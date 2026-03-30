@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "inventory",
+  "title": "Inventory",
+  "description": "A user's complete food stock at home. One document per user. Used by Agent 4 to produce available_ids for Agent 5 and a shopping list for Agent 8.",
+  "type": "object",
+  "required": ["id", "user_id", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique inventory document ID (UUID v4). One per user."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "References User.id. Unique constraint — one inventory per user."
+    },
+    "items": {
+      "type": "array",
+      "description": "List of food items the user has at home. An empty array is valid.",
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/InventoryItem"
+      }
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime. Updated on every mutation to this document."
+    }
+  },
+
+  "definitions": {
+    "InventoryItem": {
+      "type": "object",
+      "required": ["quantity", "unit"],
+      "additionalProperties": false,
+      "description": "A single food entry in the user's inventory. Can reference a known FoodItem or be a free-text unknown entry.",
+      "properties": {
+        "food_item_id": {
+          "type": ["string", "null"],
+          "format": "uuid",
+          "description": "References FoodItem.id. Must be null when is_custom_entry = true. When set, the food item must exist in the database."
+        },
+        "quantity": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Amount currently available in the given unit. 0 = out of stock (item is kept, not removed). Never negative."
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["g", "ml", "units", "tbsp", "tsp", "cup"],
+          "description": "Measurement unit for quantity. Only 'g' (grams) supports automatic inventory deduction in MVP 1."
+        },
+        "is_custom_entry": {
+          "type": "boolean",
+          "default": false,
+          "description": "true = item is not linked to a FoodItem in the DB. food_item_id must be null. custom_item_name must be provided."
+        },
+        "custom_item_name": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 150,
+          "description": "Required when is_custom_entry = true. Free-text label entered by the user. Used for display and shopping list only — no calorie data available."
+        },
+        "added_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime. Set when the item is first added to the inventory."
+        }
+      },
+      "if": {
+        "properties": { "is_custom_entry": { "const": true } }
+      },
+      "then": {
+        "required": ["custom_item_name"],
+        "properties": {
+          "food_item_id": { "type": "null" },
+          "custom_item_name": { "type": "string", "minLength": 1, "maxLength": 150 }
+        }
+      },
+      "else": {
+        "required": ["food_item_id"],
+        "properties": {
+          "food_item_id": { "type": "string", "format": "uuid" },
+          "custom_item_name": { "type": "null" }
+        }
+      }
+    }
+  }
+}

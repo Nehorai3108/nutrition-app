@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UserProfile",
+  "type": "object",
+  "required": ["user_id", "name", "gender", "date_of_birth", "height_cm", "weight_kg", "activity_level", "goal"],
+  "properties": {
+    "user_id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "gender": { "type": "string", "enum": ["male", "female"] },
+    "date_of_birth": { "type": "string", "format": "date" },
+    "height_cm": { "type": "number", "minimum": 50, "maximum": 300 },
+    "weight_kg": { "type": "number", "minimum": 10, "maximum": 500 },
+    "activity_level": {
+      "type": "string",
+      "enum": ["sedentary", "lightly_active", "moderately_active", "very_active", "extra_active"]
+    },
+    "goal": {
+      "type": "string",
+      "enum": ["lose_weight", "maintain", "gain_weight"]
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "notes": { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}

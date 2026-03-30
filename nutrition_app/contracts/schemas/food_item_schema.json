@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FoodItem",
+  "type": "object",
+  "required": ["food_id", "name_he", "name_en", "category", "nutrition_per_100g"],
+  "properties": {
+    "food_id": { "type": "string", "minLength": 1 },
+    "name_he": { "type": "string", "minLength": 1 },
+    "name_en": { "type": "string", "minLength": 1 },
+    "category": {
+      "type": "string",
+      "enum": ["protein", "carbohydrate", "fat", "vegetable", "fruit", "dairy", "grain", "legume", "nut_seed", "condiment", "beverage", "other"]
+    },
+    "nutrition_per_100g": {
+      "type": "object",
+      "required": ["calories_kcal", "protein_g", "carbs_g", "fat_g"],
+      "properties": {
+        "calories_kcal": { "type": "number", "minimum": 0 },
+        "protein_g": { "type": "number", "minimum": 0 },
+        "carbs_g": { "type": "number", "minimum": 0 },
+        "fat_g": { "type": "number", "minimum": 0 },
+        "fiber_g": { "type": "number", "minimum": 0, "default": 0 },
+        "sugar_g": { "type": "number", "minimum": 0, "default": 0 },
+        "sodium_mg": { "type": "number", "minimum": 0, "default": 0 }
+      },
+      "additionalProperties": false
+    },
+    "default_unit": { "type": "string", "enum": ["gram", "ml", "unit", "tablespoon", "teaspoon", "cup", "slice"] },
+    "default_serving_g": { "type": "number", "minimum": 0 },
+    "aliases_he": { "type": "array", "items": { "type": "string" } },
+    "aliases_en": { "type": "array", "items": { "type": "string" } },
+    "is_custom": { "type": "boolean" },
+    "source": { "type": "string" }
+  },
+  "additionalProperties": false
+}
