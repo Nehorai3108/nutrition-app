@@ -357,7 +357,15 @@ class DirectorAgent:
                     existing = json.load(f)
             except (json.JSONDecodeError, OSError):
                 existing = []
-        existing.extend(new_tasks)
+
+        # Skip tasks whose (type, details) already exist in the queue
+        seen = {(t["type"], t["details"]) for t in existing}
+        for task in new_tasks:
+            key = (task["type"], task["details"])
+            if key not in seen:
+                existing.append(task)
+                seen.add(key)
+
         with open(path, "w", encoding="utf-8") as f:
             json.dump(existing, f, ensure_ascii=False, indent=2)
 

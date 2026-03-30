@@ -4,6 +4,7 @@
 דאשבורד סוכנים — לוח בקרה אוטונומי
 """
 
+import json
 import sys
 import os
 import time
@@ -64,6 +65,26 @@ st.markdown("""
 # ── Storage dir ───────────────────────────────────────────────────────────────
 STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage_agents")
 os.makedirs(STORAGE_DIR, exist_ok=True)
+
+# ── Live-data helpers ─────────────────────────────────────────────────────────
+
+def _load_json(path: str, fallback):
+    """Load JSON from path; return fallback on any error."""
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return fallback
+
+def _latest_file(directory: str, pattern: str) -> str:
+    """Return path to the most-recently-modified file matching pattern, or ''."""
+    import glob
+    files = sorted(glob.glob(os.path.join(directory, pattern)), reverse=True)
+    return files[0] if files else ""
+
+_TASKS_DIR = os.path.join(STORAGE_DIR, "tasks")
+_REPORTS_DIR = os.path.join(STORAGE_DIR, "audit", "director_reports")
+_LOGS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "agents", "logs")
 
 # ── Simple run_state mock (no WorkflowEngine needed) ─────────────────────────
 
@@ -352,7 +373,7 @@ st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 
-tab_cycles, tab_tasks, tab_healer, tab_escalations, tab_feedback, tab_improvements, tab_audit = st.tabs([
+tab_cycles, tab_tasks, tab_healer, tab_escalations, tab_feedback, tab_improvements, tab_audit, tab_live_state = st.tabs([
     "🔄 מחזורים",
     "📋 משימות",
     "🩺 ריפוי עצמי",
@@ -360,6 +381,7 @@ tab_cycles, tab_tasks, tab_healer, tab_escalations, tab_feedback, tab_improvemen
     "💬 משוב",
     "📈 שיפורים",
     "📝 ביקורת",
+    "🗂️ מצב מערכת חי",
 ])
 
 # ── Tab: Cycles ───────────────────────────────────────────────────────────────
@@ -670,6 +692,86 @@ with col_crit:
                 )
     else:
         st.caption("לחץ 'בקר תוצאות' לביקורת משימות שהושלמו.")
+
+# ── Tab: Live System State ────────────────────────────────────────────────────
+
+with tab_live_state:
+    st.markdown("### מצב מערכת חי — נתונים מ-storage_agents/")
+
+    # Load all live files
+    pending   = _load_json(os.path.join(_TASKS_DIR, "pending_tasks.json"),   [])
+    completed = _load_json(os.path.join(_TASKS_DIR, "completed_tasks.json"), [])
+    verdicts  = _load_json(os.path.join(_TASKS_DIR, "verdicts.json"),        [])
+
+    col_ls1, col_ls2, col_ls3 = st.columns(3)
+    col_ls1.metric("📋 משימות ממתינות", len(pending))
+    col_ls2.metric("✅ משימות שהושלמו", len(completed))
+    col_ls3.metric("🔍 פסיקות Critic", len(verdicts))
+
+    st.divider()
+
+    # Director report
+    latest_report_path = _latest_file(_REPORTS_DIR, "*.json")
+    if latest_report_path:
+        report_data = _load_json(latest_report_path, {})
+        st.markdown("#### דוח Director אחרון")
+        score = report_data.get("system_health_score", "—")
+        summary = report_data.get("summary", "")
+        ts = report_data.get("timestamp", "")[:19].replace("T", " ")
+        score_color = "green" if isinstance(score, int) and score >= 80 else ("orange" if isinstance(score, int) and score >= 50 else "red")
+        st.markdown(
+            f"<b>ציון בריאות:</b> <span style='color:{score_color};font-weight:bold;'>{score}/100</span> &nbsp;|&nbsp; "
+            f"<b>זמן:</b> {ts}",
+            unsafe_allow_html=True,
+        )
+        if summary:
+            st.info(summary)
+        report_tasks = report_data.get("tasks_created", [])
+        if report_tasks:
+            st.markdown(f"**משימות בדוח ({len(report_tasks)}):**")
+            for t in report_tasks:
+                badge = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(t.get("priority", ""), "⬜")
+                st.markdown(f"{badge} {t.get('details', '')[:90]}")
+    else:
+        st.info("אין דוח Director — לחץ 'הרץ ניתוח' בחלק Director & Critic.")
+
+    st.divider()
+
+    # Pending tasks list
+    if pending:
+        with st.expander(f"📋 משימות ממתינות ({len(pending)})", expanded=False):
+            for t in pending:
+                badge = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(t.get("priority", ""), "⬜")
+                st.markdown(
+                    f"{badge} **[{t.get('type','')}]** {t.get('details','')[:80]} "
+                    f"<span style='color:gray;font-size:11px;'>→ {t.get('agent','')}</span>",
+                    unsafe_allow_html=True,
+                )
+
+    # Verdicts list
+    if verdicts:
+        approved_v = sum(1 for v in verdicts if v.get("verdict") == "APPROVED")
+        rejected_v = len(verdicts) - approved_v
+        with st.expander(f"🔍 פסיקות Critic — ✅ {approved_v} אושרו | ❌ {rejected_v} נדחו", expanded=False):
+            for v in verdicts:
+                is_ok = v.get("verdict") == "APPROVED"
+                icon = "✅" if is_ok else "❌"
+                st.markdown(f"{icon} `{v.get('task_id','')[:8]}` — {v.get('reason','')[:80]}")
+
+    # Food coverage (agents/logs/daily_*.json)
+    latest_log_path = _latest_file(_LOGS_DIR, "daily_*.json")
+    if latest_log_path:
+        st.divider()
+        log_data = _load_json(latest_log_path, {})
+        st.markdown("#### כיסוי מזונות — דוח יומי אחרון")
+        coverage = log_data.get("coverage_rate", log_data.get("coverage_pct", "—"))
+        cache_size = log_data.get("cache_size", log_data.get("cached_count", "—"))
+        log_date = os.path.basename(latest_log_path).replace("daily_", "").replace(".json", "")
+        col_c1, col_c2, col_c3 = st.columns(3)
+        col_c1.metric("📅 תאריך דוח", log_date)
+        col_c2.metric("📊 כיסוי", f"{coverage}%" if isinstance(coverage, (int, float)) else str(coverage))
+        col_c3.metric("🗄️ מטמון", str(cache_size))
+
 
 # ── Auto-refresh ──────────────────────────────────────────────────────────────
 
