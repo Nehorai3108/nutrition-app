@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "meal_plan",
+  "title": "MealPlan",
+  "description": "A single day's meal plan for one user. Contains 1–6 meals, each with 1 or more food items. All calorie and macro totals are computed deterministically from FoodItem values — never set manually or by AI.",
+  "type": "object",
+  "required": ["id", "user_id", "date", "calorie_target", "meals"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique plan identifier (UUID v4). Auto-generated."
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "References User.id. One plan per user per date."
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO 8601 date (YYYY-MM-DD) for which this plan applies. Unique per user."
+    },
+    "calorie_target": {
+      "type": "integer",
+      "minimum": 800,
+      "maximum": 6000,
+      "description": "Daily calorie target in kcal. Must equal NutritionProfile.calorie_target exactly. Never modified by Agent 5 or AI layer."
+    },
+    "meals": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "description": "Ordered list of meals in the day. Each meal_type may appear at most once.",
+      "items": {
+        "$ref": "#/definitions/Meal"
+      }
+    },
+    "totals": {
+      "$ref": "#/definitions/MacroTotals",
+      "description": "Aggregate of all Meal.totals. Computed field — equals SUM(meal.totals for meal in meals). Never stored as a free value."
+    },
+    "calorie_gap": {
+      "type": "number",
+      "description": "calorie_target − totals.calories. Positive = under target. Negative = over target. Computed field."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "confirmed"],
+      "default": "draft",
+      "description": "Plan lifecycle state. Transitions draft → confirmed trigger inventory deduction (Agent 4). No reverse transition in MVP 1."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime. Set on creation. Immutable."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime. Updated on status change or meal edit."
+    }
+  },
+
+  "definitions": {
+
+    "Meal": {
+      "type": "object",
+      "required": ["meal_id", "meal_type", "items"],
+      "additionalProperties": false,
+      "description": "One meal within a daily plan.",
+      "properties": {
+        "meal_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique meal identifier (UUID v4). Auto-generated."
+        },
+        "meal_type": {
+          "type": "string",
+          "enum": ["breakfast", "lunch", "dinner", "snack"],
+          "description": "Type of meal. Each value may appear at most once per MealPlan."
+        },
+        "name": {
+          "type": ["string", "null"],
+          "maxLength": 100,
+          "description": "Optional display name. Set by Agent 6 (AI Layer) only — purely cosmetic. Must not influence any calculation."
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Food items included in this meal. At least one required.",
+          "items": {
+            "$ref": "#/definitions/MealItem"
+          }
+        },
+        "totals": {
+          "$ref": "#/definitions/MacroTotals",
+          "description": "Aggregate of all MealItem macro values in this meal. Computed field — equals SUM(item macros for item in items)."
+        }
+      }
+    },
+
+    "MealItem": {
+      "type": "object",
+      "required": ["food_item_id", "quantity_g"],
+      "additionalProperties": false,
+      "description": "A single food item with a measured quantity inside a Meal. Macro fields are always computed via NutritionEngine.compute_item_macros() — never set manually.",
+      "properties": {
+        "food_item_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "References FoodItem.id. Must exist in the food database."
+        },
+        "quantity_g": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Quantity of the food item in grams to be consumed in this meal."
+        },
+        "calories": {
+          "type": "number",
+          "minimum": 0,
+          "description": "COMPUTED by Agent 2. Formula: (FoodItem.calories_per_100g / 100) * quantity_g. Never set manually."
+        },
+        "protein_g": {
+          "type": "number",
+          "minimum": 0,
+          "description": "COMPUTED by Agent 2. Formula: (FoodItem.protein_per_100g / 100) * quantity_g."
+        },
+        "carbs_g": {
+          "type": "number",
+          "minimum": 0,
+          "description": "COMPUTED by Agent 2. Formula: (FoodItem.carbs_per_100g / 100) * quantity_g."
+        },
+        "fat_g": {
+          "type": "number",
+          "minimum": 0,
+          "description": "COMPUTED by Agent 2. Formula: (FoodItem.fat_per_100g / 100) * quantity_g."
+        }
+      }
+    },
+
+    "MacroTotals": {
+      "type": "object",
+      "required": ["calories", "protein_g", "carbs_g", "fat_g"],
+      "additionalProperties": false,
+      "description": "Aggregated nutritional totals. Used at both Meal and MealPlan level. Always computed — never stored as a free-form value.",
+      "properties": {
+        "calories":  { "type": "number", "minimum": 0 },
+        "protein_g": { "type": "number", "minimum": 0 },
+        "carbs_g":   { "type": "number", "minimum": 0 },
+        "fat_g":     { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

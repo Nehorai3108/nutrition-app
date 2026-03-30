@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InventorySchemas",
+  "definitions": {
+    "InventoryItem": {
+      "type": "object",
+      "required": ["inventory_item_id", "food_id", "quantity", "unit"],
+      "properties": {
+        "inventory_item_id": { "type": "string" },
+        "food_id": { "type": "string" },
+        "quantity": { "type": "number", "minimum": 0 },
+        "unit": { "type": "string", "enum": ["gram", "ml", "unit", "tablespoon", "teaspoon", "cup", "slice"] },
+        "expiry_date": { "type": ["string", "null"], "format": "date" },
+        "added_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "InventoryChange": {
+      "type": "object",
+      "required": ["change_id", "inventory_item_id", "food_id", "action", "quantity_before", "quantity_after", "quantity_delta", "reason"],
+      "properties": {
+        "change_id": { "type": "string" },
+        "inventory_item_id": { "type": "string" },
+        "food_id": { "type": "string" },
+        "action": { "type": "string", "enum": ["add", "update", "remove", "deduct", "reserve", "release"] },
+        "quantity_before": { "type": "number" },
+        "quantity_after": { "type": "number", "minimum": 0 },
+        "quantity_delta": { "type": "number" },
+        "reason": { "type": "string" },
+        "run_id": { "type": ["string", "null"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "InventorySnapshot": {
+      "type": "object",
+      "required": ["snapshot_id", "run_id", "timestamp", "items"],
+      "properties": {
+        "snapshot_id": { "type": "string" },
+        "run_id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "items": { "type": "array", "items": { "$ref": "#/definitions/InventoryItem" } }
+      },
+      "additionalProperties": false
+    }
+  }
+}

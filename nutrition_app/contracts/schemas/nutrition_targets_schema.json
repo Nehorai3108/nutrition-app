@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NutritionTargets",
+  "type": "object",
+  "required": ["user_id", "bmr_kcal", "tdee_kcal", "target_calories_kcal", "protein_g", "carbs_g", "fat_g"],
+  "properties": {
+    "user_id": { "type": "string" },
+    "bmr_kcal": { "type": "number", "minimum": 0 },
+    "tdee_kcal": { "type": "number", "minimum": 0 },
+    "target_calories_kcal": { "type": "number", "minimum": 0 },
+    "protein_g": { "type": "number", "minimum": 0 },
+    "carbs_g": { "type": "number", "minimum": 0 },
+    "fat_g": { "type": "number", "minimum": 0 },
+    "fiber_g_min": { "type": "number", "minimum": 0 },
+    "fiber_g_max": { "type": "number", "minimum": 0 },
+    "calculation_method": { "type": "string" },
+    "macro_total_kcal": { "type": "number" },
+    "protein_pct": { "type": "number" },
+    "carbs_pct": { "type": "number" },
+    "fat_pct": { "type": "number" },
+    "notes": { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}

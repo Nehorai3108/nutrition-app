@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "user",
+  "title": "User",
+  "description": "Registered user profile. Physical stats are consumed by Agent 2 (Nutrition Engine) for TDEE and calorie target computation. Dietary restrictions are consumed by Agent 5 (Meal Planning Engine) for food filtering.",
+  "type": "object",
+  "required": [
+    "id",
+    "email",
+    "name",
+    "age",
+    "gender",
+    "height_cm",
+    "weight_kg",
+    "activity_level",
+    "goal"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique user identifier (UUID v4). Auto-generated. Immutable after creation."
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User's email address. Must be unique across all users."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Display name. Used by Agent 8 (Mobile App) only."
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 120,
+      "description": "User's age in whole years. Consumed by Agent 2 for BMR calculation."
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["male", "female", "other"],
+      "description": "User's gender. Consumed by Agent 2 — affects BMR formula constant and minimum calorie safety floor."
+    },
+    "height_cm": {
+      "type": "number",
+      "minimum": 50,
+      "maximum": 250,
+      "description": "Height in centimetres. Consumed by Agent 2 for BMR calculation."
+    },
+    "weight_kg": {
+      "type": "number",
+      "minimum": 20,
+      "maximum": 300,
+      "description": "Weight in kilograms. Consumed by Agent 2 for BMR calculation."
+    },
+    "activity_level": {
+      "type": "string",
+      "enum": [
+        "sedentary",
+        "lightly_active",
+        "moderately_active",
+        "very_active",
+        "extra_active"
+      ],
+      "description": "Physical activity level. Consumed by Agent 2 — maps to a PAL multiplier for TDEE. The multiplier values themselves are owned by Agent 2."
+    },
+    "goal": {
+      "type": "string",
+      "enum": ["lose_weight", "maintain", "gain_muscle"],
+      "description": "User's dietary goal. Consumed by Agent 2 — maps to a calorie delta applied on top of TDEE. The delta values are owned by Agent 2."
+    },
+    "calorie_target_override": {
+      "type": ["integer", "null"],
+      "minimum": 800,
+      "maximum": 6000,
+      "description": "Optional manual calorie target. When not null, Agent 2 uses this value directly and skips TDEE computation. Range: 800–6000 kcal."
+    },
+    "dietary_restrictions": {
+      "type": "array",
+      "default": [],
+      "uniqueItems": true,
+      "description": "List of dietary restrictions. Consumed by Agent 5 (Meal Planning Engine) to filter food items from meal plans.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "vegetarian",
+          "vegan",
+          "gluten_free",
+          "lactose_free",
+          "halal",
+          "kosher",
+          "nut_free"
+        ]
+      }
+    },
+    "subscription_tier": {
+      "type": "string",
+      "enum": ["free", "basic", "premium"],
+      "default": "free",
+      "description": "User's subscription level. Consumed by Agent 7 (Payments) to gate features."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime. Set on registration. Immutable."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime. Updated whenever any user field changes."
+    }
+  }
+}

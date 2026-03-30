@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MealPlan",
+  "type": "object",
+  "required": ["plan_id", "user_id", "run_id", "plan_date", "meals"],
+  "properties": {
+    "plan_id": { "type": "string" },
+    "user_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "plan_date": { "type": "string", "format": "date" },
+    "meals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["meal_type", "items"],
+        "properties": {
+          "meal_type": {
+            "type": "string",
+            "enum": ["breakfast", "morning_snack", "lunch", "afternoon_snack", "dinner", "evening_snack"]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["food_id", "food_name", "quantity_g", "calories_kcal", "protein_g", "carbs_g", "fat_g"],
+              "properties": {
+                "food_id": { "type": "string" },
+                "food_name": { "type": "string" },
+                "quantity_g": { "type": "number", "minimum": 0 },
+                "calories_kcal": { "type": "number", "minimum": 0 },
+                "protein_g": { "type": "number", "minimum": 0 },
+                "carbs_g": { "type": "number", "minimum": 0 },
+                "fat_g": { "type": "number", "minimum": 0 },
+                "from_inventory": { "type": "boolean" },
+                "inventory_item_id": { "type": ["string", "null"] }
+              }
+            }
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "calories_kcal": { "type": "number" },
+              "protein_g": { "type": "number" },
+              "carbs_g": { "type": "number" },
+              "fat_g": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "target_calories_kcal": { "type": "number" },
+    "totals": { "type": "object" },
+    "calorie_deviation_pct": { "type": "number" },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

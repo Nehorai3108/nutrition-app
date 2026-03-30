@@ -1,0 +1,13 @@
+[project]
+name = "nutrition-app"
+version = "0.1.0"
+description = "Modular, deterministic, agent-based nutrition planning system"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["nutrition_app/tests"]
+pythonpath = ["."]

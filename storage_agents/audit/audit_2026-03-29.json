@@ -1,0 +1,22 @@
+[
+  {
+    "entry_id": "b9cd8298-037a-4973-a30e-c7e115b433ac",
+    "timestamp": "2026-03-29T13:11:59.139625+00:00",
+    "actor": "autonomy_system",
+    "trigger": "owner_feedback",
+    "action_category": "data_processing",
+    "authority_level": "auto",
+    "description": "Feedback received: wrong_mapping",
+    "what_changed": {
+      "before": {
+        "feedback_count": 1
+      },
+      "after": {
+        "feedback_id": "ac679214-c103-45a2-9756-ffef1ed75fb1",
+        "assigned_to": "agent_3_food",
+        "task_id": "05bac7de-e2a1-41a0-a96c-4ab17fdff2ce"
+      }
+    },
+    "result": "success"
+  }
+]

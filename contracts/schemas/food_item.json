@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "food_item",
+  "title": "FoodItem",
+  "description": "A food product in the database. All macro values are per 100g. Single source of truth for calorie calculations — never overridden by AI.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "calories_per_100g",
+    "protein_per_100g",
+    "carbs_per_100g",
+    "fat_per_100g",
+    "category"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier (UUID v4). Immutable after creation."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 150,
+      "description": "Primary display name in English. Used as fallback when locale translation is missing."
+    },
+    "brand": {
+      "type": ["string", "null"],
+      "maxLength": 100,
+      "description": "Optional brand or manufacturer name."
+    },
+    "calories_per_100g": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 900,
+      "description": "Kilocalories per 100g. Source of truth — must never be modified by AI layer."
+    },
+    "protein_per_100g": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Grams of protein per 100g of food."
+    },
+    "carbs_per_100g": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Grams of carbohydrates per 100g of food."
+    },
+    "fat_per_100g": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Grams of fat per 100g of food."
+    },
+    "fiber_per_100g": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Grams of dietary fiber per 100g. Optional — not used in MVP 1 calorie calculations."
+    },
+    "default_serving_g": {
+      "type": ["number", "null"],
+      "minimum": 1,
+      "description": "Suggested default portion size in grams. Hint for Agent 5 (Meal Planning Engine). Not authoritative."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "protein",
+        "carbohydrate",
+        "vegetable",
+        "fruit",
+        "dairy",
+        "fat_oil",
+        "beverage",
+        "snack",
+        "condiment",
+        "other"
+      ],
+      "description": "Broad food category. Used by Agent 5 for meal composition logic."
+    },
+    "name_translations": {
+      "type": ["object", "null"],
+      "description": "Multilingual display names keyed by BCP-47 language tag (e.g. 'he', 'ar', 'fr'). Agent 8 selects matching locale; falls back to top-level 'name' if key is absent.",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 150
+      },
+      "propertyNames": {
+        "pattern": "^[a-z]{2,3}(-[A-Z]{2,3})?$",
+        "description": "BCP-47 language tag, e.g. 'he', 'ar', 'fr', 'zh-TW'"
+      },
+      "examples": [
+        { "he": "חזה עוף", "ar": "صدر الدجاج", "fr": "Blanc de poulet" }
+      ]
+    },
+    "aliases": {
+      "type": "array",
+      "description": "Alternative names used by Agent 3 for search and matching. Not displayed to users.",
+      "default": [],
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 150
+      },
+      "uniqueItems": true
+    },
+    "is_custom": {
+      "type": "boolean",
+      "default": false,
+      "description": "true = created manually by a user; false = from global food database."
+    },
+    "created_by_user_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "Required when is_custom = true. References the User.id who created this item. Null for global DB entries."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime. Set on creation, immutable."
+    }
+  },
+  "if": {
+    "properties": { "is_custom": { "const": true } }
+  },
+  "then": {
+    "required": ["created_by_user_id"],
+    "properties": {
+      "created_by_user_id": {
+        "type": "string",
+        "format": "uuid"
+      }
+    }
+  }
+}

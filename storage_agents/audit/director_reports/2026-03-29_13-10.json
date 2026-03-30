@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-03-29T13:10:10.514514+00:00",
+  "tasks_created": [
+    {
+      "task_id": "6d18c41b-fa6d-48e2-aa50-6cfd90637bb0",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category protein has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "22a15827-6101-47d0-8a53-77e4e3581c29",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category carbohydrate has only 0 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "5c9a6426-20b9-4440-b0e8-4bc1db79030d",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category fat has only 1 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "4ed7b75c-c672-4d77-a5dd-2a4bc67e24eb",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category vegetable has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "2977cd0d-9648-4c49-8ef8-6b33a31f598c",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category fruit has only 1 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "e8481888-6f13-4388-af74-58df82a12b2e",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category dairy has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "278413aa-5c25-4c6b-a2e7-0894fee0c3f3",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category grain has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "cd34cdf6-4ce5-4ef8-841d-1eece2237261",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category legume has only 0 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "c94111b7-543e-4d5e-8d40-e7218dbc5273",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category nut_seed has only 0 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "0118ca61-fd54-40e7-a17a-aaa29eb0c4f9",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category condiment has only 0 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "e49e4414-f31b-43c2-8ac4-a376f84e2ccc",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category beverage has only 0 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "16017ded-f182-4681-891b-e5bf2f64496e",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 0 foods. Add at least 5 more."
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 12 משימות expand_catalog."
+}
