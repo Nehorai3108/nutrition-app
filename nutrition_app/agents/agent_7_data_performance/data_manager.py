@@ -195,6 +195,69 @@ class DataManager:
                 seen[sig] = key
         return duplicates
 
+    # ─── Pipeline Metrics Tracking ──────────────────────────────────
+    def save_pipeline_metrics(self, metrics: dict) -> str:
+        """Save pipeline execution metrics for historical tracking."""
+        metrics_dir = os.path.join(self.base_path, "audit")
+        os.makedirs(metrics_dir, exist_ok=True)
+
+        # Append to metrics history
+        history_path = os.path.join(metrics_dir, "metrics_history.json")
+        history = []
+        if os.path.isfile(history_path):
+            existing = self._read_json(history_path)
+            if isinstance(existing, list):
+                history = existing
+
+        history.append(metrics)
+
+        # Keep only last 50 entries
+        if len(history) > 50:
+            history = history[-50:]
+
+        self._write_json(history_path, history)
+
+        # Also save latest metrics
+        latest_path = os.path.join(metrics_dir, "metrics.json")
+        self._write_json(latest_path, metrics)
+
+        return latest_path
+
+    def get_metrics_history(self) -> list:
+        """Load historical pipeline metrics."""
+        path = os.path.join(self.base_path, "audit", "metrics_history.json")
+        data = self._read_json(path)
+        return data if isinstance(data, list) else []
+
+    def cleanup_old_plans(self, max_plans: int = 50, max_age_days: int = 30) -> dict:
+        """Archive plans older than max_age_days, keep only latest max_plans."""
+        plans_dir = os.path.join(self.base_path, "plans")
+        if not os.path.isdir(plans_dir):
+            return {"deleted": 0, "kept": 0}
+
+        files = sorted(
+            [f for f in os.listdir(plans_dir) if f.endswith(".json")],
+            reverse=True,
+        )
+
+        kept = 0
+        deleted = 0
+        cutoff = utcnow() - timedelta(days=max_age_days)
+
+        for i, fname in enumerate(files):
+            path = os.path.join(plans_dir, fname)
+            if i < max_plans:
+                kept += 1
+                continue
+            # Delete excess plans
+            try:
+                os.remove(path)
+                deleted += 1
+            except OSError:
+                pass
+
+        return {"deleted": deleted, "kept": kept}
+
     # ─── Helpers ─────────────────────────────────────────────────────
     def _write_json(self, path: str, data: Any) -> None:
         os.makedirs(os.path.dirname(path), exist_ok=True)
