@@ -24,6 +24,8 @@ Forbidden:
 - Deduction
 """
 
+import json
+import os
 import re
 import unicodedata
 from typing import Dict, List, Optional
@@ -32,13 +34,18 @@ from nutrition_app.models.food_item import FoodItem, NutritionPer100g
 from nutrition_app.models.food_match import FoodMatch, FoodMatchResult
 from nutrition_app.models.enums import ConfidenceLevel, FoodCategory, UnitType
 
+# Path to extended catalog data
+_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "..", "data")
+
 
 class FoodCatalog:
     """Food database with search, matching, and alias support."""
 
-    def __init__(self):
+    def __init__(self, load_extended: bool = True):
         self._foods: Dict[str, FoodItem] = {}
         self._load_default_catalog()
+        if load_extended:
+            self.load_extended_catalog()
 
     def _load_default_catalog(self):
         """Load built-in food catalog. In production, this reads from data/."""
@@ -158,6 +165,21 @@ class FoodCatalog:
         ]
         for food in default_foods:
             self._foods[food.food_id] = food
+
+    def load_extended_catalog(self):
+        """Load extended food catalog from data/foods_extended.json."""
+        ext_path = os.path.join(_DATA_DIR, "foods_extended.json")
+        if not os.path.isfile(ext_path):
+            return
+        try:
+            with open(ext_path, "r", encoding="utf-8") as f:
+                foods_data = json.load(f)
+            for fd in foods_data:
+                food = FoodItem.from_dict(fd)
+                if food.food_id not in self._foods:
+                    self._foods[food.food_id] = food
+        except (json.JSONDecodeError, OSError, KeyError):
+            pass
 
     def _normalize(self, text: str) -> str:
         text = text.strip().lower()
