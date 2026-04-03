@@ -1,86 +1,43 @@
 [
   {
-    "task_id": "550a3adb-1304-4f9a-b76f-de7329a5931d",
+    "task_id": "f7371733-7e0c-459e-8f85-84e612bc5903",
     "type": "expand_catalog",
     "agent": "agent_3_food",
     "priority": "high",
-    "details": "Category protein has only 2 foods. Add at least 5 more."
+    "details": "Category carbohydrate has only 2 foods. Add at least 5 more.",
+    "last_attempt": "2026-03-30T19:21:25.522998+00:00",
+    "last_error": "Category carbohydrate still has only 2 foods.",
+    "attempts": 1
   },
   {
-    "task_id": "3fb9778a-d003-4c33-86a6-8c7762f8d654",
+    "task_id": "6b0b3fb3-d2e7-4335-8827-9311d7a02d17",
     "type": "expand_catalog",
     "agent": "agent_3_food",
     "priority": "high",
-    "details": "Category carbohydrate has only 0 foods. Add at least 5 more."
+    "details": "Category other has only 2 foods. Add at least 5 more.",
+    "last_attempt": "2026-03-30T19:21:25.524011+00:00",
+    "last_error": "Category other still has only 2 foods.",
+    "attempts": 1
   },
   {
-    "task_id": "b363e10b-452c-4c63-9cf3-97ce61010aa8",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
+    "task_id": "0957deea-e4fd-4796-97f9-0fcb08be0c2e",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
     "priority": "high",
-    "details": "Category fat has only 1 foods. Add at least 5 more."
+    "details": "BREAKFAST contains VEGETABLE category item: עגבנייה"
   },
   {
-    "task_id": "b9105f69-f823-447c-9ec8-9b3216ba879a",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
+    "task_id": "1f1d197c-3267-4e8c-8b9b-ac856f4eb891",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
     "priority": "high",
-    "details": "Category vegetable has only 2 foods. Add at least 5 more."
+    "details": "AFTERNOON_SNACK contains GRAIN category item: קינואה"
   },
   {
-    "task_id": "bd1a2665-7067-475a-82c1-e022bf9a34d8",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
+    "task_id": "cf1761d6-6acf-465b-bf97-9a853bdbc5a5",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
     "priority": "high",
-    "details": "Category fruit has only 1 foods. Add at least 5 more."
-  },
-  {
-    "task_id": "da4973a1-dc28-4f49-b664-9c9a4418ab71",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
-    "priority": "high",
-    "details": "Category dairy has only 2 foods. Add at least 5 more."
-  },
-  {
-    "task_id": "7f885be7-5265-4373-8bd5-5ee87f3db7bb",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
-    "priority": "high",
-    "details": "Category grain has only 2 foods. Add at least 5 more."
-  },
-  {
-    "task_id": "e996d391-daea-4153-90a6-144c12522a90",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
-    "priority": "high",
-    "details": "Category legume has only 0 foods. Add at least 5 more."
-  },
-  {
-    "task_id": "356d8b36-8be9-4dbe-8588-d18766b8005a",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
-    "priority": "high",
-    "details": "Category nut_seed has only 0 foods. Add at least 5 more."
-  },
-  {
-    "task_id": "975a8905-63d7-4900-a6d3-be7ae48072a5",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
-    "priority": "high",
-    "details": "Category condiment has only 0 foods. Add at least 5 more."
-  },
-  {
-    "task_id": "25de1108-e65c-40e5-b3a8-9175b0785b21",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
-    "priority": "high",
-    "details": "Category beverage has only 0 foods. Add at least 5 more."
-  },
-  {
-    "task_id": "4a0dee27-52c3-4d49-a788-d8e1e76b711c",
-    "type": "expand_catalog",
-    "agent": "agent_3_food",
-    "priority": "high",
-    "details": "Category other has only 0 foods. Add at least 5 more."
+    "details": "DINNER contains DAIRY category item: חלב"
   }
 ]

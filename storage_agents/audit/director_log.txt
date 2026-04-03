@@ -1,3 +1,3 @@
-[2026-03-29 12:12:27] tasks=12 health=0 summary=נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 12 משימות expand_catalog.
-[2026-03-29 12:12:40] tasks=12 health=0 summary=נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 12 משימות expand_catalog.
-[2026-03-29 13:10:10] tasks=12 health=0 summary=נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 12 משימות expand_catalog.
+[2026-03-30 19:21:25] tasks=2 health=70 summary=נמצאו 2 בעיות. ציון בריאות: 70/100. פירוט: 2 משימות expand_catalog.
+[2026-04-02 20:18:08] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 2 משימות expand_catalog, 3 משימות fix_meal_timing.
+[2026-04-02 20:37:33] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 2 משימות expand_catalog, 3 משימות fix_meal_timing.
