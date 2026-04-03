@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-03-30T19:21:25.541139+00:00",
+  "iterations": 1,
+  "director_health": 70,
+  "critic_approval_rate": 0.0,
+  "total_calories": 2159.5,
+  "calorie_deviation_pct": -3.2,
+  "unique_foods": 18,
+  "elapsed_seconds": 0.041278839111328125,
+  "success": true,
+  "remaining_issues": []
+}

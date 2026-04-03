@@ -46,6 +46,15 @@ st.set_page_config(
     layout="wide",
 )
 
+col_title, col_nav = st.columns([3, 1])
+col_title.markdown("# 🤖 דאשבורד סוכנים")
+col_nav.markdown(
+    '<a href="/" target="_self" style="display:inline-block;padding:0.4em 1em;'
+    "background:#f0f2f6;border-radius:8px;text-decoration:none;color:#262730;"
+    'font-weight:500;text-align:center;width:100%">🏠 דף הבית</a>',
+    unsafe_allow_html=True,
+)
+
 st.markdown("""
 <style>
     .main .block-container { direction: rtl; }
@@ -340,7 +349,7 @@ if run_cycle_btn:
 
 # ── Header ────────────────────────────────────────────────────────────────────
 
-st.markdown("# 🤖 דאשבורד סוכנים — מערכת אוטונומית")
+st.markdown("---")
 
 metrics = orc.collect_metrics()
 dash_state = dashboard.get_demo_readiness()

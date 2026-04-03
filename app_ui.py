@@ -20,6 +20,8 @@ from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_4_inventory import InventoryManager
 from nutrition_app.agents.agent_5_planner import MealPlanner
 from nutrition_app.agents.agent_6_ai import AILayer
+from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
+from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 
 # ── Page config ──────────────────────────────────────────────────────────────
 
@@ -213,6 +215,8 @@ with st.sidebar:
 col_title, col_nav = st.columns([3, 1])
 col_title.markdown("# 🥗 מערכת תזונה חכמה")
 col_title.caption(f"תאריך: {date.today().strftime('%d/%m/%Y')}")
+col_nav.page_link("pages/2_recipes.py", label="📖 מתכונים", use_container_width=True)
+col_nav.page_link("pages/3_recipe_detail.py", label="🍽 פרטי מתכון", use_container_width=True)
 col_nav.page_link("pages/1_agents_dashboard.py", label="🤖 דאשבורד סוכנים", use_container_width=True)
 
 if not run_btn and "last_plan" not in st.session_state:
@@ -372,40 +376,69 @@ with tab_plan:
     if not plan.meals:
         st.warning("לא נוצרו ארוחות.")
     else:
+        try:
+            recipe_mgr = RecipeManager()
+        except Exception:
+            recipe_mgr = None
+
+        KASHRUT_LABELS = {"meat": "בשרי", "dairy": "חלבי", "parve": "פרווה"}
+        KASHRUT_COLORS = {"meat": "#c62828", "dairy": "#2e7d32", "parve": "#e65100"}
+
         for meal in plan.meals:
             label = MEAL_LABELS.get(meal.meal_type.value, meal.meal_type.value)
+            meal_type_upper = meal.meal_type.value.upper()
 
             with st.expander(f"{label}  —  {meal.total_calories:.0f} קק\"ל", expanded=True):
-                rows = []
-                for item in meal.items:
-                    inv_tag = "✓ מלאי" if item.from_inventory else ""
-                    rows.append({
-                        "מזון": item.food_name,
-                        "כמות": f"{item.quantity_g:.0f}ג",
-                        "קלוריות": f"{item.calories_kcal:.0f}",
-                        "מלאי": inv_tag,
-                    })
+                # Show recipe suggestions as the PRIMARY content
+                suggestions = []
+                try:
+                    if recipe_mgr:
+                        suggestions = recipe_mgr.recommend_meal(
+                            meal_type=meal_type_upper,
+                            target_calories=meal.total_calories,
+                        )
+                except Exception:
+                    pass
 
-                # Display as simple columns
-                header_cols = st.columns([3, 1, 1, 1])
-                header_cols[0].markdown("**מזון**")
-                header_cols[1].markdown("**כמות**")
-                header_cols[2].markdown("**קק\"ל**")
-                header_cols[3].markdown("**מלאי**")
+                if suggestions:
+                    for i, recipe in enumerate(suggestions[:3]):
+                        portions = max(recipe.get("portions", 1), 1)
+                        nut = recipe.get("total_nutrition", {})
+                        cal = round(nut.get("calories", 0) / portions)
+                        protein = round(nut.get("protein", 0) / portions)
+                        carbs = round(nut.get("carbs", 0) / portions)
+                        fat = round(nut.get("fat", 0) / portions)
+                        prep = recipe.get("prep_time_minutes", 0)
+                        kashrut_raw = recipe.get("kashrut", "parve").lower()
+                        kashrut_lbl = KASHRUT_LABELS.get(kashrut_raw, kashrut_raw)
+                        kashrut_clr = KASHRUT_COLORS.get(kashrut_raw, "#555")
+                        ingredients = recipe.get("ingredients", [])
+                        ingredients_display = " · ".join(
+                            format_ingredient_display(ing) for ing in ingredients
+                        )
+                        name_he = recipe.get("name_he", "")
+                        name_en = recipe.get("name_en", "")
 
-                for row in rows:
-                    rc = st.columns([3, 1, 1, 1])
-                    rc[0].write(row["מזון"])
-                    rc[1].write(row["כמות"])
-                    rc[2].write(row["קלוריות"])
-                    rc[3].write(row["מלאי"])
-
-                st.divider()
-                mc = st.columns(4)
-                mc[0].metric("קלוריות", f"{meal.total_calories:.0f}")
-                mc[1].metric("חלבון", f"{meal.total_protein:.0f}ג")
-                mc[2].metric("פחמימות", f"{meal.total_carbs:.0f}ג")
-                mc[3].metric("שומן", f"{meal.total_fat:.0f}ג")
+                        recipe_link = f"/recipe_detail?id={recipe.get('recipe_id', '')}"
+                        st.markdown(
+                            f'<a href="{recipe_link}" target="_self" style="text-decoration:none;color:inherit">'
+                            f'<div style="background:#1e1e2e;border:1px solid #333;border-radius:12px;padding:14px;margin:6px 0;direction:rtl;cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor=\'#666\'" onmouseout="this.style.borderColor=\'#333\'">'
+                            f'<div style="font-size:1.15em;font-weight:700;color:#e0e0ff">{name_he}</div>'
+                            f'<div style="font-size:0.85em;color:#999;margin-bottom:8px">{name_en} · '
+                            f'<span style="color:{kashrut_clr};font-weight:600">{kashrut_lbl}</span> · '
+                            f'⏱ {prep} דק׳</div>'
+                            f'<div style="display:flex;gap:12px;margin:8px 0;flex-wrap:wrap">'
+                            f'<span style="background:#3a3a00;padding:3px 10px;border-radius:8px;font-size:0.9em">🔥 {cal} קק״ל</span>'
+                            f'<span style="background:#003a00;padding:3px 10px;border-radius:8px;font-size:0.9em">💪 {protein}ג חלבון</span>'
+                            f'<span style="background:#00203a;padding:3px 10px;border-radius:8px;font-size:0.9em">🌾 {carbs}ג פחמ׳</span>'
+                            f'<span style="background:#3a0020;padding:3px 10px;border-radius:8px;font-size:0.9em">🫒 {fat}ג שומן</span>'
+                            f'</div>'
+                            f'<div style="font-size:0.85em;color:#aaa;margin-top:6px">🧾 {ingredients_display}</div>'
+                            f'</div></a>',
+                            unsafe_allow_html=True,
+                        )
+                else:
+                    st.info("אין מתכונים מתאימים לארוחה זו.")
 
 # ── Tab 3: Daily Summary ──────────────────────────────────────────────────────
 
