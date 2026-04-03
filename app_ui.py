@@ -381,15 +381,14 @@ with tab_plan:
         except Exception:
             recipe_mgr = None
 
-        KASHRUT_LABELS = {"meat": "בשרי", "dairy": "חלבי", "parve": "פרווה"}
-        KASHRUT_COLORS = {"meat": "#c62828", "dairy": "#2e7d32", "parve": "#e65100"}
+        KASHRUT_LABELS = {"meat": "🥩 בשרי", "dairy": "🧀 חלבי", "parve": "🌿 פרווה"}
+        KASHRUT_COLORS = {"meat": "#ef5350", "dairy": "#42a5f5", "parve": "#66bb6a"}
 
         for meal in plan.meals:
             label = MEAL_LABELS.get(meal.meal_type.value, meal.meal_type.value)
             meal_type_upper = meal.meal_type.value.upper()
 
             with st.expander(f"{label}  —  {meal.total_calories:.0f} קק\"ל", expanded=True):
-                # Show recipe suggestions as the PRIMARY content
                 suggestions = []
                 try:
                     if recipe_mgr:
@@ -418,23 +417,60 @@ with tab_plan:
                         )
                         name_he = recipe.get("name_he", "")
                         name_en = recipe.get("name_en", "")
+                        recipe_id = recipe.get("recipe_id", "")
 
-                        recipe_link = f"/recipe_detail?id={recipe.get('recipe_id', '')}"
+                        # Calculate calorie match percentage
+                        target_cal = meal.total_calories
+                        match_pct = max(0, round(100 - abs(cal - target_cal) / max(target_cal, 1) * 100))
+                        if match_pct >= 85:
+                            match_color = "#66bb6a"
+                            match_icon = "✅"
+                        elif match_pct >= 70:
+                            match_color = "#ffa726"
+                            match_icon = "🟡"
+                        else:
+                            match_color = "#ef5350"
+                            match_icon = "🔴"
+
+                        recipe_link = f"/recipe_detail?id={recipe_id}"
+
+                        # Rank badge for top suggestion
+                        rank_badge = ""
+                        if i == 0:
+                            rank_badge = '<span style="background:#4caf50;color:#fff;padding:2px 8px;border-radius:6px;font-size:0.75em;margin-left:8px">⭐ המלצה ראשית</span>'
+
                         st.markdown(
-                            f'<a href="{recipe_link}" target="_self" style="text-decoration:none;color:inherit">'
-                            f'<div style="background:#1e1e2e;border:1px solid #333;border-radius:12px;padding:14px;margin:6px 0;direction:rtl;cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor=\'#666\'" onmouseout="this.style.borderColor=\'#333\'">'
-                            f'<div style="font-size:1.15em;font-weight:700;color:#e0e0ff">{name_he}</div>'
-                            f'<div style="font-size:0.85em;color:#999;margin-bottom:8px">{name_en} · '
-                            f'<span style="color:{kashrut_clr};font-weight:600">{kashrut_lbl}</span> · '
-                            f'⏱ {prep} דק׳</div>'
-                            f'<div style="display:flex;gap:12px;margin:8px 0;flex-wrap:wrap">'
-                            f'<span style="background:#3a3a00;padding:3px 10px;border-radius:8px;font-size:0.9em">🔥 {cal} קק״ל</span>'
-                            f'<span style="background:#003a00;padding:3px 10px;border-radius:8px;font-size:0.9em">💪 {protein}ג חלבון</span>'
-                            f'<span style="background:#00203a;padding:3px 10px;border-radius:8px;font-size:0.9em">🌾 {carbs}ג פחמ׳</span>'
-                            f'<span style="background:#3a0020;padding:3px 10px;border-radius:8px;font-size:0.9em">🫒 {fat}ג שומן</span>'
+                            f'<div style="background:#1a1a2e;border:1px solid #333;border-radius:14px;padding:16px 18px;margin:8px 0;direction:rtl">'
+                            # Header row: name + kashrut + match
+                            f'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">'
+                            f'<div>'
+                            f'<span style="font-size:1.2em;font-weight:700;color:#e8e8ff">{name_he}</span>'
+                            f'{rank_badge}'
                             f'</div>'
-                            f'<div style="font-size:0.85em;color:#aaa;margin-top:6px">🧾 {ingredients_display}</div>'
-                            f'</div></a>',
+                            f'<span style="color:{kashrut_clr};font-weight:600;font-size:0.9em">{kashrut_lbl}</span>'
+                            f'</div>'
+                            # Subtitle
+                            f'<div style="font-size:0.85em;color:#888;margin:4px 0 10px 0">{name_en} · ⏱ {prep} דק׳ · '
+                            f'{match_icon} <span style="color:{match_color}">{match_pct}% התאמה</span></div>'
+                            # Nutrition grid
+                            f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0">'
+                            f'<div style="background:#2a2a00;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
+                            f'<div style="color:#ffd54f;font-weight:700">{cal}</div><div style="color:#999;font-size:0.8em">קק״ל</div></div>'
+                            f'<div style="background:#002a00;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
+                            f'<div style="color:#81c784;font-weight:700">{protein}ג</div><div style="color:#999;font-size:0.8em">חלבון</div></div>'
+                            f'<div style="background:#00202a;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
+                            f'<div style="color:#64b5f6;font-weight:700">{carbs}ג</div><div style="color:#999;font-size:0.8em">פחמימות</div></div>'
+                            f'<div style="background:#2a0020;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
+                            f'<div style="color:#e57373;font-weight:700">{fat}ג</div><div style="color:#999;font-size:0.8em">שומן</div></div>'
+                            f'</div>'
+                            # Ingredients
+                            f'<div style="font-size:0.82em;color:#aaa;margin-top:8px;line-height:1.6">🧾 {ingredients_display}</div>'
+                            # View recipe link
+                            f'<div style="margin-top:10px;text-align:left">'
+                            f'<a href="{recipe_link}" target="_self" style="color:#90caf9;font-size:0.9em;text-decoration:none;border:1px solid #90caf9;padding:4px 14px;border-radius:8px;transition:all 0.2s"'
+                            f' onmouseover="this.style.background=\'#90caf9\';this.style.color=\'#1a1a2e\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#90caf9\'">'
+                            f'📖 צפה במתכון המלא</a></div>'
+                            f'</div>',
                             unsafe_allow_html=True,
                         )
                 else:
