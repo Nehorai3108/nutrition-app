@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-app_ui.py — Nutrition app dashboard.
+app_ui.py — Nutrition app dashboard with guided food selection wizard.
 Run: streamlit run app_ui.py
 """
 
@@ -22,7 +22,6 @@ from nutrition_app.agents.agent_5_planner import MealPlanner
 from nutrition_app.agents.agent_6_ai import AILayer
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
-
 from nutrition_app.agents.agent_5_planner.meal_planner import MEAL_CATEGORY_RULES
 
 from ui_helpers import (
@@ -50,54 +49,46 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* RTL */
     .main .block-container { direction: rtl; }
     section[data-testid="stSidebar"] > div { direction: rtl; }
     div[data-testid="metric-container"] { direction: rtl; text-align: right; }
     h1, h2, h3 { text-align: right; }
     input[type="number"] { text-align: right; }
+    .stTabs [data-baseweb="tab-list"] { gap: 8px; justify-content: center; }
+    .stTabs [data-baseweb="tab"] { font-size: 1.05em; padding: 10px 24px; border-radius: 10px 10px 0 0; }
 
-    /* Tabs styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        justify-content: center;
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-size: 1.05em;
-        padding: 10px 24px;
-        border-radius: 10px 10px 0 0;
-    }
-
-    /* Custom metric card */
-    .metric-card {
+    .wizard-step {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border-radius: 14px;
-        padding: 18px;
-        text-align: center;
+        border-radius: 16px;
+        padding: 24px;
+        margin: 12px 0;
         border: 1px solid #333;
-    }
-    .metric-card .value {
-        font-size: 1.8em;
-        font-weight: 700;
-        margin: 4px 0;
-    }
-    .metric-card .label {
-        font-size: 0.85em;
-        color: #999;
-    }
-
-    /* History row */
-    .history-row {
-        background: #1a1a2e;
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin: 6px 0;
-        border: 1px solid #2a2a3e;
         direction: rtl;
-        transition: border-color 0.2s;
     }
-    .history-row:hover {
-        border-color: #4caf50;
+    .wizard-progress {
+        background: #2a2a3e;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 16px;
+        direction: rtl;
+    }
+    .food-chip {
+        display: inline-block;
+        background: #1b5e20;
+        color: #a5d6a7;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        margin: 3px;
+    }
+    .food-chip-remove {
+        display: inline-block;
+        background: #333;
+        color: #eee;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        margin: 3px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -132,6 +123,9 @@ GENDER_LABELS = {
     Gender.FEMALE: "נקבה",
 }
 
+KASHRUT_LABELS = {"meat": "🥩 בשרי", "dairy": "🧀 חלבי", "parve": "🌿 פרווה"}
+KASHRUT_COLORS = {"meat": "#ef5350", "dairy": "#42a5f5", "parve": "#66bb6a"}
+
 # ── Food Catalog (loaded once) ───────────────────────────────────────────────
 
 _catalog_instance = FoodCatalog()
@@ -140,8 +134,6 @@ FOOD_LOOKUP = {f.food_id: f for f in ALL_CATALOG_FOODS}
 FOODS_BY_CATEGORY = {}
 for _f in ALL_CATALOG_FOODS:
     FOODS_BY_CATEGORY.setdefault(_f.category, []).append(_f)
-
-# Sort foods within each category by Hebrew name
 for _cat in FOODS_BY_CATEGORY:
     FOODS_BY_CATEGORY[_cat].sort(key=lambda f: f.name_he)
 
@@ -166,20 +158,18 @@ MEAL_SELECTOR_LABELS = {
     MealType.LUNCH:           "🍽️ ארוחת צהריים",
     MealType.AFTERNOON_SNACK: "🍎 חטיף אחה\"צ",
     MealType.DINNER:          "🌙 ארוחת ערב",
-    MealType.EVENING_SNACK:   "🌜 חטיף ערב",
 }
 
-# Default foods to pre-select on first load
-DEFAULT_FOOD_IDS = [
-    "food_001", "food_002", "food_003", "food_004", "food_005",
-    "food_007", "food_008", "food_009", "food_010",
+# Wizard walks through these meals in order
+WIZARD_MEALS = [
+    MealType.BREAKFAST,
+    MealType.MORNING_SNACK,
+    MealType.LUNCH,
+    MealType.AFTERNOON_SNACK,
+    MealType.DINNER,
 ]
 
-KASHRUT_LABELS = {"meat": "🥩 בשרי", "dairy": "🧀 חלבי", "parve": "🌿 פרווה"}
-KASHRUT_COLORS = {"meat": "#ef5350", "dairy": "#42a5f5", "parve": "#66bb6a"}
-
-
-# ── Sidebar — User Profile ───────────────────────────────────────────────────
+# ── Sidebar — User Profile Only ──────────────────────────────────────────────
 
 with st.sidebar:
     st.markdown("## 👤 פרופיל משתמש")
@@ -222,96 +212,45 @@ with st.sidebar:
     )
 
     st.divider()
-    st.markdown("## 🛒 בחירת מזון")
 
-    # ── Initialize selected foods in session state ──
-    if "selected_foods" not in st.session_state:
-        st.session_state["selected_foods"] = {
-            fid: FOOD_LOOKUP[fid] for fid in DEFAULT_FOOD_IDS if fid in FOOD_LOOKUP
-        }
+    # Inventory section (shown only when wizard has selections)
+    if "wizard_selections" in st.session_state:
+        all_selected_ids = set()
+        for cats in st.session_state["wizard_selections"].values():
+            for food_ids in cats.values():
+                all_selected_ids.update(food_ids)
 
-    # ── Step 1: Meal type ──
-    meal_type_pick = st.selectbox(
-        "① בחר ארוחה",
-        options=list(MEAL_SELECTOR_LABELS.keys()),
-        format_func=lambda m: MEAL_SELECTOR_LABELS[m],
-        key="food_sel_meal",
-    )
-
-    # ── Step 2: Food category (filtered by meal type rules) ──
-    valid_categories = MEAL_CATEGORY_RULES.get(meal_type_pick, list(FoodCategory))
-    # Only show categories that have foods in catalog
-    available_categories = [c for c in valid_categories if c in FOODS_BY_CATEGORY]
-
-    category_pick = st.selectbox(
-        "② בחר קטגוריה",
-        options=available_categories,
-        format_func=lambda c: CATEGORY_LABELS.get(c, c.value),
-        key="food_sel_cat",
-    )
-
-    # ── Step 3: Specific foods in category ──
-    foods_in_cat = FOODS_BY_CATEGORY.get(category_pick, [])
-    # Filter out already-selected foods
-    already_selected_ids = set(st.session_state["selected_foods"].keys())
-    available_foods = [f for f in foods_in_cat if f.food_id not in already_selected_ids]
-
-    if available_foods:
-        food_pick_names = st.multiselect(
-            "③ בחר מזונות",
-            options=[f.name_he for f in available_foods],
-            key="food_sel_items",
-        )
-
-        if food_pick_names and st.button("➕ הוסף לתפריט", use_container_width=True):
-            name_to_food = {f.name_he: f for f in available_foods}
-            for fn in food_pick_names:
-                food_obj = name_to_food.get(fn)
+        if all_selected_ids:
+            st.markdown("## 📦 מלאי ראשוני (גרם)")
+            st.caption("השאר 0 אם אין מלאי")
+            default_inv = {"food_001": 600, "food_002": 1000, "food_003": 400,
+                           "food_004": 360, "food_007": 500, "food_008": 300}
+            inventory_inputs = {}
+            for food_id in sorted(all_selected_ids):
+                food_obj = FOOD_LOOKUP.get(food_id)
                 if food_obj:
-                    st.session_state["selected_foods"][food_obj.food_id] = food_obj
-            st.rerun()
+                    default_qty = default_inv.get(food_id, 0)
+                    qty = st.number_input(
+                        food_obj.name_he,
+                        min_value=0, max_value=5000, value=default_qty, step=50,
+                        key=f"inv_{food_id}",
+                    )
+                    inventory_inputs[food_id] = float(qty)
+            st.divider()
+        else:
+            inventory_inputs = {}
     else:
-        st.caption("כל המזונות בקטגוריה זו כבר נבחרו ✓")
+        inventory_inputs = {}
 
-    # ── Display selected foods with remove buttons ──
-    selected = st.session_state["selected_foods"]
-    if selected:
-        st.divider()
-        st.markdown(f"### 🧾 מזונות שנבחרו ({len(selected)})")
-        for fid, food_obj in list(selected.items()):
-            cat_label = CATEGORY_LABELS.get(food_obj.category, "")
-            col_name, col_rm = st.columns([4, 1])
-            col_name.markdown(
-                f'<span style="font-size:0.9em">{food_obj.name_he} '
-                f'<span style="color:#888;font-size:0.78em">{cat_label}</span></span>',
-                unsafe_allow_html=True,
-            )
-            if col_rm.button("✕", key=f"rm_{fid}", use_container_width=True):
-                del st.session_state["selected_foods"][fid]
-                st.rerun()
-
-    # Derive names list for pipeline compatibility
-    selected_food_names = [f.name_he for f in st.session_state["selected_foods"].values()]
-
-    st.divider()
-    st.markdown("## 📦 מלאי ראשוני (גרם)")
-    st.caption("השאר 0 אם אין מלאי")
-
-    inventory_inputs = {}
-    default_inv = {"food_001": 600, "food_002": 1000, "food_003": 400,
-                   "food_004": 360, "food_007": 500, "food_008": 300}
-    for food_id, food_obj in st.session_state["selected_foods"].items():
-        default_qty = default_inv.get(food_id, 0)
-        qty = st.number_input(
-            food_obj.name_he,
-            min_value=0, max_value=5000, value=default_qty, step=50,
-            key=f"inv_{food_id}",
-        )
-        inventory_inputs[food_id] = float(qty)
-
-    st.divider()
-    run_daily_btn = st.button("▶ הפק תפריט יומי", type="primary", use_container_width=True)
-    run_weekly_btn = st.button("📅 הפק תפריט שבועי", use_container_width=True)
+    # Restart wizard button (when plan already exists)
+    if "last_plan" in st.session_state or "wizard_completed" in st.session_state:
+        if st.button("🔄 בחירת מזון מחדש", use_container_width=True):
+            for k in ["wizard_active", "wizard_meal_index", "wizard_cat_index",
+                       "wizard_selections", "wizard_skipped_meals", "wizard_completed",
+                       "last_plan", "weekly_plans", "weekly_targets", "weekly_user",
+                       "history_plans"]:
+                st.session_state.pop(k, None)
+            st.rerun()
 
     st.divider()
     st.page_link("pages/2_recipes.py", label="📖 מתכונים", use_container_width=True)
@@ -319,11 +258,17 @@ with st.sidebar:
     st.page_link("pages/1_agents_dashboard.py", label="🤖 דאשבורד סוכנים", use_container_width=True)
 
 
-# ── Shared Pipeline Runner ───────────────────────────────────────────────────
+# ── Pipeline Runner ──────────────────────────────────────────────────────────
 
-def _run_pipeline():
-    """Run steps 1-4 of the nutrition pipeline. Returns tuple or None on error."""
-    if not selected_food_names:
+def _run_pipeline_from_wizard():
+    """Run the full pipeline using wizard selections."""
+    # Collect all unique food IDs from wizard
+    all_food_ids = set()
+    for cats in st.session_state.get("wizard_selections", {}).values():
+        for food_ids in cats.values():
+            all_food_ids.update(food_ids)
+
+    if not all_food_ids:
         st.error("יש לבחור לפחות מזון אחד.")
         return None
 
@@ -346,9 +291,10 @@ def _run_pipeline():
     if target_errors:
         errors.extend(target_errors)
 
+    # Use food names for matching
+    food_names = [FOOD_LOOKUP[fid].name_he for fid in all_food_ids if fid in FOOD_LOOKUP]
     catalog = FoodCatalog()
-    food_queries = list(selected_food_names)
-    match_result = catalog.match_foods(food_queries)
+    match_result = catalog.match_foods(food_names)
     food_lookup = dict(FOOD_LOOKUP)
 
     inv_manager = InventoryManager()
@@ -360,74 +306,433 @@ def _run_pipeline():
     return user, targets, match_result, food_lookup, inv_state, inv_manager, errors
 
 
-# ── Handle Button Clicks ─────────────────────────────────────────────────────
-
-if run_daily_btn:
-    with st.spinner("מחשב תפריט יומי..."):
-        result = _run_pipeline()
-        if result:
-            user_obj, targets, match_result, food_lookup, inv_state, inv_manager, errors = result
-
-            planner = MealPlanner()
-            planner.set_food_lookup(food_lookup)
-            planner.load_extended_catalog()
-            run_id = f"ui_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            plan = planner.generate_plan(
-                targets=targets,
-                food_matches=match_result,
-                inventory=inv_state,
-                run_id=run_id,
-            )
-            plan_errors = planner.validate_plan(plan)
-            if plan_errors:
-                errors.extend(plan_errors)
-
-            changeset = inv_manager.deduct_for_plan(user_obj.user_id, plan, plan.run_id)
-
-            ai = AILayer()
-            target_expl = ai.format_targets_explanation(targets)
-
-            save_plan_to_disk(plan, suffix="daily")
-
-            st.session_state["last_plan"] = {
-                "user": user_obj,
-                "targets": targets,
-                "target_expl": target_expl,
-                "match_result": match_result,
-                "plan": plan,
-                "changeset": changeset,
-                "food_lookup": food_lookup,
-                "errors": errors,
-            }
-            st.session_state["gen_daily_done"] = True
-            st.session_state.pop("history_plans", None)
-
-if run_weekly_btn:
-    with st.spinner("מחשב תפריט שבועי — 7 ימים..."):
-        result = _run_pipeline()
-        if result:
-            user_obj, targets, match_result, food_lookup, inv_state, inv_manager, errors = result
-
-            run_id_prefix = f"week_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            plans = generate_weekly_plans(
-                targets=targets,
-                food_matches=match_result,
-                inventory=inv_state,
-                food_lookup=food_lookup,
-                run_id_prefix=run_id_prefix,
-            )
-
-            st.session_state["weekly_plans"] = plans
-            st.session_state["weekly_targets"] = targets
-            st.session_state["weekly_user"] = user_obj
-            st.session_state["gen_weekly_done"] = True
-            st.session_state.pop("history_plans", None)
-
-
 # ── Main Area ────────────────────────────────────────────────────────────────
 
 st.markdown("# 🥗 מערכת תזונה חכמה")
 st.caption(f"תאריך: {date.today().strftime('%d/%m/%Y')}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# WIZARD — Guided Food Selection
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _init_wizard():
+    """Initialize wizard state."""
+    st.session_state["wizard_active"] = True
+    st.session_state["wizard_meal_index"] = 0
+    st.session_state["wizard_cat_index"] = 0
+    st.session_state["wizard_selections"] = {}  # {MealType.value: {FoodCategory.value: [food_id, ...]}}
+    st.session_state["wizard_skipped_meals"] = set()
+    st.session_state.pop("wizard_completed", None)
+
+
+def _get_wizard_categories(meal_type):
+    """Get available categories for a meal type (only those with foods in catalog)."""
+    valid = MEAL_CATEGORY_RULES.get(meal_type, [])
+    return [c for c in valid if c in FOODS_BY_CATEGORY and len(FOODS_BY_CATEGORY[c]) > 0]
+
+
+def _count_total_steps():
+    """Count total wizard steps for progress calculation."""
+    total = 0
+    for meal in WIZARD_MEALS:
+        total += len(_get_wizard_categories(meal))
+    return total
+
+
+def _count_current_step():
+    """Count which step we're on (across all meals)."""
+    mi = st.session_state.get("wizard_meal_index", 0)
+    ci = st.session_state.get("wizard_cat_index", 0)
+    step = 0
+    for i, meal in enumerate(WIZARD_MEALS):
+        if i < mi:
+            step += len(_get_wizard_categories(meal))
+        elif i == mi:
+            step += ci
+    return step
+
+
+def _advance_wizard():
+    """Move to next category or next meal."""
+    mi = st.session_state["wizard_meal_index"]
+    ci = st.session_state["wizard_cat_index"]
+    meal = WIZARD_MEALS[mi]
+    cats = _get_wizard_categories(meal)
+
+    if ci + 1 < len(cats):
+        st.session_state["wizard_cat_index"] = ci + 1
+    else:
+        # Move to next meal
+        if mi + 1 < len(WIZARD_MEALS):
+            st.session_state["wizard_meal_index"] = mi + 1
+            st.session_state["wizard_cat_index"] = 0
+        else:
+            # Wizard done
+            st.session_state["wizard_completed"] = True
+            st.session_state["wizard_active"] = False
+
+
+def _skip_meal():
+    """Skip current meal entirely."""
+    mi = st.session_state["wizard_meal_index"]
+    meal = WIZARD_MEALS[mi]
+    st.session_state["wizard_skipped_meals"].add(meal.value)
+
+    if mi + 1 < len(WIZARD_MEALS):
+        st.session_state["wizard_meal_index"] = mi + 1
+        st.session_state["wizard_cat_index"] = 0
+    else:
+        st.session_state["wizard_completed"] = True
+        st.session_state["wizard_active"] = False
+
+
+# Determine what to show
+show_wizard = False
+show_tabs = False
+
+if "last_plan" in st.session_state:
+    show_tabs = True
+elif st.session_state.get("wizard_completed"):
+    show_tabs = False  # Will show summary + generate
+elif st.session_state.get("wizard_active"):
+    show_wizard = True
+else:
+    # First visit — show start screen
+    pass
+
+# ── Start Screen ─────────────────────────────────────────────────────────────
+
+if not show_wizard and not show_tabs and not st.session_state.get("wizard_completed"):
+    st.markdown("")
+    st.markdown(
+        '<div style="text-align:center;padding:40px 0">'
+        '<div style="font-size:3em;margin-bottom:16px">🍽️</div>'
+        '<div style="font-size:1.3em;color:#e0e0e0;margin-bottom:8px">'
+        'בוא נבנה לך תפריט תזונתי מותאם אישית</div>'
+        '<div style="color:#999;margin-bottom:24px">'
+        'נעבור יחד על כל ארוחה ותבחר את המזונות שאתה אוהב</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    col_start_l, col_start_c, col_start_r = st.columns([1, 2, 1])
+    with col_start_c:
+        if st.button("🚀 התחל בבחירת מזון", type="primary", use_container_width=True):
+            _init_wizard()
+            st.rerun()
+
+    # Also allow viewing history without going through wizard
+    st.divider()
+    st.markdown("### 📋 היסטוריה")
+    if "history_plans" not in st.session_state:
+        st.session_state["history_plans"] = scan_history_plans()
+    history = st.session_state["history_plans"]
+    if history:
+        st.caption(f"נמצאו {len(history)} תפריטים שמורים")
+        for i, entry in enumerate(history[:5]):
+            cols_h = st.columns([3, 1.5, 1])
+            cols_h[0].markdown(f"**{entry.get('plan_date', 'N/A')}**")
+            cols_h[1].markdown(f"{entry.get('total_calories', 0):.0f} קק\"ל")
+            if cols_h[2].button("👁 צפה", key=f"hist_start_{i}", use_container_width=True):
+                # Load this plan directly
+                filepath_h = os.path.join(PLANS_DIR, entry["filename"])
+                try:
+                    plan_data_h = load_plan_from_file(filepath_h)
+                    plan_h = reconstruct_plan_from_dict(plan_data_h)
+                    st.session_state["view_history_plan"] = plan_h
+                    st.rerun()
+                except Exception:
+                    st.error("שגיאה בטעינת תפריט")
+    else:
+        st.info("אין תפריטים שמורים עדיין.")
+
+    # Show a viewed history plan
+    if "view_history_plan" in st.session_state:
+        plan_h = st.session_state["view_history_plan"]
+        st.divider()
+        col_back, col_title_h = st.columns([1, 5])
+        if col_back.button("← חזור", key="back_hist_start"):
+            st.session_state.pop("view_history_plan", None)
+            st.rerun()
+        col_title_h.markdown(f"#### תפריט מתאריך {plan_h.plan_date}")
+        hc1, hc2, hc3 = st.columns(3)
+        hc1.metric("קלוריות", f"{plan_h.total_calories:.0f} קק\"ל")
+        hc2.metric("יעד", f"{plan_h.target_calories_kcal:.0f} קק\"ל")
+        hc3.metric("סטייה", f"{plan_h.calorie_deviation_pct:+.1f}%")
+        for meal_h in plan_h.meals:
+            st.markdown(render_meal_card_html(meal_h), unsafe_allow_html=True)
+
+    st.stop()
+
+
+# ── Active Wizard ────────────────────────────────────────────────────────────
+
+if show_wizard:
+    mi = st.session_state["wizard_meal_index"]
+    ci = st.session_state["wizard_cat_index"]
+    meal = WIZARD_MEALS[mi]
+    cats = _get_wizard_categories(meal)
+    current_cat = cats[ci] if ci < len(cats) else cats[-1]
+
+    meal_label = MEAL_SELECTOR_LABELS.get(meal, meal.value)
+    cat_label = CATEGORY_LABELS.get(current_cat, current_cat.value)
+
+    # Progress
+    total_steps = _count_total_steps()
+    current_step = _count_current_step()
+    progress_pct = int((current_step / max(total_steps, 1)) * 100)
+
+    st.progress(min(progress_pct, 100))
+    st.markdown(
+        f'<div class="wizard-progress">'
+        f'<span style="font-size:1.1em;font-weight:700;color:#e0e0e0">{meal_label}</span>'
+        f' &nbsp;·&nbsp; '
+        f'<span style="color:#ffd54f">{cat_label}</span>'
+        f' &nbsp;·&nbsp; '
+        f'<span style="color:#888;font-size:0.85em">ארוחה {mi + 1}/{len(WIZARD_MEALS)} · '
+        f'קטגוריה {ci + 1}/{len(cats)}</span>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+    # Foods in this category
+    foods_in_cat = FOODS_BY_CATEGORY.get(current_cat, [])
+
+    st.markdown(
+        f'<div class="wizard-step">'
+        f'<div style="font-size:1.15em;font-weight:600;color:#e0e0e0;margin-bottom:12px">'
+        f'בחר {cat_label} עבור {meal_label}</div>'
+        f'<div style="color:#888;font-size:0.88em;margin-bottom:8px">'
+        f'בחר את המזונות שתרצה לכלול, או דלג לקטגוריה הבאה</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+    food_names_in_cat = [f.name_he for f in foods_in_cat]
+    selected_names = st.multiselect(
+        "בחר מזונות:",
+        options=food_names_in_cat,
+        key=f"wiz_foods_{meal.value}_{current_cat.value}",
+    )
+
+    # Action buttons
+    col_skip, col_next = st.columns(2)
+
+    with col_skip:
+        if st.button("⏭️ דלג על ארוחה זו", use_container_width=True):
+            _skip_meal()
+            st.rerun()
+
+    with col_next:
+        btn_label = "הבא ❯" if not (mi == len(WIZARD_MEALS) - 1 and ci == len(cats) - 1) else "סיים ✓"
+        if st.button(btn_label, type="primary", use_container_width=True):
+            # Save selections
+            if selected_names:
+                name_to_food = {f.name_he: f for f in foods_in_cat}
+                meal_key = meal.value
+                cat_key = current_cat.value
+                if meal_key not in st.session_state["wizard_selections"]:
+                    st.session_state["wizard_selections"][meal_key] = {}
+                st.session_state["wizard_selections"][meal_key][cat_key] = [
+                    name_to_food[n].food_id for n in selected_names if n in name_to_food
+                ]
+            _advance_wizard()
+            st.rerun()
+
+    # Show what's been selected so far
+    selections = st.session_state.get("wizard_selections", {})
+    total_selected = sum(
+        len(fids) for cats_dict in selections.values() for fids in cats_dict.values()
+    )
+    if total_selected > 0:
+        st.divider()
+        st.markdown(f"### 🧾 נבחרו עד כה: {total_selected} מזונות")
+        for meal_key, cats_dict in selections.items():
+            meal_t = MealType(meal_key)
+            meal_lbl = MEAL_SELECTOR_LABELS.get(meal_t, meal_key)
+            food_chips = ""
+            for cat_key, food_ids in cats_dict.items():
+                for fid in food_ids:
+                    f = FOOD_LOOKUP.get(fid)
+                    if f:
+                        food_chips += f'<span class="food-chip">{f.name_he}</span>'
+            if food_chips:
+                st.markdown(
+                    f'<div style="margin:6px 0;direction:rtl">'
+                    f'<span style="color:#ffd54f;font-weight:600">{meal_lbl}:</span> {food_chips}'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
+
+    st.stop()
+
+
+# ── Wizard Summary + Generate ────────────────────────────────────────────────
+
+if st.session_state.get("wizard_completed") and "last_plan" not in st.session_state:
+    st.markdown("## ✅ סיכום הבחירות")
+
+    selections = st.session_state.get("wizard_selections", {})
+    skipped = st.session_state.get("wizard_skipped_meals", set())
+
+    total_foods = 0
+    for meal in WIZARD_MEALS:
+        meal_label = MEAL_SELECTOR_LABELS.get(meal, meal.value)
+        if meal.value in skipped:
+            st.markdown(
+                f'<div style="background:#2a2a3e;border-radius:10px;padding:12px 16px;margin:8px 0;'
+                f'direction:rtl;color:#888">'
+                f'<span style="font-weight:600">{meal_label}</span> — '
+                f'<span style="color:#ef5350">דילוג</span></div>',
+                unsafe_allow_html=True,
+            )
+            continue
+
+        cats_dict = selections.get(meal.value, {})
+        food_chips = ""
+        meal_count = 0
+        for cat_key, food_ids in cats_dict.items():
+            cat_t = FoodCategory(cat_key)
+            cat_lbl = CATEGORY_LABELS.get(cat_t, cat_key)
+            for fid in food_ids:
+                f = FOOD_LOOKUP.get(fid)
+                if f:
+                    food_chips += f'<span class="food-chip">{f.name_he}</span>'
+                    meal_count += 1
+                    total_foods += 1
+
+        if meal_count > 0:
+            st.markdown(
+                f'<div style="background:#1a1a2e;border-radius:12px;padding:14px 18px;margin:8px 0;'
+                f'border:1px solid #333;direction:rtl">'
+                f'<div style="font-weight:700;color:#e0e0e0;margin-bottom:6px">{meal_label}'
+                f'<span style="color:#888;font-size:0.85em;margin-right:8px">'
+                f'({meal_count} פריטים)</span></div>'
+                f'{food_chips}</div>',
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                f'<div style="background:#2a2a3e;border-radius:10px;padding:12px 16px;margin:8px 0;'
+                f'direction:rtl;color:#888">'
+                f'<span style="font-weight:600">{meal_label}</span> — '
+                f'<span>לא נבחרו מזונות</span></div>',
+                unsafe_allow_html=True,
+            )
+
+    st.markdown(f"**סה\"כ: {total_foods} מזונות נבחרו**")
+
+    if total_foods == 0:
+        st.warning("לא נבחרו מזונות. חזור ובחר לפחות מזון אחד.")
+        if st.button("← חזור לבחירה"):
+            _init_wizard()
+            st.rerun()
+        st.stop()
+
+    st.divider()
+
+    col_back, col_gen_daily, col_gen_weekly = st.columns(3)
+
+    with col_back:
+        if st.button("← חזור לבחירה", use_container_width=True):
+            _init_wizard()
+            st.rerun()
+
+    with col_gen_daily:
+        gen_daily = st.button("▶ הפק תפריט יומי", type="primary", use_container_width=True)
+
+    with col_gen_weekly:
+        gen_weekly = st.button("📅 הפק תפריט שבועי", use_container_width=True)
+
+    if gen_daily:
+        with st.spinner("מחשב תפריט יומי..."):
+            result = _run_pipeline_from_wizard()
+            if result:
+                user_obj, targets, match_result, food_lookup, inv_state, inv_manager, errors = result
+
+                planner = MealPlanner()
+                planner.set_food_lookup(food_lookup)
+                planner.load_extended_catalog()
+                run_id = f"ui_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                plan = planner.generate_plan(
+                    targets=targets,
+                    food_matches=match_result,
+                    inventory=inv_state,
+                    run_id=run_id,
+                )
+                plan_errors = planner.validate_plan(plan)
+                if plan_errors:
+                    errors.extend(plan_errors)
+
+                changeset = inv_manager.deduct_for_plan(user_obj.user_id, plan, plan.run_id)
+
+                ai = AILayer()
+                target_expl = ai.format_targets_explanation(targets)
+
+                save_plan_to_disk(plan, suffix="daily")
+
+                st.session_state["last_plan"] = {
+                    "user": user_obj,
+                    "targets": targets,
+                    "target_expl": target_expl,
+                    "match_result": match_result,
+                    "plan": plan,
+                    "changeset": changeset,
+                    "food_lookup": food_lookup,
+                    "errors": errors,
+                }
+                st.session_state["gen_daily_done"] = True
+                st.session_state.pop("history_plans", None)
+                st.rerun()
+
+    if gen_weekly:
+        with st.spinner("מחשב תפריט שבועי — 7 ימים..."):
+            result = _run_pipeline_from_wizard()
+            if result:
+                user_obj, targets, match_result, food_lookup, inv_state, inv_manager, errors = result
+
+                run_id_prefix = f"week_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                plans = generate_weekly_plans(
+                    targets=targets,
+                    food_matches=match_result,
+                    inventory=inv_state,
+                    food_lookup=food_lookup,
+                    run_id_prefix=run_id_prefix,
+                )
+
+                # Also generate a daily plan for the Today tab
+                planner = MealPlanner()
+                planner.set_food_lookup(food_lookup)
+                planner.load_extended_catalog()
+                run_id = f"ui_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                plan = planner.generate_plan(
+                    targets=targets, food_matches=match_result,
+                    inventory=inv_state, run_id=run_id,
+                )
+                changeset = inv_manager.deduct_for_plan(user_obj.user_id, plan, plan.run_id)
+                ai = AILayer()
+                target_expl = ai.format_targets_explanation(targets)
+                save_plan_to_disk(plan, suffix="daily")
+
+                st.session_state["last_plan"] = {
+                    "user": user_obj, "targets": targets, "target_expl": target_expl,
+                    "match_result": match_result, "plan": plan, "changeset": changeset,
+                    "food_lookup": food_lookup, "errors": errors,
+                }
+                st.session_state["weekly_plans"] = plans
+                st.session_state["weekly_targets"] = targets
+                st.session_state["weekly_user"] = user_obj
+                st.session_state["gen_weekly_done"] = True
+                st.session_state["gen_daily_done"] = True
+                st.session_state.pop("history_plans", None)
+                st.rerun()
+
+    st.stop()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TABS — Show after plan is generated
+# ══════════════════════════════════════════════════════════════════════════════
 
 tab_today, tab_weekly, tab_history = st.tabs([
     "🍽️ תפריט היום",
@@ -446,7 +751,7 @@ with tab_today:
         st.balloons()
 
     if "last_plan" not in st.session_state:
-        st.info("מלא את הפרטים בסרגל הצד ולחץ **הפק תפריט יומי**.")
+        st.info("בחר מזונות כדי להפיק תפריט.")
     else:
         data = st.session_state["last_plan"]
         user_d = data["user"]
@@ -460,7 +765,7 @@ with tab_today:
             for e in errors:
                 st.error(e)
 
-        # ── Top metrics ──
+        # Top metrics
         dev = plan.calorie_deviation_pct
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("👤 שם", user_d.name)
@@ -471,11 +776,9 @@ with tab_today:
 
         st.divider()
 
-        # ── Two-column layout ──
         col_main, col_side = st.columns([5, 2])
 
         with col_main:
-            # Targets summary
             with st.expander("🎯 יעדים תזונתיים", expanded=False):
                 tc1, tc2, tc3 = st.columns(3)
                 tc1.metric("BMR (מנוחה)", f"{targets.bmr_kcal:.0f} קק\"ל")
@@ -487,7 +790,6 @@ with tab_today:
 
             st.markdown("### ארוחות היום")
 
-            # Recipe manager
             try:
                 recipe_mgr = RecipeManager()
             except Exception:
@@ -496,7 +798,6 @@ with tab_today:
             for meal in plan.meals:
                 st.markdown(render_meal_card_html(meal), unsafe_allow_html=True)
 
-                # Recipe suggestions
                 suggestions = []
                 try:
                     if recipe_mgr:
@@ -582,12 +883,9 @@ with tab_today:
         with col_side:
             st.markdown("### 📊 סיכום יומי")
 
-            # Macro progress
             def _macro_bar(label, icon, actual, target, color):
                 pct = (actual / target * 100) if target > 0 else 0
                 pct_clamped = min(int(pct), 100)
-                diff = actual - target
-                diff_color = "#66bb6a" if abs(diff) <= target * 0.1 else "#ffa726"
                 st.markdown(f"**{icon} {label}**")
                 st.progress(pct_clamped)
                 st.caption(f"{actual:.0f}g / {target:.0f}g ({pct:.0f}%)")
@@ -598,7 +896,6 @@ with tab_today:
 
             st.divider()
 
-            # Inventory changes
             st.markdown("### 📦 מלאי")
             if not changeset.changes:
                 st.info("לא בוצע ניכוי מלאי.")
@@ -634,17 +931,14 @@ with tab_weekly:
         st.balloons()
 
     if "weekly_plans" not in st.session_state:
-        st.info("לחץ על **הפק תפריט שבועי** בסרגל הצד.")
+        st.info("הפק תפריט שבועי מהסיכום כדי לצפות בתפריט שבועי.")
     else:
         plans_w = st.session_state["weekly_plans"]
         targets_w = st.session_state["weekly_targets"]
 
-        # Weekly summary metrics
         avg_cal = sum(p.total_calories for p in plans_w) / 7
         avg_dev = sum(abs(p.calorie_deviation_pct) for p in plans_w) / 7
         avg_protein = sum(p.total_protein for p in plans_w) / 7
-        avg_carbs = sum(p.total_carbs for p in plans_w) / 7
-        avg_fat = sum(p.total_fat for p in plans_w) / 7
 
         wc1, wc2, wc3, wc4 = st.columns(4)
         wc1.metric("📊 ממוצע קלוריות", f"{avg_cal:.0f} קק\"ל")
@@ -654,7 +948,6 @@ with tab_weekly:
 
         st.divider()
 
-        # 7-column day grid
         cols_w = st.columns(7)
         active_day = st.session_state.get("active_week_day", 0)
 
@@ -667,27 +960,21 @@ with tab_weekly:
 
                 st.markdown(
                     render_day_card_html(
-                        day_name=day_name,
-                        day_date=d,
-                        calories=p.total_calories,
-                        deviation=p.calorie_deviation_pct,
-                        protein=p.total_protein,
-                        carbs=p.total_carbs,
-                        fat=p.total_fat,
+                        day_name=day_name, day_date=d,
+                        calories=p.total_calories, deviation=p.calorie_deviation_pct,
+                        protein=p.total_protein, carbs=p.total_carbs, fat=p.total_fat,
                         is_selected=is_sel,
                     ),
                     unsafe_allow_html=True,
                 )
                 if st.button(
                     "📖 פרטים" if not is_sel else "✅ נבחר",
-                    key=f"wd_{i}",
-                    use_container_width=True,
+                    key=f"wd_{i}", use_container_width=True,
                     type="primary" if is_sel else "secondary",
                 ):
                     st.session_state["active_week_day"] = i
                     st.rerun()
 
-        # Selected day detail
         st.divider()
         sel_plan = plans_w[active_day]
         sel_date = date.today() + timedelta(days=active_day)
@@ -731,19 +1018,14 @@ with tab_history:
     history = st.session_state["history_plans"]
 
     if not history:
-        st.info("אין תפריטים שמורים עדיין. הפק תפריט יומי או שבועי כדי להתחיל.")
+        st.info("אין תפריטים שמורים עדיין.")
     else:
         st.caption(f"נמצאו {len(history)} תפריטים שמורים")
 
         for i, entry in enumerate(history):
-            dev_h = entry.get("deviation", 0)
-            dev_h_color = "#66bb6a" if abs(dev_h) <= 5 else "#ffa726" if abs(dev_h) <= 10 else "#ef5350"
-            cal_h = entry.get("total_calories", 0)
-            target_h = entry.get("target_calories", 0)
-
             cols_h = st.columns([2.5, 1.5, 1, 1, 1, 1])
             cols_h[0].markdown(f"**{entry.get('plan_date', 'N/A')}**")
-            cols_h[1].markdown(f"{cal_h:.0f} קק\"ל")
+            cols_h[1].markdown(f"{entry.get('total_calories', 0):.0f} קק\"ל")
             cols_h[2].markdown(f"P: {entry.get('total_protein', 0):.0f}")
             cols_h[3].markdown(f"C: {entry.get('total_carbs', 0):.0f}")
             cols_h[4].markdown(f"F: {entry.get('total_fat', 0):.0f}")
@@ -751,7 +1033,6 @@ with tab_history:
                 st.session_state["selected_history"] = entry["filename"]
                 st.rerun()
 
-        # Detail view for selected plan
         selected_hist = st.session_state.get("selected_history")
         if selected_hist:
             st.divider()
