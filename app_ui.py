@@ -225,30 +225,35 @@ if not run_btn and "last_plan" not in st.session_state:
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("""
-        <div style="background:#1a1a2e;border-radius:12px;padding:20px;text-align:center;margin-bottom:8px">
-            <div style="font-size:2.5em">👤</div>
-            <div style="color:#e8e8ff;font-weight:600;margin-top:8px">פרופיל אישי</div>
-            <div style="color:#888;font-size:0.85em;margin-top:4px">הזן גובה, משקל ומטרה</div>
+        <div style="background:#1a1a2e;border-radius:12px;padding:32px 20px;text-align:center;cursor:default;border:1px solid #2a2a4a">
+            <div style="font-size:3em">👤</div>
+            <div style="color:#e8e8ff;font-weight:600;font-size:1.1em;margin-top:10px">פרופיל אישי</div>
+            <div style="color:#888;font-size:0.85em;margin-top:6px">הזן גובה, משקל ומטרה<br>בסרגל השמאלי</div>
         </div>""", unsafe_allow_html=True)
-        st.info("👈 מלא פרטים בסרגל השמאלי")
 
     with c2:
         st.markdown("""
-        <div style="background:#1a1a2e;border-radius:12px;padding:20px;text-align:center;margin-bottom:8px">
-            <div style="font-size:2.5em">🍽️</div>
-            <div style="color:#e8e8ff;font-weight:600;margin-top:8px">תפריט יומי</div>
-            <div style="color:#888;font-size:0.85em;margin-top:4px">קבל ארוחות מותאמות עם מתכונים</div>
-        </div>""", unsafe_allow_html=True)
-        st.page_link("pages/6_daily_menu.py", label="🍽️ עבור לתפריט יומי", use_container_width=True)
+        <a href="/daily_menu" target="_self" style="text-decoration:none">
+        <div style="background:#1a1a2e;border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;border:1px solid #2a2a4a;transition:all 0.2s"
+             onmouseover="this.style.background='#252540';this.style.borderColor='#4a4a8a'"
+             onmouseout="this.style.background='#1a1a2e';this.style.borderColor='#2a2a4a'">
+            <div style="font-size:3em">🍽️</div>
+            <div style="color:#e8e8ff;font-weight:600;font-size:1.1em;margin-top:10px">תפריט יומי</div>
+            <div style="color:#888;font-size:0.85em;margin-top:6px">קבל ארוחות מותאמות<br>עם מתכונים והוראות הכנה</div>
+        </div>
+        </a>""", unsafe_allow_html=True)
 
     with c3:
         st.markdown("""
-        <div style="background:#1a1a2e;border-radius:12px;padding:20px;text-align:center;margin-bottom:8px">
-            <div style="font-size:2.5em">📦</div>
-            <div style="color:#e8e8ff;font-weight:600;margin-top:8px">ניהול מלאי</div>
-            <div style="color:#888;font-size:0.85em;margin-top:4px">סרוק קבלות והוסף מוצרים</div>
-        </div>""", unsafe_allow_html=True)
-        st.page_link("pages/4_inventory.py", label="🛒 עבור למלאי", use_container_width=True)
+        <a href="/inventory" target="_self" style="text-decoration:none">
+        <div style="background:#1a1a2e;border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;border:1px solid #2a2a4a;transition:all 0.2s"
+             onmouseover="this.style.background='#252540';this.style.borderColor='#4a4a8a'"
+             onmouseout="this.style.background='#1a1a2e';this.style.borderColor='#2a2a4a'">
+            <div style="font-size:3em">📦</div>
+            <div style="color:#e8e8ff;font-weight:600;font-size:1.1em;margin-top:10px">ניהול מלאי</div>
+            <div style="color:#888;font-size:0.85em;margin-top:6px">סרוק קבלות והוסף<br>מוצרים למלאי האישי</div>
+        </div>
+        </a>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.info("👈  מלא את הפרטים בסרגל השמאלי ולחץ **▶ הפק תפריט יומי**")
