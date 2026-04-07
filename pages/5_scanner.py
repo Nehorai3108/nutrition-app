@@ -6,8 +6,23 @@
 import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import io
+import contextlib
 import streamlit as st
 from nutrition_app.user_manager import get_all_users, add_inventory_item
+
+# תיקון קידוד Windows — מונע קריסה על תווי progress-bar של EasyOCR
+import sys
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if sys.stderr and hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 st.set_page_config(page_title="סריקת קבלה", page_icon="📷", layout="wide")
 
@@ -34,7 +49,12 @@ CATALOG = load_catalog()
 def get_ocr_reader():
     """טוען את EasyOCR פעם אחת — מטמון לכל הסשן."""
     import easyocr
-    return easyocr.Reader(["he", "en"], gpu=False)
+    import os
+    # מונע שגיאות קידוד של progress-bar על Windows
+    os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        reader = easyocr.Reader(["he", "en"], gpu=False)
+    return reader
 
 
 def match_to_catalog(names: list[str]) -> tuple[list[dict], list[str]]:
