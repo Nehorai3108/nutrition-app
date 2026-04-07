@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "nutrition-app",
-      "runtimeExecutable": "C:\\Users\\PC\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "runtimeExecutable": "C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
       "runtimeArgs": ["-m", "streamlit", "run", "app_ui.py", "--server.headless", "true", "--server.port", "8501"],
       "port": 8501
     }
