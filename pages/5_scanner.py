@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-דף סריקת קבלה / רשימת סופר — OCR.space (חינמי, 500 סריקות/חודש)
+דף סריקת קבלה / רשימת סופר — EasyOCR (חינמי לחלוטין, מקומי, ללא API)
 """
-import sys, os, json, base64
+import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
@@ -28,6 +28,13 @@ def load_catalog():
         return json.load(f)
 
 CATALOG = load_catalog()
+
+
+@st.cache_resource(show_spinner="טוען מנוע OCR... (פעם ראשונה לוקח ~30 שניות)")
+def get_ocr_reader():
+    """טוען את EasyOCR פעם אחת — מטמון לכל הסשן."""
+    import easyocr
+    return easyocr.Reader(["he", "en"], gpu=False)
 
 
 def match_to_catalog(names: list[str]) -> tuple[list[dict], list[str]]:
@@ -56,45 +63,22 @@ def match_to_catalog(names: list[str]) -> tuple[list[dict], list[str]]:
     return matched, unmatched
 
 
-def scan_with_ocrspace(image_bytes: bytes, api_key: str, mime_type: str = "image/jpeg") -> list[str]:
-    """שולח תמונה ל-OCR.space ומחזיר שורות טקסט."""
-    import requests
+def scan_with_easyocr(image_bytes: bytes) -> list[str]:
+    """קורא טקסט מתמונה עם EasyOCR — עברית + אנגלית, ללא API."""
+    from PIL import Image
+    import numpy as np
+    import io
 
-    b64 = base64.b64encode(image_bytes).decode("utf-8")
-    data_uri = f"data:{mime_type};base64,{b64}"
+    reader = get_ocr_reader()
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    img_array = np.array(img)
 
-    payload = {
-        "base64Image": data_uri,
-        "language": "heb",          # עברית
-        "isOverlayRequired": False,
-        "OCREngine": 2,              # מנוע 2 — טוב יותר לעברית
-        "scale": True,
-        "isTable": False,
-    }
-
-    resp = requests.post(
-        "https://api.ocr.space/parse/image",
-        data=payload,
-        headers={"apikey": api_key},
-        timeout=30,
-    )
-
-    if resp.status_code != 200:
-        raise Exception(f"שגיאת API {resp.status_code}: {resp.text[:300]}")
-
-    result = resp.json()
-    if result.get("IsErroredOnProcessing"):
-        err = result.get("ErrorMessage", ["שגיאה לא ידועה"])
-        raise Exception(f"OCR נכשל: {err[0] if isinstance(err, list) else err}")
-
-    # חלץ את הטקסט מכל הדפים
+    results = reader.readtext(img_array, detail=0, paragraph=True)
     lines = []
-    for page in result.get("ParsedResults", []):
-        text = page.get("ParsedText", "")
-        for line in text.splitlines():
-            line = line.strip("•-– \t\r")
-            if line and len(line) > 1:
-                lines.append(line)
+    for line in results:
+        line = line.strip("•-– \t\r")
+        if line and len(line) > 1:
+            lines.append(line)
     return lines
 
 
@@ -120,40 +104,18 @@ with st.sidebar:
         st.warning("אין לקוחות. צור לקוח בדף המלאי.")
 
     st.divider()
-    st.markdown("## 🔑 OCR.space API Key")
-
-    env_key = os.environ.get("OCR_SPACE_KEY", "")
-    if env_key and "ocr_space_key" not in st.session_state:
-        st.session_state["ocr_space_key"] = env_key
-
-    api_key_input = st.text_input(
-        "הכנס מפתח",
-        type="password",
-        value=st.session_state.get("ocr_space_key", ""),
-        key="ocr_key_input",
-    )
-    if api_key_input:
-        st.session_state["ocr_space_key"] = api_key_input
-
-    if st.session_state.get("ocr_space_key"):
-        st.success("✅ מפתח מוכן")
-    else:
-        st.markdown("""
-        <div style="background:#1a2a1a;border-radius:8px;padding:10px;font-size:0.85em;direction:rtl">
-        <b>🆓 מפתח חינמי — 500 סריקות/חודש:</b><br>
-        1. כנס ל-<b>ocr.space</b><br>
-        2. לחץ <b>Free API key</b><br>
-        3. הרשם עם אימייל<br>
-        4. קבל מפתח ב-אימייל<br><br>
-        <b>לבדיקה מהירה</b> — השתמש במפתח:<br>
-        <code>helloworld</code><br>
-        (מוגבל ל-3 בקשות/שעה)
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+    <div style="background:#1a2a1a;border-radius:8px;padding:10px;font-size:0.85em;direction:rtl">
+    <b>🆓 סריקה מקומית — חינם לחלוטין</b><br>
+    אין צורך ב-API key<br>
+    הסריקה רצה על המחשב שלך<br>
+    תומך בעברית + אנגלית
+    </div>
+    """, unsafe_allow_html=True)
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 st.markdown("# 📷 סריקת קבלה / רשימת סופר")
-st.caption("העלה תמונה של קבלה או הדבק רשימה — המערכת תזהה מוצרים ותוסיף למלאי")
+st.caption("העלה תמונה של קבלה — המערכת תזהה מוצרים ותוסיף למלאי (ללא API, ללא עלות)")
 
 if not selected_id:
     st.error("יש לבחור לקוח מהתפריט השמאלי.")
@@ -179,25 +141,15 @@ with tab_image:
 
     if uploaded:
         st.image(uploaded, caption="התמונה שהועלתה", width=400)
-        mime = "image/png" if uploaded.name.lower().endswith(".png") else "image/jpeg"
 
-        ocr_key = st.session_state.get("ocr_space_key", "")
-
-        if not ocr_key:
-            st.warning("הכנס OCR.space API Key בסרגל השמאלי כדי לסרוק. (ניתן להשתמש ב-`helloworld` לבדיקה)")
-        else:
-            if st.button("🔍 סרוק ותזהה מוצרים", type="primary", use_container_width=True):
-                with st.spinner("מנתח תמונה עם OCR.space..."):
-                    try:
-                        names = scan_with_ocrspace(
-                            uploaded.read(),
-                            ocr_key,
-                            mime_type=mime,
-                        )
-                        st.session_state["scan_results"] = names
-                        st.success(f"זוהו {len(names)} שורות טקסט!")
-                    except Exception as e:
-                        st.error(f"שגיאה בסריקה: {e}")
+        if st.button("🔍 סרוק ותזהה מוצרים", type="primary", use_container_width=True):
+            with st.spinner("מנתח תמונה... (פעם ראשונה לוקח כ-30 שניות לטעינת המודל)"):
+                try:
+                    names = scan_with_easyocr(uploaded.read())
+                    st.session_state["scan_results"] = names
+                    st.success(f"זוהו {len(names)} שורות טקסט!")
+                except Exception as e:
+                    st.error(f"שגיאה בסריקה: {e}")
 
     if "scan_results" in st.session_state:
         detected_names = st.session_state["scan_results"]
