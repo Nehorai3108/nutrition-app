@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-דף סריקת קבלה / רשימת סופר
+דף סריקת קבלה / רשימת סופר — OCR.space (חינמי, 500 סריקות/חודש)
 """
 import sys, os, json, base64
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-from nutrition_app.user_manager import (
-    get_all_users, add_inventory_item,
-)
+from nutrition_app.user_manager import get_all_users, add_inventory_item
 
 st.set_page_config(page_title="סריקת קבלה", page_icon="📷", layout="wide")
 
@@ -31,55 +29,73 @@ def load_catalog():
 
 CATALOG = load_catalog()
 
+
 def match_to_catalog(names: list[str]) -> tuple[list[dict], list[str]]:
     """מתאים שמות מה-OCR למוצרים מהקטלוג."""
     matched, unmatched = [], []
+    seen_ids = set()
     for name in names:
         name_lower = name.strip().lower()
+        if not name_lower:
+            continue
         found = None
         for food in CATALOG:
             if (name_lower in food["name_he"].lower()
+                    or food["name_he"].lower() in name_lower
                     or name_lower in food["name_en"].lower()
+                    or food["name_en"].lower() in name_lower
                     or any(name_lower in a.lower() for a in food.get("aliases_he", []))
                     or any(name_lower in a.lower() for a in food.get("aliases_en", []))):
                 found = food
                 break
-        if found:
+        if found and found["food_id"] not in seen_ids:
+            seen_ids.add(found["food_id"])
             matched.append(found)
-        else:
+        elif not found:
             unmatched.append(name)
     return matched, unmatched
 
 
-def scan_with_claude(image_bytes: bytes, api_key: str) -> list[str]:
-    """שולח תמונה ל-Claude Vision ומחזיר רשימת מוצרים."""
-    import anthropic
-    b64 = base64.standard_b64encode(image_bytes).decode("utf-8")
-    client = anthropic.Anthropic(api_key=api_key)
-    msg = client.messages.create(
-        model="claude-opus-4-5",
-        max_tokens=1024,
-        messages=[{
-            "role": "user",
-            "content": [
-                {
-                    "type": "image",
-                    "source": {"type": "base64", "media_type": "image/jpeg", "data": b64},
-                },
-                {
-                    "type": "text",
-                    "text": (
-                        "זוהי תמונה של קבלת סופרמרקט או רשימת קניות. "
-                        "זהה את כל שמות המוצרים הנמצאים בתמונה. "
-                        "החזר רשימה של שמות מוצרים בעברית בלבד, כל מוצר בשורה נפרדת. "
-                        "כתוב רק את שמות המוצרים — ללא מחירים, כמויות, קודים או טקסט נוסף."
-                    ),
-                },
-            ],
-        }],
+def scan_with_ocrspace(image_bytes: bytes, api_key: str, mime_type: str = "image/jpeg") -> list[str]:
+    """שולח תמונה ל-OCR.space ומחזיר שורות טקסט."""
+    import requests
+
+    b64 = base64.b64encode(image_bytes).decode("utf-8")
+    data_uri = f"data:{mime_type};base64,{b64}"
+
+    payload = {
+        "base64Image": data_uri,
+        "language": "heb",          # עברית
+        "isOverlayRequired": False,
+        "OCREngine": 2,              # מנוע 2 — טוב יותר לעברית
+        "scale": True,
+        "isTable": False,
+    }
+
+    resp = requests.post(
+        "https://api.ocr.space/parse/image",
+        data=payload,
+        headers={"apikey": api_key},
+        timeout=30,
     )
-    text = msg.content[0].text.strip()
-    return [line.strip("•-– ").strip() for line in text.splitlines() if line.strip()]
+
+    if resp.status_code != 200:
+        raise Exception(f"שגיאת API {resp.status_code}: {resp.text[:300]}")
+
+    result = resp.json()
+    if result.get("IsErroredOnProcessing"):
+        err = result.get("ErrorMessage", ["שגיאה לא ידועה"])
+        raise Exception(f"OCR נכשל: {err[0] if isinstance(err, list) else err}")
+
+    # חלץ את הטקסט מכל הדפים
+    lines = []
+    for page in result.get("ParsedResults", []):
+        text = page.get("ParsedText", "")
+        for line in text.splitlines():
+            line = line.strip("•-– \t\r")
+            if line and len(line) > 1:
+                lines.append(line)
+    return lines
 
 
 def parse_text_list(text: str) -> list[str]:
@@ -104,30 +120,40 @@ with st.sidebar:
         st.warning("אין לקוחות. צור לקוח בדף המלאי.")
 
     st.divider()
-    st.markdown("## 🔑 הגדרות")
+    st.markdown("## 🔑 OCR.space API Key")
 
-    # קודם מנסה מהסביבה
-    env_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if env_key and "claude_api_key" not in st.session_state:
-        st.session_state["claude_api_key"] = env_key
+    env_key = os.environ.get("OCR_SPACE_KEY", "")
+    if env_key and "ocr_space_key" not in st.session_state:
+        st.session_state["ocr_space_key"] = env_key
 
-    api_key = st.text_input(
-        "Claude API Key",
+    api_key_input = st.text_input(
+        "הכנס מפתח",
         type="password",
-        value=st.session_state.get("claude_api_key", ""),
-        help="נדרש לסריקת תמונות. קבל מ-console.anthropic.com",
+        value=st.session_state.get("ocr_space_key", ""),
+        key="ocr_key_input",
     )
-    if api_key:
-        st.session_state["claude_api_key"] = api_key
+    if api_key_input:
+        st.session_state["ocr_space_key"] = api_key_input
 
-    if st.session_state.get("claude_api_key"):
+    if st.session_state.get("ocr_space_key"):
         st.success("✅ מפתח מוכן")
     else:
-        st.warning("הכנס API Key לסריקת תמונות")
+        st.markdown("""
+        <div style="background:#1a2a1a;border-radius:8px;padding:10px;font-size:0.85em;direction:rtl">
+        <b>🆓 מפתח חינמי — 500 סריקות/חודש:</b><br>
+        1. כנס ל-<b>ocr.space</b><br>
+        2. לחץ <b>Free API key</b><br>
+        3. הרשם עם אימייל<br>
+        4. קבל מפתח ב-אימייל<br><br>
+        <b>לבדיקה מהירה</b> — השתמש במפתח:<br>
+        <code>helloworld</code><br>
+        (מוגבל ל-3 בקשות/שעה)
+        </div>
+        """, unsafe_allow_html=True)
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 st.markdown("# 📷 סריקת קבלה / רשימת סופר")
-st.caption("צלם קבלה, העלה תמונה, או הדבק רשימה — המערכת תזהה את המוצרים ותוסיף למלאי")
+st.caption("העלה תמונה של קבלה או הדבק רשימה — המערכת תזהה מוצרים ותוסיף למלאי")
 
 if not selected_id:
     st.error("יש לבחור לקוח מהתפריט השמאלי.")
@@ -135,11 +161,10 @@ if not selected_id:
 
 user = next((u for u in users if u["user_id"] == selected_id), None)
 st.info(f"מוסיף מוצרים למלאי של: **{user['name']}**")
-
 st.divider()
 
-# ── בחירת שיטת קלט ────────────────────────────────────────────────────────────
-tab_image, tab_text = st.tabs(["📷 תמונת קבלה / צילום", "📝 הדבקת רשימה ידנית"])
+# ── טאבים ────────────────────────────────────────────────────────────────────
+tab_image, tab_text = st.tabs(["📷 תמונת קבלה", "📝 הדבקת רשימה ידנית"])
 
 detected_names: list[str] = []
 
@@ -154,19 +179,23 @@ with tab_image:
 
     if uploaded:
         st.image(uploaded, caption="התמונה שהועלתה", width=400)
+        mime = "image/png" if uploaded.name.lower().endswith(".png") else "image/jpeg"
 
-        if not st.session_state.get("claude_api_key"):
-            st.warning("הכנס Claude API Key בסרגל השמאלי כדי לסרוק.")
+        ocr_key = st.session_state.get("ocr_space_key", "")
+
+        if not ocr_key:
+            st.warning("הכנס OCR.space API Key בסרגל השמאלי כדי לסרוק. (ניתן להשתמש ב-`helloworld` לבדיקה)")
         else:
             if st.button("🔍 סרוק ותזהה מוצרים", type="primary", use_container_width=True):
-                with st.spinner("מנתח תמונה עם Claude Vision..."):
+                with st.spinner("מנתח תמונה עם OCR.space..."):
                     try:
-                        names = scan_with_claude(
+                        names = scan_with_ocrspace(
                             uploaded.read(),
-                            st.session_state["claude_api_key"],
+                            ocr_key,
+                            mime_type=mime,
                         )
                         st.session_state["scan_results"] = names
-                        st.success(f"זוהו {len(names)} פריטים!")
+                        st.success(f"זוהו {len(names)} שורות טקסט!")
                     except Exception as e:
                         st.error(f"שגיאה בסריקה: {e}")
 
@@ -207,22 +236,20 @@ if detected_names:
         selected_foods = []
         for food in matched:
             col_check, col_name, col_qty = st.columns([1, 4, 2])
-            checked = col_check.checkbox("בחר", value=True, key=f"chk_{food['food_id']}", label_visibility="collapsed")
+            checked = col_check.checkbox("", value=True, key=f"chk_{food['food_id']}")
             col_name.write(f"✅ {food['name_he']} ({food['name_en']})")
             qty = col_qty.number_input(
-                "גרם",
-                min_value=1, max_value=9999, value=300,
-                key=f"qty_scan_{food['food_id']}",
-                label_visibility="collapsed",
+                "גרם", min_value=1, max_value=9999, value=300,
+                key=f"qty_scan_{food['food_id']}", label_visibility="collapsed",
             )
             if checked:
                 selected_foods.append((food, qty))
 
         st.write("")
-        if st.button("➕ הוסף לקוח למלאי", type="primary", use_container_width=True):
+        if st.button("➕ הוסף למלאי", type="primary", use_container_width=True):
             for food, qty in selected_foods:
                 add_inventory_item(selected_id, food["food_id"], food["name_he"], float(qty))
-            st.success(f"נוספו {len(selected_foods)} מוצרים למלאי של {user['name']}!")
+            st.success(f"✅ נוספו {len(selected_foods)} מוצרים למלאי של {user['name']}!")
             del st.session_state["scan_results"]
             st.balloons()
 
