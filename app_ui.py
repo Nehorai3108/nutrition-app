@@ -22,6 +22,7 @@ from nutrition_app.agents.agent_5_planner import MealPlanner
 from nutrition_app.agents.agent_6_ai import AILayer
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
+from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
 
 # ── Page config ──────────────────────────────────────────────────────────────
 
@@ -179,48 +180,78 @@ with st.sidebar:
     )
 
     st.divider()
-    st.markdown("## 🛒 בחירת מזון")
 
-    selected_food_names = st.multiselect(
-        "בחר מזונות",
-        options=[name for _, name in ALL_FOODS],
-        default=["חזה עוף", "אורז לבן", "ביצה", "בננה", "שמן זית", "לחם מחיטה מלאה", "עגבנייה", "גבינת קוטג׳", "מלפפון"],
-    )
-
-    st.divider()
-    st.markdown("## 📦 מלאי ראשוני (גרם)")
-    st.caption("השאר 0 אם אין מלאי")
-
-    inventory_inputs = {}
-    for food_name in selected_food_names:
-        food_id = FOOD_NAME_TO_ID.get(food_name)
-        if food_id:
-            default_qty = {"food_001": 600, "food_002": 1000, "food_003": 400,
-                          "food_004": 360, "food_007": 500, "food_008": 300}.get(food_id, 0)
-            qty = st.number_input(
-                food_name,
-                min_value=0,
-                max_value=5000,
-                value=default_qty,
-                step=50,
-                key=f"inv_{food_id}",
-            )
-            inventory_inputs[food_id] = float(qty)
+    with st.expander("🛒 בחירת מזון ומלאי", expanded=False):
+        selected_food_names = st.multiselect(
+            "בחר מזונות",
+            options=[name for _, name in ALL_FOODS],
+            default=["חזה עוף", "אורז לבן", "ביצה", "בננה", "שמן זית", "לחם מחיטה מלאה", "עגבנייה", "גבינת קוטג׳", "מלפפון"],
+        )
+        st.caption("מלאי ראשוני (גרם) — השאר 0 אם אין")
+        inventory_inputs = {}
+        for food_name in selected_food_names:
+            food_id = FOOD_NAME_TO_ID.get(food_name)
+            if food_id:
+                default_qty = {"food_001": 600, "food_002": 1000, "food_003": 400,
+                              "food_004": 360, "food_007": 500, "food_008": 300}.get(food_id, 0)
+                qty = st.number_input(
+                    food_name, min_value=0, max_value=5000,
+                    value=default_qty, step=50, key=f"inv_{food_id}",
+                )
+                inventory_inputs[food_id] = float(qty)
 
     st.divider()
     run_btn = st.button("▶ הפק תפריט יומי", type="primary", use_container_width=True)
 
 # ── Main Area ─────────────────────────────────────────────────────────────────
 
-col_title, col_nav = st.columns([3, 1])
-col_title.markdown("# 🥗 מערכת תזונה חכמה")
-col_title.caption(f"תאריך: {date.today().strftime('%d/%m/%Y')}")
-col_nav.page_link("pages/2_recipes.py", label="📖 מתכונים", use_container_width=True)
-col_nav.page_link("pages/3_recipe_detail.py", label="🍽 פרטי מתכון", use_container_width=True)
-col_nav.page_link("pages/1_agents_dashboard.py", label="🤖 דאשבורד סוכנים", use_container_width=True)
+st.markdown(f"# 🥗 מערכת תזונה חכמה")
+st.caption(f"📅 {date.today().strftime('%d/%m/%Y')}")
+st.divider()
 
 if not run_btn and "last_plan" not in st.session_state:
-    st.info("מלא את הפרטים בסרגל השמאלי ולחץ **הפק תפריט יומי**.")
+    # מסך ברוכים הבאים
+    st.markdown("""
+    <div style="text-align:center; padding: 40px 0 20px 0;">
+        <div style="font-size: 5em;">🥗</div>
+        <h2 style="color:#e8e8ff; text-align:center">ברוכים הבאים למערכת תזונה חכמה</h2>
+        <p style="color:#aaa; font-size:1.1em; text-align:center">
+            המערכת תחשב עבורך תפריט יומי מותאם אישית<br>
+            בהתבסס על הפרופיל, המטרות והמלאי שלך
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown("""
+        <div style="background:#1a1a2e;border-radius:12px;padding:20px;text-align:center;margin-bottom:8px">
+            <div style="font-size:2.5em">👤</div>
+            <div style="color:#e8e8ff;font-weight:600;margin-top:8px">פרופיל אישי</div>
+            <div style="color:#888;font-size:0.85em;margin-top:4px">הזן גובה, משקל ומטרה</div>
+        </div>""", unsafe_allow_html=True)
+        st.info("👈 מלא פרטים בסרגל השמאלי")
+
+    with c2:
+        st.markdown("""
+        <div style="background:#1a1a2e;border-radius:12px;padding:20px;text-align:center;margin-bottom:8px">
+            <div style="font-size:2.5em">🍽️</div>
+            <div style="color:#e8e8ff;font-weight:600;margin-top:8px">תפריט יומי</div>
+            <div style="color:#888;font-size:0.85em;margin-top:4px">קבל ארוחות מותאמות עם מתכונים</div>
+        </div>""", unsafe_allow_html=True)
+        st.page_link("pages/6_daily_menu.py", label="🍽️ עבור לתפריט יומי", use_container_width=True)
+
+    with c3:
+        st.markdown("""
+        <div style="background:#1a1a2e;border-radius:12px;padding:20px;text-align:center;margin-bottom:8px">
+            <div style="font-size:2.5em">📦</div>
+            <div style="color:#e8e8ff;font-weight:600;margin-top:8px">ניהול מלאי</div>
+            <div style="color:#888;font-size:0.85em;margin-top:4px">סרוק קבלות והוסף מוצרים</div>
+        </div>""", unsafe_allow_html=True)
+        st.page_link("pages/4_inventory.py", label="🛒 עבור למלאי", use_container_width=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.info("👈  מלא את הפרטים בסרגל השמאלי ולחץ **▶ הפק תפריט יומי**")
     st.stop()
 
 # ── Run Pipeline ──────────────────────────────────────────────────────────────
@@ -465,14 +496,22 @@ with tab_plan:
                             f'</div>'
                             # Ingredients
                             f'<div style="font-size:0.82em;color:#aaa;margin-top:8px;line-height:1.6">🧾 {ingredients_display}</div>'
-                            # View recipe link
-                            f'<div style="margin-top:10px;text-align:left">'
-                            f'<a href="{recipe_link}" target="_self" style="color:#90caf9;font-size:0.9em;text-decoration:none;border:1px solid #90caf9;padding:4px 14px;border-radius:8px;transition:all 0.2s"'
-                            f' onmouseover="this.style.background=\'#90caf9\';this.style.color=\'#1a1a2e\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#90caf9\'">'
-                            f'📖 צפה במתכון המלא</a></div>'
                             f'</div>',
                             unsafe_allow_html=True,
                         )
+
+                        # Ingredients list + preparation instructions inline
+                        with st.expander("📋 מרכיבים והוראות הכנה", expanded=False):
+                            if ingredients:
+                                st.markdown("**מרכיבים:**")
+                                for ing in ingredients:
+                                    st.markdown(f"• {format_ingredient_display(ing)}")
+                            steps = get_instructions(recipe_id)
+                            if steps:
+                                st.markdown("---")
+                                st.markdown("**הוראות הכנה:**")
+                                for step_i, step in enumerate(steps, 1):
+                                    st.markdown(f"**{step_i}.** {step}")
                 else:
                     st.info("אין מתכונים מתאימים לארוחה זו.")
 
