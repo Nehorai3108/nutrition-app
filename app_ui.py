@@ -13,9 +13,18 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import streamlit as st
 
+from ui.components import (
+    inject_global_css, page_header, section_header, nav_menu,
+    icon_button, recipe_card_html, welcome_card_html, macro_grid_html,
+    kashrut_badge_html, meal_badge_html,
+)
+from ui.images import image_data_uri as _recipe_image_data_uri
+
 from nutrition_app.models.user import UserProfile
-from nutrition_app.models.enums import Gender, ActivityLevel, Goal
-from nutrition_app.agents.agent_2_nutrition import NutritionEngine
+from nutrition_app.models.enums import Gender, ActivityLevel, Goal, WorkoutIntensity, WorkoutType
+from nutrition_app.models.workout import WorkoutEntry
+from nutrition_app.repositories.workout_repository import WorkoutRepository
+from nutrition_app.agents.agent_2_nutrition import NutritionEngine, adjust_targets_for_workouts
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_4_inventory import InventoryManager
 from nutrition_app.agents.agent_5_planner import MealPlanner
@@ -24,67 +33,26 @@ from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
 
+_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage", "nutrition.db")
+
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
     page_title="מערכת תזונה חכמה",
     page_icon="🥗",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
-# ── RTL + custom style ───────────────────────────────────────────────────────
-
-st.markdown("""
-<style>
-    /* RTL - only content, not Streamlit chrome */
-    .main .block-container { direction: rtl; }
-    section[data-testid="stSidebar"] > div { direction: rtl; }
-    /* Metric cards */
-    div[data-testid="metric-container"] { direction: rtl; text-align: right; }
-    /* Headers */
-    h1, h2, h3 { text-align: right; }
-    /* Fix number inputs alignment */
-    input[type="number"] { text-align: right; }
-    /* Meal card style */
-    .meal-card {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 12px;
-        border-right: 4px solid #2e7d32;
-    }
-    .meal-title {
-        font-size: 18px;
-        font-weight: bold;
-        color: #2e7d32;
-        margin-bottom: 8px;
-    }
-    .food-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 4px 0;
-        border-bottom: 1px solid #e0e0e0;
-        font-size: 14px;
-    }
-    .summary-box {
-        background: #e8f5e9;
-        border-radius: 10px;
-        padding: 16px;
-        margin-top: 8px;
-    }
-    .inv-tag { color: #388e3c; font-size: 12px; }
-    .deviation-ok { color: #2e7d32; font-weight: bold; }
-    .deviation-warn { color: #f57f17; font-weight: bold; }
-</style>
-""", unsafe_allow_html=True)
+# ── Design system ────────────────────────────────────────────────────────────
+inject_global_css()
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
 MEAL_LABELS = {
     "breakfast":       "🌅 ארוחת בוקר",
     "morning_snack":   "☕ חטיף בוקר",
-    "lunch":           "🍽️ ארוחת צהריים",
+    "lunch":           "🍽 ארוחת צהריים",
     "afternoon_snack": "🍎 חטיף אחה\"צ",
     "dinner":          "🌙 ארוחת ערב",
     "evening_snack":   "🌜 חטיף ערב",
@@ -99,9 +67,9 @@ ACTIVITY_LABELS = {
 }
 
 GOAL_LABELS = {
-    Goal.LOSE_WEIGHT:  "🔽 ירידה במשקל",
-    Goal.MAINTAIN:     "⚖️ שמירה על משקל",
-    Goal.GAIN_WEIGHT:  "🔼 עלייה במשקל",
+    Goal.LOSE_WEIGHT:  "ירידה במשקל",
+    Goal.MAINTAIN:     "שמירה על משקל",
+    Goal.GAIN_WEIGHT:  "עלייה במשקל",
 }
 
 GENDER_LABELS = {
@@ -109,39 +77,33 @@ GENDER_LABELS = {
     Gender.FEMALE: "נקבה",
 }
 
-# All foods in catalog
-ALL_FOODS = [
-    ("food_001", "חזה עוף"),
-    ("food_002", "אורז לבן"),
-    ("food_003", "ביצה"),
-    ("food_004", "בננה"),
-    ("food_005", "שמן זית"),
-    ("food_006", "חלב"),
-    ("food_007", "לחם מחיטה מלאה"),
-    ("food_008", "עגבנייה"),
-    ("food_009", "מלפפון"),
-    ("food_010", "גבינת קוטג׳"),
-]
+@st.cache_resource
+def _get_catalog() -> FoodCatalog:
+    """Load FoodCatalog from nutrition.db. Falls back to static catalog if DB is empty."""
+    return FoodCatalog(db_path=_DB_PATH)
+
+
+_catalog = _get_catalog()
+_all_food_items = sorted(_catalog.get_all_foods(), key=lambda f: f.name_he)
+
+ALL_FOODS = [(f.food_id, f.name_he) for f in _all_food_items]
 FOOD_ID_TO_NAME = {fid: name for fid, name in ALL_FOODS}
 FOOD_NAME_TO_ID = {name: fid for fid, name in ALL_FOODS}
-FOOD_QUERY_MAP = {
-    "food_001": "חזה עוף",
-    "food_002": "אורז",
-    "food_003": "ביצה",
-    "food_004": "בננה",
-    "food_005": "שמן זית",
-    "food_006": "חלב",
-    "food_007": "לחם",
-    "food_008": "עגבנייה",
-    "food_009": "מלפפון",
-    "food_010": "קוטג׳",
-}
+# Query map: food_id → search term (use name_he directly — it's in the catalog)
+FOOD_QUERY_MAP = {f.food_id: f.name_he for f in _all_food_items}
+
+_PREFERRED_DEFAULTS = [
+    "חזה עוף", "אורז לבן", "ביצה", "בננה", "שמן זית",
+    "לחם מחיטה מלאה", "עגבנייה", "גבינת קוטג׳", "מלפפון",
+]
+_DEFAULT_FOOD_NAMES = [n for n in _PREFERRED_DEFAULTS if n in FOOD_NAME_TO_ID]
+if not _DEFAULT_FOOD_NAMES:
+    _DEFAULT_FOOD_NAMES = [name for _, name in ALL_FOODS[:5]]
 
 # ── Sidebar — User Profile ────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.markdown("## 👤 פרופיל משתמש")
-    st.divider()
+    section_header("פרופיל משתמש", "user")
 
     name = st.text_input("שם מלא", value="ישראל ישראלי")
 
@@ -181,82 +143,249 @@ with st.sidebar:
 
     st.divider()
 
+    # ── Workout input for today ──────────────────────────────────────────
+    WORKOUT_INTENSITY_LABELS = {
+        WorkoutIntensity.LOW:      "נמוכה (הליכה קלה)",
+        WorkoutIntensity.MODERATE: "בינונית (הליכה מהירה)",
+        WorkoutIntensity.HIGH:     "גבוהה (ריצה)",
+        WorkoutIntensity.EXTREME:  "עצימה מאוד (HIIT)",
+    }
+    WORKOUT_TYPE_LABELS = {
+        # Cardio
+        WorkoutType.RUNNING:        "🏃 ריצה",
+        WorkoutType.WALKING:        "🚶 הליכה",
+        WorkoutType.HIKING:         "🥾 טיול/הייקינג",
+        WorkoutType.CYCLING:        "🚴 אופניים",
+        WorkoutType.SWIMMING:       "🏊 שחייה",
+        WorkoutType.ROWING:         "🚣 חתירה",
+        WorkoutType.ELLIPTICAL:     "⚙️ אליפטיקל",
+        WorkoutType.STAIR_CLIMBING: "🪜 מדרגות",
+        WorkoutType.JUMPING_ROPE:   "🪢 קפיצה בחבל",
+        # Strength / studio
+        WorkoutType.STRENGTH:       "🏋️ משקולות",
+        WorkoutType.CROSSFIT:       "💪 קרוספיט",
+        WorkoutType.HIIT:           "🔥 HIIT",
+        WorkoutType.PILATES:        "🧘 פילאטיס",
+        WorkoutType.YOGA:           "🧘 יוגה",
+        WorkoutType.DANCE:          "💃 ריקוד",
+        # Combat
+        WorkoutType.BOXING:         "🥊 איגרוף",
+        WorkoutType.KICKBOXING:     "🥋 קיקבוקסינג",
+        WorkoutType.MARTIAL_ARTS:   "🥋 אומנויות לחימה",
+        WorkoutType.WRESTLING:      "🤼 היאבקות",
+        # Ball sports
+        WorkoutType.SOCCER:         "⚽ כדורגל",
+        WorkoutType.BASKETBALL:     "🏀 כדורסל",
+        WorkoutType.TENNIS:         "🎾 טניס",
+        WorkoutType.TABLE_TENNIS:   "🏓 טניס שולחן",
+        WorkoutType.BADMINTON:      "🏸 בדמינטון",
+        WorkoutType.VOLLEYBALL:     "🏐 כדורעף",
+        WorkoutType.BASEBALL:       "⚾ בייסבול",
+        WorkoutType.HANDBALL:       "🤾 כדוריד",
+        WorkoutType.RUGBY:          "🏉 רוגבי",
+        WorkoutType.HOCKEY:         "🏒 הוקי",
+        WorkoutType.GOLF:           "⛳ גולף",
+        # Outdoor
+        WorkoutType.CLIMBING:       "🧗 טיפוס",
+        WorkoutType.SKIING:         "⛷️ סקי",
+        WorkoutType.SNOWBOARDING:   "🏂 סנובורד",
+        WorkoutType.SURFING:        "🏄 גלישה",
+        WorkoutType.SKATING:        "⛸️ החלקה",
+        WorkoutType.OTHER:          "🏋️ אחר",
+    }
+
+    DISTANCE_TYPES = {WorkoutType.RUNNING, WorkoutType.WALKING, WorkoutType.HIKING}
+
+    with st.expander("🏋️ אימוני היום", expanded=False):
+        _workout_repo = WorkoutRepository()
+        _today = date.today()
+        _today_workouts = _workout_repo.resolve_workouts_for_date("ui_user_001", _today)
+
+        # Determine if the shown list is from the daily log (overriding) or from the weekly plan
+        _raw_data = _workout_repo.get_workout_data("ui_user_001")
+        _has_daily_override = _today.isoformat() in _raw_data.daily_log
+
+        if _today_workouts:
+            _src = "רשום להיום" if _has_daily_override else "מתכנית שבועית"
+            st.caption(f"📋 {len(_today_workouts)} אימונים ({_src}):")
+            for i, w in enumerate(_today_workouts):
+                if w.mode == "intensity" and w.intensity:
+                    _desc = f"עצימות {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
+                elif w.mode == "type" and w.workout_type:
+                    _desc = WORKOUT_TYPE_LABELS.get(w.workout_type, w.workout_type.value)
+                    if w.intensity:
+                        _desc += f" · עצימות {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
+                else:
+                    _desc = "אימון"
+                _metric = f"{w.distance_km} ק\"מ" if w.distance_km else f"{w.duration_minutes} דק׳"
+                col_w, col_del = st.columns([4, 1])
+                col_w.markdown(f"• **{_desc}** · {_metric}")
+                if _has_daily_override:
+                    with col_del:
+                        if icon_button("מחק", "delete", key=f"del_w_{i}",
+                                       help="מחק אימון", type="secondary"):
+                            _workout_repo.remove_daily_workout("ui_user_001", _today, i)
+                            st.rerun()
+            if _has_daily_override:
+                if icon_button("נקה את כל אימוני היום", "clear",
+                               key="clear_daily_workouts"):
+                    _workout_repo.clear_daily_workouts("ui_user_001", _today)
+                    st.rerun()
+        else:
+            st.caption("לא נרשמו אימונים להיום (ואין תכנית שבועית ליום זה).")
+
+        st.markdown("**➕ הוסף אימון**")
+        workout_mode_choice = st.radio(
+            "איך להזין?",
+            options=["intensity", "type"],
+            format_func=lambda m: {"intensity": "לפי עצימות",
+                                     "type": "לפי סוג אימון"}[m],
+            key="workout_mode_choice",
+            horizontal=True,
+        )
+
+        workout_entry_input: "WorkoutEntry | None" = None
+        if workout_mode_choice == "intensity":
+            intensity_sel = st.selectbox(
+                "עצימות",
+                options=list(WORKOUT_INTENSITY_LABELS.keys()),
+                format_func=lambda x: WORKOUT_INTENSITY_LABELS[x],
+                key="workout_intensity_sel",
+            )
+            duration_sel = st.number_input(
+                "משך (דקות)", min_value=0, max_value=300, value=30, step=5,
+                key="workout_duration_intensity",
+            )
+            if duration_sel > 0:
+                workout_entry_input = WorkoutEntry(
+                    duration_minutes=int(duration_sel),
+                    mode="intensity",
+                    intensity=intensity_sel,
+                )
+        else:  # type
+            type_sel = st.selectbox(
+                "סוג אימון",
+                options=list(WORKOUT_TYPE_LABELS.keys()),
+                format_func=lambda x: WORKOUT_TYPE_LABELS[x],
+                key="workout_type_sel",
+            )
+            duration_sel = st.number_input(
+                "משך (דקות)", min_value=0, max_value=300, value=30, step=5,
+                key="workout_duration_type",
+            )
+            # Distance input (only for run/walk/hike) — overrides duration when > 0
+            distance_sel = 0.0
+            if type_sel in DISTANCE_TYPES:
+                distance_sel = st.number_input(
+                    "מרחק (ק\"מ) — אם מוזן, יגבר על משך",
+                    min_value=0.0, max_value=200.0, value=0.0, step=0.5,
+                    key="workout_distance_type",
+                )
+            # Optional intensity modifier for the sport
+            type_intensity_sel = st.selectbox(
+                "עצימות (אופציונלי)",
+                options=["none"] + list(WORKOUT_INTENSITY_LABELS.keys()),
+                format_func=lambda x: "רגילה" if x == "none" else WORKOUT_INTENSITY_LABELS[x],
+                key="workout_type_intensity_sel",
+            )
+            _eff_intensity = None if type_intensity_sel == "none" else type_intensity_sel
+            if duration_sel > 0 or distance_sel > 0:
+                workout_entry_input = WorkoutEntry(
+                    duration_minutes=int(duration_sel),
+                    mode="type",
+                    workout_type=type_sel,
+                    intensity=_eff_intensity,
+                    distance_km=float(distance_sel) if distance_sel > 0 else None,
+                )
+
+        if icon_button("הוסף אימון לרשימה", "add", key="add_workout_btn"):
+            if workout_entry_input is None:
+                st.warning("יש להזין משך אימון גדול מ-0.")
+            else:
+                _workout_repo.add_daily_workout("ui_user_001", _today, workout_entry_input)
+                st.success("האימון נוסף.")
+                st.rerun()
+
+        st.caption("💡 תכנית שבועית משמשת כברירת מחדל. לוג יומי (גם אימון אחד) עוקף אותה ליום הזה.")
+        st.page_link(
+            "pages/7_weekly_workout_plan.py",
+            label="📅 ערוך תכנית אימונים שבועית",
+            use_container_width=True,
+        )
+
+    st.divider()
+
     with st.expander("🛒 בחירת מזון ומלאי", expanded=False):
         selected_food_names = st.multiselect(
             "בחר מזונות",
             options=[name for _, name in ALL_FOODS],
-            default=["חזה עוף", "אורז לבן", "ביצה", "בננה", "שמן זית", "לחם מחיטה מלאה", "עגבנייה", "גבינת קוטג׳", "מלפפון"],
+            default=_DEFAULT_FOOD_NAMES,
         )
-        st.caption("מלאי ראשוני (גרם) — השאר 0 אם אין")
+
+        scanned_inv = st.session_state.get("scanned_inventory", {})
+        if scanned_inv:
+            st.success(f"🧾 {len(scanned_inv)} מוצרים נטענו מסריקה")
+        else:
+            st.caption("מלאי ראשוני (גרם) — השאר 0 אם אין")
+
+        st.page_link("pages/2_receipt_scanner.py", label="🧾 סרוק קבלה / רשימת קניות", use_container_width=True)
+
+        # Merge scanned foods into the selected list so they appear in inventory
+        scanned_names = []
+        for fid in scanned_inv:
+            name = FOOD_ID_TO_NAME.get(fid)
+            if name and name not in selected_food_names:
+                scanned_names.append(name)
+        effective_food_names = list(selected_food_names) + scanned_names
+
         inventory_inputs = {}
-        for food_name in selected_food_names:
+        for food_name in effective_food_names:
             food_id = FOOD_NAME_TO_ID.get(food_name)
             if food_id:
-                default_qty = {"food_001": 600, "food_002": 1000, "food_003": 400,
-                              "food_004": 360, "food_007": 500, "food_008": 300}.get(food_id, 0)
+                default_qty = scanned_inv.get(
+                    food_id,
+                    {"food_001": 600, "food_002": 1000, "food_003": 400,
+                     "food_004": 360, "food_007": 500, "food_008": 300}.get(food_id, 0)
+                )
                 qty = st.number_input(
-                    food_name, min_value=0, max_value=5000,
-                    value=default_qty, step=50, key=f"inv_{food_id}",
+                    food_name,
+                    min_value=0,
+                    max_value=10000,
+                    value=int(default_qty),
+                    step=50,
+                    key=f"inv_{food_id}",
                 )
                 inventory_inputs[food_id] = float(qty)
 
     st.divider()
-    run_btn = st.button("▶ הפק תפריט יומי", type="primary", use_container_width=True)
+    run_btn = icon_button("הפק תפריט יומי", "play",
+                          key="run_pipeline_btn", type="primary")
 
 # ── Main Area ─────────────────────────────────────────────────────────────────
 
-st.markdown(f"# 🥗 מערכת תזונה חכמה")
-st.caption(f"📅 {date.today().strftime('%d/%m/%Y')}")
-st.divider()
+nav_menu(active="ראשי")
+page_header(
+    "מערכת תזונה חכמה",
+    icon_name="plate",
+    subtitle=f"היום: {date.today().strftime('%d/%m/%Y')}",
+)
 
 if not run_btn and "last_plan" not in st.session_state:
     # מסך ברוכים הבאים
-    st.markdown("""
-    <div style="text-align:center; padding: 40px 0 20px 0;">
-        <div style="font-size: 5em;">🥗</div>
-        <h2 style="color:#e8e8ff; text-align:center">ברוכים הבאים למערכת תזונה חכמה</h2>
-        <p style="color:#aaa; font-size:1.1em; text-align:center">
-            המערכת תחשב עבורך תפריט יומי מותאם אישית<br>
-            בהתבסס על הפרופיל, המטרות והמלאי שלך
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown("""
-        <div style="background:#1a1a2e;border-radius:12px;padding:32px 20px;text-align:center;cursor:default;border:1px solid #2a2a4a">
-            <div style="font-size:3em">👤</div>
-            <div style="color:#e8e8ff;font-weight:600;font-size:1.1em;margin-top:10px">פרופיל אישי</div>
-            <div style="color:#888;font-size:0.85em;margin-top:6px">הזן גובה, משקל ומטרה<br>בסרגל השמאלי</div>
-        </div>""", unsafe_allow_html=True)
-
-    with c2:
-        st.markdown("""
-        <a href="/daily_menu" target="_self" style="text-decoration:none">
-        <div style="background:#1a1a2e;border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;border:1px solid #2a2a4a;transition:all 0.2s"
-             onmouseover="this.style.background='#252540';this.style.borderColor='#4a4a8a'"
-             onmouseout="this.style.background='#1a1a2e';this.style.borderColor='#2a2a4a'">
-            <div style="font-size:3em">🍽️</div>
-            <div style="color:#e8e8ff;font-weight:600;font-size:1.1em;margin-top:10px">תפריט יומי</div>
-            <div style="color:#888;font-size:0.85em;margin-top:6px">קבל ארוחות מותאמות<br>עם מתכונים והוראות הכנה</div>
-        </div>
-        </a>""", unsafe_allow_html=True)
-
-    with c3:
-        st.markdown("""
-        <a href="/inventory" target="_self" style="text-decoration:none">
-        <div style="background:#1a1a2e;border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;border:1px solid #2a2a4a;transition:all 0.2s"
-             onmouseover="this.style.background='#252540';this.style.borderColor='#4a4a8a'"
-             onmouseout="this.style.background='#1a1a2e';this.style.borderColor='#2a2a4a'">
-            <div style="font-size:3em">📦</div>
-            <div style="color:#e8e8ff;font-weight:600;font-size:1.1em;margin-top:10px">ניהול מלאי</div>
-            <div style="color:#888;font-size:0.85em;margin-top:6px">סרוק קבלות והוסף<br>מוצרים למלאי האישי</div>
-        </div>
-        </a>""", unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.info("👈  מלא את הפרטים בסרגל השמאלי ולחץ **▶ הפק תפריט יומי**")
+    st.markdown(
+        '<div class="nut-welcome-grid">'
+        + welcome_card_html("/", "user", "פרופיל אישי",
+                            "הזן גובה, משקל ומטרה בסרגל הצדי")
+        + welcome_card_html("/daily_menu", "plate", "תפריט יומי",
+                            "קבל ארוחות מותאמות עם מתכונים והוראות הכנה")
+        + welcome_card_html("/inventory", "inventory", "ניהול מלאי",
+                            "סרוק קבלות והוסף מוצרים למלאי האישי")
+        + welcome_card_html("/weekly_workout_plan", "training", "אימונים שבועיים",
+                            "תכנן את האימונים — התפריט יותאם לפי השריפה")
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+    st.info("מלא את הפרטים בסרגל הצדי ולחץ **הפק תפריט יומי**")
     st.stop()
 
 # ── Run Pipeline ──────────────────────────────────────────────────────────────
@@ -288,8 +417,14 @@ if run_btn:
         if target_errors:
             errors.extend(target_errors)
 
-        # Step 3: Food matching
-        catalog = FoodCatalog()
+        # Step 2b: Workout-based adjustment (weekly plan + daily override, multi-workout)
+        workout_repo = WorkoutRepository()
+        todays_workouts = workout_repo.resolve_workouts_for_date(user.user_id, date.today())
+        if todays_workouts:
+            targets = adjust_targets_for_workouts(targets, todays_workouts, user)
+
+        # Step 3: Food matching (uses catalog already loaded from nutrition.db)
+        catalog = _get_catalog()
         food_queries = [FOOD_QUERY_MAP.get(FOOD_NAME_TO_ID[n], n) for n in selected_food_names]
         match_result = catalog.match_foods(food_queries)
         food_lookup = {f.food_id: f for f in catalog.get_all_foods()}
@@ -332,6 +467,7 @@ if run_btn:
             "changeset": changeset,
             "food_lookup": food_lookup,
             "errors": errors,
+            "todays_workouts": todays_workouts,
         }
 
 # ── Display Results ───────────────────────────────────────────────────────────
@@ -351,14 +487,34 @@ if errors:
     for e in errors:
         st.error(e)
 
+todays_workouts = data.get("todays_workouts") or []
+_total_burn = sum(w.estimated_calories_burned for w in todays_workouts)
+if _total_workout_count := len(todays_workouts):
+    parts = []
+    for w in todays_workouts:
+        if w.mode == "intensity" and w.intensity:
+            d = f"עצימות {w.intensity.value}"
+        elif w.mode == "type" and w.workout_type:
+            d = w.workout_type.value
+            if w.intensity:
+                d += f"/{w.intensity.value}"
+        else:
+            d = "אימון"
+        metric = f"{w.distance_km}ק\"מ" if w.distance_km else f"{w.duration_minutes}ד׳"
+        parts.append(f"{d} {metric} ({int(w.estimated_calories_burned)}קק\"ל)")
+    st.info(
+        f"🏋️ יום אימון ({_total_workout_count} אימונים): "
+        + " · ".join(parts)
+        + f" · סה\"כ +{int(_total_burn)} קק\"ל · חלוקת המאקרו הותאמה (יותר פחמימות וחלבון)"
+    )
+
 # Header summary bar
 dev = plan.calorie_deviation_pct
-dev_class = "deviation-ok" if abs(dev) <= 5 else "deviation-warn"
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("👤 שם", user.name)
-col2.metric("🎯 יעד קלורי", f"{targets.target_calories_kcal:.0f} קק\"ל")
-col3.metric("🍽️ קלוריות בתפריט", f"{plan.total_calories:.0f} קק\"ל")
-col4.metric("📊 סטייה", f"{dev:+.1f}%", delta_color="inverse" if dev > 0 else "normal")
+col1.metric("שם", user.name)
+col2.metric("יעד קלורי", f"{targets.target_calories_kcal:.0f} קק\"ל")
+col3.metric("קלוריות בתפריט", f"{plan.total_calories:.0f} קק\"ל")
+col4.metric("סטייה", f"{dev:+.1f}%", delta_color="inverse" if dev > 0 else "normal")
 
 st.divider()
 
@@ -440,73 +596,26 @@ with tab_plan:
                         portions = max(recipe.get("portions", 1), 1)
                         nut = recipe.get("total_nutrition", {})
                         cal = round(nut.get("calories", 0) / portions)
-                        protein = round(nut.get("protein", 0) / portions)
-                        carbs = round(nut.get("carbs", 0) / portions)
-                        fat = round(nut.get("fat", 0) / portions)
-                        prep = recipe.get("prep_time_minutes", 0)
-                        kashrut_raw = recipe.get("kashrut", "parve").lower()
-                        kashrut_lbl = KASHRUT_LABELS.get(kashrut_raw, kashrut_raw)
-                        kashrut_clr = KASHRUT_COLORS.get(kashrut_raw, "#555")
                         ingredients = recipe.get("ingredients", [])
-                        ingredients_display = " · ".join(
-                            format_ingredient_display(ing) for ing in ingredients
-                        )
-                        name_he = recipe.get("name_he", "")
-                        name_en = recipe.get("name_en", "")
                         recipe_id = recipe.get("recipe_id", "")
 
-                        # Calculate calorie match percentage
+                        # Calorie match percentage
                         target_cal = meal.total_calories
                         match_pct = max(0, round(100 - abs(cal - target_cal) / max(target_cal, 1) * 100))
-                        if match_pct >= 85:
-                            match_color = "#66bb6a"
-                            match_icon = "✅"
-                        elif match_pct >= 70:
-                            match_color = "#ffa726"
-                            match_icon = "🟡"
-                        else:
-                            match_color = "#ef5350"
-                            match_icon = "🔴"
 
-                        recipe_link = f"/recipe_detail?id={recipe_id}"
-
-                        # Rank badge for top suggestion
-                        rank_badge = ""
-                        if i == 0:
-                            rank_badge = '<span style="background:#4caf50;color:#fff;padding:2px 8px;border-radius:6px;font-size:0.75em;margin-left:8px">⭐ המלצה ראשית</span>'
-
+                        _img_uri = _recipe_image_data_uri(recipe.get("image_path", ""))
                         st.markdown(
-                            f'<div style="background:#1a1a2e;border:1px solid #333;border-radius:14px;padding:16px 18px;margin:8px 0;direction:rtl">'
-                            # Header row: name + kashrut + match
-                            f'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">'
-                            f'<div>'
-                            f'<span style="font-size:1.2em;font-weight:700;color:#e8e8ff">{name_he}</span>'
-                            f'{rank_badge}'
-                            f'</div>'
-                            f'<span style="color:{kashrut_clr};font-weight:600;font-size:0.9em">{kashrut_lbl}</span>'
-                            f'</div>'
-                            # Subtitle
-                            f'<div style="font-size:0.85em;color:#888;margin:4px 0 10px 0">{name_en} · ⏱ {prep} דק׳ · '
-                            f'{match_icon} <span style="color:{match_color}">{match_pct}% התאמה</span></div>'
-                            # Nutrition grid
-                            f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0">'
-                            f'<div style="background:#2a2a00;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
-                            f'<div style="color:#ffd54f;font-weight:700">{cal}</div><div style="color:#999;font-size:0.8em">קק״ל</div></div>'
-                            f'<div style="background:#002a00;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
-                            f'<div style="color:#81c784;font-weight:700">{protein}ג</div><div style="color:#999;font-size:0.8em">חלבון</div></div>'
-                            f'<div style="background:#00202a;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
-                            f'<div style="color:#64b5f6;font-weight:700">{carbs}ג</div><div style="color:#999;font-size:0.8em">פחמימות</div></div>'
-                            f'<div style="background:#2a0020;padding:6px 10px;border-radius:8px;text-align:center;font-size:0.85em">'
-                            f'<div style="color:#e57373;font-weight:700">{fat}ג</div><div style="color:#999;font-size:0.8em">שומן</div></div>'
-                            f'</div>'
-                            # Ingredients
-                            f'<div style="font-size:0.82em;color:#aaa;margin-top:8px;line-height:1.6">🧾 {ingredients_display}</div>'
-                            f'</div>',
+                            recipe_card_html(
+                                recipe,
+                                image_uri=_img_uri,
+                                match_pct=match_pct,
+                                show_rank=(i == 0),
+                            ),
                             unsafe_allow_html=True,
                         )
 
                         # Ingredients list + preparation instructions inline
-                        with st.expander("📋 מרכיבים והוראות הכנה", expanded=False):
+                        with st.expander("מרכיבים והוראות הכנה", expanded=False):
                             if ingredients:
                                 st.markdown("**מרכיבים:**")
                                 for ing in ingredients:

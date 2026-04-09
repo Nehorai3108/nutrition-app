@@ -9,15 +9,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import streamlit as st
 from nutrition_app.user_manager import get_all_users, add_inventory_item
 
-st.set_page_config(page_title="סריקת קבלה", page_icon="📷", layout="wide")
+from ui.components import (
+    inject_global_css, page_header, section_header, nav_menu, icon_button,
+)
 
-st.markdown("""
-<style>
-    .main .block-container { direction: rtl; }
-    section[data-testid="stSidebar"] > div { direction: rtl; }
-    h1,h2,h3 { text-align: right; }
-</style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="סריקת קבלה", page_icon="📷", layout="wide", initial_sidebar_state="collapsed")
+
+inject_global_css()
 
 # ── טעינת קטלוג ──────────────────────────────────────────────────────────────
 @st.cache_data
@@ -108,7 +106,7 @@ def parse_text_list(text: str) -> list[str]:
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 👥 לקוח")
+    section_header("לקוח", "user")
     users = get_all_users()
 
     if users:
@@ -123,7 +121,7 @@ with st.sidebar:
         st.warning("אין לקוחות. צור לקוח בדף המלאי.")
 
     st.divider()
-    st.markdown("## 🔑 מפתח OCR")
+    section_header("מפתח OCR", "lock")
 
     env_key = os.environ.get("OCR_SPACE_KEY", "")
     if env_key and "ocr_space_key" not in st.session_state:
@@ -155,8 +153,12 @@ with st.sidebar:
         """, unsafe_allow_html=True)
 
 # ── Main ──────────────────────────────────────────────────────────────────────
-st.markdown("# 📷 סריקת קבלה / רשימת סופר")
-st.caption("העלה תמונה של קבלה — המערכת תזהה מוצרים עבריים ותוסיף למלאי")
+nav_menu(active="סריקת קבלה")
+page_header(
+    "סריקת קבלה / רשימת סופר",
+    icon_name="scan",
+    subtitle="העלה תמונה של קבלה — המערכת תזהה מוצרים עבריים ותוסיף למלאי",
+)
 
 if not selected_id:
     st.error("יש לבחור לקוח מהתפריט השמאלי.")
@@ -189,7 +191,8 @@ with tab_image:
         if not ocr_key:
             st.warning("הכנס מפתח API בסרגל השמאלי — ראה הוראות לקבלת מפתח חינמי.")
         else:
-            if st.button("🔍 סרוק ותזהה מוצרים", type="primary", use_container_width=True):
+            if icon_button("סרוק ותזהה מוצרים", "scan",
+                           key="scan_image_btn", type="primary"):
                 with st.spinner("מנתח תמונה בעברית..."):
                     try:
                         names = scan_with_ocrspace(uploaded.read(), ocr_key, mime_type=mime)
@@ -212,7 +215,7 @@ with tab_text:
         key="manual_list",
     )
 
-    if st.button("🔍 זהה מוצרים מהרשימה", use_container_width=True):
+    if icon_button("זהה מוצרים מהרשימה", "scan", key="parse_text_btn"):
         if text_input.strip():
             detected_names = parse_text_list(text_input)
             st.session_state["scan_results"] = detected_names
@@ -245,7 +248,8 @@ if detected_names:
                 selected_foods.append((food, qty))
 
         st.write("")
-        if st.button("➕ הוסף למלאי", type="primary", use_container_width=True):
+        if icon_button("הוסף למלאי", "add",
+                       key="add_matched_btn", type="primary"):
             for food, qty in selected_foods:
                 add_inventory_item(selected_id, food["food_id"], food["name_he"], float(qty))
             st.success(f"✅ נוספו {len(selected_foods)} מוצרים למלאי של {user['name']}!")
@@ -262,7 +266,9 @@ if detected_names:
                 "גרם", min_value=1, value=300,
                 key=f"uq_{name}", label_visibility="collapsed",
             )
-            if col_b.button("הוסף בכ״ז", key=f"ub_{name}"):
+            with col_b:
+                _add_unmatched = icon_button("הוסף בכ״ז", "add", key=f"ub_{name}")
+            if _add_unmatched:
                 custom_id = f"custom_{name.replace(' ', '_')}"
                 add_inventory_item(selected_id, custom_id, name, float(custom_qty))
                 st.success(f"נוסף: {name}")

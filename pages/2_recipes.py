@@ -14,75 +14,24 @@ from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 
+from ui.components import (
+    inject_global_css, page_header, section_header, nav_menu, recipe_card_html,
+)
+from ui.images import image_data_uri
+
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
     page_title="מתכונים",
     page_icon="📖",
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
-st.markdown("""
-<style>
-    .main .block-container { direction: rtl; }
-    section[data-testid="stSidebar"] > div { direction: rtl; }
-    h1, h2, h3, h4 { text-align: right; }
-    .recipe-card {
-        background: #fafafa;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 16px;
-        margin: 8px 0;
-        direction: rtl;
-    }
-    .recipe-title {
-        font-size: 1.2em;
-        font-weight: 700;
-        color: #1a237e;
-        margin-bottom: 4px;
-    }
-    .recipe-subtitle {
-        font-size: 0.85em;
-        color: #757575;
-        margin-bottom: 8px;
-    }
-    .recipe-tag {
-        display: inline-block;
-        background: #e3f2fd;
-        color: #1565c0;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 0.75em;
-        margin: 2px;
-    }
-    .kashrut-dairy { background: #e8f5e9; color: #2e7d32; }
-    .kashrut-meat { background: #fce4ec; color: #c62828; }
-    .kashrut-parve { background: #fff3e0; color: #e65100; }
-    .macro-box {
-        display: inline-block;
-        text-align: center;
-        padding: 4px 10px;
-        margin: 2px;
-        border-radius: 8px;
-        font-size: 0.85em;
-    }
-    .macro-cal { background: #fff9c4; }
-    .macro-protein { background: #e8f5e9; }
-    .macro-carbs { background: #e3f2fd; }
-    .macro-fat { background: #fce4ec; }
-</style>
-""", unsafe_allow_html=True)
-
-# ── Header ───────────────────────────────────────────────────────────────────
-
-col_title, col_nav = st.columns([3, 1])
-col_title.markdown("# 📖 מתכונים")
-col_nav.markdown(
-    '<a href="/" target="_self" style="display:inline-block;padding:0.4em 1em;'
-    "background:#f0f2f6;border-radius:8px;text-decoration:none;color:#262730;"
-    'font-weight:500;text-align:center;width:100%">🏠 דף הבית</a>',
-    unsafe_allow_html=True,
-)
+inject_global_css()
+nav_menu(active="מתכונים")
+page_header("מתכונים", icon_name="recipe",
+            subtitle="חיפוש וצפייה במתכונים")
 
 # ── Load recipe manager ──────────────────────────────────────────────────────
 
@@ -108,7 +57,8 @@ stat_cols[4].metric("ארוחות", total_meal_slots)
 
 # ── Sidebar filters ──────────────────────────────────────────────────────────
 
-st.sidebar.markdown("## 🔍 סינון מתכונים")
+with st.sidebar:
+    section_header("סינון מתכונים", "search")
 
 search_text = st.sidebar.text_input("חיפוש חופשי", placeholder="שקשוקה, סלט, עוף...")
 
@@ -163,59 +113,12 @@ results = manager.search_recipes(recipe_filter)
 st.markdown(f"### נמצאו {len(results)} מתכונים")
 st.markdown("---")
 
-KASHRUT_LABELS = {"dairy": "חלבי", "meat": "בשרי", "parve": "פרווה"}
-KASHRUT_CSS = {"dairy": "kashrut-dairy", "meat": "kashrut-meat", "parve": "kashrut-parve"}
-
 for recipe in results:
-    name_he = recipe.get("name_he", "")
-    name_en = recipe.get("name_en", "")
-    kashrut = recipe.get("kashrut", "parve")
-    kashrut_label_text = KASHRUT_LABELS.get(kashrut, kashrut)
-    kashrut_css = KASHRUT_CSS.get(kashrut, "")
-    portions = recipe.get("portions", 1)
-    prep_time = recipe.get("prep_time_minutes", 0)
-    tags = recipe.get("tags", [])
-    ingredients = recipe.get("ingredients", [])
-    nutrition = recipe.get("total_nutrition", {})
-    meal_types = recipe.get("meal_types", [])
-
-    # Per-portion nutrition
-    cal_per_portion = round(nutrition.get("calories", 0) / max(portions, 1))
-    protein_per_portion = round(nutrition.get("protein", 0) / max(portions, 1))
-    carbs_per_portion = round(nutrition.get("carbs", 0) / max(portions, 1))
-    fat_per_portion = round(nutrition.get("fat", 0) / max(portions, 1))
-
-    meal_labels = [MEAL_TYPE_LABELS.get(mt, mt) for mt in meal_types]
-
-    # Build card HTML
-    tags_html = "".join(f'<span class="recipe-tag">{t}</span>' for t in tags)
-    meals_html = "".join(f'<span class="recipe-tag">{m}</span>' for m in meal_labels)
-    ingredients_text = " · ".join(
-        format_ingredient_display(ing)
-        for ing in ingredients
+    _img_uri = image_data_uri(recipe.get("image_path", ""))
+    st.markdown(
+        recipe_card_html(recipe, image_uri=_img_uri),
+        unsafe_allow_html=True,
     )
-
-    recipe_link = f"/recipe_detail?id={recipe.get('recipe_id', '')}"
-    card_html = f"""
-    <a href="{recipe_link}" target="_self" style="text-decoration:none;color:inherit">
-    <div class="recipe-card" style="cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor='#999'" onmouseout="this.style.borderColor='#e0e0e0'">
-        <div class="recipe-title">{name_he}</div>
-        <div class="recipe-subtitle">{name_en} · <span class="{kashrut_css}" style="padding:2px 6px;border-radius:8px">{kashrut_label_text}</span> · ⏱ {prep_time} דק׳ · 🍽 {portions} מנות</div>
-        <div style="margin:6px 0">
-            <span class="macro-box macro-cal">🔥 {cal_per_portion} קק״ל</span>
-            <span class="macro-box macro-protein">💪 {protein_per_portion}ג חלבון</span>
-            <span class="macro-box macro-carbs">🌾 {carbs_per_portion}ג פחמ׳</span>
-            <span class="macro-box macro-fat">🫒 {fat_per_portion}ג שומן</span>
-        </div>
-        <div style="margin:4px 0;font-size:0.85em;color:#555">
-            <b>מרכיבים:</b> {ingredients_text}
-        </div>
-        <div style="margin:4px 0">{meals_html}</div>
-        <div style="margin:4px 0">{tags_html}</div>
-    </div>
-    </a>
-    """
-    st.markdown(card_html, unsafe_allow_html=True)
 
 if not results:
     st.info("לא נמצאו מתכונים התואמים לסינון. נסה להרחיב את החיפוש.")

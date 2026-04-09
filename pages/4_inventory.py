@@ -13,24 +13,13 @@ from nutrition_app.user_manager import (
     load_inventory, add_inventory_item, update_inventory_item, remove_inventory_item,
 )
 
-st.set_page_config(page_title="מלאי אישי", page_icon="🛒", layout="wide")
+from ui.components import (
+    inject_global_css, page_header, section_header, nav_menu, icon_button,
+)
 
-st.markdown("""
-<style>
-    .main .block-container { direction: rtl; }
-    section[data-testid="stSidebar"] > div { direction: rtl; }
-    h1,h2,h3 { text-align: right; }
-    .inv-row {
-        background: #1a1a2e;
-        border-radius: 10px;
-        padding: 10px 16px;
-        margin: 6px 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-</style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="מלאי אישי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
+
+inject_global_css()
 
 # ── טעינת קטלוג מזון ─────────────────────────────────────────────────────────
 @st.cache_data
@@ -45,7 +34,7 @@ CATALOG_BY_ID = {f["food_id"]: f for f in CATALOG}
 
 # ── Sidebar — בחירת משתמש ────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 👥 לקוחות")
+    section_header("לקוחות", "user")
 
     users = get_all_users()
 
@@ -62,9 +51,9 @@ with st.sidebar:
         st.info("אין לקוחות עדיין. צור לקוח חדש.")
 
     st.divider()
-    st.markdown("### ➕ לקוח חדש")
+    section_header("לקוח חדש", "add")
     new_name = st.text_input("שם הלקוח", key="new_user_name")
-    if st.button("צור לקוח", use_container_width=True):
+    if icon_button("צור לקוח", "add", key="create_user_btn"):
         if new_name.strip():
             u = create_user(new_name.strip())
             st.success(f"נוצר: {u['name']}")
@@ -74,12 +63,15 @@ with st.sidebar:
 
     if selected_id:
         st.divider()
-        if st.button("🗑 מחק לקוח זה", use_container_width=True, type="secondary"):
+        if icon_button("מחק לקוח זה", "delete",
+                       key="delete_user_btn", type="secondary"):
             delete_user(selected_id)
             st.rerun()
 
 # ── Main ──────────────────────────────────────────────────────────────────────
-st.markdown("# 🛒 מלאי אישי")
+nav_menu(active="מלאי")
+page_header("מלאי אישי", icon_name="inventory",
+            subtitle="ניהול מוצרים לכל לקוח")
 
 if not selected_id:
     st.info("בחר לקוח מהתפריט השמאלי או צור לקוח חדש.")
@@ -124,7 +116,7 @@ with st.expander("➕ הוסף מוצר ידנית", expanded=False):
         with col_btn:
             st.write("")
             st.write("")
-            if st.button("הוסף", use_container_width=True, type="primary"):
+            if icon_button("הוסף", "add", key="inv_add_btn", type="primary"):
                 food = CATALOG_BY_ID[chosen_id]
                 add_inventory_item(selected_id, chosen_id, food["name_he"], float(qty))
                 st.success(f"נוסף: {food['name_he']} — {qty}ג")
@@ -139,7 +131,9 @@ with st.expander("➕ הוסף מוצר ידנית", expanded=False):
         custom_qty = c2.number_input("כמות (גרם)", min_value=1, value=100, key="custom_qty")
         c3.write("")
         c3.write("")
-        if c3.button("הוסף", key="add_custom"):
+        with c3:
+            _add_custom = icon_button("הוסף", "add", key="add_custom")
+        if _add_custom:
             if custom_name.strip():
                 custom_id = f"custom_{custom_name.strip().replace(' ', '_')}"
                 add_inventory_item(selected_id, custom_id, custom_name.strip(), float(custom_qty))
@@ -181,14 +175,18 @@ else:
             label_visibility="collapsed",
         )
 
-        if c3.button("✔ שמור", key=f"save_{fid}", use_container_width=True):
-            update_inventory_item(selected_id, fid, float(new_qty))
-            st.success("עודכן!")
-            st.rerun()
+        with c3:
+            if icon_button("שמור", "save", key=f"save_{fid}",
+                           help="עדכן כמות"):
+                update_inventory_item(selected_id, fid, float(new_qty))
+                st.success("עודכן!")
+                st.rerun()
 
-        if c4.button("🗑", key=f"del_{fid}", use_container_width=True):
-            remove_inventory_item(selected_id, fid)
-            st.rerun()
+        with c4:
+            if icon_button("מחק", "delete", key=f"del_{fid}",
+                           type="secondary", help="הסר מהמלאי"):
+                remove_inventory_item(selected_id, fid)
+                st.rerun()
 
 st.divider()
 col_scan = st.columns(1)[0]

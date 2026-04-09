@@ -14,58 +14,21 @@ from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
 
+from ui.components import (
+    inject_global_css, page_header, section_header, nav_menu,
+    kashrut_badge_html, macro_grid_html,
+)
+
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
     page_title="פרטי מתכון",
     page_icon="🍽",
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
-st.markdown("""
-<style>
-    .main .block-container { direction: rtl; }
-    section[data-testid="stSidebar"] > div { direction: rtl; }
-    h1, h2, h3, h4 { text-align: right; }
-    .detail-header {
-        margin-bottom: 1em;
-    }
-    .detail-header .name-he {
-        font-size: 2em;
-        font-weight: 700;
-        color: #e0e0ff;
-    }
-    .detail-header .name-en {
-        font-size: 1.1em;
-        color: #999;
-    }
-    .kashrut-badge {
-        display: inline-block;
-        padding: 4px 14px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.95em;
-        margin: 8px 0;
-    }
-    .kashrut-meat { background: #c62828; color: #fff; }
-    .kashrut-dairy { background: #2e7d32; color: #fff; }
-    .kashrut-parve { background: #e65100; color: #fff; }
-    .ingredient-item {
-        padding: 6px 0;
-        border-bottom: 1px solid #333;
-        font-size: 1em;
-    }
-    .tag-chip {
-        display: inline-block;
-        background: #2a2a4a;
-        color: #b0b0ff;
-        padding: 4px 12px;
-        border-radius: 14px;
-        font-size: 0.85em;
-        margin: 3px;
-    }
-</style>
-""", unsafe_allow_html=True)
+inject_global_css()
 
 # ── Load recipe ──────────────────────────────────────────────────────────────
 
@@ -77,14 +40,11 @@ def get_recipe_manager():
 params = st.query_params
 recipe_id = params.get("id", "")
 
+nav_menu(active="מתכונים")
+
 if not recipe_id:
     st.error("לא צוין מזהה מתכון.")
-    st.markdown(
-        '<a href="/" target="_self" style="display:inline-block;padding:0.5em 1.5em;'
-        "background:#3a3a5a;border-radius:8px;text-decoration:none;color:#e0e0ff;"
-        'font-weight:600;margin-top:1em">⬅ חזור לדף הבית</a>',
-        unsafe_allow_html=True,
-    )
+    st.page_link("pages/2_recipes.py", label="⬅ חזור לרשימת המתכונים")
     st.stop()
 
 manager = get_recipe_manager()
@@ -92,49 +52,35 @@ recipe = manager.get_recipe(recipe_id)
 
 if not recipe:
     st.error(f"מתכון עם מזהה '{recipe_id}' לא נמצא.")
-    st.markdown(
-        '<a href="/" target="_self" style="display:inline-block;padding:0.5em 1.5em;'
-        "background:#3a3a5a;border-radius:8px;text-decoration:none;color:#e0e0ff;"
-        'font-weight:600;margin-top:1em">⬅ חזור לדף הבית</a>',
-        unsafe_allow_html=True,
-    )
+    st.page_link("pages/2_recipes.py", label="⬅ חזור לרשימת המתכונים")
     st.stop()
-
-# ── Back button ──────────────────────────────────────────────────────────────
-
-col_back, col_spacer = st.columns([1, 4])
-col_back.markdown(
-    '<a href="/recipes" target="_self" style="display:inline-block;padding:0.4em 1.2em;'
-    "background:#3a3a5a;border-radius:8px;text-decoration:none;color:#e0e0ff;"
-    'font-weight:500">⬅ חזור</a>',
-    unsafe_allow_html=True,
-)
 
 # ── Header ───────────────────────────────────────────────────────────────────
 
 name_he = recipe.get("name_he", "")
 name_en = recipe.get("name_en", "")
-kashrut_raw = recipe.get("kashrut", "parve").lower()
+kashrut_raw = (recipe.get("kashrut") or "parve").lower()
 portions = max(recipe.get("portions", 1), 1)
 prep_time = recipe.get("prep_time_minutes", 0)
 tags = recipe.get("tags", [])
 ingredients = recipe.get("ingredients", [])
 nutrition = recipe.get("total_nutrition", {})
 
-KASHRUT_LABELS = {"meat": "בשרי", "dairy": "חלבי", "parve": "פרווה"}
-KASHRUT_CSS = {"meat": "kashrut-meat", "dairy": "kashrut-dairy", "parve": "kashrut-parve"}
+page_header(name_he, icon_name="recipe", subtitle=name_en)
+st.markdown(kashrut_badge_html(kashrut_raw), unsafe_allow_html=True)
 
-kashrut_lbl = KASHRUT_LABELS.get(kashrut_raw, kashrut_raw)
-kashrut_css = KASHRUT_CSS.get(kashrut_raw, "kashrut-parve")
-
-st.markdown(
-    f'<div class="detail-header">'
-    f'<div class="name-he">{name_he}</div>'
-    f'<div class="name-en">{name_en}</div>'
-    f'<span class="kashrut-badge {kashrut_css}">{kashrut_lbl}</span>'
-    f'</div>',
-    unsafe_allow_html=True,
-)
+# ── Recipe image ─────────────────────────────────────────────────────────────
+_image_path = recipe.get("image_path")
+if _image_path:
+    _abs_img = _image_path if os.path.isabs(_image_path) else os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), _image_path
+    )
+    if os.path.isfile(_abs_img):
+        img_col = st.columns([1, 2, 1])[1]
+        img_col.image(_abs_img, caption=name_he, use_container_width=True)
+        _credit = recipe.get("image_credit")
+        if _credit:
+            img_col.caption(f"📷 {_credit}")
 
 # ── Info row ─────────────────────────────────────────────────────────────────
 
@@ -163,15 +109,11 @@ st.divider()
 
 # ── Ingredients ──────────────────────────────────────────────────────────────
 
-st.markdown("### מרכיבים")
+section_header("מרכיבים", "recipe")
 
 for ing in ingredients:
     display = format_ingredient_display(ing)
-    food_name = ing.get("food_name", "")
-    st.markdown(
-        f'<div class="ingredient-item">• {display}</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"• {display}")
 
 # ── Preparation Instructions ────────────────────────────────────────────────
 
@@ -187,6 +129,6 @@ st.divider()
 # ── Tags ─────────────────────────────────────────────────────────────────────
 
 if tags:
-    st.markdown("### תגיות")
-    tags_html = "".join(f'<span class="tag-chip">{t}</span>' for t in tags)
+    section_header("תגיות", "menu")
+    tags_html = "".join(f'<span class="nut-chip">{t}</span>' for t in tags)
     st.markdown(tags_html, unsafe_allow_html=True)

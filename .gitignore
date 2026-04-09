@@ -11,3 +11,6 @@ build/
 storage/runs/
 storage/data/
 storage/artifacts/
+storage_agents/recipe_images/.pexels_api_key
+storage_agents/recipe_images/candidates/
+.streamlit/secrets.toml
