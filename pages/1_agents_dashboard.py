@@ -15,6 +15,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
 
+from ui.components import (
+    inject_global_css, page_header, section_header, nav_menu, icon_button,
+)
+from ui.auth import require_admin, admin_logout_button
+
 # ── Autonomy imports ──────────────────────────────────────────────────────────
 from nutrition_app.models.enums import ActivityLevel, Gender, Goal
 from nutrition_app.models.user import UserProfile
@@ -44,32 +49,21 @@ st.set_page_config(
     page_title="דאשבורד סוכנים",
     page_icon="🤖",
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
-col_title, col_nav = st.columns([3, 1])
-col_title.markdown("# 🤖 דאשבורד סוכנים")
-col_nav.markdown(
-    '<a href="/" target="_self" style="display:inline-block;padding:0.4em 1em;'
-    "background:#f0f2f6;border-radius:8px;text-decoration:none;color:#262730;"
-    'font-weight:500;text-align:center;width:100%">🏠 דף הבית</a>',
-    unsafe_allow_html=True,
-)
+# ── Admin gate (must be before any data rendering) ───────────────────────────
+inject_global_css()
+require_admin(page_title="דאשבורד סוכנים", icon_name="agent")
 
-st.markdown("""
-<style>
-    .main .block-container { direction: rtl; }
-    section[data-testid="stSidebar"] > div { direction: rtl; }
-    h1, h2, h3 { text-align: right; }
-    .status-ok   { color: #2e7d32; font-weight: bold; }
-    .status-warn { color: #f57f17; font-weight: bold; }
-    .status-fail { color: #c62828; font-weight: bold; }
-    .agent-card  { background: #f5f5f5; border-radius: 8px; padding: 12px; margin: 4px 0; }
-    .task-done   { color: #2e7d32; }
-    .task-fail   { color: #c62828; }
-    .task-prog   { color: #1565c0; }
-    .task-stuck  { color: #6a1b9a; }
-</style>
-""", unsafe_allow_html=True)
+# ── Top nav + page header (admin only past this point) ───────────────────────
+nav_menu(active="סוכנים")
+page_header(
+    "דאשבורד סוכנים",
+    icon_name="agent",
+    subtitle="לוח בקרה אוטונומי — גישת מנהל",
+)
+admin_logout_button()
 
 # ── Storage dir ───────────────────────────────────────────────────────────────
 STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage_agents")
@@ -310,10 +304,11 @@ with st.sidebar:
     inv_banana  = st.number_input("בננה (ג)", 0, 1000, 360, step=50)
 
     st.divider()
-    run_cycle_btn = st.button("▶ הרץ מחזור", type="primary", use_container_width=True)
+    run_cycle_btn = icon_button("הרץ מחזור", "play",
+                                key="run_cycle_btn", type="primary")
     auto_refresh = st.toggle("רענון אוטומטי (5 שנ')", value=False)
 
-    if st.button("🗑️ אפס מערכת", use_container_width=True):
+    if icon_button("אפס מערכת", "delete", key="reset_orc_btn"):
         for key in ["orc", "cycles", "run_count"]:
             if key in st.session_state:
                 del st.session_state[key]
@@ -382,11 +377,12 @@ st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 
-tab_cycles, tab_tasks, tab_healer, tab_escalations, tab_feedback, tab_improvements, tab_audit, tab_live_state = st.tabs([
+tab_cycles, tab_tasks, tab_healer, tab_escalations, tab_recipe_images, tab_feedback, tab_improvements, tab_audit, tab_live_state = st.tabs([
     "🔄 מחזורים",
     "📋 משימות",
     "🩺 ריפוי עצמי",
     "🚨 הסלמות",
+    "🖼️ תמונות מתכונים",
     "💬 משוב",
     "📈 שיפורים",
     "📝 ביקורת",
@@ -528,6 +524,98 @@ with tab_escalations:
                     orc.resolve_escalation(i, approved=False, notes=notes_val)
                     st.warning("נדחה")
                     st.rerun()
+
+# ── Tab: Recipe Images ────────────────────────────────────────────────────────
+
+with tab_recipe_images:
+    st.markdown("### 🖼️ איסוף תמונות למתכונים")
+    st.caption("הצעות תמונה נאספות אוטומטית מ-Pexels. אשר/דחה כאן — תמונה מאושרת משויכת למתכון ב-recipes.json.")
+
+    try:
+        from nutrition_app.agents.agent_recipe_images import (
+            image_fetcher as _img_fetcher,
+        )
+        from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager as _RecipeManager
+
+        # Auto-fetch a small batch on each dashboard load.
+        if "_recipe_img_batch_done" not in st.session_state:
+            with st.spinner("מחפש תמונות חדשות ב-Pexels..."):
+                batch_stats = _img_fetcher.run_batch(limit=10)
+            st.session_state["_recipe_img_batch_done"] = True
+            if batch_stats["fetched"]:
+                st.success(f"נאספו {batch_stats['fetched']} מתכונים חדשים עם הצעות.")
+            if batch_stats["no_results"]:
+                st.info(f"{batch_stats['no_results']} מתכונים לא החזירו תוצאות בחיפוש.")
+
+        stats = _img_fetcher.get_stats()
+        sc1, sc2, sc3, sc4 = st.columns(4)
+        sc1.metric("סך מתכונים", stats["total_recipes"])
+        sc2.metric("עם תמונה מאושרת", stats["with_image"])
+        sc3.metric("ממתינים לאישור", stats["pending"])
+        sc4.metric("ללא תוצאות", stats["no_results"])
+
+        col_refresh, col_reset = st.columns([1, 1])
+        if col_refresh.button("🔄 חפש batch נוסף", key="img_refetch"):
+            st.session_state.pop("_recipe_img_batch_done", None)
+            st.rerun()
+        if col_reset.button("♻️ נסה שוב לפריטים ללא תוצאות", key="img_retry_noresults"):
+            pending_all = _img_fetcher.load_pending()
+            cleaned = {k: v for k, v in pending_all.items()
+                       if v.get("status") not in ("no_results", "rejected")}
+            _img_fetcher.save_pending(cleaned)
+            st.session_state.pop("_recipe_img_batch_done", None)
+            st.rerun()
+
+        st.divider()
+
+        pending = _img_fetcher.load_pending()
+        pending_items = [(rid, entry) for rid, entry in pending.items()
+                         if entry.get("status") == "pending" and entry.get("candidates")]
+
+        if not pending_items:
+            st.info("אין הצעות ממתינות כרגע. לחץ 'חפש batch נוסף' כדי לאסוף עוד.")
+        else:
+            st.markdown(f"**{len(pending_items)} מתכונים ממתינים לאישור:**")
+            for rid, entry in pending_items:
+                name_he = entry.get("name_he", rid)
+                name_en = entry.get("name_en", "")
+                with st.expander(f"🍽️ {name_he} ({name_en})", expanded=True):
+                    candidates = entry.get("candidates", [])
+                    cols = st.columns(len(candidates))
+                    for idx, (col, cand) in enumerate(zip(cols, candidates)):
+                        abs_path = os.path.join(_img_fetcher.PROJECT_ROOT, cand["local_path"])
+                        if os.path.isfile(abs_path):
+                            try:
+                                col.image(abs_path, use_container_width=True)
+                            except Exception:
+                                col.caption("(שגיאה בטעינת תמונה)")
+                        else:
+                            col.caption("(תמונה חסרה)")
+                        photographer = cand.get("photographer", "")
+                        if photographer:
+                            col.caption(f"📷 {photographer}")
+                        if col.button("✅ בחר", key=f"img_approve_{rid}_{idx}"):
+                            result = _img_fetcher.approve(rid, idx)
+                            if result:
+                                rm = _RecipeManager()
+                                ok = rm.set_recipe_image(
+                                    rid,
+                                    result["image_path"],
+                                    result.get("image_credit"),
+                                )
+                                if ok:
+                                    st.success(f"תמונה שויכה ל-{name_he}")
+                                else:
+                                    st.error("נכשל בעדכון recipes.json")
+                            else:
+                                st.error("נכשל באישור התמונה")
+                            st.rerun()
+                    if st.button("❌ דחה הכל למתכון זה", key=f"img_reject_{rid}"):
+                        _img_fetcher.reject(rid)
+                        st.warning(f"נדחה: {name_he}")
+                        st.rerun()
+    except Exception as exc:
+        st.error(f"שגיאה בטעינת מודול תמונות מתכונים: {exc}")
 
 # ── Tab: Feedback ─────────────────────────────────────────────────────────────
 

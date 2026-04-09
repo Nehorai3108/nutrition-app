@@ -3,7 +3,11 @@ name = "nutrition-app"
 version = "0.1.0"
 description = "Modular, deterministic, agent-based nutrition planning system"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "streamlit>=1.32",
+    "streamlit-extras>=0.4",
+    "streamlit-option-menu>=0.3.13",
+]
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
