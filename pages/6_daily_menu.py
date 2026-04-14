@@ -6,10 +6,12 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import json
 import streamlit as st
-from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
+from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager, get_recipe_inventory_match
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
+from nutrition_app.user_manager import get_all_users, load_inventory
 
 from ui.components import (
     inject_global_css, page_header, nav_menu, recipe_card_html, meal_badge_html,
@@ -24,7 +26,33 @@ inject_global_css()
 def get_mgr():
     return RecipeManager()
 
+@st.cache_data
+def load_catalog():
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "nutrition_app", "data", "foods_extended.json")
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
 recipe_mgr = get_mgr()
+CATALOG = load_catalog()
+
+def build_inventory_names(user_id: str) -> set:
+    items = load_inventory(user_id)
+    if not items:
+        return set()
+    catalog_by_id = {f["food_id"]: f for f in CATALOG}
+    names = set()
+    for item in items:
+        food = catalog_by_id.get(item["food_id"])
+        if food:
+            names.add(food["name_en"].lower())
+            for a in food.get("aliases_en", []):
+                names.add(a.lower())
+            names.add(food["name_he"].lower())
+            for a in food.get("aliases_he", []):
+                names.add(a.lower())
+        names.add(item["name_he"].lower())
+    return names
 
 MEAL_SECTIONS = [
     ("BREAKFAST",       "ארוחת בוקר",       "ארוחה קלה ומזינה לתחילת היום"),
@@ -35,10 +63,34 @@ MEAL_SECTIONS = [
     ("EVENING_SNACK",   "חטיף ערב",          "משהו קל לפני השינה"),
 ]
 
+# ── Sidebar — בחירת לקוח ─────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("## 👤 לקוח")
+    all_users = get_all_users()
+    if all_users:
+        user_options = {u["user_id"]: u["name"] for u in all_users}
+        selected_user_id = st.selectbox(
+            "בחר לקוח לסינון לפי מלאי",
+            options=[""] + list(user_options.keys()),
+            format_func=lambda uid: "— ללא סינון מלאי —" if uid == "" else user_options[uid],
+            key="menu_user_id",
+        )
+    else:
+        selected_user_id = ""
+        st.info("אין לקוחות. הוסף לקוח בדף המלאי.")
+
+inventory_names: set = set()
+if selected_user_id:
+    inventory_names = build_inventory_names(selected_user_id)
+
 # ── כותרת ─────────────────────────────────────────────────────────────────────
 nav_menu(active="תפריט יומי")
 page_header("תפריט יומי", icon_name="plate",
             subtitle="המלצות מתכונים לכל ארוחה — בחר מה מתאים לך היום")
+
+if inventory_names:
+    user_name = next((u["name"] for u in all_users if u["user_id"] == selected_user_id), "")
+    st.success(f"🛒 מציג מתכונים לפי מלאי של **{user_name}** — {len(load_inventory(selected_user_id))} פריטים זמינים")
 
 # ── בדוק אם יש תפריט מותאם אישית מהדף הראשי ────────────────────────────────
 has_plan = "last_plan" in st.session_state
@@ -69,6 +121,7 @@ for meal_key, meal_label, meal_desc in MEAL_SECTIONS:
             suggestions = recipe_mgr.recommend_meal(
                 meal_type=meal_key,
                 target_calories=target_cal,
+                inventory_names=inventory_names if inventory_names else None,
             )[:3]
         except Exception:
             suggestions = []
@@ -88,6 +141,15 @@ for meal_key, meal_label, meal_desc in MEAL_SECTIONS:
             match_pct = max(0, round(100 - abs(cal - target_cal) / max(target_cal, 1) * 100))
             _img_uri = _image_data_uri(recipe.get("image_path", ""))
 
+            # Inventory availability for this recipe
+            inv_info = None
+            inv_badge_html = ""
+            if inventory_names:
+                inv_info = get_recipe_inventory_match(recipe, inventory_names)
+                inv_pct = inv_info["match_pct"]
+                inv_clr = "#66bb6a" if inv_pct >= 80 else ("#ffa726" if inv_pct >= 50 else "#ef5350")
+                inv_badge_html = f'<span style="background:{inv_clr};color:#fff;padding:1px 7px;border-radius:6px;font-size:0.72em">🛒 {inv_pct}% במלאי</span>'
+
             with col:
                 st.markdown(
                     recipe_card_html(
@@ -98,11 +160,23 @@ for meal_key, meal_label, meal_desc in MEAL_SECTIONS:
                     ),
                     unsafe_allow_html=True,
                 )
+                if inv_badge_html:
+                    st.markdown(inv_badge_html, unsafe_allow_html=True)
                 with st.expander("מרכיבים והוראות הכנה"):
                     if ingredients:
                         st.markdown("**מרכיבים:**")
                         for ing in ingredients:
-                            st.markdown(f"• {format_ingredient_display(ing)}")
+                            if inv_info:
+                                is_avail = any(
+                                    ing.get("food_name_en") == a.get("food_name_en")
+                                    for a in inv_info["available"]
+                                )
+                                icon = "✅" if is_avail else "❌"
+                                st.markdown(f"{icon} {format_ingredient_display(ing)}")
+                            else:
+                                st.markdown(f"• {format_ingredient_display(ing)}")
+                        if inv_info and inv_info["missing"]:
+                            st.markdown(f"**חסר במלאי:** {', '.join(i.get('food_name','') or i.get('food_name_en','') for i in inv_info['missing'])}")
                     steps = get_instructions(recipe_id)
                     if steps:
                         st.markdown("---")

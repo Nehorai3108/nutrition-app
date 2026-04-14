@@ -403,6 +403,7 @@ class RecipeManager:
         meal_type: str,
         target_calories: float,
         kashrut: Optional[str] = None,
+        inventory_names: Optional[Set[str]] = None,
     ) -> List[dict]:
         """Find top 5 recipes for a specific meal slot.
 
@@ -438,6 +439,7 @@ class RecipeManager:
                 est_fat,
                 MenuPreferences(),
                 set(),
+                inventory_names=inventory_names,
             )
             scored.append((score, recipe))
 
@@ -505,13 +507,22 @@ class RecipeManager:
         target_fat: float,
         preferences: MenuPreferences,
         used_ids: Set[str],
+        inventory_names: Optional[Set[str]] = None,
     ) -> float:
         """Score a recipe for a meal slot. Higher = better fit.
 
-        Weights:
+        Weights (without inventory):
           - calorie deviation: 0.4
           - protein match:     0.2
           - macro balance:     0.2
+          - variety:           0.1
+          - tag preference:    0.1
+
+        When inventory_names provided, weights shift to include:
+          - inventory match:   0.2  (rescaled from calorie/protein/macro)
+          - calorie deviation: 0.3
+          - protein match:     0.15
+          - macro balance:     0.15
           - variety:           0.1
           - tag preference:    0.1
         """
@@ -522,21 +533,27 @@ class RecipeManager:
         carbs = nut.get("carbs", 0) / portions
         fat = nut.get("fat", 0) / portions
 
-        # --- Calorie proximity (weight 0.4) ---
+        use_inventory = inventory_names is not None and len(inventory_names) > 0
+
+        cal_w     = 0.30 if use_inventory else 0.40
+        prot_w    = 0.15 if use_inventory else 0.20
+        macro_w   = 0.15 if use_inventory else 0.20
+
+        # --- Calorie proximity ---
         if target_calories > 0:
             cal_dev = abs(cal - target_calories) / target_calories
         else:
             cal_dev = 0.0
-        cal_score = max(0.0, 1.0 - cal_dev) * 0.4
+        cal_score = max(0.0, 1.0 - cal_dev) * cal_w
 
-        # --- Protein match (weight 0.2) ---
+        # --- Protein match ---
         if target_protein > 0:
             prot_dev = abs(protein - target_protein) / target_protein
         else:
             prot_dev = 0.0
-        protein_score = max(0.0, 1.0 - prot_dev) * 0.2
+        protein_score = max(0.0, 1.0 - prot_dev) * prot_w
 
-        # --- Macro balance (weight 0.2) ---
+        # --- Macro balance ---
         if target_carbs > 0:
             carbs_dev = abs(carbs - target_carbs) / target_carbs
         else:
@@ -545,12 +562,11 @@ class RecipeManager:
             fat_dev = abs(fat - target_fat) / target_fat
         else:
             fat_dev = 0.0
-        macro_score = max(0.0, 1.0 - (carbs_dev + fat_dev) / 2.0) * 0.2
+        macro_score = max(0.0, 1.0 - (carbs_dev + fat_dev) / 2.0) * macro_w
 
         # --- Variety (weight 0.1) ---
         rid = recipe.get("recipe_id", "")
         variety_score = 0.1 if rid not in used_ids else 0.0
-        # Scale by preference weight
         variety_score *= preferences.variety_weight
 
         # --- Tag preference (weight 0.1) ---
@@ -562,7 +578,18 @@ class RecipeManager:
             )
             tag_score = (matching / len(preferences.preferred_tags)) * 0.1
 
-        return cal_score + protein_score + macro_score + variety_score + tag_score
+        # --- Inventory match (weight 0.2, only when inventory provided) ---
+        inventory_score = 0.0
+        if use_inventory:
+            ingredients = recipe.get("ingredients", [])
+            if ingredients:
+                matched = sum(
+                    1 for ing in ingredients
+                    if _ingredient_in_inventory(ing, inventory_names)
+                )
+                inventory_score = (matched / len(ingredients)) * 0.2
+
+        return cal_score + protein_score + macro_score + variety_score + tag_score + inventory_score
 
     def _filter_kashrut(
         self,
@@ -614,3 +641,48 @@ def _today_str() -> str:
     import datetime as _dt
 
     return _dt.date.today().isoformat()
+
+
+def _ingredient_in_inventory(ingredient: dict, inventory_names: Set[str]) -> bool:
+    """Check if a recipe ingredient matches any item in the user's inventory.
+
+    Matches by English food name (case-insensitive substring), so
+    "olive oil" in inventory matches ingredient food_name_en="olive oil".
+    """
+    food_name_en = ingredient.get("food_name_en", "").lower().strip()
+    food_name_he = ingredient.get("food_name", "").lower().strip()
+    if not food_name_en and not food_name_he:
+        return False
+    for inv_name in inventory_names:
+        inv = inv_name.lower()
+        if food_name_en and (food_name_en in inv or inv in food_name_en):
+            return True
+        if food_name_he and (food_name_he in inv or inv in food_name_he):
+            return True
+    return False
+
+
+def get_recipe_inventory_match(recipe: dict, inventory_names: Set[str]) -> dict:
+    """Return per-ingredient availability info for a recipe.
+
+    Returns:
+        {
+            "available": [{"food_name": ..., "food_name_en": ...}, ...],
+            "missing":   [{"food_name": ..., "food_name_en": ...}, ...],
+            "match_pct": 0-100,
+        }
+    """
+    ingredients = recipe.get("ingredients", [])
+    if not ingredients:
+        return {"available": [], "missing": [], "match_pct": 100}
+
+    available = []
+    missing = []
+    for ing in ingredients:
+        if _ingredient_in_inventory(ing, inventory_names):
+            available.append(ing)
+        else:
+            missing.append(ing)
+
+    match_pct = round(len(available) / len(ingredients) * 100)
+    return {"available": available, "missing": missing, "match_pct": match_pct}
