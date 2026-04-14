@@ -103,3 +103,38 @@ def update_inventory_item(user_id: str, food_id: str, quantity_g: float):
 def remove_inventory_item(user_id: str, food_id: str):
     items = [i for i in load_inventory(user_id) if i["food_id"] != food_id]
     save_inventory(user_id, items)
+
+
+# ── Workouts per user ─────────────────────────────────────────────────────────
+
+def _workouts_path(user_id: str) -> str:
+    folder = os.path.join(os.path.dirname(__file__), "..", "storage_agents", "workouts")
+    os.makedirs(folder, exist_ok=True)
+    return os.path.join(folder, f"{user_id}.json")
+
+
+def load_workouts(user_id: str) -> list[dict]:
+    path = _workouts_path(user_id)
+    if not os.path.exists(path):
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_workout(user_id: str, workout: dict) -> dict:
+    """Add a new workout entry. Adds workout_id and logged_at if missing."""
+    workouts = load_workouts(user_id)
+    if "workout_id" not in workout:
+        workout["workout_id"] = str(uuid.uuid4())[:8]
+    if "logged_at" not in workout:
+        workout["logged_at"] = datetime.now().isoformat()
+    workouts.append(workout)
+    with open(_workouts_path(user_id), "w", encoding="utf-8") as f:
+        json.dump(workouts, f, ensure_ascii=False, indent=2)
+    return workout
+
+
+def delete_workout(user_id: str, workout_id: str):
+    workouts = [w for w in load_workouts(user_id) if w.get("workout_id") != workout_id]
+    with open(_workouts_path(user_id), "w", encoding="utf-8") as f:
+        json.dump(workouts, f, ensure_ascii=False, indent=2)
