@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-31T06:55:28.110274+00:00",
+  "tasks_created": [
+    {
+      "task_id": "3308a372-b46e-4119-9259-af0a9c922ae6",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category carbohydrate has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "7b66be65-e0fc-4d63-a093-512a20206747",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 2 foods. Add at least 5 more."
+    }
+  ],
+  "system_health_score": 70,
+  "summary": "נמצאו 2 בעיות. ציון בריאות: 70/100. פירוט: 2 משימות expand_catalog."
+}

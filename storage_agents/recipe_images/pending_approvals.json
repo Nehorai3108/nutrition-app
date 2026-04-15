@@ -1,0 +1,1066 @@
+{
+  "recipe_007": {
+    "name_he": "סביח",
+    "name_en": "Sabich",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_007/0.jpg",
+        "src_url": "https://images.pexels.com/photos/4409303/pexels-photo-4409303.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nadezhda Moryak",
+        "photographer_url": "https://www.pexels.com/@nadezhda-moryak",
+        "pexels_id": 4409303
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_007/1.jpg",
+        "src_url": "https://images.pexels.com/photos/6053899/pexels-photo-6053899.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "cottonbro studio",
+        "photographer_url": "https://www.pexels.com/@cottonbro",
+        "pexels_id": 6053899
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_007/2.jpg",
+        "src_url": "https://images.pexels.com/photos/6419708/pexels-photo-6419708.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Polina Tankilevitch",
+        "photographer_url": "https://www.pexels.com/@polina-tankilevitch",
+        "pexels_id": 6419708
+      }
+    ]
+  },
+  "recipe_010": {
+    "name_he": "חומוס עם בשר",
+    "name_en": "Hummus with Ground Meat",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_010/0.jpg",
+        "src_url": "https://images.pexels.com/photos/28241672/pexels-photo-28241672.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Ali Dashti",
+        "photographer_url": "https://www.pexels.com/@ali-dashti-506667798",
+        "pexels_id": 28241672
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_010/1.jpg",
+        "src_url": "https://images.pexels.com/photos/5191824/pexels-photo-5191824.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Shameel mukkath",
+        "photographer_url": "https://www.pexels.com/@shameel-mukkath-3421394",
+        "pexels_id": 5191824
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_010/2.jpg",
+        "src_url": "https://images.pexels.com/photos/17321490/pexels-photo-17321490.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Shameel mukkath",
+        "photographer_url": "https://www.pexels.com/@shameel-mukkath-3421394",
+        "pexels_id": 17321490
+      }
+    ]
+  },
+  "recipe_019": {
+    "name_he": "בורגול עם ירקות",
+    "name_en": "Bulgur with Vegetables",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_019/0.jpg",
+        "src_url": "https://images.pexels.com/photos/36498027/pexels-photo-36498027.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Mustafa Akın",
+        "photographer_url": "https://www.pexels.com/@msaimakin",
+        "pexels_id": 36498027
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_019/1.jpg",
+        "src_url": "https://images.pexels.com/photos/20476110/pexels-photo-20476110.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Sami  Abdullah",
+        "photographer_url": "https://www.pexels.com/@onbab",
+        "pexels_id": 20476110
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_019/2.jpg",
+        "src_url": "https://images.pexels.com/photos/35578778/pexels-photo-35578778.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "mehmetography",
+        "photographer_url": "https://www.pexels.com/@mehmetography-2153058108",
+        "pexels_id": 35578778
+      }
+    ]
+  },
+  "recipe_020": {
+    "name_he": "סלט טונה",
+    "name_en": "Tuna Salad",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_020/0.jpg",
+        "src_url": "https://images.pexels.com/photos/19859347/pexels-photo-19859347.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Valeria Boltneva",
+        "photographer_url": "https://www.pexels.com/@valeriya",
+        "pexels_id": 19859347
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_020/1.jpg",
+        "src_url": "https://images.pexels.com/photos/8983407/pexels-photo-8983407.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Shardar Tarikul Islam",
+        "photographer_url": "https://www.pexels.com/@shardar-tarikul-islam-84327533",
+        "pexels_id": 8983407
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_020/2.jpg",
+        "src_url": "https://images.pexels.com/photos/19572489/pexels-photo-19572489.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Tuğba ÖZTÜRK",
+        "photographer_url": "https://www.pexels.com/@tugba-ozturk-368300535",
+        "pexels_id": 19572489
+      }
+    ]
+  },
+  "recipe_027": {
+    "name_he": "חומוס עם פיתה",
+    "name_en": "Hummus with Pita",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_027/0.jpg",
+        "src_url": "https://images.pexels.com/photos/11842140/pexels-photo-11842140.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "eat kubba",
+        "photographer_url": "https://www.pexels.com/@eat-kubba-15863701",
+        "pexels_id": 11842140
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_027/1.jpg",
+        "src_url": "https://images.pexels.com/photos/6419381/pexels-photo-6419381.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Polina Tankilevitch",
+        "photographer_url": "https://www.pexels.com/@polina-tankilevitch",
+        "pexels_id": 6419381
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_027/2.jpg",
+        "src_url": "https://images.pexels.com/photos/12431190/pexels-photo-12431190.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Cristian Mihaila",
+        "photographer_url": "https://www.pexels.com/@crysnet",
+        "pexels_id": 12431190
+      }
+    ]
+  },
+  "recipe_028": {
+    "name_he": "קוטג׳ עם ירקות",
+    "name_en": "Cottage Cheese with Veggies",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_028/0.jpg",
+        "src_url": "https://images.pexels.com/photos/4198142/pexels-photo-4198142.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "www.kaboompics.com",
+        "photographer_url": "https://www.pexels.com/@karola-g",
+        "pexels_id": 4198142
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_028/1.jpg",
+        "src_url": "https://images.pexels.com/photos/32356159/pexels-photo-32356159.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Gundula Vogel",
+        "photographer_url": "https://www.pexels.com/@guvo59",
+        "pexels_id": 32356159
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_028/2.jpg",
+        "src_url": "https://images.pexels.com/photos/32356161/pexels-photo-32356161.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Gundula Vogel",
+        "photographer_url": "https://www.pexels.com/@guvo59",
+        "pexels_id": 32356161
+      }
+    ]
+  },
+  "recipe_029": {
+    "name_he": "שקדים ופירות יבשים",
+    "name_en": "Almonds and Dried Fruits",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_029/0.jpg",
+        "src_url": "https://images.pexels.com/photos/32281733/pexels-photo-32281733.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Joel Camelot",
+        "photographer_url": "https://www.pexels.com/@jorkael",
+        "pexels_id": 32281733
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_029/1.jpg",
+        "src_url": "https://images.pexels.com/photos/7412090/pexels-photo-7412090.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Monstera Production",
+        "photographer_url": "https://www.pexels.com/@gabby-k",
+        "pexels_id": 7412090
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_029/2.jpg",
+        "src_url": "https://images.pexels.com/photos/12641692/pexels-photo-12641692.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Sudip Pathak",
+        "photographer_url": "https://www.pexels.com/@sudip-pathak-260674005",
+        "pexels_id": 12641692
+      }
+    ]
+  },
+  "recipe_030": {
+    "name_he": "יוגורט עם אגוזים",
+    "name_en": "Yogurt with Nuts",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_030/0.jpg",
+        "src_url": "https://images.pexels.com/photos/5150149/pexels-photo-5150149.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "ROMAN ODINTSOV",
+        "photographer_url": "https://www.pexels.com/@roman-odintsov",
+        "pexels_id": 5150149
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_030/1.jpg",
+        "src_url": "https://images.pexels.com/photos/31683421/pexels-photo-31683421.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Richard L",
+        "photographer_url": "https://www.pexels.com/@richard-l-2150581203",
+        "pexels_id": 31683421
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_030/2.jpg",
+        "src_url": "https://images.pexels.com/photos/5620413/pexels-photo-5620413.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Amnah Mohammad",
+        "photographer_url": "https://www.pexels.com/@amnahmohammad",
+        "pexels_id": 5620413
+      }
+    ]
+  },
+  "recipe_031": {
+    "name_he": "סטיר פריי ירקות עם טופו",
+    "name_en": "Tofu Stir Fry",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_031/0.jpg",
+        "src_url": "https://images.pexels.com/photos/7009334/pexels-photo-7009334.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Alexandra Victoria",
+        "photographer_url": "https://www.pexels.com/@alexandra-victoria-1961554",
+        "pexels_id": 7009334
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_031/1.jpg",
+        "src_url": "https://images.pexels.com/photos/9218768/pexels-photo-9218768.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Loren Castillo",
+        "photographer_url": "https://www.pexels.com/@lorencastillo",
+        "pexels_id": 9218768
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_031/2.jpg",
+        "src_url": "https://images.pexels.com/photos/5848469/pexels-photo-5848469.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Polina Tankilevitch",
+        "photographer_url": "https://www.pexels.com/@polina-tankilevitch",
+        "pexels_id": 5848469
+      }
+    ]
+  },
+  "recipe_032": {
+    "name_he": "פסטה עם רוטב עגבניות",
+    "name_en": "Pasta with Tomato Sauce",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_032/0.jpg",
+        "src_url": "https://images.pexels.com/photos/28936956/pexels-photo-28936956.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "nikki awal",
+        "photographer_url": "https://www.pexels.com/@nikki-awal-796695619",
+        "pexels_id": 28936956
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_032/1.jpg",
+        "src_url": "https://images.pexels.com/photos/28936957/pexels-photo-28936957.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "nikki awal",
+        "photographer_url": "https://www.pexels.com/@nikki-awal-796695619",
+        "pexels_id": 28936957
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_032/2.jpg",
+        "src_url": "https://images.pexels.com/photos/30649000/pexels-photo-30649000.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Electra Studio",
+        "photographer_url": "https://www.pexels.com/@electra-studio-32883186",
+        "pexels_id": 30649000
+      }
+    ]
+  },
+  "recipe_033": {
+    "name_he": "שישליק עוף",
+    "name_en": "Chicken Shishlik",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_033/0.jpg",
+        "src_url": "https://images.pexels.com/photos/36548085/pexels-photo-36548085.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Valeria Boltneva",
+        "photographer_url": "https://www.pexels.com/@valeriya",
+        "pexels_id": 36548085
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_033/1.jpg",
+        "src_url": "https://images.pexels.com/photos/29173111/pexels-photo-29173111.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Kunal Lakhotia",
+        "photographer_url": "https://www.pexels.com/@kunal-lakhotia-781256899",
+        "pexels_id": 29173111
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_033/2.jpg",
+        "src_url": "https://images.pexels.com/photos/29173124/pexels-photo-29173124.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Kunal Lakhotia",
+        "photographer_url": "https://www.pexels.com/@kunal-lakhotia-781256899",
+        "pexels_id": 29173124
+      }
+    ]
+  },
+  "recipe_034": {
+    "name_he": "טבולה",
+    "name_en": "Tabbouleh",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_034/0.jpg",
+        "src_url": "https://images.pexels.com/photos/25856515/pexels-photo-25856515.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Ali Dashti",
+        "photographer_url": "https://www.pexels.com/@ali-dashti-506667798",
+        "pexels_id": 25856515
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_034/1.jpg",
+        "src_url": "https://images.pexels.com/photos/25856516/pexels-photo-25856516.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Ali Dashti",
+        "photographer_url": "https://www.pexels.com/@ali-dashti-506667798",
+        "pexels_id": 25856516
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_034/2.jpg",
+        "src_url": "https://images.pexels.com/photos/15832880/pexels-photo-15832880.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Esmihel  Muhammed",
+        "photographer_url": "https://www.pexels.com/@esmihel",
+        "pexels_id": 15832880
+      }
+    ]
+  },
+  "recipe_035": {
+    "name_he": "ביצה עם אבוקדו על לחם",
+    "name_en": "Avocado Toast with Egg",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_035/0.jpg",
+        "src_url": "https://images.pexels.com/photos/7936963/pexels-photo-7936963.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nicola Barts",
+        "photographer_url": "https://www.pexels.com/@nicola-barts",
+        "pexels_id": 7936963
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_035/1.jpg",
+        "src_url": "https://images.pexels.com/photos/3636958/pexels-photo-3636958.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Mister Mister",
+        "photographer_url": "https://www.pexels.com/@bemistermister",
+        "pexels_id": 3636958
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_035/2.jpg",
+        "src_url": "https://images.pexels.com/photos/8542164/pexels-photo-8542164.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Kristina Paukshtite",
+        "photographer_url": "https://www.pexels.com/@kpaukshtite",
+        "pexels_id": 8542164
+      }
+    ]
+  },
+  "recipe_036": {
+    "name_he": "מרק חומוס",
+    "name_en": "Chickpea Soup",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_036/0.jpg",
+        "src_url": "https://images.pexels.com/photos/13152709/pexels-photo-13152709.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Beril Seyis",
+        "photographer_url": "https://www.pexels.com/@beril-seyis-289670733",
+        "pexels_id": 13152709
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_036/1.jpg",
+        "src_url": "https://images.pexels.com/photos/33597401/pexels-photo-33597401.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Brad Hines",
+        "photographer_url": "https://www.pexels.com/@culturesnap",
+        "pexels_id": 33597401
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_036/2.jpg",
+        "src_url": "https://images.pexels.com/photos/28286217/pexels-photo-28286217.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nic Wood",
+        "photographer_url": "https://www.pexels.com/@nic-scrollstoppingphotos",
+        "pexels_id": 28286217
+      }
+    ]
+  },
+  "recipe_037": {
+    "name_he": "סלט ישראלי",
+    "name_en": "Israeli Salad",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_037/0.jpg",
+        "src_url": "https://images.pexels.com/photos/11161411/pexels-photo-11161411.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Shameel mukkath",
+        "photographer_url": "https://www.pexels.com/@shameel-mukkath-3421394",
+        "pexels_id": 11161411
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_037/1.jpg",
+        "src_url": "https://images.pexels.com/photos/34618719/pexels-photo-34618719.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Novkov Visuals",
+        "photographer_url": "https://www.pexels.com/@novkov-visuals",
+        "pexels_id": 34618719
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_037/2.jpg",
+        "src_url": "https://images.pexels.com/photos/31233890/pexels-photo-31233890.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Mahmoud Salem",
+        "photographer_url": "https://www.pexels.com/@peno33",
+        "pexels_id": 31233890
+      }
+    ]
+  },
+  "recipe_038": {
+    "name_he": "טורטייה עם עוף",
+    "name_en": "Chicken Wrap",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_038/0.jpg",
+        "src_url": "https://images.pexels.com/photos/29306505/pexels-photo-29306505.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nano Erdozain",
+        "photographer_url": "https://www.pexels.com/@nano-erdozain-120534369",
+        "pexels_id": 29306505
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_038/1.jpg",
+        "src_url": "https://images.pexels.com/photos/29535640/pexels-photo-29535640.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nano Erdozain",
+        "photographer_url": "https://www.pexels.com/@nano-erdozain-120534369",
+        "pexels_id": 29535640
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_038/2.jpg",
+        "src_url": "https://images.pexels.com/photos/33215435/pexels-photo-33215435.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nour Alhoda",
+        "photographer_url": "https://www.pexels.com/@nour-alhoda-2151678059",
+        "pexels_id": 33215435
+      }
+    ]
+  },
+  "recipe_039": {
+    "name_he": "תבשיל שעועית",
+    "name_en": "Bean Stew",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_039/0.jpg",
+        "src_url": "https://images.pexels.com/photos/19870150/pexels-photo-19870150.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Boryslav Shoot",
+        "photographer_url": "https://www.pexels.com/@boryslav",
+        "pexels_id": 19870150
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_039/1.jpg",
+        "src_url": "https://images.pexels.com/photos/19870147/pexels-photo-19870147.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Boryslav Shoot",
+        "photographer_url": "https://www.pexels.com/@boryslav",
+        "pexels_id": 19870147
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_039/2.jpg",
+        "src_url": "https://images.pexels.com/photos/19870149/pexels-photo-19870149.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Boryslav Shoot",
+        "photographer_url": "https://www.pexels.com/@boryslav",
+        "pexels_id": 19870149
+      }
+    ]
+  },
+  "recipe_040": {
+    "name_he": "פתיתים עם ירקות",
+    "name_en": "Ptitim with Vegetables",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_040/0.jpg",
+        "src_url": "https://images.pexels.com/photos/36991618/pexels-photo-36991618.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "FERA",
+        "photographer_url": "https://www.pexels.com/@fera-263453090",
+        "pexels_id": 36991618
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_040/1.jpg",
+        "src_url": "https://images.pexels.com/photos/36511370/pexels-photo-36511370.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Jade  Sandra",
+        "photographer_url": "https://www.pexels.com/@jadesandra",
+        "pexels_id": 36511370
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_040/2.jpg",
+        "src_url": "https://images.pexels.com/photos/30520745/pexels-photo-30520745.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Özge Arsoy",
+        "photographer_url": "https://www.pexels.com/@ozgarts",
+        "pexels_id": 30520745
+      }
+    ]
+  },
+  "recipe_001": {
+    "name_he": "שקשוקה",
+    "name_en": "Shakshuka",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_001/0.jpg",
+        "src_url": "https://images.pexels.com/photos/30892286/pexels-photo-30892286.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Oleksandr Plakhota",
+        "photographer_url": "https://www.pexels.com/@oleksandr-plakhota-1270583835",
+        "pexels_id": 30892286
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_001/1.jpg",
+        "src_url": "https://images.pexels.com/photos/6275164/pexels-photo-6275164.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nataliya Vaitkevich",
+        "photographer_url": "https://www.pexels.com/@n-voitkevich",
+        "pexels_id": 6275164
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_001/2.jpg",
+        "src_url": "https://images.pexels.com/photos/29843063/pexels-photo-29843063.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Valeria Boltneva",
+        "photographer_url": "https://www.pexels.com/@valeriya",
+        "pexels_id": 29843063
+      }
+    ]
+  },
+  "recipe_002": {
+    "name_he": "טוסט גבינה",
+    "name_en": "Cheese Toast",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_002/0.jpg",
+        "src_url": "https://images.pexels.com/photos/35846656/pexels-photo-35846656.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nur Tok",
+        "photographer_url": "https://www.pexels.com/@nur-tok-1105432560",
+        "pexels_id": 35846656
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_002/1.jpg",
+        "src_url": "https://images.pexels.com/photos/15110224/pexels-photo-15110224.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "MikeGz",
+        "photographer_url": "https://www.pexels.com/@mikegz-400576129",
+        "pexels_id": 15110224
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_002/2.jpg",
+        "src_url": "https://images.pexels.com/photos/31768242/pexels-photo-31768242.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Gu Ko",
+        "photographer_url": "https://www.pexels.com/@gu-ko-2150570603",
+        "pexels_id": 31768242
+      }
+    ]
+  },
+  "recipe_003": {
+    "name_he": "גרנולה עם יוגורט",
+    "name_en": "Granola with Yogurt",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_003/0.jpg",
+        "src_url": "https://images.pexels.com/photos/32268820/pexels-photo-32268820.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Swarup Sarkar",
+        "photographer_url": "https://www.pexels.com/@roopsarkar",
+        "pexels_id": 32268820
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_003/1.jpg",
+        "src_url": "https://images.pexels.com/photos/5150149/pexels-photo-5150149.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "ROMAN ODINTSOV",
+        "photographer_url": "https://www.pexels.com/@roman-odintsov",
+        "pexels_id": 5150149
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_003/2.jpg",
+        "src_url": "https://images.pexels.com/photos/30265685/pexels-photo-30265685.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Giovanna Kamimura",
+        "photographer_url": "https://www.pexels.com/@giovanna-kamimura-399616174",
+        "pexels_id": 30265685
+      }
+    ]
+  },
+  "recipe_004": {
+    "name_he": "אומלט ירקות",
+    "name_en": "Vegetable Omelette",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_004/0.jpg",
+        "src_url": "https://images.pexels.com/photos/12512039/pexels-photo-12512039.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Amine",
+        "photographer_url": "https://www.pexels.com/@amine-1285347",
+        "pexels_id": 12512039
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_004/1.jpg",
+        "src_url": "https://images.pexels.com/photos/35238489/pexels-photo-35238489.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Er.Shyama Charan Prasad",
+        "photographer_url": "https://www.pexels.com/@er-shyama-charan-prasad-231393",
+        "pexels_id": 35238489
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_004/2.jpg",
+        "src_url": "https://images.pexels.com/photos/25402355/pexels-photo-25402355.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Oğuzhan Karataş",
+        "photographer_url": "https://www.pexels.com/@withoguz",
+        "pexels_id": 25402355
+      }
+    ]
+  },
+  "recipe_005": {
+    "name_he": "צלחת לבנה",
+    "name_en": "Labaneh Plate",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_005/0.jpg",
+        "src_url": "https://images.pexels.com/photos/34022861/pexels-photo-34022861.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Tahir Xəlfə",
+        "photographer_url": "https://www.pexels.com/@tahir",
+        "pexels_id": 34022861
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_005/1.jpg",
+        "src_url": "https://images.pexels.com/photos/12156079/pexels-photo-12156079.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Erly Morales",
+        "photographer_url": "https://www.pexels.com/@erlymorales",
+        "pexels_id": 12156079
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_005/2.jpg",
+        "src_url": "https://images.pexels.com/photos/13653097/pexels-photo-13653097.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "hissetmehurriyeti",
+        "photographer_url": "https://www.pexels.com/@hissetmehurriyeti-47135946",
+        "pexels_id": 13653097
+      }
+    ]
+  },
+  "recipe_006": {
+    "name_he": "שיבולת שועל עם פירות",
+    "name_en": "Oatmeal with Fruits",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_006/0.jpg",
+        "src_url": "https://images.pexels.com/photos/10877314/pexels-photo-10877314.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Alexey Demidov",
+        "photographer_url": "https://www.pexels.com/@alexeydemidov",
+        "pexels_id": 10877314
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_006/1.jpg",
+        "src_url": "https://images.pexels.com/photos/4725754/pexels-photo-4725754.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Polina Tankilevitch",
+        "photographer_url": "https://www.pexels.com/@polina-tankilevitch",
+        "pexels_id": 4725754
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_006/2.jpg",
+        "src_url": "https://images.pexels.com/photos/4725751/pexels-photo-4725751.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Polina Tankilevitch",
+        "photographer_url": "https://www.pexels.com/@polina-tankilevitch",
+        "pexels_id": 4725751
+      }
+    ]
+  },
+  "recipe_008": {
+    "name_he": "ביצים קשות עם ירקות",
+    "name_en": "Hard Boiled Eggs with Veggies",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_008/0.jpg",
+        "src_url": "https://images.pexels.com/photos/12905087/pexels-photo-12905087.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Iva Tomic",
+        "photographer_url": "https://www.pexels.com/@iva-tomic-966048",
+        "pexels_id": 12905087
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_008/1.jpg",
+        "src_url": "https://images.pexels.com/photos/15583294/pexels-photo-15583294.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Edanur Hassumer",
+        "photographer_url": "https://www.pexels.com/@edanur-hassumer-408238667",
+        "pexels_id": 15583294
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_008/2.jpg",
+        "src_url": "https://images.pexels.com/photos/4397269/pexels-photo-4397269.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Antoni Shkraba Studio",
+        "photographer_url": "https://www.pexels.com/@shkrabaanthony",
+        "pexels_id": 4397269
+      }
+    ]
+  },
+  "recipe_011": {
+    "name_he": "עוף צלוי עם אורז",
+    "name_en": "Grilled Chicken with Rice",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_011/0.jpg",
+        "src_url": "https://images.pexels.com/photos/33481128/pexels-photo-33481128.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Eyimofe  Odunusi",
+        "photographer_url": "https://www.pexels.com/@eyimofe-odunusi-116747863",
+        "pexels_id": 33481128
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_011/1.jpg",
+        "src_url": "https://images.pexels.com/photos/24513655/pexels-photo-24513655.png?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "sandrin",
+        "photographer_url": "https://www.pexels.com/@sandrin-159590604",
+        "pexels_id": 24513655
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_011/2.jpg",
+        "src_url": "https://images.pexels.com/photos/28898628/pexels-photo-28898628.png?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Ayat Shahin",
+        "photographer_url": "https://www.pexels.com/@ayat-shahin-1307738040",
+        "pexels_id": 28898628
+      }
+    ]
+  },
+  "recipe_013": {
+    "name_he": "מג׳דרה",
+    "name_en": "Mujadara",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_013/0.jpg",
+        "src_url": "https://images.pexels.com/photos/32588480/pexels-photo-32588480.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nour Alhoda",
+        "photographer_url": "https://www.pexels.com/@nour-alhoda-2151678059",
+        "pexels_id": 32588480
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_013/1.jpg",
+        "src_url": "https://images.pexels.com/photos/6309780/pexels-photo-6309780.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "furkanfdemir",
+        "photographer_url": "https://www.pexels.com/@furkanfdemir",
+        "pexels_id": 6309780
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_013/2.jpg",
+        "src_url": "https://images.pexels.com/photos/36934928/pexels-photo-36934928.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Mohamed  Olwy",
+        "photographer_url": "https://www.pexels.com/@mohamed9380",
+        "pexels_id": 36934928
+      }
+    ]
+  },
+  "recipe_015": {
+    "name_he": "סלמון צלוי עם ירקות",
+    "name_en": "Roasted Salmon with Vegetables",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_015/0.jpg",
+        "src_url": "https://images.pexels.com/photos/14515103/pexels-photo-14515103.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Vidal Balielo Jr.",
+        "photographer_url": "https://www.pexels.com/@vidalbalielojrfotografia",
+        "pexels_id": 14515103
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_015/1.jpg",
+        "src_url": "https://images.pexels.com/photos/12431192/pexels-photo-12431192.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Cristian Mihaila",
+        "photographer_url": "https://www.pexels.com/@crysnet",
+        "pexels_id": 12431192
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_015/2.jpg",
+        "src_url": "https://images.pexels.com/photos/31890213/pexels-photo-31890213.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "kaleef  lawal",
+        "photographer_url": "https://www.pexels.com/@kaleef-lawal-1481864847",
+        "pexels_id": 31890213
+      }
+    ]
+  },
+  "recipe_041": {
+    "name_he": "שקשוקה ירוקה",
+    "name_en": "Green Shakshuka",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_041/0.jpg",
+        "src_url": "https://images.pexels.com/photos/6275164/pexels-photo-6275164.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nataliya Vaitkevich",
+        "photographer_url": "https://www.pexels.com/@n-voitkevich",
+        "pexels_id": 6275164
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_041/1.jpg",
+        "src_url": "https://images.pexels.com/photos/6275160/pexels-photo-6275160.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nataliya Vaitkevich",
+        "photographer_url": "https://www.pexels.com/@n-voitkevich",
+        "pexels_id": 6275160
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_041/2.jpg",
+        "src_url": "https://images.pexels.com/photos/6275157/pexels-photo-6275157.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nataliya Vaitkevich",
+        "photographer_url": "https://www.pexels.com/@n-voitkevich",
+        "pexels_id": 6275157
+      }
+    ]
+  },
+  "recipe_042": {
+    "name_he": "חומוס עם בשר טחון",
+    "name_en": "Hummus with Ground Meat",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_042/0.jpg",
+        "src_url": "https://images.pexels.com/photos/5191824/pexels-photo-5191824.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Shameel mukkath",
+        "photographer_url": "https://www.pexels.com/@shameel-mukkath-3421394",
+        "pexels_id": 5191824
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_042/1.jpg",
+        "src_url": "https://images.pexels.com/photos/28241672/pexels-photo-28241672.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Ali Dashti",
+        "photographer_url": "https://www.pexels.com/@ali-dashti-506667798",
+        "pexels_id": 28241672
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_042/2.jpg",
+        "src_url": "https://images.pexels.com/photos/17321490/pexels-photo-17321490.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Shameel mukkath",
+        "photographer_url": "https://www.pexels.com/@shameel-mukkath-3421394",
+        "pexels_id": 17321490
+      }
+    ]
+  },
+  "recipe_043": {
+    "name_he": "סלט פטוש",
+    "name_en": "Fattoush Salad",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_043/0.jpg",
+        "src_url": "https://images.pexels.com/photos/4768991/pexels-photo-4768991.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Denys Gromov",
+        "photographer_url": "https://www.pexels.com/@jdgromov",
+        "pexels_id": 4768991
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_043/1.jpg",
+        "src_url": "https://images.pexels.com/photos/36879177/pexels-photo-36879177.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Mahmut Zeytin",
+        "photographer_url": "https://www.pexels.com/@mahmut-zeytin-2159832264",
+        "pexels_id": 36879177
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_043/2.jpg",
+        "src_url": "https://images.pexels.com/photos/32986457/pexels-photo-32986457.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "J KREATOR",
+        "photographer_url": "https://www.pexels.com/@jkreat0r",
+        "pexels_id": 32986457
+      }
+    ]
+  },
+  "recipe_044": {
+    "name_he": "קציצות הודו",
+    "name_en": "Turkey Meatballs",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_044/0.jpg",
+        "src_url": "https://images.pexels.com/photos/29872932/pexels-photo-29872932.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Snappr",
+        "photographer_url": "https://www.pexels.com/@snappr",
+        "pexels_id": 29872932
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_044/1.jpg",
+        "src_url": "https://images.pexels.com/photos/36958915/pexels-photo-36958915.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Cookie Marenco",
+        "photographer_url": "https://www.pexels.com/@cookie-marenco-109307227",
+        "pexels_id": 36958915
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_044/2.jpg",
+        "src_url": "https://images.pexels.com/photos/34314421/pexels-photo-34314421.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "ERIVELTO Martins",
+        "photographer_url": "https://www.pexels.com/@erivas",
+        "pexels_id": 34314421
+      }
+    ]
+  },
+  "recipe_045": {
+    "name_he": "מרק עדשים כתומות",
+    "name_en": "Red Lentil Soup",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_045/0.jpg",
+        "src_url": "https://images.pexels.com/photos/12077978/pexels-photo-12077978.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Alex Bayev",
+        "photographer_url": "https://www.pexels.com/@alexbayev",
+        "pexels_id": 12077978
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_045/1.jpg",
+        "src_url": "https://images.pexels.com/photos/29850843/pexels-photo-29850843.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Snappr",
+        "photographer_url": "https://www.pexels.com/@snappr",
+        "pexels_id": 29850843
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_045/2.jpg",
+        "src_url": "https://images.pexels.com/photos/9027516/pexels-photo-9027516.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "I Own My Food Art",
+        "photographer_url": "https://www.pexels.com/@i-own-my-food-art-76108785",
+        "pexels_id": 9027516
+      }
+    ]
+  },
+  "recipe_046": {
+    "name_he": "פילה סלמון בתנור",
+    "name_en": "Oven-Baked Salmon Fillet",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_046/0.jpg",
+        "src_url": "https://images.pexels.com/photos/34624944/pexels-photo-34624944.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Ayşe Nur",
+        "photographer_url": "https://www.pexels.com/@ayse-nur-99373970",
+        "pexels_id": 34624944
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_046/1.jpg",
+        "src_url": "https://images.pexels.com/photos/12077942/pexels-photo-12077942.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Richard Pan",
+        "photographer_url": "https://www.pexels.com/@richard-pan-5305182",
+        "pexels_id": 12077942
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_046/2.jpg",
+        "src_url": "https://images.pexels.com/photos/33674236/pexels-photo-33674236.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "pedro furtado",
+        "photographer_url": "https://www.pexels.com/@pedrofurtadoo",
+        "pexels_id": 33674236
+      }
+    ]
+  },
+  "recipe_047": {
+    "name_he": "סלט קינואה ועשבי תיבול",
+    "name_en": "Herb Quinoa Salad",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_047/0.jpg",
+        "src_url": "https://images.pexels.com/photos/17012851/pexels-photo-17012851.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nadin Sh",
+        "photographer_url": "https://www.pexels.com/@nadin-sh-78971847",
+        "pexels_id": 17012851
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_047/1.jpg",
+        "src_url": "https://images.pexels.com/photos/8895212/pexels-photo-8895212.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Andi  Farruku",
+        "photographer_url": "https://www.pexels.com/@andi-farruku-3345901",
+        "pexels_id": 8895212
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_047/2.jpg",
+        "src_url": "https://images.pexels.com/photos/5817522/pexels-photo-5817522.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Shameel mukkath",
+        "photographer_url": "https://www.pexels.com/@shameel-mukkath-3421394",
+        "pexels_id": 5817522
+      }
+    ]
+  },
+  "recipe_048": {
+    "name_he": "עוף בלימון וזיתים",
+    "name_en": "Lemon Olive Chicken",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_048/0.jpg",
+        "src_url": "https://images.pexels.com/photos/27497768/pexels-photo-27497768.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Philippe Alamazani",
+        "photographer_url": "https://www.pexels.com/@philippe-alamazani-508356",
+        "pexels_id": 27497768
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_048/1.jpg",
+        "src_url": "https://images.pexels.com/photos/26707585/pexels-photo-26707585.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Towfiqu barbhuiya",
+        "photographer_url": "https://www.pexels.com/@towfiqu-barbhuiya-3440682",
+        "pexels_id": 26707585
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_048/2.jpg",
+        "src_url": "https://images.pexels.com/photos/6072033/pexels-photo-6072033.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Alesia  Kozik",
+        "photographer_url": "https://www.pexels.com/@alesiakozik",
+        "pexels_id": 6072033
+      }
+    ]
+  },
+  "recipe_049": {
+    "name_he": "גרנולה ביתית",
+    "name_en": "Homemade Granola",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_049/0.jpg",
+        "src_url": "https://images.pexels.com/photos/4397293/pexels-photo-4397293.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Antoni Shkraba Studio",
+        "photographer_url": "https://www.pexels.com/@shkrabaanthony",
+        "pexels_id": 4397293
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_049/1.jpg",
+        "src_url": "https://images.pexels.com/photos/4397282/pexels-photo-4397282.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Antoni Shkraba Studio",
+        "photographer_url": "https://www.pexels.com/@shkrabaanthony",
+        "pexels_id": 4397282
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_049/2.jpg",
+        "src_url": "https://images.pexels.com/photos/36235854/pexels-photo-36235854.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Amari Saloua",
+        "photographer_url": "https://www.pexels.com/@amari-saloua-2156305490",
+        "pexels_id": 36235854
+      }
+    ]
+  },
+  "recipe_050": {
+    "name_he": "מג'דרה",
+    "name_en": "Mujaddara",
+    "status": "pending",
+    "candidates": [
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_050/0.jpg",
+        "src_url": "https://images.pexels.com/photos/32588480/pexels-photo-32588480.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Nour Alhoda",
+        "photographer_url": "https://www.pexels.com/@nour-alhoda-2151678059",
+        "pexels_id": 32588480
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_050/1.jpg",
+        "src_url": "https://images.pexels.com/photos/36934928/pexels-photo-36934928.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "Mohamed  Olwy",
+        "photographer_url": "https://www.pexels.com/@mohamed9380",
+        "pexels_id": 36934928
+      },
+      {
+        "local_path": "storage_agents/recipe_images/candidates/recipe_050/2.jpg",
+        "src_url": "https://images.pexels.com/photos/6309780/pexels-photo-6309780.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+        "photographer": "furkanfdemir",
+        "photographer_url": "https://www.pexels.com/@furkanfdemir",
+        "pexels_id": 6309780
+      }
+    ]
+  }
+}

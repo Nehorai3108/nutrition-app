@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-app_ui.py — ממשק משתמש גרפי למערכת תזונה חכמה
-הרצה: streamlit run app_ui.py
+app_user.py — ממשק משתמש גרפי למערכת תזונה חכמה
+הרצה: streamlit run app_user.py
 """
 
 import sys
 import os
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,6 +25,7 @@ from nutrition_app.models.enums import Gender, ActivityLevel, Goal, WorkoutInten
 from nutrition_app.models.workout import WorkoutEntry
 from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.agents.agent_2_nutrition import NutritionEngine, adjust_targets_for_workouts
+from nutrition_app.agents.agent_2_nutrition.workout_adjuster import estimate_calories_burned
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_4_inventory import InventoryManager
 from nutrition_app.agents.agent_5_planner import MealPlanner
@@ -32,6 +33,10 @@ from nutrition_app.agents.agent_6_ai import AILayer
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
+from nutrition_app.models.daily_summary import DailySummary
+from nutrition_app.repositories.daily_summary_repository import DailySummaryRepository
+from nutrition_app.repositories.water_repository import WaterRepository as _WaterRepo
+from nutrition_app.repositories.workout_repository import WorkoutRepository as _WorkoutRepo
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage", "nutrition.db")
 
@@ -100,46 +105,62 @@ _DEFAULT_FOOD_NAMES = [n for n in _PREFERRED_DEFAULTS if n in FOOD_NAME_TO_ID]
 if not _DEFAULT_FOOD_NAMES:
     _DEFAULT_FOOD_NAMES = [name for _, name in ALL_FOODS[:5]]
 
-# ── Sidebar — User Profile ────────────────────────────────────────────────────
+# ── Sidebar — Slim Dashboard ──────────────────────────────────────────────────
+from nutrition_app.repositories.profile_repository import ProfileRepository as _ProfileRepo
+from nutrition_app.user_manager import load_inventory as _load_inv
+
+_profile_repo = _ProfileRepo()
+_profile = _profile_repo.load("ui_user_001")
+
+# Resolve profile values (used by pipeline below)
+name          = _profile.get("name", "ישראל ישראלי")
+gender_choice = Gender(_profile.get("gender", "male"))
+height        = float(_profile.get("height_cm", 178.0))
+weight        = float(_profile.get("weight_kg", 82.0))
+try:
+    dob = date.fromisoformat(_profile.get("date_of_birth", "1990-05-15"))
+except ValueError:
+    dob = date(1990, 5, 15)
+activity_choice = ActivityLevel(_profile.get("activity_level", "moderately_active"))
+goal_choice     = Goal(_profile.get("goal", "lose_weight"))
+
+# Build food selection + inventory from stored inventory (managed via inventory page)
+_stored_inv = _load_inv("ui_user_001")   # list of {food_id, name_he, quantity_g}
+_scanned_inv = st.session_state.get("scanned_inventory", {})
+
+# Merge stored + scanned inventory
+inventory_inputs: dict = {}
+for _item in _stored_inv:
+    _fid = _item.get("food_id", "")
+    _qty = float(_item.get("quantity_g", 0))
+    if _fid and _qty > 0:
+        inventory_inputs[_fid] = _qty
+for _fid, _qty in _scanned_inv.items():
+    inventory_inputs[_fid] = float(_qty)
+
+# Food names from inventory (for pipeline matching)
+selected_food_names = [
+    FOOD_ID_TO_NAME[fid] for fid in inventory_inputs if fid in FOOD_ID_TO_NAME
+]
+if not selected_food_names:
+    selected_food_names = _DEFAULT_FOOD_NAMES
+    inventory_inputs = {
+        FOOD_NAME_TO_ID[n]: float({"חזה עוף": 600, "אורז לבן": 1000, "ביצה": 400,
+                                    "בננה": 360, "לחם מחיטה מלאה": 500}.get(n, 300))
+        for n in selected_food_names if n in FOOD_NAME_TO_ID
+    }
+
+GOAL_LABEL_SHORT = {
+    Goal.LOSE_WEIGHT: "ירידה במשקל",
+    Goal.MAINTAIN: "שמירה",
+    Goal.GAIN_WEIGHT: "עלייה במשקל",
+}
 
 with st.sidebar:
-    section_header("פרופיל משתמש", "user")
-
-    name = st.text_input("שם מלא", value="ישראל ישראלי")
-
-    gender_choice = st.radio(
-        "מגדר",
-        options=list(GENDER_LABELS.keys()),
-        format_func=lambda g: GENDER_LABELS[g],
-        horizontal=True,
-    )
-
-    col_h, col_w = st.columns(2)
-    with col_h:
-        height = st.number_input("גובה (ס\"מ)", min_value=130.0, max_value=220.0, value=178.0, step=0.5)
-    with col_w:
-        weight = st.number_input("משקל (ק\"ג)", min_value=35.0, max_value=200.0, value=82.0, step=0.5)
-
-    dob = st.date_input(
-        "תאריך לידה",
-        value=date(1990, 5, 15),
-        min_value=date(1930, 1, 1),
-        max_value=date(date.today().year - 10, 1, 1),
-    )
-
-    activity_choice = st.selectbox(
-        "רמת פעילות",
-        options=list(ACTIVITY_LABELS.keys()),
-        format_func=lambda a: ACTIVITY_LABELS[a],
-        index=2,
-    )
-
-    goal_choice = st.selectbox(
-        "מטרה",
-        options=list(GOAL_LABELS.keys()),
-        format_func=lambda g: GOAL_LABELS[g],
-        index=0,
-    )
+    # ── Profile card ──────────────────────────────────────────────────────
+    st.markdown(f"### 👤 {name}")
+    st.caption(f"⚖️ {weight}ק״ג &nbsp;·&nbsp; 🎯 {GOAL_LABEL_SHORT.get(goal_choice, '')}")
+    st.page_link("pages/0_profile.py", label="✏️ ערוך פרופיל", use_container_width=True)
 
     st.divider()
 
@@ -199,42 +220,131 @@ with st.sidebar:
     with st.expander("🏋️ אימוני היום", expanded=False):
         _workout_repo = WorkoutRepository()
         _today = date.today()
-        _today_workouts = _workout_repo.resolve_workouts_for_date("ui_user_001", _today)
-
-        # Determine if the shown list is from the daily log (overriding) or from the weekly plan
         _raw_data = _workout_repo.get_workout_data("ui_user_001")
         _has_daily_override = _today.isoformat() in _raw_data.daily_log
+        _plan_workouts = _raw_data.weekly_plan.workouts_by_day.get(
+            _today.strftime("%A").lower(), []
+        ) if _raw_data.weekly_plan else []
 
-        if _today_workouts:
-            _src = "רשום להיום" if _has_daily_override else "מתכנית שבועית"
-            st.caption(f"📋 {len(_today_workouts)} אימונים ({_src}):")
-            for i, w in enumerate(_today_workouts):
+        # ── CONFIRMED workouts (already in daily log) ─────────────────────────
+        if _has_daily_override:
+            _confirmed = _raw_data.daily_log[_today.isoformat()]
+            st.success(f"✅ {len(_confirmed)} אימון(ים) אושר(ו) להיום")
+            for i, w in enumerate(_confirmed):
                 if w.mode == "intensity" and w.intensity:
                     _desc = f"עצימות {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
                 elif w.mode == "type" and w.workout_type:
                     _desc = WORKOUT_TYPE_LABELS.get(w.workout_type, w.workout_type.value)
                     if w.intensity:
-                        _desc += f" · עצימות {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
+                        _desc += f" · {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
                 else:
                     _desc = "אימון"
                 _metric = f"{w.distance_km} ק\"מ" if w.distance_km else f"{w.duration_minutes} דק׳"
                 col_w, col_del = st.columns([4, 1])
-                col_w.markdown(f"• **{_desc}** · {_metric}")
-                if _has_daily_override:
-                    with col_del:
-                        if icon_button("מחק", "delete", key=f"del_w_{i}",
-                                       help="מחק אימון", type="secondary"):
-                            _workout_repo.remove_daily_workout("ui_user_001", _today, i)
-                            st.rerun()
-            if _has_daily_override:
-                if icon_button("נקה את כל אימוני היום", "clear",
-                               key="clear_daily_workouts"):
-                    _workout_repo.clear_daily_workouts("ui_user_001", _today)
-                    st.rerun()
-        else:
-            st.caption("לא נרשמו אימונים להיום (ואין תכנית שבועית ליום זה).")
+                _w_kcal = w.estimated_calories_burned if w.estimated_calories_burned > 0 else estimate_calories_burned(w, weight)
+                col_w.markdown(f"✔ **{_desc}** · {_metric} · {_w_kcal:.0f} קק״ל")
+                with col_del:
+                    if icon_button("מחק", "delete", key=f"del_w_{i}",
+                                   help="הסר אימון מהיום", type="secondary"):
+                        _workout_repo.remove_daily_workout("ui_user_001", _today, i)
+                        st.rerun()
+            if icon_button("נקה הכל", "clear", key="clear_daily_workouts", type="secondary"):
+                _workout_repo.clear_daily_workouts("ui_user_001", _today)
+                st.rerun()
+            st.divider()
 
-        st.markdown("**➕ הוסף אימון**")
+        # ── PENDING confirmation (weekly plan, not yet confirmed) ─────────────
+        elif _plan_workouts:
+            st.warning(f"⏳ {len(_plan_workouts)} אימון(ים) מהתכנית השבועית — האם בוצעו?")
+            for i, w in enumerate(_plan_workouts):
+                if w.mode == "intensity" and w.intensity:
+                    _desc = f"עצימות {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
+                elif w.mode == "type" and w.workout_type:
+                    _desc = WORKOUT_TYPE_LABELS.get(w.workout_type, w.workout_type.value)
+                    if w.intensity:
+                        _desc += f" · {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
+                else:
+                    _desc = "אימון"
+                _metric = f"{w.distance_km} ק\"מ" if w.distance_km else f"{w.duration_minutes} דק׳"
+
+                st.markdown(f"**{i+1}.** {_desc} · {_metric}")
+
+                _editing_key = f"editing_workout_{i}"
+                _is_editing = st.session_state.get(_editing_key, False)
+
+                if not _is_editing:
+                    c1, c2, c3 = st.columns(3)
+                    # ✅ Confirm as-is
+                    if c1.button("✅ בוצע", key=f"confirm_w_{i}", use_container_width=True):
+                        w.estimated_calories_burned = estimate_calories_burned(w, weight)
+                        _workout_repo.add_daily_workout("ui_user_001", _today, w)
+                        st.success(f"✅ {_desc} אושר!")
+                        st.rerun()
+                    # ✏️ Edit before confirming
+                    if c2.button("✏️ שנה", key=f"edit_w_{i}", use_container_width=True):
+                        st.session_state[_editing_key] = True
+                        st.rerun()
+                    # ❌ Skip
+                    if c3.button("❌ דלג", key=f"skip_w_{i}", use_container_width=True):
+                        # Confirm an empty-ish entry won't work; just mark day so plan is bypassed
+                        skipped = st.session_state.get("skipped_workouts_today", set())
+                        skipped.add(i)
+                        st.session_state["skipped_workouts_today"] = skipped
+                        st.info(f"↩️ {_desc} דולג")
+                        st.rerun()
+                else:
+                    # ── Inline edit form ──────────────────────────────────────
+                    st.markdown("##### ✏️ ערוך אימון")
+                    _e_type = st.selectbox(
+                        "סוג אימון",
+                        options=list(WORKOUT_TYPE_LABELS.keys()),
+                        format_func=lambda x: WORKOUT_TYPE_LABELS[x],
+                        index=list(WORKOUT_TYPE_LABELS.keys()).index(w.workout_type)
+                              if w.workout_type in WORKOUT_TYPE_LABELS else 0,
+                        key=f"edit_type_{i}",
+                    )
+                    _e_dur = st.number_input(
+                        "משך (דקות)", min_value=1, max_value=300,
+                        value=w.duration_minutes or 30, step=5,
+                        key=f"edit_dur_{i}",
+                    )
+                    _e_dist = 0.0
+                    if _e_type in DISTANCE_TYPES:
+                        _e_dist = st.number_input(
+                            "מרחק (ק\"מ)", min_value=0.0, max_value=200.0,
+                            value=w.distance_km or 0.0, step=0.5,
+                            key=f"edit_dist_{i}",
+                        )
+                    _e_intensity = st.selectbox(
+                        "עצימות",
+                        options=["none"] + list(WORKOUT_INTENSITY_LABELS.keys()),
+                        format_func=lambda x: "רגילה" if x == "none" else WORKOUT_INTENSITY_LABELS[x],
+                        key=f"edit_int_{i}",
+                    )
+                    ce1, ce2 = st.columns(2)
+                    if ce1.button("✅ אשר שינוי", key=f"confirm_edit_{i}", use_container_width=True):
+                        _new_w = WorkoutEntry(
+                            duration_minutes=int(_e_dur),
+                            mode="type",
+                            workout_type=_e_type,
+                            intensity=None if _e_intensity == "none" else _e_intensity,
+                            distance_km=float(_e_dist) if _e_dist > 0 else None,
+                        )
+                        _new_w.estimated_calories_burned = estimate_calories_burned(_new_w, weight)
+                        _workout_repo.add_daily_workout("ui_user_001", _today, _new_w)
+                        st.session_state[_editing_key] = False
+                        st.success("✅ אימון מעודכן נשמר!")
+                        st.rerun()
+                    if ce2.button("ביטול", key=f"cancel_edit_{i}", use_container_width=True):
+                        st.session_state[_editing_key] = False
+                        st.rerun()
+                st.divider()
+
+        else:
+            st.caption("אין אימונים מתוכננים להיום ואין תכנית שבועית ליום זה.")
+
+        # ── Manual add ────────────────────────────────────────────────────────
+        st.markdown("**➕ הוסף אימון ידנית**")
         workout_mode_choice = st.radio(
             "איך להזין?",
             options=["intensity", "type"],
@@ -273,7 +383,6 @@ with st.sidebar:
                 "משך (דקות)", min_value=0, max_value=300, value=30, step=5,
                 key="workout_duration_type",
             )
-            # Distance input (only for run/walk/hike) — overrides duration when > 0
             distance_sel = 0.0
             if type_sel in DISTANCE_TYPES:
                 distance_sel = st.number_input(
@@ -281,7 +390,6 @@ with st.sidebar:
                     min_value=0.0, max_value=200.0, value=0.0, step=0.5,
                     key="workout_distance_type",
                 )
-            # Optional intensity modifier for the sport
             type_intensity_sel = st.selectbox(
                 "עצימות (אופציונלי)",
                 options=["none"] + list(WORKOUT_INTENSITY_LABELS.keys()),
@@ -302,11 +410,11 @@ with st.sidebar:
             if workout_entry_input is None:
                 st.warning("יש להזין משך אימון גדול מ-0.")
             else:
+                workout_entry_input.estimated_calories_burned = estimate_calories_burned(workout_entry_input, weight)
                 _workout_repo.add_daily_workout("ui_user_001", _today, workout_entry_input)
                 st.success("האימון נוסף.")
                 st.rerun()
 
-        st.caption("💡 תכנית שבועית משמשת כברירת מחדל. לוג יומי (גם אימון אחד) עוקף אותה ליום הזה.")
         st.page_link(
             "pages/7_weekly_workout_plan.py",
             label="📅 ערוך תכנית אימונים שבועית",
@@ -315,47 +423,99 @@ with st.sidebar:
 
     st.divider()
 
-    with st.expander("🛒 בחירת מזון ומלאי", expanded=False):
-        selected_food_names = st.multiselect(
-            "בחר מזונות",
-            options=[name for _, name in ALL_FOODS],
-            default=_DEFAULT_FOOD_NAMES,
+    # ── Water Tracking ───────────────────────────────────────────────────────
+    _WATER_USER_ID = "ui_user_001"
+    water_repo = _WaterRepo()
+    water_data = water_repo.get_water_data(_WATER_USER_ID)
+    today_water = water_repo.get_water_intakes_for_date(_WATER_USER_ID, date.today())
+    daily_total = sum(w.amount_ml for w in today_water)
+    goal_ml = water_data.goal.daily_goal_ml if water_data.goal else 2000
+
+    with st.expander("💧 מים - היום", expanded=False):
+        # Display current progress
+        col_metric, col_pct = st.columns([2, 1])
+        with col_metric:
+            st.metric("צריכת מים", f"{daily_total:.0f}ml / {goal_ml:.0f}ml")
+        with col_pct:
+            pct = (daily_total / goal_ml * 100) if goal_ml > 0 else 0
+            st.metric("התקדמות", f"{pct:.0f}%")
+
+        st.progress(min(daily_total / goal_ml, 1.0))
+
+        # Quick add buttons
+        st.markdown("**הוסף מים:**")
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            if st.button("250ml", key="water_250", use_container_width=True):
+                water_repo.add_water_intake(_WATER_USER_ID, 250, source="bottle")
+                st.rerun()
+
+        with col2:
+            if st.button("500ml", key="water_500", use_container_width=True):
+                water_repo.add_water_intake(_WATER_USER_ID, 500, source="bottle")
+                st.rerun()
+
+        with col3:
+            if st.button("750ml", key="water_750", use_container_width=True):
+                water_repo.add_water_intake(_WATER_USER_ID, 750, source="bottle")
+                st.rerun()
+
+        with col4:
+            if st.button("1L", key="water_1000", use_container_width=True):
+                water_repo.add_water_intake(_WATER_USER_ID, 1000, source="bottle")
+                st.rerun()
+
+        st.divider()
+
+        # Custom amount
+        st.markdown("**כמות מותאמת:**")
+        custom_ml = st.number_input("סמ״ק", min_value=0, max_value=2000, value=250, step=50, key="water_custom_ml")
+        water_source = st.selectbox(
+            "מקור",
+            options=["bottle", "cup", "glass", "tap"],
+            format_func=lambda x: {"bottle": "בקבוק", "cup": "כוס", "glass": "גביע", "tap": "ברז"}[x],
+            key="water_source",
         )
 
-        scanned_inv = st.session_state.get("scanned_inventory", {})
-        if scanned_inv:
-            st.success(f"🧾 {len(scanned_inv)} מוצרים נטענו מסריקה")
-        else:
-            st.caption("מלאי ראשוני (גרם) — השאר 0 אם אין")
+        if st.button("הוסף כמות מותאמת", key="water_custom_btn", use_container_width=True, type="secondary"):
+            if custom_ml > 0:
+                water_repo.add_water_intake(_WATER_USER_ID, custom_ml, source=water_source)
+                st.rerun()
 
-        st.page_link("pages/2_receipt_scanner.py", label="🧾 סרוק קבלה / רשימת קניות", use_container_width=True)
+        st.divider()
 
-        # Merge scanned foods into the selected list so they appear in inventory
-        scanned_names = []
-        for fid in scanned_inv:
-            name = FOOD_ID_TO_NAME.get(fid)
-            if name and name not in selected_food_names:
-                scanned_names.append(name)
-        effective_food_names = list(selected_food_names) + scanned_names
+        # Recent intakes
+        if today_water:
+            st.markdown("**צריכות היום:**")
+            for intake in today_water[-3:]:  # Last 3 intakes
+                time_str = intake.timestamp[11:16]  # HH:MM
+                st.caption(f"🕐 {time_str} — {intake.amount_ml:.0f}ml ({intake.source})")
 
-        inventory_inputs = {}
-        for food_name in effective_food_names:
-            food_id = FOOD_NAME_TO_ID.get(food_name)
-            if food_id:
-                default_qty = scanned_inv.get(
-                    food_id,
-                    {"food_001": 600, "food_002": 1000, "food_003": 400,
-                     "food_004": 360, "food_007": 500, "food_008": 300}.get(food_id, 0)
-                )
-                qty = st.number_input(
-                    food_name,
-                    min_value=0,
-                    max_value=10000,
-                    value=int(default_qty),
-                    step=50,
-                    key=f"inv_{food_id}",
-                )
-                inventory_inputs[food_id] = float(qty)
+        # Water goal setting
+        st.divider()
+        st.markdown("**יעד יומי:**")
+        new_goal = st.number_input(
+            "ליטר מים",
+            min_value=0.5,
+            max_value=5.0,
+            value=goal_ml / 1000,
+            step=0.1,
+            key="water_goal_input",
+        )
+        if st.button("עדכן יעד", key="water_goal_btn", use_container_width=True, type="secondary"):
+            water_repo.save_water_goal(_WATER_USER_ID, new_goal * 1000)
+            st.rerun()
+            st.rerun()
+
+    st.divider()
+
+    # ── Quick links ───────────────────────────────────────────────────────
+    _inv_count = len([i for i in _stored_inv if i.get("quantity_g", 0) > 0])
+    _scanned_count = len(_scanned_inv)
+    _inv_label = f"📦 מלאי ({_inv_count} פריטים{f' + {_scanned_count} סרוקים' if _scanned_count else ''})"
+    st.page_link("pages/4_inventory.py", label=_inv_label, use_container_width=True)
+    st.page_link("pages/2_receipt_scanner.py", label="🧾 סרוק קבלה", use_container_width=True)
 
     st.divider()
     run_btn = icon_button("הפק תפריט יומי", "play",
@@ -371,21 +531,257 @@ page_header(
 )
 
 if not run_btn and "last_plan" not in st.session_state:
-    # מסך ברוכים הבאים
-    st.markdown(
-        '<div class="nut-welcome-grid">'
-        + welcome_card_html("/", "user", "פרופיל אישי",
-                            "הזן גובה, משקל ומטרה בסרגל הצדי")
-        + welcome_card_html("/daily_menu", "plate", "תפריט יומי",
-                            "קבל ארוחות מותאמות עם מתכונים והוראות הכנה")
-        + welcome_card_html("/inventory", "inventory", "ניהול מלאי",
-                            "סרוק קבלות והוסף מוצרים למלאי האישי")
-        + welcome_card_html("/weekly_workout_plan", "training", "אימונים שבועיים",
-                            "תכנן את האימונים — התפריט יותאם לפי השריפה")
-        + "</div>",
-        unsafe_allow_html=True,
+    # ── Dashboard ─────────────────────────────────────────────────────────────
+    _summary_repo = DailySummaryRepository()
+    _water_repo_db = _WaterRepo()
+    _workout_repo_db = _WorkoutRepo()
+    _DASH_USER = "ui_user_001"
+
+    # ── Week bar ─────────────────────────────────────────────────────────────
+    today = date.today()
+    week_days = [today - timedelta(days=i) for i in range(6, -1, -1)]  # Mon→today
+    selected_day = st.session_state.get("dash_selected_day", today.isoformat())
+
+    HEB_DAYS = {0: "ב׳", 1: "ג׳", 2: "ד׳", 3: "ה׳", 4: "ו׳", 5: "ש׳", 6: "א׳"}
+
+    st.markdown("""
+    <style>
+    .day-row { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
+    .day-pill {
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        width:44px; height:56px; border-radius:22px; cursor:pointer;
+        background:#1e1e2e; border:2px solid #333; font-size:12px; color:#aaa;
+    }
+    .day-pill.today { background:#7c5cff; border-color:#7c5cff; color:#fff; font-weight:700; }
+    .day-pill.has-data { border-color:#7c5cff55; }
+    .day-num { font-size:16px; font-weight:700; }
+    </style>""", unsafe_allow_html=True)
+
+    day_cols = st.columns(7)
+    for i, d in enumerate(week_days):
+        summary = _summary_repo.get(_DASH_USER, d)
+        is_today = d == today
+        is_selected = d.isoformat() == selected_day
+
+        label_day = HEB_DAYS[d.weekday()]
+        label_num = str(d.day)
+
+        badge = "🟣" if is_selected else ("🔵" if is_today else ("⚫" if summary else ""))
+        btn_label = f"{badge}\n**{label_num}**\n{label_day}"
+
+        with day_cols[i]:
+            if st.button(
+                f"{'**' if is_today or is_selected else ''}{label_num}{'**' if is_today or is_selected else ''}\n{label_day}",
+                key=f"dash_day_{d.isoformat()}",
+                use_container_width=True,
+                type="primary" if is_selected else "secondary",
+            ):
+                st.session_state["dash_selected_day"] = d.isoformat()
+                st.rerun()
+
+    st.divider()
+
+    # ── Load selected day data ────────────────────────────────────────────────
+    sel_date = date.fromisoformat(selected_day)
+    summary = _summary_repo.get(_DASH_USER, sel_date)
+    water_intakes = _water_repo_db.get_water_intakes_for_date(_DASH_USER, sel_date)
+    water_total = sum(w.amount_ml for w in water_intakes)
+    water_goal = _water_repo_db.get_water_goal(_DASH_USER).daily_goal_ml
+    workouts = _workout_repo_db.resolve_workouts_for_date(_DASH_USER, sel_date)
+
+    # Calculate BMR from current user profile (always available, no meal plan required)
+    _dash_user_obj = UserProfile(
+        user_id=_DASH_USER, name=name, gender=gender_choice,
+        date_of_birth=dob, height_cm=height, weight_kg=weight,
+        activity_level=activity_choice, goal=goal_choice,
     )
-    st.info("מלא את הפרטים בסרגל הצדי ולחץ **הפק תפריט יומי**")
+    bmr = NutritionEngine().calculate_targets(_dash_user_obj).bmr_kcal
+
+    # On-the-fly recalculation for workouts saved before calorie burn was implemented
+    burned = sum(
+        w.estimated_calories_burned if w.estimated_calories_burned > 0
+        else estimate_calories_burned(w, weight)
+        for w in workouts
+    )
+
+    cal_eaten = summary.calories_eaten if summary else 0
+    cal_target = summary.calories_target if summary else 0
+    # Deficit = (BMR + workout calories burned) - calories eaten
+    # Positive → in deficit (burning more than eating)
+    # Negative → in surplus (eating more than burning)
+    cal_balance = (bmr + burned) - cal_eaten
+    balance_label = f"{'גרעון' if cal_balance > 0 else 'עודף'} {abs(cal_balance):.0f} קק״ל"
+
+    # ── Calorie card ─────────────────────────────────────────────────────────
+    st.markdown(f"### {'היום' if sel_date == today else sel_date.strftime('%d/%m/%Y')}")
+    cal_col, burn_col, bal_col = st.columns(3)
+    with cal_col:
+        st.metric(
+            "קלוריות שנאכלו",
+            f"{cal_eaten:.0f}",
+            f"יעד: {cal_target:.0f}" if cal_target else "עדיין לא הופקה תכנית",
+        )
+    with burn_col:
+        burn_delta = f"BMR: {bmr:.0f}" + (f" + {burned:.0f} אימון" if burned > 0 else "")
+        st.metric("🔥 קלוריות נשרפו", f"{burned:.0f}", burn_delta)
+    with bal_col:
+        # Deficit → positive → good for weight loss → green
+        delta_color = "normal" if cal_balance > 0 else "inverse"
+        st.metric(
+            "גרעון / עודף",
+            balance_label,
+            delta=f"BMR {bmr:.0f} + אימון {burned:.0f}",
+            delta_color="off",
+        )
+
+    # ── Macro row ─────────────────────────────────────────────────────────────
+    st.divider()
+    m_cols = st.columns(3)
+    macros = [
+        ("🥩 חלבון", summary.protein_eaten if summary else 0, summary.protein_target if summary else 0, "g"),
+        ("🍞 פחמימות", summary.carbs_eaten if summary else 0, summary.carbs_target if summary else 0, "g"),
+        ("🥑 שומן", summary.fat_eaten if summary else 0, summary.fat_target if summary else 0, "g"),
+    ]
+    for col, (label, eaten, target, unit) in zip(m_cols, macros):
+        with col:
+            pct = int(eaten / target * 100) if target > 0 else 0
+            st.markdown(f"**{label}**")
+            st.markdown(f"**{eaten:.0f}** / {target:.0f}{unit}")
+            st.progress(min(pct / 100, 1.0))
+            st.caption(f"{pct}%")
+
+    # ── Water bar ─────────────────────────────────────────────────────────────
+    st.divider()
+    w_pct = water_total / water_goal if water_goal > 0 else 0
+    wl, wr = st.columns([4, 1])
+    with wl:
+        st.markdown(f"**💧 מים:** {water_total:.0f} ml / {water_goal:.0f} ml")
+        st.progress(min(w_pct, 1.0))
+    with wr:
+        st.metric("", f"{w_pct * 100:.0f}%")
+
+    # ── Recent activity feed ─────────────────────────────────────────────────
+    st.divider()
+    st.markdown("### 📋 פעילות אחרונה")
+
+    # Collect last 7 days of activity
+    feed_items = []
+    for d in [today - timedelta(days=i) for i in range(7)]:
+        for w in _water_repo_db.get_water_intakes_for_date(_DASH_USER, d):
+            feed_items.append({
+                "ts": w.timestamp,
+                "icon": "💧",
+                "title": "מים",
+                "detail": f"{w.amount_ml:.0f} mL",
+                "sub": w.source,
+                "date": d,
+            })
+        for wo in _workout_repo_db.resolve_workouts_for_date(_DASH_USER, d):
+            wtype = wo.workout_type.value if wo.workout_type else "אימון"
+            feed_items.append({
+                "ts": f"{d.isoformat()}T09:00:00",
+                "icon": "🏋️",
+                "title": wtype,
+                "detail": f"{wo.duration_minutes} דק׳ · {wo.estimated_calories_burned:.0f} קק״ל",
+                "sub": wo.intensity.value if wo.intensity else "",
+                "date": d,
+            })
+        s = _summary_repo.get(_DASH_USER, d)
+        if s and s.calories_eaten > 0:
+            feed_items.append({
+                "ts": s.updated_at,
+                "icon": "🍽️",
+                "title": "תפריט יומי",
+                "detail": f"{s.calories_eaten:.0f} קק״ל",
+                "sub": f"חלבון {s.protein_eaten:.0f}g · פחמ׳ {s.carbs_eaten:.0f}g · שומן {s.fat_eaten:.0f}g",
+                "date": d,
+            })
+
+    feed_items.sort(key=lambda x: x["ts"], reverse=True)
+
+    if not feed_items:
+        st.info("אין פעילות עדיין — הפק תפריט יומי או רשום מים ואימונים")
+    else:
+        for item in feed_items[:10]:
+            is_today = item["date"] == today
+            date_tag = "היום" if is_today else item["date"].strftime("%d/%m")
+            time_tag = item["ts"][11:16] if len(item["ts"]) > 15 else ""
+            with st.container():
+                c1, c2, c3 = st.columns([0.5, 5, 1.5])
+                c1.markdown(f"## {item['icon']}")
+                c2.markdown(f"**{item['title']}** — {item['detail']}")
+                if item["sub"]:
+                    c2.caption(item["sub"])
+                c3.caption(f"{date_tag} {time_tag}")
+            st.divider()
+
+    # ── Meal-time prompt ──────────────────────────────────────────────────────
+    _hour = datetime.now().hour
+    _MEAL_WINDOWS = [
+        (6,  10, "BREAKFAST",        "🌅 ארוחת בוקר"),
+        (10, 12, "MORNING_SNACK",    "☕ חטיף בוקר"),
+        (12, 15, "LUNCH",            "🍽️ ארוחת צהריים"),
+        (15, 17, "AFTERNOON_SNACK",  "🍎 חטיף אחה״צ"),
+        (17, 21, "DINNER",           "🌙 ארוחת ערב"),
+        (21, 24, "EVENING_SNACK",    "🌜 חטיף ערב"),
+    ]
+    _cur_meal_type = next(
+        (mt for s, e, mt, _ in _MEAL_WINDOWS if s <= _hour < e), None
+    )
+    _cur_meal_label = next(
+        (lbl for s, e, mt, lbl in _MEAL_WINDOWS if s <= _hour < e), None
+    )
+
+    if _cur_meal_type and summary and summary.calories_eaten > 0:
+        st.divider()
+        st.markdown(f"### {_cur_meal_label} — מה אוכלים?")
+
+        # Try to get suggestion from last saved plan
+        _last_plan_data = st.session_state.get("last_plan")
+        _meal_suggestion = None
+        if _last_plan_data:
+            from nutrition_app.models.enums import MealType as _MealType
+            _plan_obj = _last_plan_data.get("plan")
+            if _plan_obj:
+                for _m in _plan_obj.meals:
+                    if _m.meal_type.value.upper() == _cur_meal_type:
+                        _meal_suggestion = _m
+                        break
+
+        if _meal_suggestion:
+            _cal = _meal_suggestion.total_calories
+            _items_str = ", ".join(
+                f"{item.food_name} {item.quantity_g:.0f}g"
+                for item in _meal_suggestion.items[:3]
+            )
+            st.info(f"**הצעה:** {_items_str}\n\n🔥 {_cal:.0f} קק״ל")
+
+            c1, c2, c3 = st.columns(3)
+            if c1.button("✅ אכלתי זאת", key="meal_confirm", use_container_width=True, type="primary"):
+                st.success("✅ מעולה! נרשם.")
+            if c2.button("✏️ שיניתי משהו", key="meal_edit", use_container_width=True):
+                st.session_state["show_meal_edit"] = _cur_meal_type
+                st.rerun()
+            if c3.button("⏭️ דילגתי", key="meal_skip", use_container_width=True):
+                st.warning("↩️ ארוחה דולגה")
+
+            # Inline edit form
+            if st.session_state.get("show_meal_edit") == _cur_meal_type:
+                with st.expander("✏️ מה אכלת בפועל?", expanded=True):
+                    _actual = st.text_area(
+                        "תאר מה אכלת (לתיעוד בלבד)",
+                        placeholder="לדוגמה: חזה עוף 150g, אורז 100g, סלט",
+                        key="meal_edit_text",
+                    )
+                    if st.button("שמור", key="meal_edit_save"):
+                        st.session_state["show_meal_edit"] = None
+                        st.success("✅ נשמר!")
+                        st.rerun()
+        else:
+            st.info(f"אין הצעה זמינה ל{_cur_meal_label} — הפק תפריט יומי תחילה")
+
+    st.divider()
+    st.info("💡 לחץ **הפק תפריט יומי** בסרגל הצדי כדי ליצור תפריט חדש")
     st.stop()
 
 # ── Run Pipeline ──────────────────────────────────────────────────────────────
@@ -469,6 +865,24 @@ if run_btn:
             "errors": errors,
             "todays_workouts": todays_workouts,
         }
+
+        # ── Persist daily summary for dashboard/history ──────────────────────
+        _water_today = _WaterRepo().get_daily_total(user.user_id, date.today())
+        _burned = sum(w.estimated_calories_burned for w in todays_workouts)
+        DailySummaryRepository().save(DailySummary(
+            user_id=user.user_id,
+            date=date.today().isoformat(),
+            calories_eaten=plan.total_calories,
+            protein_eaten=plan.total_protein,
+            carbs_eaten=plan.total_carbs,
+            fat_eaten=plan.total_fat,
+            calories_target=targets.target_calories_kcal,
+            protein_target=targets.protein_g,
+            carbs_target=targets.carbs_g,
+            fat_target=targets.fat_g,
+            calories_burned=_burned,
+            water_ml=_water_today,
+        ))
 
 # ── Display Results ───────────────────────────────────────────────────────────
 

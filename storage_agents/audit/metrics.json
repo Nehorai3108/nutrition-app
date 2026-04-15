@@ -1,12 +1,14 @@
 {
-  "timestamp": "2026-03-30T19:21:25.541139+00:00",
-  "iterations": 1,
-  "director_health": 70,
-  "critic_approval_rate": 0.0,
-  "total_calories": 2159.5,
-  "calorie_deviation_pct": -3.2,
+  "timestamp": "2026-04-15T07:06:39.293207+00:00",
+  "iterations": 20,
+  "director_health": 2,
+  "critic_approval_rate": 1.9189765458422177,
+  "total_calories": 2232.3,
+  "calorie_deviation_pct": 0.0,
   "unique_foods": 18,
-  "elapsed_seconds": 0.041278839111328125,
-  "success": true,
-  "remaining_issues": []
+  "elapsed_seconds": 7.794379949569702,
+  "success": false,
+  "remaining_issues": [
+    "Director health 55/100 < 70"
+  ]
 }

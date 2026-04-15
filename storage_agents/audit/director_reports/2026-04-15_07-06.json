@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-04-15T07:06:39.462404+00:00",
+  "tasks_created": [
+    {
+      "task_id": "db111719-7077-499b-a2d4-eafdeca94e75",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category carbohydrate has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "49b6c8c2-fd12-4bd1-be53-870ce19fc32a",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "1ba2a9f1-6e53-4861-95f1-4c0d647a43e4",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "326c600f-7925-4d3c-bafd-5787dfef930d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: דג דניס"
+    },
+    {
+      "task_id": "4845033e-64eb-4961-9873-1f8c70db6392",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: דג אמנון"
+    },
+    {
+      "task_id": "6be9d0ca-4c19-4315-95e9-612b602626b9",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "f37fdcd4-af19-4756-a55f-6a54e741199a",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: לחם מחיטה מלאה"
+    },
+    {
+      "task_id": "f9bb780d-436a-49ea-8f2a-2b149e11ca69",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: פסטה"
+    },
+    {
+      "task_id": "1fa9ca11-2f2b-4ac9-8e08-b9a1bb414e6d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: שום"
+    },
+    {
+      "task_id": "a8e1ef1f-94d1-4a4f-a70b-f283dc6a9b83",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: פטרוזיליה"
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 8 משימות fix_meal_timing."
+}

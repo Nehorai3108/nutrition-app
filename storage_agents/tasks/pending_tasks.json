@@ -1,13 +1,557 @@
 [
   {
+    "task_id": "9af1d843-e4d1-44a5-b510-680983fa57a0",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: בורגול",
+    "completed_at": "2026-04-15T07:06:39.149741+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "9af1d843-e4d1-44a5-b510-680983fa57a0",
+    "requeued_at": "2026-04-15T07:06:39.262357+00:00",
+    "last_attempt": "2026-04-15T07:06:39.947378+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: שרימפס (protein)']",
+    "attempts": 1
+  },
+  {
+    "task_id": "b138688b-086c-4862-9f1e-586afbbddc38",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: אורז חום",
+    "completed_at": "2026-04-15T07:06:39.161871+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "b138688b-086c-4862-9f1e-586afbbddc38",
+    "requeued_at": "2026-04-15T07:06:39.265197+00:00",
+    "last_attempt": "2026-04-15T07:06:39.959360+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: שרימפס (protein)']",
+    "attempts": 1
+  },
+  {
+    "task_id": "326c600f-7925-4d3c-bafd-5787dfef930d",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains PROTEIN category item: דג דניס",
+    "last_attempt": "2026-04-15T07:06:39.971208+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: שרימפס (protein)']",
+    "attempts": 1
+  },
+  {
+    "task_id": "4540ff90-58a6-4b40-96c1-9579140da5a8",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains VEGETABLE category item: חציל",
+    "last_attempt": "2026-04-15T07:06:38.341483+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 2,
+    "completed_at": "2026-04-15T07:06:39.498020+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "4540ff90-58a6-4b40-96c1-9579140da5a8",
+    "requeued_at": "2026-04-15T07:06:39.979379+00:00"
+  },
+  {
+    "task_id": "6fe4d61b-527a-47de-a231-d4e44a3edc21",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "LUNCH contains CONDIMENT category item: כוסברה",
+    "last_attempt": "2026-04-15T07:06:38.803837+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 4,
+    "completed_at": "2026-04-15T07:06:39.512264+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "6fe4d61b-527a-47de-a231-d4e44a3edc21",
+    "requeued_at": "2026-04-15T07:06:39.982338+00:00"
+  },
+  {
+    "task_id": "96335476-c4f6-4dae-b0c6-00c8723f31a8",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: לחם מחיטה מלאה",
+    "last_attempt": "2026-04-15T07:06:38.815007+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 5,
+    "completed_at": "2026-04-15T07:06:39.526602+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "96335476-c4f6-4dae-b0c6-00c8723f31a8",
+    "requeued_at": "2026-04-15T07:06:39.985881+00:00"
+  },
+  {
+    "task_id": "d7af41c7-bc14-4909-809b-3112f3c34c58",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains VEGETABLE category item: תרד",
+    "last_attempt": "2026-04-15T07:06:38.826799+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 10,
+    "completed_at": "2026-04-15T07:06:39.541095+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "d7af41c7-bc14-4909-809b-3112f3c34c58",
+    "requeued_at": "2026-04-15T07:06:39.989349+00:00"
+  },
+  {
+    "task_id": "5b29dd4d-e9db-4e87-9a95-d8ccc91ec07d",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: פסטה",
+    "last_attempt": "2026-04-15T07:06:38.838609+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 11,
+    "completed_at": "2026-04-15T07:06:39.555870+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "5b29dd4d-e9db-4e87-9a95-d8ccc91ec07d",
+    "requeued_at": "2026-04-15T07:06:39.992464+00:00"
+  },
+  {
+    "task_id": "131ce404-a529-4a1a-b06d-a7a8a4ec8865",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "DINNER contains CONDIMENT category item: חומוס ממרח",
+    "last_attempt": "2026-04-15T07:06:38.850275+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 13,
+    "completed_at": "2026-04-15T07:06:39.570784+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "131ce404-a529-4a1a-b06d-a7a8a4ec8865",
+    "requeued_at": "2026-04-15T07:06:39.995388+00:00"
+  },
+  {
+    "task_id": "fb2ec672-4207-4fe7-a644-45255cb806ce",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains VEGETABLE category item: מלפפון",
+    "completed_at": "2026-04-15T07:06:39.585321+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "fb2ec672-4207-4fe7-a644-45255cb806ce",
+    "requeued_at": "2026-04-15T07:06:39.998413+00:00",
+    "last_attempt": "2026-04-15T07:06:38.861763+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 13
+  },
+  {
+    "task_id": "5824d85b-9f10-4f6a-a7ca-9cac072540a0",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: קוסקוס",
+    "completed_at": "2026-04-15T07:06:39.599403+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "5824d85b-9f10-4f6a-a7ca-9cac072540a0",
+    "requeued_at": "2026-04-15T07:06:40.001749+00:00",
+    "last_attempt": "2026-04-15T07:06:38.873478+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14
+  },
+  {
+    "task_id": "08e5c5e2-3fe4-4051-9e62-b4b48c296e8f",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains OTHER category item: שוקולד מריר",
+    "completed_at": "2026-04-15T07:06:39.613680+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "08e5c5e2-3fe4-4051-9e62-b4b48c296e8f",
+    "requeued_at": "2026-04-15T07:06:40.004723+00:00",
+    "last_attempt": "2026-04-15T07:06:38.885768+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14
+  },
+  {
+    "task_id": "f3685cc3-7dd6-4b14-b0fd-dad158b500fc",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "LUNCH contains CONDIMENT category item: טחינה",
+    "last_attempt": "2026-04-15T07:06:38.896556+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14,
+    "completed_at": "2026-04-15T07:06:39.628075+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "f3685cc3-7dd6-4b14-b0fd-dad158b500fc",
+    "requeued_at": "2026-04-15T07:06:40.007799+00:00"
+  },
+  {
+    "task_id": "532017d8-f5d1-47ac-b36e-80d0ccb7bc60",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "LUNCH contains CONDIMENT category item: רוטב עגבניות",
+    "last_attempt": "2026-04-15T07:06:38.908046+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14,
+    "completed_at": "2026-04-15T07:06:39.642399+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "532017d8-f5d1-47ac-b36e-80d0ccb7bc60",
+    "requeued_at": "2026-04-15T07:06:40.010788+00:00"
+  },
+  {
+    "task_id": "964f53e3-cf14-471b-aa71-7a5f2c1bfde6",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "LUNCH contains CONDIMENT category item: חרדל",
+    "last_attempt": "2026-04-15T07:06:38.919332+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14,
+    "completed_at": "2026-04-15T07:06:39.656657+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "964f53e3-cf14-471b-aa71-7a5f2c1bfde6",
+    "requeued_at": "2026-04-15T07:06:40.013729+00:00"
+  },
+  {
+    "task_id": "7666723d-fb3d-4406-b800-9485e3c6932a",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "LUNCH contains CONDIMENT category item: רוטב סויה",
+    "last_attempt": "2026-04-15T07:06:38.930232+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14,
+    "completed_at": "2026-04-15T07:06:39.671150+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "7666723d-fb3d-4406-b800-9485e3c6932a",
+    "requeued_at": "2026-04-15T07:06:40.017175+00:00"
+  },
+  {
+    "task_id": "a2f19db9-9491-4ad2-b1bc-b39a85ea4fb1",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains OTHER category item: דבש",
+    "last_attempt": "2026-04-15T07:06:38.941727+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14,
+    "completed_at": "2026-04-15T07:06:39.686442+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "a2f19db9-9491-4ad2-b1bc-b39a85ea4fb1",
+    "requeued_at": "2026-04-15T07:06:40.020277+00:00"
+  },
+  {
+    "task_id": "2d1506ec-d214-4350-b08a-6e6075eeafc1",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: גרנולה",
+    "last_attempt": "2026-04-15T07:06:38.953349+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14,
+    "completed_at": "2026-04-15T07:06:39.701364+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "2d1506ec-d214-4350-b08a-6e6075eeafc1",
+    "requeued_at": "2026-04-15T07:06:40.023214+00:00"
+  },
+  {
+    "task_id": "dde46317-dc0d-43d2-bafe-1bd995e31dee",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "MORNING_SNACK contains OTHER category item: שוקולד מריר",
+    "completed_at": "2026-04-15T07:06:39.715518+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "dde46317-dc0d-43d2-bafe-1bd995e31dee",
+    "requeued_at": "2026-04-15T07:06:40.026150+00:00",
+    "last_attempt": "2026-04-15T07:06:38.964423+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14
+  },
+  {
+    "task_id": "b9498939-7181-4d99-92c5-72693dc7f1b5",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "MORNING_SNACK contains OTHER category item: דבש",
+    "completed_at": "2026-04-15T07:06:39.730034+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "b9498939-7181-4d99-92c5-72693dc7f1b5",
+    "requeued_at": "2026-04-15T07:06:40.029236+00:00",
+    "last_attempt": "2026-04-15T07:06:38.976507+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14
+  },
+  {
+    "task_id": "79373bee-daa4-4be9-a51e-d778f05c7eaf",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: אורז בסמטי",
+    "completed_at": "2026-04-15T07:06:39.744839+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "79373bee-daa4-4be9-a51e-d778f05c7eaf",
+    "requeued_at": "2026-04-15T07:06:40.032147+00:00",
+    "last_attempt": "2026-04-15T07:06:38.988437+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 14
+  },
+  {
+    "task_id": "363d75fe-a8f4-418b-8a7b-92ca48ed2ce8",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: אורז לבן",
+    "last_attempt": "2026-04-15T07:06:38.999002+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 15,
+    "completed_at": "2026-04-15T07:06:39.760673+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "363d75fe-a8f4-418b-8a7b-92ca48ed2ce8",
+    "requeued_at": "2026-04-15T07:06:40.035920+00:00"
+  },
+  {
+    "task_id": "0d9ed4b7-a8f9-483a-b67c-509a1ea8e14d",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "DINNER contains CONDIMENT category item: כוסברה",
+    "last_attempt": "2026-04-15T07:06:39.010390+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 15,
+    "completed_at": "2026-04-15T07:06:39.775505+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "0d9ed4b7-a8f9-483a-b67c-509a1ea8e14d",
+    "requeued_at": "2026-04-15T07:06:40.038902+00:00"
+  },
+  {
+    "task_id": "0957deea-e4fd-4796-97f9-0fcb08be0c2e",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains VEGETABLE category item: עגבנייה",
+    "completed_at": "2026-04-15T07:06:39.790335+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "0957deea-e4fd-4796-97f9-0fcb08be0c2e",
+    "requeued_at": "2026-04-15T07:06:40.041877+00:00",
+    "last_attempt": "2026-04-15T07:06:39.021599+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 16
+  },
+  {
+    "task_id": "fa426795-9782-4cf1-afd9-ef9e3ae949c2",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains PROTEIN category item: טונה",
+    "last_attempt": "2026-04-15T07:06:39.032119+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 16,
+    "completed_at": "2026-04-15T07:06:39.804697+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "fa426795-9782-4cf1-afd9-ef9e3ae949c2",
+    "requeued_at": "2026-04-15T07:06:40.044802+00:00"
+  },
+  {
+    "task_id": "34e01b78-bd51-4037-99eb-92f540ed3224",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains PROTEIN category item: דג אמנון",
+    "last_attempt": "2026-04-15T07:06:39.043800+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 16,
+    "completed_at": "2026-04-15T07:06:39.819820+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "34e01b78-bd51-4037-99eb-92f540ed3224",
+    "requeued_at": "2026-04-15T07:06:40.047761+00:00"
+  },
+  {
+    "task_id": "1f1d197c-3267-4e8c-8b9b-ac856f4eb891",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: קינואה",
+    "last_attempt": "2026-04-15T07:06:39.055143+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 17,
+    "completed_at": "2026-04-15T07:06:39.834125+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "1f1d197c-3267-4e8c-8b9b-ac856f4eb891",
+    "requeued_at": "2026-04-15T07:06:40.051449+00:00"
+  },
+  {
+    "task_id": "cf1761d6-6acf-465b-bf97-9a853bdbc5a5",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "DINNER contains DAIRY category item: חלב",
+    "last_attempt": "2026-04-15T07:06:39.065787+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 17,
+    "completed_at": "2026-04-15T07:06:39.848097+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "cf1761d6-6acf-465b-bf97-9a853bdbc5a5",
+    "requeued_at": "2026-04-15T07:06:40.054417+00:00"
+  },
+  {
+    "task_id": "47e8175c-f00a-4331-bae4-8631a7eb9ea7",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "BREAKFAST contains PROTEIN category item: הודו",
+    "last_attempt": "2026-04-15T07:06:39.077345+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 17,
+    "completed_at": "2026-04-15T07:06:39.862482+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "47e8175c-f00a-4331-bae4-8631a7eb9ea7",
+    "requeued_at": "2026-04-15T07:06:40.057483+00:00"
+  },
+  {
+    "task_id": "656487b4-a9bc-49f7-8edf-5cd53e3115cf",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "AFTERNOON_SNACK contains GRAIN category item: שיבולת שועל",
+    "last_attempt": "2026-04-15T07:06:39.088406+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 17,
+    "completed_at": "2026-04-15T07:06:39.876701+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "656487b4-a9bc-49f7-8edf-5cd53e3115cf",
+    "requeued_at": "2026-04-15T07:06:40.060431+00:00"
+  },
+  {
+    "task_id": "532cf89e-da56-497f-9a15-1a4be7912263",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "DINNER contains CONDIMENT category item: שום",
+    "last_attempt": "2026-04-15T07:06:39.098926+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 17,
+    "completed_at": "2026-04-15T07:06:39.891037+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "532cf89e-da56-497f-9a15-1a4be7912263",
+    "requeued_at": "2026-04-15T07:06:40.063354+00:00"
+  },
+  {
+    "task_id": "5633784c-1b0b-487e-ab40-b9512fc8c2dc",
+    "type": "fix_meal_timing",
+    "agent": "agent_5_planner",
+    "priority": "high",
+    "details": "DINNER contains CONDIMENT category item: פטרוזיליה",
+    "last_attempt": "2026-04-15T07:06:39.110599+00:00",
+    "last_error": "Still 2 timing violations: ['breakfast: הודו (protein)', 'breakfast: טונה (protein)']",
+    "attempts": 17,
+    "completed_at": "2026-04-15T07:06:39.907122+00:00",
+    "result": {
+      "success": true,
+      "message": "Meal timing rules verified. No violations in test plan."
+    },
+    "requeued_from": "5633784c-1b0b-487e-ab40-b9512fc8c2dc",
+    "requeued_at": "2026-04-15T07:06:40.066578+00:00"
+  },
+  {
     "task_id": "f7371733-7e0c-459e-8f85-84e612bc5903",
     "type": "expand_catalog",
     "agent": "agent_3_food",
     "priority": "high",
     "details": "Category carbohydrate has only 2 foods. Add at least 5 more.",
-    "last_attempt": "2026-03-30T19:21:25.522998+00:00",
+    "last_attempt": "2026-04-15T07:06:39.908125+00:00",
     "last_error": "Category carbohydrate still has only 2 foods.",
-    "attempts": 1
+    "attempts": 22,
+    "completed_at": "2026-04-15T07:06:39.908130+00:00",
+    "result": {
+      "success": false,
+      "error": "Category carbohydrate still has only 2 foods."
+    },
+    "requeued_from": "f7371733-7e0c-459e-8f85-84e612bc5903",
+    "requeued_at": "2026-04-15T07:06:40.067688+00:00"
   },
   {
     "task_id": "6b0b3fb3-d2e7-4335-8827-9311d7a02d17",
@@ -15,29 +559,15 @@
     "agent": "agent_3_food",
     "priority": "high",
     "details": "Category other has only 2 foods. Add at least 5 more.",
-    "last_attempt": "2026-03-30T19:21:25.524011+00:00",
+    "last_attempt": "2026-04-15T07:06:39.908983+00:00",
     "last_error": "Category other still has only 2 foods.",
-    "attempts": 1
-  },
-  {
-    "task_id": "0957deea-e4fd-4796-97f9-0fcb08be0c2e",
-    "type": "fix_meal_timing",
-    "agent": "agent_5_planner",
-    "priority": "high",
-    "details": "BREAKFAST contains VEGETABLE category item: עגבנייה"
-  },
-  {
-    "task_id": "1f1d197c-3267-4e8c-8b9b-ac856f4eb891",
-    "type": "fix_meal_timing",
-    "agent": "agent_5_planner",
-    "priority": "high",
-    "details": "AFTERNOON_SNACK contains GRAIN category item: קינואה"
-  },
-  {
-    "task_id": "cf1761d6-6acf-465b-bf97-9a853bdbc5a5",
-    "type": "fix_meal_timing",
-    "agent": "agent_5_planner",
-    "priority": "high",
-    "details": "DINNER contains DAIRY category item: חלב"
+    "attempts": 22,
+    "completed_at": "2026-04-15T07:06:39.908987+00:00",
+    "result": {
+      "success": false,
+      "error": "Category other still has only 2 foods."
+    },
+    "requeued_from": "6b0b3fb3-d2e7-4335-8827-9311d7a02d17",
+    "requeued_at": "2026-04-15T07:06:40.068531+00:00"
   }
 ]

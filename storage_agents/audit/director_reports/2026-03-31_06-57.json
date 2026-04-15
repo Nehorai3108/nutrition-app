@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-03-31T06:57:39.566522+00:00",
+  "tasks_created": [
+    {
+      "task_id": "1251db3c-4a77-4e79-a3f0-cae8c33b44a7",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category carbohydrate has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "7897d73e-81b7-4669-b0d7-e59cb2f63eb9",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "537f0b11-c581-4fb7-9bc0-19b9c90e9d69",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains VEGETABLE category item: עגבנייה"
+    },
+    {
+      "task_id": "02ceb6fd-2fcc-4fa9-b80f-75e174cdd8dc",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: קינואה"
+    },
+    {
+      "task_id": "d81ccd99-0610-4199-81a1-ec98c2832421",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains DAIRY category item: חלב"
+    }
+  ],
+  "system_health_score": 25,
+  "summary": "נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 2 משימות expand_catalog, 3 משימות fix_meal_timing."
+}

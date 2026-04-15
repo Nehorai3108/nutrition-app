@@ -1,0 +1,219 @@
+[
+  {
+    "template_id": "template_001",
+    "name_he": "ארוחת בוקר חלבית + צהריים בשרי",
+    "name_en": "Dairy Breakfast + Meat Lunch",
+    "pattern": {
+      "BREAKFAST": {
+        "kashrut": "dairy",
+        "categories": [
+          "dairy",
+          "grain",
+          "vegetable"
+        ]
+      },
+      "MORNING_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "fruit"
+        ]
+      },
+      "LUNCH": {
+        "kashrut": "meat",
+        "categories": [
+          "protein",
+          "grain",
+          "vegetable"
+        ]
+      },
+      "AFTERNOON_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "nut_seed",
+          "fruit"
+        ]
+      },
+      "DINNER": {
+        "kashrut": "dairy",
+        "categories": [
+          "dairy",
+          "vegetable",
+          "grain"
+        ]
+      }
+    }
+  },
+  {
+    "template_id": "template_002",
+    "name_he": "יום טבעוני",
+    "name_en": "Vegan Day",
+    "pattern": {
+      "BREAKFAST": {
+        "kashrut": "parve",
+        "categories": [
+          "grain",
+          "fruit",
+          "nut_seed"
+        ]
+      },
+      "MORNING_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "fruit"
+        ]
+      },
+      "LUNCH": {
+        "kashrut": "parve",
+        "categories": [
+          "legume",
+          "grain",
+          "vegetable"
+        ]
+      },
+      "AFTERNOON_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "nut_seed",
+          "fruit"
+        ]
+      },
+      "DINNER": {
+        "kashrut": "parve",
+        "categories": [
+          "legume",
+          "vegetable",
+          "grain"
+        ]
+      }
+    }
+  },
+  {
+    "template_id": "template_003",
+    "name_he": "יום דגים",
+    "name_en": "Fish Day",
+    "pattern": {
+      "BREAKFAST": {
+        "kashrut": "dairy",
+        "categories": [
+          "dairy",
+          "grain",
+          "fruit"
+        ]
+      },
+      "MORNING_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "fruit",
+          "nut_seed"
+        ]
+      },
+      "LUNCH": {
+        "kashrut": "parve",
+        "categories": [
+          "protein",
+          "grain",
+          "vegetable"
+        ]
+      },
+      "AFTERNOON_SNACK": {
+        "kashrut": "dairy",
+        "categories": [
+          "dairy",
+          "fruit"
+        ]
+      },
+      "DINNER": {
+        "kashrut": "parve",
+        "categories": [
+          "protein",
+          "vegetable"
+        ]
+      }
+    }
+  },
+  {
+    "template_id": "template_004",
+    "name_he": "יום עשיר בחלבון",
+    "name_en": "High Protein Day",
+    "pattern": {
+      "BREAKFAST": {
+        "kashrut": "parve",
+        "categories": [
+          "protein",
+          "grain"
+        ]
+      },
+      "MORNING_SNACK": {
+        "kashrut": "dairy",
+        "categories": [
+          "dairy",
+          "nut_seed"
+        ]
+      },
+      "LUNCH": {
+        "kashrut": "meat",
+        "categories": [
+          "protein",
+          "vegetable",
+          "grain"
+        ]
+      },
+      "AFTERNOON_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "legume",
+          "nut_seed"
+        ]
+      },
+      "DINNER": {
+        "kashrut": "parve",
+        "categories": [
+          "protein",
+          "vegetable"
+        ]
+      }
+    }
+  },
+  {
+    "template_id": "template_005",
+    "name_he": "יום קל",
+    "name_en": "Light Day",
+    "pattern": {
+      "BREAKFAST": {
+        "kashrut": "dairy",
+        "categories": [
+          "dairy",
+          "fruit"
+        ]
+      },
+      "MORNING_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "fruit"
+        ]
+      },
+      "LUNCH": {
+        "kashrut": "parve",
+        "categories": [
+          "vegetable",
+          "legume",
+          "grain"
+        ]
+      },
+      "AFTERNOON_SNACK": {
+        "kashrut": "parve",
+        "categories": [
+          "fruit",
+          "nut_seed"
+        ]
+      },
+      "DINNER": {
+        "kashrut": "dairy",
+        "categories": [
+          "dairy",
+          "vegetable"
+        ]
+      }
+    }
+  }
+]

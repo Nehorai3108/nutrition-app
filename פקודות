@@ -1,0 +1,6 @@
+cd "C:\Users\User\Desktop\אפליקציית תזונאי"
+streamlit run app_user.py
+
+
+cd "C:\Users\User\Desktop\אפליקציית תזונאי"
+streamlit run app_admin.py --server.port 8503

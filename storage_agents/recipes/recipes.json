@@ -1180,7 +1180,9 @@
       "fish",
       "healthy"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_path": "storage_agents/recipe_images/approved/recipe_023.jpg",
+    "image_credit": "Pexels / Alena Evseenko"
   },
   {
     "recipe_id": "recipe_024",

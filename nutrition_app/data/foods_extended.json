@@ -1813,5 +1813,186 @@
     "aliases_en": [
       "sardine"
     ]
+  },
+  {
+    "food_id": "food_q009",
+    "name_he": "אנטריקוט",
+    "name_en": "Ribeye Steak",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 291,
+      "protein_g": 24,
+      "carbs_g": 0,
+      "fat_g": 21,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200,
+    "aliases_he": [
+      "סטייק"
+    ],
+    "aliases_en": [
+      "steak",
+      "rib eye"
+    ]
+  },
+  {
+    "food_id": "food_q010",
+    "name_he": "כרעיי עוף",
+    "name_en": "Chicken Thigh",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 209,
+      "protein_g": 26,
+      "carbs_g": 0,
+      "fat_g": 11,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "ירך עוף",
+      "שוק עוף"
+    ],
+    "aliases_en": [
+      "chicken leg",
+      "thigh"
+    ]
+  },
+  {
+    "food_id": "food_q011",
+    "name_he": "טחינה גולמית",
+    "name_en": "Raw Tahini (protein source)",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 595,
+      "protein_g": 17,
+      "carbs_g": 21,
+      "fat_g": 54,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "טחינה גולמית מלאה"
+    ],
+    "aliases_en": [
+      "raw tahini paste"
+    ]
+  },
+  {
+    "food_id": "food_q012",
+    "name_he": "שרימפס",
+    "name_en": "Shrimp",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 85,
+      "protein_g": 20,
+      "carbs_g": 0,
+      "fat_g": 0.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "חסילונים"
+    ],
+    "aliases_en": [
+      "prawns"
+    ]
+  },
+  {
+    "food_id": "food_q013",
+    "name_he": "נקניקיות הודו",
+    "name_en": "Turkey Sausage",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 196,
+      "protein_g": 14,
+      "carbs_g": 2,
+      "fat_g": 15,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 80,
+    "aliases_he": [
+      "נקניקייה"
+    ],
+    "aliases_en": [
+      "sausage"
+    ]
+  },
+  {
+    "food_id": "food_q014",
+    "name_he": "המבורגר בקר",
+    "name_en": "Beef Burger Patty",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 254,
+      "protein_g": 17,
+      "carbs_g": 0,
+      "fat_g": 20,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 120,
+    "aliases_he": [
+      "קציצה",
+      "המבורגר"
+    ],
+    "aliases_en": [
+      "burger",
+      "patty"
+    ]
+  },
+  {
+    "food_id": "food_q015",
+    "name_he": "פסטרמה",
+    "name_en": "Pastrami",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 147,
+      "protein_g": 22,
+      "carbs_g": 2,
+      "fat_g": 6,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 60,
+    "aliases_he": [
+      "פסטרמה הודו"
+    ],
+    "aliases_en": [
+      "turkey pastrami"
+    ]
+  },
+  {
+    "food_id": "food_q016",
+    "name_he": "עגל",
+    "name_en": "Veal",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 172,
+      "protein_g": 24,
+      "carbs_g": 0,
+      "fat_g": 8,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "בשר עגל"
+    ],
+    "aliases_en": [
+      "veal cutlet"
+    ]
   }
 ]
