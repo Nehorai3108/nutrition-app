@@ -11,8 +11,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import streamlit as st
-from ui.auth import require_admin
-from ui.components import inject_global_css, admin_sidebar_menu
+from ui.auth import require_admin, is_admin
+from ui.components import inject_global_css
 
 # ── Page config ──────────────────────────────────────────────────────────────
 
@@ -27,29 +27,55 @@ st.set_page_config(
 inject_global_css()
 
 # ── Admin Access Gate ────────────────────────────────────────────────────────
-# This runs on every page load, so unauthorized users never see any content
-require_admin(page_title="ניהול המערכת", icon_name="shield")
+# If not authenticated, show login form and stop. Sidebar is hidden on login.
+if not is_admin():
+    st.markdown(
+        '<style>section[data-testid="stSidebar"] {display:none}</style>',
+        unsafe_allow_html=True,
+    )
+    require_admin(page_title="ניהול המערכת", icon_name="shield")
+    # require_admin calls st.stop() when not authenticated — code below
+    # this block only runs after a successful login + rerun
 
-# ── Main app initialization ──────────────────────────────────────────────────
-
-# Hide Streamlit's auto-discovered pages and render custom menu instead
-st.markdown(
-    '<style>'
-    'section[data-testid="stSidebar"] ul {display:none;}'
-    '</style>',
-    unsafe_allow_html=True,
+# ── Navigation — explicitly register admin pages ─────────────────────────────
+pg = st.navigation(
+    {
+        "ניהול מערכת": [
+            st.Page(
+                "pages_admin/1_agents_dashboard.py",
+                title="סוכנים",
+                icon="🤖",
+                default=True,
+            ),
+            st.Page(
+                "pages_admin/2_photo_manager.py",
+                title="מנהל תמונות",
+                icon="🖼️",
+            ),
+            st.Page(
+                "pages_admin/3_audit_logs.py",
+                title="ביקורת לוג",
+                icon="📋",
+            ),
+            st.Page(
+                "pages_admin/4_settings.py",
+                title="הגדרות",
+                icon="⚙️",
+            ),
+        ],
+        "מערכת": [
+            st.Page(
+                "pages/2_recipes.py",
+                title="מתכונים",
+                icon="📖",
+            ),
+            st.Page(
+                "pages/7_weekly_workout_plan.py",
+                title="אימונים",
+                icon="🏃",
+            ),
+        ],
+    }
 )
 
-# Render custom admin sidebar menu
-with st.sidebar:
-    admin_sidebar_menu(context="admin")
-
-st.title("🛡️ דאשבורד ניהול")
-st.markdown("""
-ברוכים הבאים לדאשבורד הניהול. בחר דף מהתפריט בצד שמאל:
-
-- **סוכנים** — ניטור משימות וסטטוס מערכת
-- **ניהול תמונות** — העלאה וניהול תמונות מתכונים
-- **ביקורת לוג** — צפייה בדוחות וביומני ביקורת
-- **הגדרות** — הגדרות יישום וניהול מערכת
-""")
+pg.run()
