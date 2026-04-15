@@ -38,14 +38,70 @@ from nutrition_app.models.enums import ConfidenceLevel, FoodCategory, UnitType
 _DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "..", "data")
 
 
+def _db_row_to_food_item(row: dict) -> FoodItem:
+    """Convert a NutritionDB food row dict to a FoodItem."""
+    return FoodItem(
+        food_id=row["food_id"],
+        name_he=row["name_he"],
+        name_en=row["name_en"],
+        category=FoodCategory(row["category"]),
+        nutrition_per_100g=NutritionPer100g(
+            calories_kcal=row["calories_kcal"],
+            protein_g=row["protein_g"],
+            carbs_g=row["carbs_g"],
+            fat_g=row["fat_g"],
+            fiber_g=row.get("fiber_g", 0.0),
+            sugar_g=row.get("sugar_g", 0.0),
+            sodium_mg=row.get("sodium_mg", 0.0),
+        ),
+        default_unit=UnitType(row.get("default_unit", "gram")),
+        default_serving_g=row.get("default_serving_g", 100.0),
+        aliases_he=row.get("aliases_he", []),
+        aliases_en=row.get("aliases_en", []),
+        is_custom=bool(row.get("is_custom", 0)),
+        source=row.get("source", "catalog"),
+    )
+
+
 class FoodCatalog:
     """Food database with search, matching, and alias support."""
 
-    def __init__(self, load_extended: bool = True):
+    def __init__(self, load_extended: bool = True, db_path: Optional[str] = None):
         self._foods: Dict[str, FoodItem] = {}
-        self._load_default_catalog()
-        if load_extended:
-            self.load_extended_catalog()
+        if db_path is not None:
+            loaded = self.load_from_db(db_path)
+            if loaded == 0:
+                # DB exists but is empty — fall back to static catalog
+                self._load_default_catalog()
+                if load_extended:
+                    self.load_extended_catalog()
+        else:
+            self._load_default_catalog()
+            if load_extended:
+                self.load_extended_catalog()
+
+    def load_from_db(self, db_path: str) -> int:
+        """Load all foods from NutritionDB into the catalog.
+
+        Returns the number of foods loaded. On any error returns 0 and
+        leaves self._foods unchanged so callers can fall back gracefully.
+        """
+        try:
+            from db.database import NutritionDB
+            db = NutritionDB(db_path)
+            rows = db.get_all_foods()
+        except Exception:
+            return 0
+
+        count = 0
+        for row in rows:
+            try:
+                food = _db_row_to_food_item(row)
+                self._foods[food.food_id] = food
+                count += 1
+            except Exception:
+                pass
+        return count
 
     def _load_default_catalog(self):
         """Load built-in food catalog. In production, this reads from data/."""
