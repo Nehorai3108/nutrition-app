@@ -227,6 +227,18 @@ def inject_global_css() -> None:
             border-radius: {t.RADIUS_LG};
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }}
+
+        /* ─── Recipe images ───────────────────────────────────────────── */
+        .nut-recipe-image {{
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: {t.RADIUS};
+            margin-bottom: 12px;
+            display: block;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }}
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
@@ -430,9 +442,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
     alt       = name_he or "מתכון"
 
     image_block = (
-        f'<img src="{image_uri}" alt="{alt}" '
-        f'style="width:100%;max-height:220px;object-fit:cover;'
-        f'border-radius:{t.RADIUS};margin-bottom:12px" />'
+        f'<img src="{image_uri}" alt="{alt}" class="nut-recipe-image" />'
         if image_uri else ""
     )
 
