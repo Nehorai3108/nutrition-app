@@ -1633,5 +1633,185 @@
     "aliases_en": [
       "coriander"
     ]
+  },
+  {
+    "food_id": "food_q001",
+    "name_he": "חזה הודו מעושן",
+    "name_en": "Smoked Turkey Breast",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 104,
+      "protein_g": 18,
+      "carbs_g": 2,
+      "fat_g": 2.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "הודו מעושן"
+    ],
+    "aliases_en": [
+      "smoked turkey"
+    ]
+  },
+  {
+    "food_id": "food_q002",
+    "name_he": "שניצל עוף",
+    "name_en": "Chicken Schnitzel",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 260,
+      "protein_g": 20,
+      "carbs_g": 14,
+      "fat_g": 14,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "שניצלון"
+    ],
+    "aliases_en": [
+      "schnitzel"
+    ]
+  },
+  {
+    "food_id": "food_q003",
+    "name_he": "כבד עוף",
+    "name_en": "Chicken Liver",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 172,
+      "protein_g": 25,
+      "carbs_g": 1,
+      "fat_g": 7,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "כבדי עוף"
+    ],
+    "aliases_en": [
+      "liver"
+    ]
+  },
+  {
+    "food_id": "food_q004",
+    "name_he": "שוורמה",
+    "name_en": "Shawarma (Turkey)",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 215,
+      "protein_g": 22,
+      "carbs_g": 3,
+      "fat_g": 13,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "שווארמה",
+      "שוארמה"
+    ],
+    "aliases_en": [
+      "shawarma"
+    ]
+  },
+  {
+    "food_id": "food_q005",
+    "name_he": "קבב",
+    "name_en": "Kebab",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 226,
+      "protein_g": 18,
+      "carbs_g": 5,
+      "fat_g": 15,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "קבאב",
+      "כבאב"
+    ],
+    "aliases_en": [
+      "kabob"
+    ]
+  },
+  {
+    "food_id": "food_q006",
+    "name_he": "דג אמנון",
+    "name_en": "Tilapia",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 96,
+      "protein_g": 20,
+      "carbs_g": 0,
+      "fat_g": 1.7,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "אמנון",
+      "דג מושט"
+    ],
+    "aliases_en": [
+      "st peters fish"
+    ]
+  },
+  {
+    "food_id": "food_q007",
+    "name_he": "דג דניס",
+    "name_en": "Sea Bream",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 100,
+      "protein_g": 19,
+      "carbs_g": 0,
+      "fat_g": 2.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "דניס"
+    ],
+    "aliases_en": [
+      "bream",
+      "dorade"
+    ]
+  },
+  {
+    "food_id": "food_q008",
+    "name_he": "סרדינים",
+    "name_en": "Sardines (canned)",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 208,
+      "protein_g": 25,
+      "carbs_g": 0,
+      "fat_g": 11,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 85,
+    "aliases_he": [
+      "סרדינים בשמן"
+    ],
+    "aliases_en": [
+      "sardine"
+    ]
   }
 ]

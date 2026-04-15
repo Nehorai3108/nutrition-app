@@ -95,6 +95,37 @@ class RecipeManager:
         with open(self._recipes_path, "w", encoding="utf-8") as fh:
             json.dump(self._recipes, fh, ensure_ascii=False, indent=2)
 
+    def set_recipe_image(
+        self,
+        recipe_id: str,
+        image_path: str,
+        image_credit: Optional[str] = None,
+    ) -> bool:
+        """Assign an approved image path to a recipe and persist.
+
+        Re-reads from disk before writing to avoid clobbering concurrent
+        changes (the dashboard may edit recipes.json from another path).
+        Returns True on success.
+        """
+        disk = self.load_recipes()
+        found = False
+        for rec in disk:
+            if rec.get("recipe_id") == recipe_id:
+                rec["image_path"] = image_path
+                if image_credit is not None:
+                    rec["image_credit"] = image_credit
+                found = True
+                break
+        if not found:
+            return False
+        os.makedirs(self._storage_dir, exist_ok=True)
+        with open(self._recipes_path, "w", encoding="utf-8") as fh:
+            json.dump(disk, fh, ensure_ascii=False, indent=2)
+        # Refresh in-memory state so subsequent lookups reflect the change.
+        self._recipes = disk
+        self._build_indexes()
+        return True
+
     # ------------------------------------------------------------------
     # Seeding
     # ------------------------------------------------------------------

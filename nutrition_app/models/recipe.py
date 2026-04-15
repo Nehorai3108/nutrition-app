@@ -41,6 +41,8 @@ class Recipe:
     meal_types: List[str] = field(default_factory=list)  # ["BREAKFAST", "DINNER"]
     tags: List[str] = field(default_factory=list)  # ["vegetarian", "quick"]
     kashrut: str = "parve"  # "dairy" | "meat" | "parve"
+    image_path: Optional[str] = None  # Relative path to approved image file
+    image_credit: Optional[str] = None  # Photographer credit (e.g., Pexels)
 
     def to_dict(self) -> dict:
         return {
@@ -54,6 +56,8 @@ class Recipe:
             "meal_types": self.meal_types,
             "tags": self.tags,
             "kashrut": self.kashrut,
+            "image_path": self.image_path,
+            "image_credit": self.image_credit,
         }
 
     @classmethod
@@ -70,6 +74,8 @@ class Recipe:
             meal_types=data.get("meal_types", []),
             tags=data.get("tags", []),
             kashrut=data.get("kashrut", "parve"),
+            image_path=data.get("image_path"),
+            image_credit=data.get("image_credit"),
         )
 
     @property

@@ -109,6 +109,58 @@ class DecisionType(str, Enum):
     RISKY_WRITE = "risky_write"
 
 
+class WorkoutIntensity(str, Enum):
+    LOW = "low"            # ~3 MET  (easy walk, light yoga)
+    MODERATE = "moderate"  # ~5 MET  (brisk walk, easy cycling)
+    HIGH = "high"          # ~7.5 MET (running, hard cycling)
+    EXTREME = "extreme"    # ~10 MET (HIIT, sprinting)
+
+
+class WorkoutType(str, Enum):
+    # Cardio / endurance
+    RUNNING = "running"
+    WALKING = "walking"
+    HIKING = "hiking"
+    CYCLING = "cycling"
+    SWIMMING = "swimming"
+    ROWING = "rowing"
+    ELLIPTICAL = "elliptical"
+    STAIR_CLIMBING = "stair_climbing"
+    JUMPING_ROPE = "jumping_rope"
+    # Strength / studio
+    STRENGTH = "strength"
+    CROSSFIT = "crossfit"
+    HIIT = "hiit"
+    PILATES = "pilates"
+    YOGA = "yoga"
+    DANCE = "dance"
+    # Combat sports
+    BOXING = "boxing"
+    KICKBOXING = "kickboxing"
+    MARTIAL_ARTS = "martial_arts"
+    WRESTLING = "wrestling"
+    # Ball sports
+    SOCCER = "soccer"
+    BASKETBALL = "basketball"
+    TENNIS = "tennis"
+    TABLE_TENNIS = "table_tennis"
+    BADMINTON = "badminton"
+    VOLLEYBALL = "volleyball"
+    BASEBALL = "baseball"
+    HANDBALL = "handball"
+    RUGBY = "rugby"
+    HOCKEY = "hockey"
+    GOLF = "golf"
+    # Outdoor / adventure
+    CLIMBING = "climbing"
+    SKIING = "skiing"
+    SNOWBOARDING = "snowboarding"
+    SURFING = "surfing"
+    SKATING = "skating"
+    # Fallback
+    OTHER = "other"
+
+
 class ArtifactType(str, Enum):
     SOURCE = "source"
     DERIVED = "derived"
