@@ -52,9 +52,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ── Admin gate (must be before any data rendering) ───────────────────────────
+# ── Design system ─────────────────────────────────────────────────────────
+# Admin authentication is handled at the app level (app_admin.py)
 inject_global_css()
-require_admin(page_title="דאשבורד סוכנים", icon_name="agent")
 
 # ── Top nav + page header (admin only past this point) ───────────────────────
 nav_menu(active="סוכנים")
@@ -528,94 +528,10 @@ with tab_escalations:
 # ── Tab: Recipe Images ────────────────────────────────────────────────────────
 
 with tab_recipe_images:
-    st.markdown("### 🖼️ איסוף תמונות למתכונים")
-    st.caption("הצעות תמונה נאספות אוטומטית מ-Pexels. אשר/דחה כאן — תמונה מאושרת משויכת למתכון ב-recipes.json.")
-
-    try:
-        from nutrition_app.agents.agent_recipe_images import (
-            image_fetcher as _img_fetcher,
-        )
-        from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager as _RecipeManager
-
-        # Auto-fetch a small batch on each dashboard load.
-        if "_recipe_img_batch_done" not in st.session_state:
-            with st.spinner("מחפש תמונות חדשות ב-Pexels..."):
-                batch_stats = _img_fetcher.run_batch(limit=10)
-            st.session_state["_recipe_img_batch_done"] = True
-            if batch_stats["fetched"]:
-                st.success(f"נאספו {batch_stats['fetched']} מתכונים חדשים עם הצעות.")
-            if batch_stats["no_results"]:
-                st.info(f"{batch_stats['no_results']} מתכונים לא החזירו תוצאות בחיפוש.")
-
-        stats = _img_fetcher.get_stats()
-        sc1, sc2, sc3, sc4 = st.columns(4)
-        sc1.metric("סך מתכונים", stats["total_recipes"])
-        sc2.metric("עם תמונה מאושרת", stats["with_image"])
-        sc3.metric("ממתינים לאישור", stats["pending"])
-        sc4.metric("ללא תוצאות", stats["no_results"])
-
-        col_refresh, col_reset = st.columns([1, 1])
-        if col_refresh.button("🔄 חפש batch נוסף", key="img_refetch"):
-            st.session_state.pop("_recipe_img_batch_done", None)
-            st.rerun()
-        if col_reset.button("♻️ נסה שוב לפריטים ללא תוצאות", key="img_retry_noresults"):
-            pending_all = _img_fetcher.load_pending()
-            cleaned = {k: v for k, v in pending_all.items()
-                       if v.get("status") not in ("no_results", "rejected")}
-            _img_fetcher.save_pending(cleaned)
-            st.session_state.pop("_recipe_img_batch_done", None)
-            st.rerun()
-
-        st.divider()
-
-        pending = _img_fetcher.load_pending()
-        pending_items = [(rid, entry) for rid, entry in pending.items()
-                         if entry.get("status") == "pending" and entry.get("candidates")]
-
-        if not pending_items:
-            st.info("אין הצעות ממתינות כרגע. לחץ 'חפש batch נוסף' כדי לאסוף עוד.")
-        else:
-            st.markdown(f"**{len(pending_items)} מתכונים ממתינים לאישור:**")
-            for rid, entry in pending_items:
-                name_he = entry.get("name_he", rid)
-                name_en = entry.get("name_en", "")
-                with st.expander(f"🍽️ {name_he} ({name_en})", expanded=True):
-                    candidates = entry.get("candidates", [])
-                    cols = st.columns(len(candidates))
-                    for idx, (col, cand) in enumerate(zip(cols, candidates)):
-                        abs_path = os.path.join(_img_fetcher.PROJECT_ROOT, cand["local_path"])
-                        if os.path.isfile(abs_path):
-                            try:
-                                col.image(abs_path, use_container_width=True)
-                            except Exception:
-                                col.caption("(שגיאה בטעינת תמונה)")
-                        else:
-                            col.caption("(תמונה חסרה)")
-                        photographer = cand.get("photographer", "")
-                        if photographer:
-                            col.caption(f"📷 {photographer}")
-                        if col.button("✅ בחר", key=f"img_approve_{rid}_{idx}"):
-                            result = _img_fetcher.approve(rid, idx)
-                            if result:
-                                rm = _RecipeManager()
-                                ok = rm.set_recipe_image(
-                                    rid,
-                                    result["image_path"],
-                                    result.get("image_credit"),
-                                )
-                                if ok:
-                                    st.success(f"תמונה שויכה ל-{name_he}")
-                                else:
-                                    st.error("נכשל בעדכון recipes.json")
-                            else:
-                                st.error("נכשל באישור התמונה")
-                            st.rerun()
-                    if st.button("❌ דחה הכל למתכון זה", key=f"img_reject_{rid}"):
-                        _img_fetcher.reject(rid)
-                        st.warning(f"נדחה: {name_he}")
-                        st.rerun()
-    except Exception as exc:
-        st.error(f"שגיאה בטעינת מודול תמונות מתכונים: {exc}")
+    st.markdown("### 🖼️ תמונות מתכונים")
+    st.info("ניהול אישור / דחיית תמונות הועבר לדף **מנהל תמונות** הייעודי.")
+    if st.button("🔗 עבור למנהל תמונות", type="primary"):
+        st.switch_page("pages_admin/2_photo_manager.py")
 
 # ── Tab: Feedback ─────────────────────────────────────────────────────────────
 
