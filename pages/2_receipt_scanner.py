@@ -355,7 +355,7 @@ if inv:
             st.rerun()
     with col_go:
         st.page_link(
-            "app_ui.py",
+            "app_user.py",
             label="🥗 עבור לתכנון תפריט עם המלאי שנסרק ←",
             use_container_width=True,
         )

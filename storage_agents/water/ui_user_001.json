@@ -1,0 +1,30 @@
+{
+  "user_id": "ui_user_001",
+  "daily_log": {
+    "2026-04-15": [
+      {
+        "water_id": "33e07b9b",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-15T04:17:03.432514",
+        "amount_ml": 500,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "11c109ab",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-15T04:17:05.480753",
+        "amount_ml": 750,
+        "source": "bottle",
+        "notes": null
+      }
+    ]
+  },
+  "goal": {
+    "user_id": "ui_user_001",
+    "daily_goal_ml": 3000.0,
+    "created_at": "2026-04-15T04:17:03.432501",
+    "updated_at": "2026-04-15T04:17:33.952408"
+  },
+  "updated_at": "2026-04-15T04:17:05.480770"
+}

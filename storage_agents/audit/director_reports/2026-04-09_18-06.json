@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-04-09T18:06:02.793385+00:00",
+  "tasks_created": [
+    {
+      "task_id": "f423adb4-25cb-4c93-a3d6-3f6e0328ee14",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category carbohydrate has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "7fec3ae9-5761-49d4-8eac-5c5e7d242c06",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "74c236b1-fa3b-4254-8929-9d883deb33d7",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "d805c4c5-d1e2-49ce-b5ec-342fee6c69ae",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "d5a8cddd-d2f4-4252-9630-2da5b6d39991",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: שיבולת שועל"
+    },
+    {
+      "task_id": "f5c271b4-3d52-4229-8080-b47a1229c1d7",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: שום"
+    },
+    {
+      "task_id": "1893c25b-53d9-4d98-9ab6-5e876d6f9060",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: פטרוזיליה"
+    }
+  ],
+  "system_health_score": 2,
+  "summary": "נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 4 משימות fix_meal_timing."
+}

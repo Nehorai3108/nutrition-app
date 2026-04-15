@@ -42,6 +42,8 @@ def create_user(name: str) -> dict:
     }
     data[user_id] = user
     _save(data)
+    # Initialize water data for new user
+    initialize_water(user_id)
     return user
 
 
@@ -138,3 +140,35 @@ def delete_workout(user_id: str, workout_id: str):
     workouts = [w for w in load_workouts(user_id) if w.get("workout_id") != workout_id]
     with open(_workouts_path(user_id), "w", encoding="utf-8") as f:
         json.dump(workouts, f, ensure_ascii=False, indent=2)
+
+
+# ── Water tracking per user ───────────────────────────────────────────────────
+
+def _water_path(user_id: str) -> str:
+    folder = os.path.join(os.path.dirname(__file__), "..", "storage_agents", "water")
+    os.makedirs(folder, exist_ok=True)
+    return os.path.join(folder, f"{user_id}.json")
+
+
+def initialize_water(user_id: str, daily_goal_ml: float = 2000.0) -> dict:
+    """Initialize water data for a user with default goal."""
+    from nutrition_app.models.water import UserWaterData, WaterGoal
+
+    water_data = UserWaterData(
+        user_id=user_id,
+        daily_log={},
+        goal=WaterGoal(user_id=user_id, daily_goal_ml=daily_goal_ml),
+    )
+    with open(_water_path(user_id), "w", encoding="utf-8") as f:
+        json.dump(water_data.to_dict(), f, ensure_ascii=False, indent=2)
+    return water_data.to_dict()
+
+
+def load_water(user_id: str) -> dict:
+    """Load water data for a user."""
+    path = _water_path(user_id)
+    if not os.path.exists(path):
+        # Auto-initialize if not exists
+        return initialize_water(user_id)
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)

@@ -1,0 +1,52 @@
+[
+  {
+    "date": "2026-03-31",
+    "catalog_size": 90,
+    "recipes_count": 4,
+    "templates_count": 3,
+    "health_score": 25,
+    "new_foods_added": 8,
+    "new_recipes_added": 4,
+    "critic_approved": 0,
+    "critic_total": 1,
+    "categories_coverage": {
+      "protein": 15,
+      "carbohydrate": 2,
+      "fat": 5,
+      "vegetable": 11,
+      "fruit": 8,
+      "dairy": 7,
+      "grain": 12,
+      "legume": 6,
+      "nut_seed": 8,
+      "condiment": 8,
+      "beverage": 6,
+      "other": 2
+    }
+  },
+  {
+    "date": "2026-04-15",
+    "catalog_size": 98,
+    "recipes_count": 210,
+    "templates_count": 5,
+    "health_score": 0,
+    "new_foods_added": 8,
+    "new_recipes_added": 0,
+    "critic_approved": 1,
+    "critic_total": 32,
+    "categories_coverage": {
+      "protein": 23,
+      "carbohydrate": 2,
+      "fat": 5,
+      "vegetable": 11,
+      "fruit": 8,
+      "dairy": 7,
+      "grain": 12,
+      "legume": 6,
+      "nut_seed": 8,
+      "condiment": 8,
+      "beverage": 6,
+      "other": 2
+    }
+  }
+]
