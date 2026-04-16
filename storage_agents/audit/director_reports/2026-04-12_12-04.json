@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-04-12T12:04:58.888678+00:00",
+  "tasks_created": [
+    {
+      "task_id": "59341c0e-c0e7-42b2-bf08-ee2dca22ef55",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_012 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "b04743b6-403c-41cd-9fd5-475209b1042d",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 6/7 plans. Force rotation."
+    },
+    {
+      "task_id": "38fb5b32-9232-41ef-9280-ea3ccdb15e38",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains VEGETABLE category item: תרד"
+    },
+    {
+      "task_id": "21bf3db2-fcca-4e6d-ad47-074c354964b0",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains VEGETABLE category item: פלפל אדום"
+    },
+    {
+      "task_id": "59c3c7cc-b1b8-48b0-9206-07c8c6b7e8bd",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "2cb51c3e-c68f-4bf9-87a9-a8412af13d8b",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    }
+  ],
+  "system_health_score": 24,
+  "summary": "נמצאו 6 בעיות. ציון בריאות: 24/100. פירוט: 2 משימות improve_variety, 4 משימות fix_meal_timing."
+}

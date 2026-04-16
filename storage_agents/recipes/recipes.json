@@ -10548,5 +10548,3286 @@
       "toast"
     ],
     "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_211",
+    "name_he": "חביתת גבינות עם ירקות",
+    "name_en": "Cheese Omelette with Vegetables",
+    "ingredients": [
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינה בולגרית",
+        "food_name_en": "bulgarian cheese",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל אדום",
+        "food_name_en": "red bell pepper",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תרד",
+        "food_name_en": "spinach",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 330,
+      "protein": 24,
+      "carbs": 5,
+      "fat": 24
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "BREAKFAST",
+      "DINNER"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "high-protein"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_212",
+    "name_he": "קערת בודהה עם קינואה וטחינה",
+    "name_en": "Buddha Bowl with Quinoa and Tahini",
+    "ingredients": [
+      {
+        "food_name": "קינואה",
+        "food_name_en": "quinoa",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חומוס",
+        "food_name_en": "chickpeas",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אבוקדו",
+        "food_name_en": "avocado",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תרד",
+        "food_name_en": "spinach",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "טחינה",
+        "food_name_en": "tahini",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 485,
+      "protein": 18,
+      "carbs": 55,
+      "fat": 22
+    },
+    "portions": 1,
+    "prep_time_minutes": 25,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "vegan",
+      "healthy",
+      "high-fiber"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_213",
+    "name_he": "עוף בפפריקה עם בטטה",
+    "name_en": "Paprika Chicken with Sweet Potato",
+    "ingredients": [
+      {
+        "food_name": "חזה עוף",
+        "food_name_en": "chicken breast",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בטטה",
+        "food_name_en": "sweet potato",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 540,
+      "protein": 47,
+      "carbs": 52,
+      "fat": 14
+    },
+    "portions": 2,
+    "prep_time_minutes": 40,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "high-protein",
+      "traditional"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_214",
+    "name_he": "סלט עדשים עם לימון וכוסברה",
+    "name_en": "Lentil Salad with Lemon and Cilantro",
+    "ingredients": [
+      {
+        "food_name": "עדשים אדומות",
+        "food_name_en": "red lentils",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "כוסברה",
+        "food_name_en": "cilantro",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 340,
+      "protein": 20,
+      "carbs": 45,
+      "fat": 10
+    },
+    "portions": 2,
+    "prep_time_minutes": 20,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "vegan",
+      "high-fiber",
+      "salad"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_215",
+    "name_he": "בננה שייק עם שיבולת שועל",
+    "name_en": "Banana Oat Shake",
+    "ingredients": [
+      {
+        "food_name": "בננה",
+        "food_name_en": "banana",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב",
+        "food_name_en": "milk",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שיבולת שועל",
+        "food_name_en": "oats",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חמאת בוטנים",
+        "food_name_en": "peanut butter",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 385,
+      "protein": 15,
+      "carbs": 52,
+      "fat": 13
+    },
+    "portions": 1,
+    "prep_time_minutes": 5,
+    "meal_types": [
+      "BREAKFAST",
+      "SNACK_MORNING"
+    ],
+    "tags": [
+      "dairy",
+      "quick",
+      "shake"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_216",
+    "name_he": "מג'דרה",
+    "name_en": "Mujaddara (Lentils & Rice)",
+    "ingredients": [
+      {
+        "food_name": "עדשים ירוקות",
+        "food_name_en": "green lentils",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אורז בסמטי",
+        "food_name_en": "basmati rice",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "כמון",
+        "food_name_en": "cumin",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 520,
+      "protein": 22,
+      "carbs": 90,
+      "fat": 10
+    },
+    "portions": 2,
+    "prep_time_minutes": 40,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "vegan",
+      "traditional",
+      "filling",
+      "budget-friendly"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_217",
+    "name_he": "שניצל עוף",
+    "name_en": "Chicken Schnitzel",
+    "ingredients": [
+      {
+        "food_name": "חזה עוף",
+        "food_name_en": "chicken breast",
+        "quantity": 300,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לחם חלה",
+        "food_name_en": "challah bread",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן קוקוס",
+        "food_name_en": "coconut oil",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 620,
+      "protein": 65,
+      "carbs": 28,
+      "fat": 25
+    },
+    "portions": 2,
+    "prep_time_minutes": 25,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "kids-friendly",
+      "crispy"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_218",
+    "name_he": "ממולאים (עלי גפן)",
+    "name_en": "Stuffed Grape Leaves (Warak Dawali)",
+    "ingredients": [
+      {
+        "food_name": "עלי גפן",
+        "food_name_en": "grape leaves",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אורז בסמטי",
+        "food_name_en": "basmati rice",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בשר טחון רזה",
+        "food_name_en": "ground beef",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 580,
+      "protein": 26,
+      "carbs": 72,
+      "fat": 20
+    },
+    "portions": 3,
+    "prep_time_minutes": 90,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "festive",
+      "mediterranean"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_219",
+    "name_he": "סלט חומוס ביתי",
+    "name_en": "Homemade Hummus Plate",
+    "ingredients": [
+      {
+        "food_name": "חומוס",
+        "food_name_en": "hummus",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "טחינה",
+        "food_name_en": "tahini",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פיתה",
+        "food_name_en": "pita bread",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 620,
+      "protein": 19,
+      "carbs": 68,
+      "fat": 30
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "BREAKFAST",
+      "LUNCH",
+      "SNACK"
+    ],
+    "tags": [
+      "vegetarian",
+      "traditional",
+      "quick",
+      "israeli-classic"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_220",
+    "name_he": "מרק עדשים",
+    "name_en": "Red Lentil Soup",
+    "ingredients": [
+      {
+        "food_name": "עדשים אדומות",
+        "food_name_en": "red lentils",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "כמון",
+        "food_name_en": "cumin",
+        "quantity": 5,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 490,
+      "protein": 28,
+      "carbs": 72,
+      "fat": 10
+    },
+    "portions": 3,
+    "prep_time_minutes": 35,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "vegan",
+      "traditional",
+      "warming",
+      "high-fiber"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_221",
+    "name_he": "סלט ישראלי עם חלבה",
+    "name_en": "Israeli Salad with Halva Crumble",
+    "ingredients": [
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלבה",
+        "food_name_en": "halva",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 215,
+      "protein": 5,
+      "carbs": 22,
+      "fat": 13
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "quick",
+      "salad",
+      "traditional"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_222",
+    "name_he": "חביתת ירקות",
+    "name_en": "Vegetable Omelette",
+    "ingredients": [
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל אדום",
+        "food_name_en": "red bell pepper",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תרד",
+        "food_name_en": "spinach",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 8,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 310,
+      "protein": 20,
+      "carbs": 8,
+      "fat": 22
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "BREAKFAST",
+      "LUNCH"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "high-protein"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_223",
+    "name_he": "קוסקוס מרוקאי עם ירקות",
+    "name_en": "Moroccan Vegetable Couscous",
+    "ingredients": [
+      {
+        "food_name": "קוסקוס",
+        "food_name_en": "couscous",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חומוס (מבושל)",
+        "food_name_en": "chickpeas (cooked)",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "רוטב עגבניות",
+        "food_name_en": "tomato sauce",
+        "quantity": 50,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 480,
+      "protein": 16,
+      "carbs": 72,
+      "fat": 14
+    },
+    "portions": 2,
+    "prep_time_minutes": 30,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "traditional",
+      "moroccan"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_224",
+    "name_he": "טוסט אבוקדו עם ביצה",
+    "name_en": "Avocado Toast with Egg",
+    "ingredients": [
+      {
+        "food_name": "לחם מחיטה מלאה",
+        "food_name_en": "whole wheat bread",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אבוקדו",
+        "food_name_en": "avocado",
+        "quantity": 70,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 370,
+      "protein": 14,
+      "carbs": 30,
+      "fat": 22
+    },
+    "portions": 1,
+    "prep_time_minutes": 8,
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "trendy"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_225",
+    "name_he": "מרק עדשים כתומות עם תמרים",
+    "name_en": "Orange Lentil Soup with Dates",
+    "ingredients": [
+      {
+        "food_name": "עדשים אדומות",
+        "food_name_en": "red lentils",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תמרים מג'הול",
+        "food_name_en": "medjool dates",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מים",
+        "food_name_en": "water",
+        "quantity": 500,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 480,
+      "protein": 26,
+      "carbs": 76,
+      "fat": 10
+    },
+    "portions": 3,
+    "prep_time_minutes": 35,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "soup",
+      "traditional",
+      "warming"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_226",
+    "name_he": "סלט עדשים שחורות עם ירקות",
+    "name_en": "Black Lentil Salad with Vegetables",
+    "ingredients": [
+      {
+        "food_name": "Black Lentils (Beluga)",
+        "food_id": "food_118",
+        "quantity_g": 200
+      },
+      {
+        "food_name": "Tomato",
+        "food_id": "food_080",
+        "quantity_g": 100
+      },
+      {
+        "food_name": "Cucumber",
+        "food_id": "food_081",
+        "quantity_g": 100
+      },
+      {
+        "food_name": "Red Bell Pepper",
+        "food_id": "food_018",
+        "quantity_g": 80
+      },
+      {
+        "food_name": "Olive Oil",
+        "food_id": "food_079",
+        "quantity_g": 15
+      },
+      {
+        "food_name": "Lemon",
+        "food_id": "food_070",
+        "quantity_g": 30
+      },
+      {
+        "food_name": "Parsley",
+        "food_id": "food_071",
+        "quantity_g": 10
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "dinner"
+    ],
+    "prep_time_minutes": 25,
+    "tags": [
+      "parve",
+      "vegan",
+      "high-protein",
+      "salad",
+      "healthy"
+    ]
+  },
+  {
+    "recipe_id": "recipe_227",
+    "name_he": "שקשוקה ירוקה עם תרד",
+    "name_en": "Green Shakshuka with Spinach",
+    "ingredients": [
+      {
+        "food_name": "Egg",
+        "food_id": "food_074",
+        "quantity_g": 200
+      },
+      {
+        "food_name": "Spinach",
+        "food_id": "food_017",
+        "quantity_g": 150
+      },
+      {
+        "food_name": "Onion",
+        "food_id": "food_067",
+        "quantity_g": 80
+      },
+      {
+        "food_name": "Garlic",
+        "food_id": "food_068",
+        "quantity_g": 10
+      },
+      {
+        "food_name": "Bulgarian Cheese",
+        "food_id": "food_030",
+        "quantity_g": 50
+      },
+      {
+        "food_name": "Olive Oil",
+        "food_id": "food_079",
+        "quantity_g": 15
+      }
+    ],
+    "meal_types": [
+      "breakfast",
+      "lunch"
+    ],
+    "prep_time_minutes": 20,
+    "tags": [
+      "dairy",
+      "vegetarian",
+      "traditional",
+      "quick"
+    ]
+  },
+  {
+    "recipe_id": "recipe_228",
+    "name_he": "פיתה עם חומוס ואמבה",
+    "name_en": "Pita with Hummus and Amba",
+    "ingredients": [
+      {
+        "food_name": "Pita Bread",
+        "food_id": "food_021",
+        "quantity_g": 80
+      },
+      {
+        "food_name": "Hummus",
+        "food_id": "food_052",
+        "quantity_g": 100
+      },
+      {
+        "food_name": "Amba (Mango Pickle Sauce)",
+        "food_id": "food_120",
+        "quantity_g": 15
+      },
+      {
+        "food_name": "Tomato",
+        "food_id": "food_080",
+        "quantity_g": 60
+      },
+      {
+        "food_name": "Cucumber",
+        "food_id": "food_081",
+        "quantity_g": 60
+      },
+      {
+        "food_name": "Raw Tahini (Whole)",
+        "food_id": "food_113",
+        "quantity_g": 20
+      }
+    ],
+    "meal_types": [
+      "breakfast",
+      "lunch",
+      "snack"
+    ],
+    "prep_time_minutes": 5,
+    "tags": [
+      "parve",
+      "vegan",
+      "quick",
+      "traditional",
+      "street-food"
+    ]
+  },
+  {
+    "recipe_id": "recipe_229",
+    "name_he": "בול לבן עם פיסטוקים וסילאן",
+    "name_en": "Laban Bowl with Pistachios and Silan",
+    "ingredients": [
+      {
+        "food_name": "Laban (Fermented Milk)",
+        "food_id": "food_115",
+        "quantity_g": 250
+      },
+      {
+        "food_name": "Pistachios",
+        "food_id": "food_119",
+        "quantity_g": 20
+      },
+      {
+        "food_name": "Date Syrup (Silan)",
+        "food_id": "food_109",
+        "quantity_g": 15
+      },
+      {
+        "food_name": "Granola",
+        "food_id": "food_063",
+        "quantity_g": 30
+      }
+    ],
+    "meal_types": [
+      "breakfast",
+      "snack"
+    ],
+    "prep_time_minutes": 3,
+    "tags": [
+      "dairy",
+      "quick",
+      "sweet",
+      "healthy"
+    ]
+  },
+  {
+    "recipe_id": "recipe_230",
+    "name_he": "סחלב חם עם פיסטוקים וקינמון",
+    "name_en": "Hot Sahlab with Pistachios and Cinnamon",
+    "ingredients": [
+      {
+        "food_name": "Sahlab (Hot Milk Drink)",
+        "food_id": "food_117",
+        "quantity_g": 300
+      },
+      {
+        "food_name": "Pistachios",
+        "food_id": "food_119",
+        "quantity_g": 10
+      }
+    ],
+    "meal_types": [
+      "snack"
+    ],
+    "prep_time_minutes": 10,
+    "tags": [
+      "dairy",
+      "sweet",
+      "winter",
+      "traditional"
+    ]
+  },
+  {
+    "recipe_id": "recipe_231",
+    "name_he": "שניצל עוף עם סלט ירקות",
+    "name_en": "Chicken Schnitzel with Vegetable Salad",
+    "ingredients": [
+      {
+        "food_name": "שניצל עוף",
+        "food_name_en": "chicken schnitzel",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "dinner"
+    ],
+    "prep_time_minutes": 25,
+    "tags": [
+      "meat",
+      "traditional",
+      "filling"
+    ]
+  },
+  {
+    "recipe_id": "recipe_232",
+    "name_he": "סלט רימונים ובורגול",
+    "name_en": "Pomegranate Bulgur Salad",
+    "ingredients": [
+      {
+        "food_name": "בורגול",
+        "food_name_en": "bulgur",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "רימון",
+        "food_name_en": "pomegranate",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 30,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "side"
+    ],
+    "prep_time_minutes": 20,
+    "tags": [
+      "parve",
+      "vegan",
+      "seasonal",
+      "traditional"
+    ]
+  },
+  {
+    "recipe_id": "recipe_233",
+    "name_he": "קובה בסלק",
+    "name_en": "Kubeh in Beet Soup",
+    "ingredients": [
+      {
+        "food_name": "קובה בורגול",
+        "food_name_en": "kubeh (bulgur shell)",
+        "quantity": 160,
+        "unit": "grams"
+      },
+      {
+        "food_name": "סלק",
+        "food_name_en": "beet",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "כוסברה",
+        "food_name_en": "cilantro",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 40,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "dinner"
+    ],
+    "prep_time_minutes": 45,
+    "tags": [
+      "meat",
+      "traditional",
+      "iraqi",
+      "soup"
+    ]
+  },
+  {
+    "recipe_id": "recipe_234",
+    "name_he": "צפתית עם זעתר ושמן זית",
+    "name_en": "Tzfatit Cheese with Za'atar and Olive Oil",
+    "ingredients": [
+      {
+        "food_name": "גבינת צפתית",
+        "food_name_en": "tzfatit cheese",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זעתר",
+        "food_name_en": "za'atar spice mix",
+        "quantity": 5,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פיתה",
+        "food_name_en": "pita bread",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 80,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "breakfast",
+      "snack"
+    ],
+    "prep_time_minutes": 5,
+    "tags": [
+      "dairy",
+      "quick",
+      "traditional",
+      "galilean"
+    ]
+  },
+  {
+    "recipe_id": "recipe_235",
+    "name_he": "פרסימון עם יוגורט ודבש",
+    "name_en": "Persimmon Yogurt Bowl with Honey",
+    "ingredients": [
+      {
+        "food_name": "אפרסמון",
+        "food_name_en": "persimmon (sharon fruit)",
+        "quantity": 170,
+        "unit": "grams"
+      },
+      {
+        "food_name": "יוגורט יווני",
+        "food_name_en": "greek yogurt",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "דבש",
+        "food_name_en": "honey",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גרנולה",
+        "food_name_en": "granola",
+        "quantity": 30,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "breakfast",
+      "snack"
+    ],
+    "prep_time_minutes": 5,
+    "tags": [
+      "dairy",
+      "quick",
+      "seasonal",
+      "sweet"
+    ]
+  },
+  {
+    "recipe_id": "recipe_236",
+    "name_he": "עוף בפריקה עם ירקות",
+    "name_en": "Chicken with Freekeh and Vegetables",
+    "ingredients": [
+      {
+        "food_name": "חזה עוף",
+        "food_name_en": "chicken breast",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פריקה",
+        "food_name_en": "freekeh",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 70,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "dinner"
+    ],
+    "prep_time_minutes": 35,
+    "tags": [
+      "meat",
+      "traditional",
+      "mediterranean",
+      "whole_grain"
+    ]
+  },
+  {
+    "recipe_id": "recipe_237",
+    "name_he": "סלט סלק קלוי עם פטה",
+    "name_en": "Roasted Beet Salad with Feta",
+    "ingredients": [
+      {
+        "food_name": "סלק",
+        "food_name_en": "beetroot",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינת פטה",
+        "food_name_en": "feta cheese",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אגוזי מלך",
+        "food_name_en": "walnuts",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חסה",
+        "food_name_en": "lettuce",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "dinner"
+    ],
+    "prep_time_minutes": 40,
+    "tags": [
+      "dairy",
+      "vegetarian",
+      "salad",
+      "mediterranean"
+    ]
+  },
+  {
+    "recipe_id": "recipe_238",
+    "name_he": "אמנון בתנור עם לימון ושום",
+    "name_en": "Baked Tilapia with Lemon and Garlic",
+    "ingredients": [
+      {
+        "food_name": "אמנון",
+        "food_name_en": "tilapia",
+        "quantity": 180,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "dinner"
+    ],
+    "prep_time_minutes": 25,
+    "tags": [
+      "fish",
+      "parve",
+      "quick",
+      "mediterranean",
+      "light"
+    ]
+  },
+  {
+    "recipe_id": "recipe_239",
+    "name_he": "פטריות ברוטב שום וחריסה",
+    "name_en": "Garlic Harissa Mushrooms",
+    "ingredients": [
+      {
+        "food_name": "פטריות",
+        "food_name_en": "mushrooms",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חריסה",
+        "food_name_en": "harissa",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "lunch",
+      "dinner",
+      "snack"
+    ],
+    "prep_time_minutes": 15,
+    "tags": [
+      "parve",
+      "vegan",
+      "quick",
+      "spicy",
+      "north_african"
+    ]
+  },
+  {
+    "recipe_id": "recipe_240",
+    "name_he": "קערת פקאן וסלק עם לבנה",
+    "name_en": "Pecan Beet Bowl with Labneh",
+    "ingredients": [
+      {
+        "food_name": "סלק",
+        "food_name_en": "beetroot",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לבנה",
+        "food_name_en": "labneh",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אגוזי פקאן",
+        "food_name_en": "pecans",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "סילאן",
+        "food_name_en": "date syrup",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זעתר",
+        "food_name_en": "za'atar",
+        "quantity": 3,
+        "unit": "grams"
+      }
+    ],
+    "meal_types": [
+      "breakfast",
+      "snack",
+      "lunch"
+    ],
+    "prep_time_minutes": 10,
+    "tags": [
+      "dairy",
+      "vegetarian",
+      "quick",
+      "mediterranean"
+    ]
+  },
+  {
+    "recipe_id": "recipe_241",
+    "name_he": "דניס צלוי עם ירקות ים תיכוני",
+    "name_en": "Roasted Sea Bream with Mediterranean Vegetables",
+    "ingredients": [
+      {
+        "food_name": "דניס",
+        "food_name_en": "sea bream",
+        "quantity": 300,
+        "unit": "grams"
+      },
+      {
+        "food_name": "קישוא",
+        "food_name_en": "zucchini",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 570,
+      "protein": 63,
+      "carbs": 14,
+      "fat": 29
+    },
+    "portions": 2,
+    "prep_time_minutes": 30,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "fish",
+      "parve",
+      "mediterranean",
+      "healthy",
+      "gluten-free"
+    ]
+  },
+  {
+    "recipe_id": "recipe_242",
+    "name_he": "במיה ברוטב עגבניות",
+    "name_en": "Bamya in Tomato Sauce",
+    "ingredients": [
+      {
+        "food_name": "במיה",
+        "food_name_en": "okra",
+        "quantity": 400,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 250,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 410,
+      "protein": 10,
+      "carbs": 45,
+      "fat": 22
+    },
+    "portions": 3,
+    "prep_time_minutes": 45,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "vegan",
+      "parve",
+      "traditional",
+      "iraqi",
+      "gluten-free"
+    ]
+  },
+  {
+    "recipe_id": "recipe_243",
+    "name_he": "סביח בלאפה",
+    "name_en": "Sabich in Lafa",
+    "ingredients": [
+      {
+        "food_name": "לאפה",
+        "food_name_en": "lafa bread",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חציל",
+        "food_name_en": "eggplant",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חומוס",
+        "food_name_en": "hummus",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "טחינה",
+        "food_name_en": "tahini",
+        "quantity": 25,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 60,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 620,
+      "protein": 22,
+      "carbs": 68,
+      "fat": 30
+    },
+    "portions": 1,
+    "prep_time_minutes": 20,
+    "meal_types": [
+      "BREAKFAST",
+      "LUNCH"
+    ],
+    "tags": [
+      "vegetarian",
+      "parve",
+      "traditional",
+      "iraqi-jewish",
+      "street-food"
+    ]
+  },
+  {
+    "recipe_id": "recipe_244",
+    "name_he": "סלט קולורבי ומשמש",
+    "name_en": "Kohlrabi and Apricot Salad",
+    "ingredients": [
+      {
+        "food_name": "קולורבי",
+        "food_name_en": "kohlrabi",
+        "quantity": 250,
+        "unit": "grams"
+      },
+      {
+        "food_name": "משמש",
+        "food_name_en": "apricot",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "צנוברים",
+        "food_name_en": "pine nuts",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 340,
+      "protein": 6,
+      "carbs": 38,
+      "fat": 21
+    },
+    "portions": 2,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "LUNCH",
+      "SNACK"
+    ],
+    "tags": [
+      "vegan",
+      "parve",
+      "quick",
+      "raw",
+      "gluten-free"
+    ]
+  },
+  {
+    "recipe_id": "recipe_245",
+    "name_he": "פסטה עם פסטו וגבינת קשקבל",
+    "name_en": "Pasta with Pesto and Kashkaval",
+    "ingredients": [
+      {
+        "food_name": "פסטה",
+        "food_name_en": "pasta",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פסטו",
+        "food_name_en": "pesto",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "קשקבל",
+        "food_name_en": "kashkaval",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 720,
+      "protein": 24,
+      "carbs": 82,
+      "fat": 32
+    },
+    "portions": 2,
+    "prep_time_minutes": 15,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "dairy",
+      "vegetarian",
+      "quick",
+      "italian-inspired"
+    ]
+  },
+  {
+    "recipe_id": "recipe_246",
+    "name_he": "סלט פריקה עם רימון",
+    "name_en": "Freekeh Salad with Pomegranate",
+    "ingredients": [
+      {
+        "food_name": "פריקה",
+        "food_name_en": "freekeh",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "רימון",
+        "food_name_en": "pomegranate",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "נענע",
+        "food_name_en": "mint",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "סומאק",
+        "food_name_en": "sumac",
+        "quantity": 3,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 470,
+      "protein": 13,
+      "carbs": 75,
+      "fat": 15
+    },
+    "portions": 1,
+    "prep_time_minutes": 25,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "vegan",
+      "traditional",
+      "mediterranean"
+    ]
+  },
+  {
+    "recipe_id": "recipe_247",
+    "name_he": "הלומי צלוי עם ירקות",
+    "name_en": "Grilled Halloumi with Vegetables",
+    "ingredients": [
+      {
+        "food_name": "גבינת הלומי",
+        "food_name_en": "halloumi",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זוקיני",
+        "food_name_en": "zucchini",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 395,
+      "protein": 19,
+      "carbs": 12,
+      "fat": 30
+    },
+    "portions": 1,
+    "prep_time_minutes": 15,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "dairy",
+      "vegetarian",
+      "quick",
+      "low-carb"
+    ]
+  },
+  {
+    "recipe_id": "recipe_248",
+    "name_he": "מקרל בתנור עם לימון ועשבי תיבול",
+    "name_en": "Baked Mackerel with Lemon and Herbs",
+    "ingredients": [
+      {
+        "food_name": "מקרל",
+        "food_name_en": "mackerel",
+        "quantity": 180,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 8,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 490,
+      "protein": 36,
+      "carbs": 5,
+      "fat": 36
+    },
+    "portions": 1,
+    "prep_time_minutes": 25,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "fish",
+      "omega3",
+      "traditional"
+    ]
+  },
+  {
+    "recipe_id": "recipe_249",
+    "name_he": "מלאווח עם ביצה ועגבנייה מרוסקת",
+    "name_en": "Malawach with Egg and Crushed Tomato",
+    "ingredients": [
+      {
+        "food_name": "מלאווח",
+        "food_name_en": "malawach",
+        "quantity": 110,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 595,
+      "protein": 18,
+      "carbs": 46,
+      "fat": 36
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "tags": [
+      "parve",
+      "yemenite",
+      "traditional",
+      "weekend"
+    ]
+  },
+  {
+    "recipe_id": "recipe_250",
+    "name_he": "סלט צבר וחרוב",
+    "name_en": "Prickly Pear and Carob Snack Bowl",
+    "ingredients": [
+      {
+        "food_name": "צבר",
+        "food_name_en": "prickly pear",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אבקת חרוב",
+        "food_name_en": "carob powder",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "יוגורט",
+        "food_name_en": "yogurt",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שקדים",
+        "food_name_en": "almonds",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 340,
+      "protein": 12,
+      "carbs": 38,
+      "fat": 15
+    },
+    "portions": 1,
+    "prep_time_minutes": 5,
+    "meal_types": [
+      "BREAKFAST",
+      "SNACK"
+    ],
+    "tags": [
+      "dairy",
+      "vegetarian",
+      "quick",
+      "traditional"
+    ]
+  },
+  {
+    "recipe_id": "recipe_251",
+    "name_he": "לוביה בעגבניות",
+    "name_en": "Black-Eyed Pea Stew",
+    "ingredients": [
+      {
+        "food_name": "לוביה",
+        "food_name_en": "black-eyed peas",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "כוסברה",
+        "food_name_en": "cilantro",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 370,
+      "protein": 19,
+      "carbs": 52,
+      "fat": 10
+    },
+    "portions": 2,
+    "prep_time_minutes": 35,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "vegan",
+      "traditional",
+      "legume"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_252",
+    "name_he": "טוסט לחם שיפון עם גבינה בולגרית וזעתר",
+    "name_en": "Rye Bread Toast with Bulgarian Cheese and Za'atar",
+    "ingredients": [
+      {
+        "food_name": "לחם שיפון",
+        "food_name_en": "rye bread",
+        "quantity": 64,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינה בולגרית",
+        "food_name_en": "bulgarian cheese",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זעתר",
+        "food_name_en": "za'atar spice mix",
+        "quantity": 5,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 385,
+      "protein": 16,
+      "carbs": 38,
+      "fat": 19
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "BREAKFAST",
+      "SNACK"
+    ],
+    "tags": [
+      "dairy",
+      "vegetarian",
+      "quick"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_253",
+    "name_he": "שייק סויה ובננה",
+    "name_en": "Soy Milk Banana Smoothie",
+    "ingredients": [
+      {
+        "food_name": "חלב סויה",
+        "food_name_en": "soy milk",
+        "quantity": 250,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בננה",
+        "food_name_en": "banana",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חמאת בוטנים",
+        "food_name_en": "peanut butter",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תמרים",
+        "food_name_en": "medjool dates",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 345,
+      "protein": 16,
+      "carbs": 45,
+      "fat": 12
+    },
+    "portions": 1,
+    "prep_time_minutes": 5,
+    "meal_types": [
+      "BREAKFAST",
+      "SNACK"
+    ],
+    "tags": [
+      "parve",
+      "vegan",
+      "quick"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_254",
+    "name_he": "פריקה עם עוף וירקות",
+    "name_en": "Freekeh with Chicken and Vegetables",
+    "ingredients": [
+      {
+        "food_name": "פריקה",
+        "food_name_en": "freekeh (cooked)",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חזה עוף",
+        "food_name_en": "chicken breast",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 520,
+      "protein": 45,
+      "carbs": 55,
+      "fat": 12
+    },
+    "portions": 2,
+    "prep_time_minutes": 40,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "high-protein"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_255",
+    "name_he": "סלט לוביה עם שמן אגוזי מלך",
+    "name_en": "Black-Eyed Pea Salad with Walnut Oil Dressing",
+    "ingredients": [
+      {
+        "food_name": "לוביה",
+        "food_name_en": "black-eyed peas",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן אגוזי מלך",
+        "food_name_en": "walnut oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 280,
+      "protein": 14,
+      "carbs": 38,
+      "fat": 10
+    },
+    "portions": 2,
+    "prep_time_minutes": 15,
+    "meal_types": [
+      "LUNCH",
+      "DINNER",
+      "SNACK"
+    ],
+    "tags": [
+      "parve",
+      "vegan",
+      "quick",
+      "salad"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_256",
+    "name_he": "מפרום (תפוחי אדמה ממולאים)",
+    "name_en": "Mafrum (Stuffed Potatoes)",
+    "ingredients": [
+      {
+        "food_name": "תפוח אדמה",
+        "food_name_en": "potato",
+        "quantity": 300,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בשר טחון",
+        "food_name_en": "ground beef (lean)",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "רסק עגבניות",
+        "food_name_en": "tomato sauce",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 680,
+      "protein": 42,
+      "carbs": 62,
+      "fat": 28
+    },
+    "portions": 2,
+    "prep_time_minutes": 60,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "tripolitean",
+      "libyan"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_257",
+    "name_he": "סלט עדשים ובורגול",
+    "name_en": "Lentil and Bulgur Salad",
+    "ingredients": [
+      {
+        "food_name": "עדשים ירוקות",
+        "food_name_en": "green lentils",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בורגול",
+        "food_name_en": "bulgur wheat",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 520,
+      "protein": 24,
+      "carbs": 80,
+      "fat": 12
+    },
+    "portions": 2,
+    "prep_time_minutes": 30,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "vegan",
+      "healthy",
+      "salad"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_258",
+    "name_he": "קציצות בקר ברוטב עגבניות",
+    "name_en": "Beef Meatballs in Tomato Sauce",
+    "ingredients": [
+      {
+        "food_name": "קציצות בקר",
+        "food_name_en": "beef meatballs",
+        "quantity": 240,
+        "unit": "grams"
+      },
+      {
+        "food_name": "רסק עגבניות",
+        "food_name_en": "tomato sauce",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 580,
+      "protein": 44,
+      "carbs": 22,
+      "fat": 34
+    },
+    "portions": 2,
+    "prep_time_minutes": 40,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "comfort"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_259",
+    "name_he": "טוסט פומפרניקל עם לבנה ועגבניות",
+    "name_en": "Pumpernickel Toast with Labneh and Tomatoes",
+    "ingredients": [
+      {
+        "food_name": "לחם שיפון כהה",
+        "food_name_en": "dark rye pumpernickel",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לבנה",
+        "food_name_en": "labneh",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זעתר",
+        "food_name_en": "za'atar spice mix",
+        "quantity": 5,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 310,
+      "protein": 10,
+      "carbs": 36,
+      "fat": 14
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "BREAKFAST",
+      "SNACK_1"
+    ],
+    "tags": [
+      "dairy",
+      "quick",
+      "healthy"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_260",
+    "name_he": "שייק פשתן ובננה",
+    "name_en": "Flax Seed Banana Smoothie",
+    "ingredients": [
+      {
+        "food_name": "בננה",
+        "food_name_en": "banana",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זרעי פשתן",
+        "food_name_en": "flax seeds",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב",
+        "food_name_en": "milk (3%)",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "דבש",
+        "food_name_en": "honey",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 310,
+      "protein": 12,
+      "carbs": 46,
+      "fat": 10
+    },
+    "portions": 1,
+    "prep_time_minutes": 5,
+    "meal_types": [
+      "BREAKFAST",
+      "SNACK_1",
+      "SNACK_2"
+    ],
+    "tags": [
+      "dairy",
+      "quick",
+      "smoothie",
+      "healthy"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_261",
+    "name_he": "סלט יווני עם מוצרלה",
+    "name_en": "Greek-Style Salad with Mozzarella",
+    "ingredients": [
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינת מוצרלה",
+        "food_name_en": "mozzarella",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זיתים ירוקים",
+        "food_name_en": "green olives",
+        "quantity": 25,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 280,
+      "protein": 12,
+      "carbs": 10,
+      "fat": 22
+    },
+    "portions": 1,
+    "prep_time_minutes": 10,
+    "meal_types": [
+      "LUNCH",
+      "DINNER",
+      "SNACK_1"
+    ],
+    "tags": [
+      "dairy",
+      "quick",
+      "salad",
+      "mediterranean",
+      "vegetarian"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_262",
+    "name_he": "מרק אפונה יבשה",
+    "name_en": "Split Pea Soup",
+    "ingredients": [
+      {
+        "food_name": "אפונה יבשה",
+        "food_name_en": "split peas",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תפוח אדמה",
+        "food_name_en": "potato",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 380,
+      "protein": 16,
+      "carbs": 62,
+      "fat": 8
+    },
+    "portions": 2,
+    "prep_time_minutes": 45,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "traditional",
+      "soup",
+      "vegan",
+      "high_fiber"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_263",
+    "name_he": "סולת מתוקה עם חלב",
+    "name_en": "Sweet Semolina Milk Porridge",
+    "ingredients": [
+      {
+        "food_name": "סולת",
+        "food_name_en": "semolina",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב",
+        "food_name_en": "milk (3%)",
+        "quantity": 250,
+        "unit": "grams"
+      },
+      {
+        "food_name": "דבש",
+        "food_name_en": "honey",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אגוזי לוז",
+        "food_name_en": "hazelnuts",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 435,
+      "protein": 15,
+      "carbs": 64,
+      "fat": 14
+    },
+    "portions": 1,
+    "prep_time_minutes": 15,
+    "meal_types": [
+      "BREAKFAST",
+      "SNACK_2"
+    ],
+    "tags": [
+      "dairy",
+      "traditional",
+      "comfort",
+      "sweet"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_264",
+    "name_he": "סנדוויץ' טונה עם מיונז ומלפפון חמוץ",
+    "name_en": "Tuna Sandwich with Mayo and Pickles",
+    "ingredients": [
+      {
+        "food_name": "לחם מחיטה מלאה",
+        "food_name_en": "whole wheat bread",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "טונה",
+        "food_name_en": "canned tuna",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מיונז",
+        "food_name_en": "mayonnaise",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלפפונים חמוצים",
+        "food_name_en": "pickles",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חסה",
+        "food_name_en": "lettuce",
+        "quantity": 30,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 470,
+      "protein": 32,
+      "carbs": 42,
+      "fat": 19
+    },
+    "portions": 1,
+    "prep_time_minutes": 8,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "quick",
+      "sandwich",
+      "high_protein"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_265",
+    "name_he": "אורז בר עם שקדים ושסק",
+    "name_en": "Wild Rice with Almonds and Loquat",
+    "ingredients": [
+      {
+        "food_name": "אורז בר",
+        "food_name_en": "wild rice",
+        "quantity": 180,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שקדים",
+        "food_name_en": "almonds",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שסק",
+        "food_name_en": "loquat",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 8,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 405,
+      "protein": 12,
+      "carbs": 62,
+      "fat": 14
+    },
+    "portions": 1,
+    "prep_time_minutes": 40,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "healthy",
+      "side",
+      "vegan"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_266",
+    "name_he": "חמין ירושלמי",
+    "name_en": "Jerusalem Chamin (Cholent)",
+    "ingredients": [
+      {
+        "food_name": "בקר טחון",
+        "food_name_en": "ground beef",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תפוחי אדמה",
+        "food_name_en": "potato",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חיטה",
+        "food_name_en": "barley",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חומוס מבושל",
+        "food_name_en": "chickpeas",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 680,
+      "protein": 42,
+      "carbs": 62,
+      "fat": 24
+    },
+    "portions": 1,
+    "prep_time_minutes": 30,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "shabbat",
+      "slow_cook",
+      "high_protein"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_267",
+    "name_he": "קציצות דגים מרוקאיות",
+    "name_en": "Moroccan Fish Patties",
+    "ingredients": [
+      {
+        "food_name": "טונה",
+        "food_name_en": "tuna (canned)",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לחם",
+        "food_name_en": "bread",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן קנולה",
+        "food_name_en": "canola oil",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 460,
+      "protein": 40,
+      "carbs": 18,
+      "fat": 25
+    },
+    "portions": 1,
+    "prep_time_minutes": 25,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "parve",
+      "traditional",
+      "moroccan",
+      "high_protein",
+      "fried"
+    ],
+    "kashrut": "parve"
+  },
+  {
+    "recipe_id": "recipe_268",
+    "name_he": "ירקות ממולאים",
+    "name_en": "Stuffed Vegetables with Meat and Rice",
+    "ingredients": [
+      {
+        "food_name": "בקר טחון",
+        "food_name_en": "ground beef",
+        "quantity": 130,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אורז לבן",
+        "food_name_en": "white rice",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל ירוק",
+        "food_name_en": "green pepper",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 520,
+      "protein": 34,
+      "carbs": 42,
+      "fat": 22
+    },
+    "portions": 1,
+    "prep_time_minutes": 60,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "stuffed",
+      "baked",
+      "mediterranean"
+    ],
+    "kashrut": "meat"
+  },
+  {
+    "recipe_id": "recipe_269",
+    "name_he": "ביצת עין בלחם",
+    "name_en": "Egg-in-a-Hole Toast (Israeli Breakfast)",
+    "ingredients": [
+      {
+        "food_name": "לחם",
+        "food_name_en": "bread",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חמאה",
+        "food_name_en": "butter",
+        "quantity": 8,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלח ים",
+        "food_name_en": "salt",
+        "quantity": 1,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 250,
+      "protein": 12,
+      "carbs": 22,
+      "fat": 13
+    },
+    "portions": 1,
+    "prep_time_minutes": 8,
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "tags": [
+      "dairy",
+      "quick",
+      "breakfast",
+      "classic"
+    ],
+    "kashrut": "dairy"
+  },
+  {
+    "recipe_id": "recipe_270",
+    "name_he": "מרק עוף ירושלמי",
+    "name_en": "Jerusalem Chicken Soup",
+    "ingredients": [
+      {
+        "food_name": "חזה עוף",
+        "food_name_en": "chicken breast",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "סלרי",
+        "food_name_en": "celery",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אטריות",
+        "food_name_en": "noodles",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 8,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 420,
+      "protein": 48,
+      "carbs": 30,
+      "fat": 10
+    },
+    "portions": 1,
+    "prep_time_minutes": 50,
+    "meal_types": [
+      "LUNCH",
+      "DINNER"
+    ],
+    "tags": [
+      "meat",
+      "traditional",
+      "shabbat",
+      "soup",
+      "comfort",
+      "high_protein"
+    ],
+    "kashrut": "meat"
   }
 ]

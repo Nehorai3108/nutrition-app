@@ -1,6 +1,7 @@
 [2026-03-30 19:21:25] tasks=2 health=70 summary=נמצאו 2 בעיות. ציון בריאות: 70/100. פירוט: 2 משימות expand_catalog.
 [2026-04-02 20:18:08] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 2 משימות expand_catalog, 3 משימות fix_meal_timing.
 [2026-04-02 20:37:33] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 2 משימות expand_catalog, 3 משימות fix_meal_timing.
+<<<<<<< Updated upstream
 [2026-04-15 07:06:31] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 4 משימות fix_meal_timing.
 [2026-04-15 07:06:31] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 3 משימות fix_meal_timing.
 [2026-04-15 07:06:31] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 6 משימות fix_meal_timing.
@@ -22,3 +23,266 @@
 [2026-04-15 07:06:38] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 7 משימות fix_meal_timing.
 [2026-04-15 07:06:38] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 4 משימות fix_meal_timing.
 [2026-04-15 07:06:39] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 8 משימות fix_meal_timing.
+=======
+[2026-04-05 11:34:44] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 2 משימות expand_catalog, 3 משימות fix_meal_timing.
+[2026-04-05 11:34:44] tasks=5 health=39 summary=נמצאו 5 בעיות. ציון בריאות: 39/100. פירוט: 2 משימות expand_catalog, 2 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-05 11:34:45] tasks=4 health=40 summary=נמצאו 4 בעיות. ציון בריאות: 40/100. פירוט: 2 משימות expand_catalog, 2 משימות fix_meal_timing.
+[2026-04-05 11:34:45] tasks=7 health=0 summary=נמצאו 7 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 5 משימות fix_meal_timing.
+[2026-04-05 11:34:45] tasks=12 health=0 summary=נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 10 משימות fix_meal_timing.
+[2026-04-05 11:34:46] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 6 משימות fix_meal_timing.
+[2026-04-05 11:34:46] tasks=4 health=40 summary=נמצאו 4 בעיות. ציון בריאות: 40/100. פירוט: 2 משימות expand_catalog, 2 משימות fix_meal_timing.
+[2026-04-05 11:34:47] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-05 11:34:47] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-05 11:34:48] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-05 11:34:49] tasks=13 health=0 summary=נמצאו 13 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-05 11:34:50] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-05 11:34:51] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-05 11:34:52] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-05 11:34:53] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-05 11:34:54] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-05 11:34:55] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-05 11:34:55] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-05 11:34:56] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 2 משימות expand_catalog, 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-05 11:34:57] tasks=14 health=0 summary=נמצאו 14 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 3 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-05 12:04:44] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-05 12:04:45] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-05 12:04:46] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-05 12:04:47] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-05 12:04:48] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-05 12:04:50] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 1 משימות expand_catalog, 4 משימות fix_meal_timing.
+[2026-04-05 12:04:51] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 7 משימות fix_meal_timing.
+[2026-04-05 12:04:53] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-05 12:04:54] tasks=12 health=0 summary=נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-05 12:04:55] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-05 12:04:56] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-05 12:04:58] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 1 משימות expand_catalog, 2 משימות fix_meal_timing.
+[2026-04-05 12:04:59] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-05 12:05:01] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 1 משימות expand_catalog, 2 משימות fix_meal_timing.
+[2026-04-05 12:05:02] tasks=6 health=10 summary=נמצאו 6 בעיות. ציון בריאות: 10/100. פירוט: 1 משימות expand_catalog, 5 משימות fix_meal_timing.
+[2026-04-05 12:05:03] tasks=4 health=40 summary=נמצאו 4 בעיות. ציון בריאות: 40/100. פירוט: 1 משימות expand_catalog, 3 משימות fix_meal_timing.
+[2026-04-05 12:05:04] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-05 12:05:05] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-05 12:05:07] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-05 12:05:08] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-06 14:50:34] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-06 14:50:35] tasks=12 health=0 summary=נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 11 משימות fix_meal_timing.
+[2026-04-06 14:50:36] tasks=6 health=10 summary=נמצאו 6 בעיות. ציון בריאות: 10/100. פירוט: 6 משימות fix_meal_timing.
+[2026-04-06 14:50:38] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-06 14:50:39] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-06 14:50:40] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-06 14:50:42] tasks=6 health=24 summary=נמצאו 6 בעיות. ציון בריאות: 24/100. פירוט: 2 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-06 14:50:43] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-06 14:50:45] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-06 14:50:46] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-06 14:50:47] tasks=1 health=85 summary=נמצאו 1 בעיות. ציון בריאות: 85/100. פירוט: 1 משימות fix_meal_timing.
+[2026-04-06 14:50:49] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 8 משימות fix_meal_timing.
+[2026-04-06 14:50:50] tasks=4 health=40 summary=נמצאו 4 בעיות. ציון בריאות: 40/100. פירוט: 4 משימות fix_meal_timing.
+[2026-04-06 14:50:51] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-06 14:50:52] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-06 14:50:54] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-06 14:50:55] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-06 14:50:57] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-06 14:50:58] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-06 14:50:59] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-06 14:51:07] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-06 14:51:08] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-06 14:51:10] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-06 14:51:11] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-06 14:51:13] tasks=2 health=77 summary=נמצאו 2 בעיות. ציון בריאות: 77/100. פירוט: 1 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-06 14:51:14] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-06 14:51:16] tasks=2 health=77 summary=נמצאו 2 בעיות. ציון בריאות: 77/100. פירוט: 1 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-06 14:51:17] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-06 14:51:18] tasks=6 health=10 summary=נמצאו 6 בעיות. ציון בריאות: 10/100. פירוט: 6 משימות fix_meal_timing.
+[2026-04-06 14:51:20] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-06 14:51:22] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-06 14:51:24] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-06 14:51:25] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-06 14:51:27] tasks=8 health=1 summary=נמצאו 8 בעיות. ציון בריאות: 1/100. פירוט: 2 משימות improve_variety, 5 משימות fix_meal_timing, 1 משימות rebalance_macros.
+[2026-04-06 14:51:28] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-06 14:51:30] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing, 1 משימות rebalance_macros.
+[2026-04-06 14:51:32] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-06 14:51:33] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-06 14:51:35] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-06 14:51:37] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-07 15:01:06] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-07 15:01:08] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-07 15:01:09] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-07 15:01:11] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-07 15:01:13] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-07 15:01:15] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-07 15:01:17] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-07 15:01:18] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-07 15:01:20] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-07 15:01:22] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-07 15:01:24] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-07 15:01:26] tasks=5 health=39 summary=נמצאו 5 בעיות. ציון בריאות: 39/100. פירוט: 2 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-07 15:01:28] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-07 15:01:29] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-07 15:01:31] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-07 15:01:33] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-07 15:01:35] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-07 15:01:37] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-07 15:01:39] tasks=2 health=77 summary=נמצאו 2 בעיות. ציון בריאות: 77/100. פירוט: 1 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-07 15:01:40] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-08 15:01:19] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-08 15:01:21] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-08 15:01:23] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-08 15:01:25] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-08 15:01:27] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-08 15:01:29] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-08 15:01:31] tasks=4 health=54 summary=נמצאו 4 בעיות. ציון בריאות: 54/100. פירוט: 2 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-08 15:01:33] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-08 15:01:35] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-08 15:01:37] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-08 15:01:39] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-08 15:01:41] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-08 15:01:43] tasks=6 health=24 summary=נמצאו 6 בעיות. ציון בריאות: 24/100. פירוט: 2 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-08 15:01:45] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-08 15:01:47] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-08 15:01:49] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-08 15:01:51] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-08 15:01:53] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-08 15:01:55] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-08 15:01:57] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-09 14:58:04] tasks=2 health=77 summary=נמצאו 2 בעיות. ציון בריאות: 77/100. פירוט: 1 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-10 12:04:57] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-10 12:04:59] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-10 12:05:01] tasks=6 health=31 summary=נמצאו 6 בעיות. ציון בריאות: 31/100. פירוט: 3 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-10 12:05:03] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-10 12:05:05] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-10 12:05:07] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-10 12:05:09] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-10 12:05:11] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-10 12:05:14] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-10 12:05:16] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-10 12:05:18] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-10 12:05:20] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-10 12:05:22] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-10 12:05:25] tasks=5 health=39 summary=נמצאו 5 בעיות. ציון בריאות: 39/100. פירוט: 2 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-10 12:05:27] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-10 12:05:29] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-10 12:05:31] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-10 12:05:33] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-10 12:05:36] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-10 12:05:38] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 10 משימות fix_meal_timing.
+[2026-04-11 12:05:03] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-11 12:05:06] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-11 12:05:08] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 8 משימות fix_meal_timing.
+[2026-04-11 12:05:10] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-11 12:05:13] tasks=4 health=54 summary=נמצאו 4 בעיות. ציון בריאות: 54/100. פירוט: 2 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-11 12:05:15] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-11 12:05:17] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-11 12:05:20] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-11 12:05:22] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-11 12:05:24] tasks=11 health=0 summary=נמצאו 11 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-11 12:05:27] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-11 12:05:29] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-11 12:05:31] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-11 12:05:34] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-11 12:05:36] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-11 12:05:39] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-11 12:05:41] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-11 12:05:44] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-11 12:05:46] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-11 12:05:48] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-12 12:04:34] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-12 12:04:36] tasks=4 health=40 summary=נמצאו 4 בעיות. ציון בריאות: 40/100. פירוט: 4 משימות fix_meal_timing.
+[2026-04-12 12:04:39] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-12 12:04:41] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 5 משימות fix_meal_timing.
+[2026-04-12 12:04:44] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-12 12:04:46] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-12 12:04:48] tasks=7 health=0 summary=נמצאו 7 בעיות. ציון בריאות: 0/100. פירוט: 7 משימות fix_meal_timing.
+[2026-04-12 12:04:51] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-12 12:04:53] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-12 12:04:56] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 8 משימות fix_meal_timing.
+[2026-04-12 12:04:58] tasks=6 health=24 summary=נמצאו 6 בעיות. ציון בריאות: 24/100. פירוט: 2 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-12 12:05:01] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-12 12:05:04] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-12 12:05:06] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-12 12:05:09] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-12 12:05:11] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-12 12:05:14] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-12 12:05:16] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-12 12:05:19] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-12 12:05:21] tasks=0 health=100 summary=המערכת תקינה. ציון בריאות: 100/100. לא נמצאו בעיות.
+[2026-04-13 12:04:52] tasks=12 health=0 summary=נמצאו 12 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 11 משימות fix_meal_timing.
+[2026-04-13 12:04:53] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-13 12:04:54] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-13 12:04:55] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-13 12:04:57] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-13 12:04:58] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-13 12:04:59] tasks=2 health=70 summary=נמצאו 2 בעיות. ציון בריאות: 70/100. פירוט: 2 משימות fix_meal_timing.
+[2026-04-13 12:05:00] tasks=4 health=40 summary=נמצאו 4 בעיות. ציון בריאות: 40/100. פירוט: 4 משימות fix_meal_timing.
+[2026-04-13 12:05:01] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-13 12:05:03] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-13 12:05:04] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-13 12:05:06] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-13 12:05:07] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-13 12:05:09] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-13 12:05:11] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-13 12:05:13] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-13 12:05:15] tasks=4 health=40 summary=נמצאו 4 בעיות. ציון בריאות: 40/100. פירוט: 4 משימות fix_meal_timing.
+[2026-04-13 12:05:17] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-13 12:05:18] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-13 12:05:21] tasks=9 health=0 summary=נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-14 12:06:21] tasks=5 health=39 summary=נמצאו 5 בעיות. ציון בריאות: 39/100. פירוט: 2 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:06:23] tasks=5 health=39 summary=נמצאו 5 בעיות. ציון בריאות: 39/100. פירוט: 2 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:06:25] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-14 12:06:27] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-14 12:06:29] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:06:31] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:06:33] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-14 12:06:35] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:06:37] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:06:40] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:06:42] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:06:44] tasks=2 health=70 summary=נמצאו 2 בעיות. ציון בריאות: 70/100. פירוט: 2 משימות fix_meal_timing.
+[2026-04-14 12:06:46] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:06:48] tasks=2 health=77 summary=נמצאו 2 בעיות. ציון בריאות: 77/100. פירוט: 1 משימות improve_variety, 1 משימות fix_meal_timing.
+[2026-04-14 12:06:50] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:06:53] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-14 12:06:55] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-14 12:06:57] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-14 12:06:59] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:07:02] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-14 12:07:08] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 8 משימות fix_meal_timing.
+[2026-04-14 12:07:11] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:07:13] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:07:15] tasks=7 health=0 summary=נמצאו 7 בעיות. ציון בריאות: 0/100. פירוט: 7 משימות fix_meal_timing.
+[2026-04-14 12:07:18] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-14 12:07:20] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-14 12:07:22] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-14 12:07:24] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 10 משימות fix_meal_timing.
+[2026-04-14 12:07:27] tasks=5 health=39 summary=נמצאו 5 בעיות. ציון בריאות: 39/100. פירוט: 2 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:07:29] tasks=14 health=0 summary=נמצאו 14 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 12 משימות fix_meal_timing.
+[2026-04-14 12:07:32] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-14 12:07:34] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:07:36] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-14 12:07:39] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-14 12:07:41] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing, 1 משימות rebalance_macros.
+[2026-04-14 12:07:44] tasks=3 health=55 summary=נמצאו 3 בעיות. ציון בריאות: 55/100. פירוט: 3 משימות fix_meal_timing.
+[2026-04-14 12:07:46] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-14 12:07:49] tasks=8 health=0 summary=נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing.
+[2026-04-14 12:07:51] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-14 12:07:54] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-16 16:56:00] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 5 משימות fix_meal_timing.
+[2026-04-16 16:56:03] tasks=5 health=32 summary=נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing.
+[2026-04-16 16:56:05] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-16 16:56:08] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-16 16:56:10] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-16 16:56:13] tasks=3 health=62 summary=נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-16 16:56:15] tasks=10 health=0 summary=נמצאו 10 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 9 משימות fix_meal_timing.
+[2026-04-16 16:56:18] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-16 16:56:21] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-16 16:56:23] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-16 16:56:26] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+[2026-04-16 16:56:28] tasks=4 health=54 summary=נמצאו 4 בעיות. ציון בריאות: 54/100. פירוט: 2 משימות improve_variety, 2 משימות fix_meal_timing.
+[2026-04-16 16:56:31] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 5 משימות fix_meal_timing.
+[2026-04-16 16:56:33] tasks=7 health=0 summary=נמצאו 7 בעיות. ציון בריאות: 0/100. פירוט: 7 משימות fix_meal_timing.
+[2026-04-16 16:56:36] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 5 משימות fix_meal_timing.
+[2026-04-16 16:56:38] tasks=5 health=25 summary=נמצאו 5 בעיות. ציון בריאות: 25/100. פירוט: 5 משימות fix_meal_timing.
+[2026-04-16 16:56:41] tasks=7 health=0 summary=נמצאו 7 בעיות. ציון בריאות: 0/100. פירוט: 7 משימות fix_meal_timing.
+[2026-04-16 16:56:43] tasks=4 health=47 summary=נמצאו 4 בעיות. ציון בריאות: 47/100. פירוט: 1 משימות improve_variety, 3 משימות fix_meal_timing.
+[2026-04-16 16:56:46] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-16 16:56:48] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
+>>>>>>> Stashed changes

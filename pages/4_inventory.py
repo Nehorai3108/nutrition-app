@@ -16,6 +16,7 @@ from nutrition_app.user_manager import (
 from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, icon_button,
 )
+from chatbot.sidebar_widget import render_chatbot_sidebar
 
 st.set_page_config(page_title="מלאי אישי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
 
@@ -67,6 +68,9 @@ with st.sidebar:
                        key="delete_user_btn", type="secondary"):
             delete_user(selected_id)
             st.rerun()
+
+    st.divider()
+    render_chatbot_sidebar()
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 nav_menu(active="מלאי")

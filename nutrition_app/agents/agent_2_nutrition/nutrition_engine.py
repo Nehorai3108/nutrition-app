@@ -24,6 +24,8 @@ Forbidden:
 - Storage design
 """
 
+from typing import List
+
 from nutrition_app.models.user import UserProfile
 from nutrition_app.models.nutrition_targets import NutritionTargets
 from nutrition_app.models.enums import Gender, Goal
@@ -133,3 +135,33 @@ class NutritionEngine:
                 f"({targets.target_calories_kcal:.1f}) by {deviation:.1f} kcal"
             )
         return errors
+
+
+def adjust_targets_for_workouts(
+    targets: NutritionTargets,
+    workouts: List,
+    user: UserProfile,
+) -> NutritionTargets:
+    """Add workout calorie burn to daily targets, redistributing across macros."""
+    total_burn = sum(w.estimated_calories_burned for w in workouts)
+    if total_burn <= 0:
+        return targets
+
+    new_target = targets.target_calories_kcal + total_burn
+
+    engine = NutritionEngine()
+    protein_g, carbs_g, fat_g = engine._calculate_macros(new_target, user.goal.value)
+
+    return NutritionTargets(
+        user_id=targets.user_id,
+        bmr_kcal=targets.bmr_kcal,
+        tdee_kcal=targets.tdee_kcal,
+        target_calories_kcal=round(new_target, 1),
+        protein_g=protein_g,
+        carbs_g=carbs_g,
+        fat_g=fat_g,
+        fiber_g_min=targets.fiber_g_min,
+        fiber_g_max=targets.fiber_g_max,
+        calculation_method=targets.calculation_method,
+        notes=f"Adjusted for {len(workouts)} workout(s), +{total_burn:.0f} kcal",
+    )

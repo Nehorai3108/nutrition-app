@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-04-06T14:51:37.001882+00:00",
+  "tasks_created": [
+    {
+      "task_id": "e51b2e21-d636-49d9-a622-3cc55841d346",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 6/7 plans. Force rotation."
+    },
+    {
+      "task_id": "aca571c4-5af3-49dc-b1f2-dc19ad641ad1",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "dc4c1903-3a60-4a3a-aca5-2e4ca2918e6d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: קוסקוס"
+    }
+  ],
+  "system_health_score": 62,
+  "summary": "נמצאו 3 בעיות. ציון בריאות: 62/100. פירוט: 1 משימות improve_variety, 2 משימות fix_meal_timing."
+}

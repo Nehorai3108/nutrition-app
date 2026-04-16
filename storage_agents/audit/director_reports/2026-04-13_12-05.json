@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-04-13T12:05:21.053610+00:00",
+  "tasks_created": [
+    {
+      "task_id": "40e3daf5-f026-489c-9b20-b784f4b2b694",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_012 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "547f24a2-8fb5-47a5-9a6a-81853d82a74e",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "93b838f0-8f85-42bf-b902-f238c16aaa12",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "e0979522-d084-4a49-a29c-8fdc1aa6adce",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "450d4902-ac5f-40db-bde9-4342ba30961d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: חזה עוף"
+    },
+    {
+      "task_id": "6330b7ac-83d1-4614-842c-04d66b389387",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: אמנון"
+    },
+    {
+      "task_id": "780babb3-aad1-4118-8b71-a2516736bc2d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: חומוס ממרח"
+    },
+    {
+      "task_id": "e2681567-65c4-4d08-af3b-8367e37c3972",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: שום"
+    },
+    {
+      "task_id": "1bcaf152-e7a1-4c26-a16a-687306c8a1cc",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: פטרוזיליה"
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 9 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 7 משימות fix_meal_timing."
+}

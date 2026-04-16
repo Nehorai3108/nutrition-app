@@ -1,0 +1,105 @@
+{
+  "timestamp": "2026-04-05T11:34:57.882097+00:00",
+  "tasks_created": [
+    {
+      "task_id": "2d7bb959-34ad-4371-a75f-e9b68398986b",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category carbohydrate has only 4 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "7f6e65ad-85b1-40fb-9e41-36028afcf3fc",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 2 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "d2a7a56f-afb5-4e0f-bd52-93cef97b8e35",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_001 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "d3c2d3e8-db87-4da0-9310-a7feb82b4359",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_012 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "ca016228-c019-45a4-a03d-f21ccaac2605",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 6/7 plans. Force rotation."
+    },
+    {
+      "task_id": "9a86c148-d0fd-4916-973f-50b36b384c11",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: חזה עוף"
+    },
+    {
+      "task_id": "d824660d-88f1-45ff-8861-dc64f57a5ef9",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "d8ab8bd4-3560-4dfa-85a5-5af332777ffe",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "420c4584-2eda-4642-a2ac-e5c6cb04d17c",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: רוטב עגבניות"
+    },
+    {
+      "task_id": "d32dfdb3-b122-4776-8e95-a2173aee691b",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: חרדל"
+    },
+    {
+      "task_id": "c7567ff6-a07c-44ca-87a0-abf57f4f9975",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: רוטב סויה"
+    },
+    {
+      "task_id": "42bd3315-c243-47a6-8d94-68becb874372",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: חומוס ממרח"
+    },
+    {
+      "task_id": "51a71dbc-53dc-47b7-a0ea-05e341b16e03",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: שוקולד מריר"
+    },
+    {
+      "task_id": "41fc1298-d063-4424-adb2-177bcb808903",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: דבש"
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 14 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות expand_catalog, 3 משימות improve_variety, 9 משימות fix_meal_timing."
+}

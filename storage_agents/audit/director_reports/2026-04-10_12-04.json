@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-04-10T12:04:59.103495+00:00",
+  "tasks_created": [
+    {
+      "task_id": "3040924a-a25b-4c98-af74-ac5c3f4f242f",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "921bf50e-b47a-47cd-882a-f47dafe7bcc8",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains VEGETABLE category item: עגבנייה"
+    },
+    {
+      "task_id": "ccefd1d6-0514-44a2-b6ff-933336d475f6",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: שיבולת שועל"
+    },
+    {
+      "task_id": "dc65085d-bc1e-47ca-856b-a823da1f1094",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: פסטה"
+    },
+    {
+      "task_id": "4db17479-a44f-45ff-90ce-c69e5d528916",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains DAIRY category item: שמנת חמוצה"
+    }
+  ],
+  "system_health_score": 32,
+  "summary": "נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing."
+}

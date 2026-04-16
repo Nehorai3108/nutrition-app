@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-04-14T12:07:54.339724+00:00",
+  "tasks_created": [
+    {
+      "task_id": "44d07fae-30cf-4f03-a3b4-ab01e1d8b380",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "b7a38047-9f46-495e-8bc6-4dd4028b6d3f",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains VEGETABLE category item: תרד"
+    },
+    {
+      "task_id": "68ad4edf-de96-4ac5-b8b5-532bf20e6517",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "e61f7483-5f64-4e3c-b124-2152b6c409ea",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: שוקולד מריר"
+    },
+    {
+      "task_id": "6342a292-1d24-4151-96f9-9d5dd98a22dd",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: טחינה"
+    },
+    {
+      "task_id": "37b6e918-bc0a-48d6-b143-228f89ccd87b",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: רוטב עגבניות"
+    },
+    {
+      "task_id": "62b9d777-1d12-42e3-8ed3-d39e01e51b73",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: חרדל"
+    }
+  ],
+  "system_health_score": 2,
+  "summary": "נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing."
+}

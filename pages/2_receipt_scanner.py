@@ -18,11 +18,15 @@ from nutrition_app.models.food_item import FoodItem
 from ui.components import (
     inject_global_css, page_header, nav_menu, icon_button,
 )
+from chatbot.sidebar_widget import render_chatbot_sidebar
 
 # ── page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="סורק קבלה", page_icon="🧾", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
+
+with st.sidebar:
+    render_chatbot_sidebar()
 
 # ── catalog (cached) ──────────────────────────────────────────────────────────
 _DB_PATH = os.path.join(_ROOT, "storage", "nutrition.db")

@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-04-05T12:04:59.315790+00:00",
+  "tasks_created": [
+    {
+      "task_id": "7b41b997-5254-43a1-9ba2-59a86e55e730",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 4 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "27dad41e-99e8-4046-9264-c73bfc4bfa01",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "27a48f54-a191-496b-903a-970560025e06",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "4e6bc57c-e2c0-4ac4-b15d-f374c19132aa",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "44deedf8-da3c-4f7c-9782-f80c4372004e",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: זעתר"
+    },
+    {
+      "task_id": "d36f1f1d-f09b-4dcd-b2a7-98277f9b6607",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: עלי גפן"
+    },
+    {
+      "task_id": "792b6a77-93c6-4def-b631-b18c7b6b84d0",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: אורז לבן"
+    }
+  ],
+  "system_health_score": 2,
+  "summary": "נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 5 משימות fix_meal_timing."
+}

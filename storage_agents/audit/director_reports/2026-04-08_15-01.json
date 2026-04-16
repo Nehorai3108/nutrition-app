@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-04-08T15:01:57.551653+00:00",
+  "tasks_created": [
+    {
+      "task_id": "3a7b1ab3-0ffb-406b-ab7d-743f3c541022",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "d78264da-25b6-45e1-937d-b0d854456595",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "a492cc04-602c-4fd4-a86f-8c0289398516",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: חזה עוף"
+    },
+    {
+      "task_id": "495f6acf-91d4-446c-af76-591eff3afd13",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "2e2054be-0cd5-42fb-9e77-c454f4f894d8",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: שוקולד מריר"
+    },
+    {
+      "task_id": "29400794-1014-42bc-90b4-5a871a06b2d5",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: דבש"
+    },
+    {
+      "task_id": "05de38fa-f0e2-4531-9e38-22b4299f018f",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: גרנולה"
+    },
+    {
+      "task_id": "1ecc4fa9-7cde-4840-8bfc-dac900e4031d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: חומוס ממרח"
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing."
+}
