@@ -17,10 +17,14 @@ from ui.components import (
     inject_global_css, page_header, nav_menu, recipe_card_html, meal_badge_html,
 )
 from ui.images import image_data_uri as _image_data_uri
+from chatbot.sidebar_widget import render_chatbot_sidebar
 
 st.set_page_config(page_title="תפריט יומי", page_icon="🍽️", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
+
+with st.sidebar:
+    render_chatbot_sidebar()
 
 @st.cache_resource
 def get_mgr():

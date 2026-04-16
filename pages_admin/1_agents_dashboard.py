@@ -19,6 +19,7 @@ from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, icon_button,
 )
 from ui.auth import require_admin, admin_logout_button
+from chatbot.sidebar_widget import render_chatbot_sidebar
 
 # ── Autonomy imports ──────────────────────────────────────────────────────────
 from nutrition_app.models.enums import ActivityLevel, Gender, Goal
@@ -623,6 +624,8 @@ with st.sidebar:
         st.markdown(f"✅ {a.get('metric', '')} — {a.get('current', '')}")
     for na in not_achieved:
         st.markdown(f"❌ {na.get('metric', '')} — {na.get('current', '')} (יעד: {na.get('target', '')})")
+    st.divider()
+    render_chatbot_sidebar()
 
 # ── Section: Director & Critic ────────────────────────────────────────────────
 

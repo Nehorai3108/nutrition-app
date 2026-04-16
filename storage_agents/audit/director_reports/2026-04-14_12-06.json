@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-04-14T12:06:59.782459+00:00",
+  "tasks_created": [
+    {
+      "task_id": "ce53d6a4-d99f-4494-81b1-aa1f3a24f861",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 6/7 plans. Force rotation."
+    },
+    {
+      "task_id": "fa0a2789-dd4e-47f6-957b-ed28980af856",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_012 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "de02e236-ea3e-4dbc-b8a5-adfca41c85ea",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: אמנון"
+    },
+    {
+      "task_id": "e446543a-e9fb-4e7e-8769-1543eb23ba41",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "3817c31b-7774-42f5-9293-159c7627badb",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "8eeb2526-370f-44b8-af2a-65188f17488d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: חומוס ממרח"
+    },
+    {
+      "task_id": "6f017b67-4c43-43f9-ba49-bb99a6bd3c0f",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: שום"
+    },
+    {
+      "task_id": "84b61033-6499-487b-bf6b-24565a078184",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: פטרוזיליה"
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 2 משימות improve_variety, 6 משימות fix_meal_timing."
+}

@@ -12,6 +12,7 @@ from nutrition_app.user_manager import get_all_users, add_inventory_item
 from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, icon_button,
 )
+from chatbot.sidebar_widget import render_chatbot_sidebar
 
 st.set_page_config(page_title="סריקת קבלה", page_icon="📷", layout="wide", initial_sidebar_state="collapsed")
 
@@ -151,6 +152,9 @@ with st.sidebar:
         הכנס: <code>helloworld</code>
         </div>
         """, unsafe_allow_html=True)
+
+    st.divider()
+    render_chatbot_sidebar()
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 nav_menu(active="סריקת קבלה")

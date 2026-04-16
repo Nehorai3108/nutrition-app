@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-04-05T12:05:08.471312+00:00",
+  "tasks_created": [
+    {
+      "task_id": "6a940942-e3fb-4196-a866-f6daf7cc7934",
+      "type": "expand_catalog",
+      "agent": "agent_3_food",
+      "priority": "high",
+      "details": "Category other has only 4 foods. Add at least 5 more."
+    },
+    {
+      "task_id": "48df2c9f-a0b7-404b-843c-7566ac639fdc",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "ca646b31-23b5-498d-9ea2-4c06b04950fa",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "dbea689e-68c8-453d-90e1-20e34717927b",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "8b66f17a-fdc7-4f3d-8459-5d783b8cdc53",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: חומוס ממרח"
+    },
+    {
+      "task_id": "04e6e3ed-40c0-4ece-950c-630f50370284",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: שום"
+    },
+    {
+      "task_id": "bb5a21bb-cef1-4f1b-a12b-fc9afd2717ea",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: פטרוזיליה"
+    },
+    {
+      "task_id": "11e0a7a1-6704-4622-af26-c4cbc681139d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains DAIRY category item: חלב"
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות expand_catalog, 1 משימות improve_variety, 6 משימות fix_meal_timing."
+}

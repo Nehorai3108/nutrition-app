@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-04-07T15:01:40.931660+00:00",
+  "tasks_created": [
+    {
+      "task_id": "a539caba-2d3d-422c-9c92-d00d6fe7aaf4",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "5ce04786-2190-436c-b654-03dabc7f54bd",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "2ae74f2f-5630-4542-bdb0-d9abf079657d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: טונה"
+    },
+    {
+      "task_id": "4ba5f935-d6d1-42f1-8903-218936448989",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: טחינה"
+    },
+    {
+      "task_id": "c1050a5b-be40-495c-aee5-52e886ceac9b",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains OTHER category item: דבש"
+    },
+    {
+      "task_id": "96c26388-85db-4897-9908-8e34b574aaf9",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: גרנולה"
+    },
+    {
+      "task_id": "0311c2a3-88cc-4f42-9cb2-08785b75d757",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: רוטב עגבניות"
+    },
+    {
+      "task_id": "600bccd9-9fe7-47a2-9fc7-bf1bf83734ba",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: חרדל"
+    }
+  ],
+  "system_health_score": 0,
+  "summary": "נמצאו 8 בעיות. ציון בריאות: 0/100. פירוט: 1 משימות improve_variety, 7 משימות fix_meal_timing."
+}

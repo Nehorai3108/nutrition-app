@@ -168,3 +168,55 @@ class ArtifactType(str, Enum):
     LOG = "log"
     DEBUG = "debug"
     SNAPSHOT = "snapshot"
+
+
+class WorkoutIntensity(str, Enum):
+    LOW = "low"
+    MODERATE = "moderate"
+    HIGH = "high"
+    EXTREME = "extreme"
+
+
+class WorkoutType(str, Enum):
+    # Cardio
+    RUNNING = "running"
+    WALKING = "walking"
+    HIKING = "hiking"
+    CYCLING = "cycling"
+    SWIMMING = "swimming"
+    ROWING = "rowing"
+    ELLIPTICAL = "elliptical"
+    STAIR_CLIMBING = "stair_climbing"
+    JUMPING_ROPE = "jumping_rope"
+    # Strength / Functional
+    STRENGTH = "strength"
+    CROSSFIT = "crossfit"
+    HIIT = "hiit"
+    PILATES = "pilates"
+    YOGA = "yoga"
+    DANCE = "dance"
+    # Combat
+    BOXING = "boxing"
+    KICKBOXING = "kickboxing"
+    MARTIAL_ARTS = "martial_arts"
+    WRESTLING = "wrestling"
+    # Team / Ball sports
+    SOCCER = "soccer"
+    BASKETBALL = "basketball"
+    TENNIS = "tennis"
+    TABLE_TENNIS = "table_tennis"
+    BADMINTON = "badminton"
+    VOLLEYBALL = "volleyball"
+    BASEBALL = "baseball"
+    HANDBALL = "handball"
+    RUGBY = "rugby"
+    HOCKEY = "hockey"
+    GOLF = "golf"
+    # Outdoor / Adventure
+    CLIMBING = "climbing"
+    SKIING = "skiing"
+    SNOWBOARDING = "snowboarding"
+    SURFING = "surfing"
+    SKATING = "skating"
+    # Other
+    OTHER = "other"

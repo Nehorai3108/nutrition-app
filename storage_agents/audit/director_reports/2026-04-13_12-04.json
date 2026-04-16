@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-04-13T12:04:59.523285+00:00",
+  "tasks_created": [
+    {
+      "task_id": "f7568481-fa32-4f21-85df-8952c9ca3368",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains VEGETABLE category item: עגבנייה"
+    },
+    {
+      "task_id": "55fda1de-ad3b-4b0a-9f83-d81c6f1caed4",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: פיתה"
+    }
+  ],
+  "system_health_score": 70,
+  "summary": "נמצאו 2 בעיות. ציון בריאות: 70/100. פירוט: 2 משימות fix_meal_timing."
+}

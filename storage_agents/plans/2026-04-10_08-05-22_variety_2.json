@@ -1,0 +1,325 @@
+{
+  "plan_id": "d8f7a598-1a64-40e7-9113-10fa45251848",
+  "user_id": "variety_test",
+  "run_id": "variety_run_2",
+  "plan_date": "2026-04-10",
+  "meals": [
+    {
+      "meal_type": "breakfast",
+      "items": [
+        {
+          "food_id": "food_011",
+          "food_name": "הודו",
+          "quantity_g": 115.3,
+          "calories_kcal": 155.7,
+          "protein_g": 34.6,
+          "carbs_g": 0.0,
+          "fat_g": 1.2,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_001",
+          "food_name": "חזה עוף",
+          "quantity_g": 77.6,
+          "calories_kcal": 128.0,
+          "protein_g": 24.1,
+          "carbs_g": 0.0,
+          "fat_g": 2.8,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_012",
+          "food_name": "טונה",
+          "quantity_g": 44.0,
+          "calories_kcal": 51.0,
+          "protein_g": 11.2,
+          "carbs_g": 0.0,
+          "fat_g": 0.4,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_027",
+          "food_name": "תרד",
+          "quantity_g": 100.0,
+          "calories_kcal": 23.0,
+          "protein_g": 2.9,
+          "carbs_g": 3.6,
+          "fat_g": 0.4,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_129",
+          "food_name": "אמנון",
+          "quantity_g": 38.8,
+          "calories_kcal": 37.2,
+          "protein_g": 7.8,
+          "carbs_g": 0.0,
+          "fat_g": 0.8,
+          "from_inventory": false,
+          "inventory_item_id": null
+        }
+      ],
+      "totals": {
+        "calories_kcal": 394.9,
+        "protein_g": 80.6,
+        "carbs_g": 3.6,
+        "fat_g": 5.6
+      }
+    },
+    {
+      "meal_type": "morning_snack",
+      "items": [
+        {
+          "food_id": "food_031",
+          "food_name": "תפוח",
+          "quantity_g": 150.0,
+          "calories_kcal": 78.0,
+          "protein_g": 0.4,
+          "carbs_g": 21.0,
+          "fat_g": 0.3,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_032",
+          "food_name": "תפוז",
+          "quantity_g": 150.0,
+          "calories_kcal": 70.5,
+          "protein_g": 1.4,
+          "carbs_g": 18.0,
+          "fat_g": 0.2,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_052",
+          "food_name": "שקדים",
+          "quantity_g": 19.0,
+          "calories_kcal": 110.0,
+          "protein_g": 4.0,
+          "carbs_g": 4.2,
+          "fat_g": 9.5,
+          "from_inventory": false,
+          "inventory_item_id": null
+        }
+      ],
+      "totals": {
+        "calories_kcal": 258.5,
+        "protein_g": 5.8,
+        "carbs_g": 43.2,
+        "fat_g": 10.0
+      }
+    },
+    {
+      "meal_type": "lunch",
+      "items": [
+        {
+          "food_id": "food_029",
+          "food_name": "גזר",
+          "quantity_g": 100.0,
+          "calories_kcal": 41.0,
+          "protein_g": 0.9,
+          "carbs_g": 9.6,
+          "fat_g": 0.2,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_030",
+          "food_name": "חציל",
+          "quantity_g": 150.0,
+          "calories_kcal": 37.5,
+          "protein_g": 1.5,
+          "carbs_g": 9.0,
+          "fat_g": 0.3,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_044",
+          "food_name": "קוסקוס",
+          "quantity_g": 150.0,
+          "calories_kcal": 168.0,
+          "protein_g": 5.7,
+          "carbs_g": 34.8,
+          "fat_g": 0.3,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_049",
+          "food_name": "אפונה ירוקה",
+          "quantity_g": 100.0,
+          "calories_kcal": 81.0,
+          "protein_g": 5.4,
+          "carbs_g": 14.5,
+          "fat_g": 0.4,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_058",
+          "food_name": "טחינה",
+          "quantity_g": 20.0,
+          "calories_kcal": 119.0,
+          "protein_g": 3.4,
+          "carbs_g": 4.2,
+          "fat_g": 10.8,
+          "from_inventory": false,
+          "inventory_item_id": null
+        }
+      ],
+      "totals": {
+        "calories_kcal": 446.5,
+        "protein_g": 16.9,
+        "carbs_g": 72.1,
+        "fat_g": 12.0
+      }
+    },
+    {
+      "meal_type": "afternoon_snack",
+      "items": [
+        {
+          "food_id": "food_067",
+          "food_name": "חלב שקדים",
+          "quantity_g": 250.0,
+          "calories_kcal": 37.5,
+          "protein_g": 1.5,
+          "carbs_g": 0.8,
+          "fat_g": 2.8,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_068",
+          "food_name": "קפה שחור",
+          "quantity_g": 250.0,
+          "calories_kcal": 5.0,
+          "protein_g": 0.8,
+          "carbs_g": 0.0,
+          "fat_g": 0.0,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_069",
+          "food_name": "תה ירוק",
+          "quantity_g": 250.0,
+          "calories_kcal": 2.5,
+          "protein_g": 0.0,
+          "carbs_g": 0.5,
+          "fat_g": 0.0,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_070",
+          "food_name": "חלב סויה",
+          "quantity_g": 250.0,
+          "calories_kcal": 82.5,
+          "protein_g": 7.0,
+          "carbs_g": 4.5,
+          "fat_g": 4.5,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_071",
+          "food_name": "שוקולד מריר",
+          "quantity_g": 20.0,
+          "calories_kcal": 109.2,
+          "protein_g": 1.1,
+          "carbs_g": 12.0,
+          "fat_g": 6.2,
+          "from_inventory": false,
+          "inventory_item_id": null
+        }
+      ],
+      "totals": {
+        "calories_kcal": 236.7,
+        "protein_g": 10.4,
+        "carbs_g": 17.8,
+        "fat_g": 13.5
+      }
+    },
+    {
+      "meal_type": "dinner",
+      "items": [
+        {
+          "food_id": "food_059",
+          "food_name": "רוטב עגבניות",
+          "quantity_g": 50.0,
+          "calories_kcal": 14.5,
+          "protein_g": 0.7,
+          "carbs_g": 2.7,
+          "fat_g": 0.2,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_073",
+          "food_name": "גרנולה",
+          "quantity_g": 40.0,
+          "calories_kcal": 188.4,
+          "protein_g": 4.0,
+          "carbs_g": 25.6,
+          "fat_g": 8.0,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_074",
+          "food_name": "תירס",
+          "quantity_g": 100.0,
+          "calories_kcal": 86.0,
+          "protein_g": 3.3,
+          "carbs_g": 19.0,
+          "fat_g": 1.4,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_075",
+          "food_name": "אורז בסמטי",
+          "quantity_g": 150.0,
+          "calories_kcal": 181.5,
+          "protein_g": 5.2,
+          "carbs_g": 37.8,
+          "fat_g": 0.6,
+          "from_inventory": false,
+          "inventory_item_id": null
+        },
+        {
+          "food_id": "food_076",
+          "food_name": "חסה",
+          "quantity_g": 80.0,
+          "calories_kcal": 12.0,
+          "protein_g": 1.1,
+          "carbs_g": 2.3,
+          "fat_g": 0.2,
+          "from_inventory": false,
+          "inventory_item_id": null
+        }
+      ],
+      "totals": {
+        "calories_kcal": 482.4,
+        "protein_g": 14.3,
+        "carbs_g": 87.4,
+        "fat_g": 10.4
+      }
+    }
+  ],
+  "target_calories_kcal": 2586.6,
+  "totals": {
+    "calories_kcal": 1819.0,
+    "protein_g": 128.0,
+    "carbs_g": 224.1,
+    "fat_g": 51.5
+  },
+  "calorie_deviation_pct": -29.7,
+  "created_at": "2026-04-10T12:05:22.279317+00:00"
+}

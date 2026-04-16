@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-04-11T12:05:48.641598+00:00",
+  "tasks_created": [
+    {
+      "task_id": "00e28b0a-1bb3-4654-b2b8-e33b67943047",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 6/7 plans. Force rotation."
+    },
+    {
+      "task_id": "158e211f-a1de-4326-aa89-adf4fb6d6f4d",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "0a3cc15c-dcd4-402b-83dc-53173a742ece",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: שום"
+    },
+    {
+      "task_id": "64e3d157-8d86-44ab-b50f-9909da84f7f5",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: פטרוזיליה"
+    },
+    {
+      "task_id": "554be9a5-4707-4a1b-8e37-63591a4bde1e",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: כוסברה"
+    }
+  ],
+  "system_health_score": 32,
+  "summary": "נמצאו 5 בעיות. ציון בריאות: 32/100. פירוט: 1 משימות improve_variety, 4 משימות fix_meal_timing."
+}

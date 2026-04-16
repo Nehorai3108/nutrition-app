@@ -378,7 +378,8 @@ def main() -> int:
         for item in meal.items:
             inv_tag = " (מלאי)" if item.from_inventory else ""
             print(f"    {item.food_name:<18} {item.quantity_g:>6.0f}ג  {item.calories_kcal:>5.0f} קק\"ל{inv_tag}")
-        print(f"    {'סה\"כ:':<18} {'':>6}  {meal.total_calories:>5.0f} קק\"ל")
+        total_label = 'סה"כ:'
+        print(f"    {total_label:<18} {'':>6}  {meal.total_calories:>5.0f} קק\"ל")
 
     print()
     print("-" * WIDTH)

@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-04-09T14:58:04.510354+00:00",
+  "tasks_created": [
+    {
+      "task_id": "0749f263-bd93-4b43-b47f-9e622723cea8",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "87035039-3550-46d0-ac99-9d6c460bb9ac",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    }
+  ],
+  "system_health_score": 77,
+  "summary": "נמצאו 2 בעיות. ציון בריאות: 77/100. פירוט: 1 משימות improve_variety, 1 משימות fix_meal_timing."
+}

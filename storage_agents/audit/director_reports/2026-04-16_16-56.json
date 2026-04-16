@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-04-16T16:56:48.770090+00:00",
+  "tasks_created": [
+    {
+      "task_id": "3b7bf73f-6beb-45bf-bcca-4f6a8fc347c8",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    },
+    {
+      "task_id": "d09231a2-245b-4bcc-b9ff-5077b0f8cac9",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "BREAKFAST contains PROTEIN category item: הודו"
+    },
+    {
+      "task_id": "d8b1781b-7845-4865-9964-acf627d9ebd7",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: טחינה"
+    },
+    {
+      "task_id": "bfbf562e-c95a-43e2-8b88-d4470c317b4b",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "LUNCH contains CONDIMENT category item: רוטב עגבניות"
+    },
+    {
+      "task_id": "a70d1507-33ad-4249-bc43-3bacd588edd6",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "AFTERNOON_SNACK contains GRAIN category item: אורז בסמטי"
+    },
+    {
+      "task_id": "73522946-de3d-4387-9070-62f033390901",
+      "type": "fix_meal_timing",
+      "agent": "agent_5_planner",
+      "priority": "high",
+      "details": "DINNER contains CONDIMENT category item: כוסברה"
+    }
+  ],
+  "system_health_score": 17,
+  "summary": "נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing."
+}

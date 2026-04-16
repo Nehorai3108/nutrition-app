@@ -18,6 +18,7 @@ from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, recipe_card_html,
 )
 from ui.images import image_data_uri
+from chatbot.sidebar_widget import render_chatbot_sidebar
 
 # ── Page config ──────────────────────────────────────────────────────────────
 
@@ -92,6 +93,10 @@ all_tags = sorted(stats.get("by_tag", {}).keys())
 selected_tags = st.sidebar.multiselect("תגיות", options=all_tags)
 
 max_results = st.sidebar.slider("מספר תוצאות", 5, 100, 20, step=5)
+
+with st.sidebar:
+    st.divider()
+    render_chatbot_sidebar()
 
 # ── Build filter and search ──────────────────────────────────────────────────
 

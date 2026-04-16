@@ -18,6 +18,7 @@ from ui.components import (
     inject_global_css, page_header, section_header, nav_menu,
     kashrut_badge_html, macro_grid_html,
 )
+from chatbot.sidebar_widget import render_chatbot_sidebar
 
 # ── Page config ──────────────────────────────────────────────────────────────
 
@@ -29,6 +30,9 @@ st.set_page_config(
 )
 
 inject_global_css()
+
+with st.sidebar:
+    render_chatbot_sidebar()
 
 # ── Load recipe ──────────────────────────────────────────────────────────────
 
