@@ -611,12 +611,15 @@ def nav_menu(active: Optional[str] = None) -> None:
     except ImportError:
         pass
 
-    # Fallback: simple page links in a row
+    # Fallback: simple page links in a row (skip pages not registered in this app)
     cols = st.columns(len(items))
     for col, (lbl, page, icon_name) in zip(cols, items):
         with col:
-            st.page_link(page, label=f"{_unicode_glyph(icon_name)} {lbl}",
-                         use_container_width=True)
+            try:
+                st.page_link(page, label=f"{_unicode_glyph(icon_name)} {lbl}",
+                             use_container_width=True)
+            except Exception:
+                pass
     st.markdown("<div style='margin-bottom:10px'></div>", unsafe_allow_html=True)
 
 

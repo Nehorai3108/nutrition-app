@@ -4,3 +4,22 @@ streamlit run app_user.py
 
 cd "C:\Users\User\Desktop\אפליקציית תזונאי"
 streamlit run app_admin.py --server.port 8503
+
+
+# ─── גרסת שיפורים (שיפורי סוכן באפליקציית תזונה) ───────────────────────────
+# לראות את השינויים שהסוכן יישם — port שונה כדי לא להתנגש
+
+cd "C:\Users\User\Desktop\שיפורי סוכן באפליקציית תזונה"
+streamlit run app_user.py --server.port 8505
+
+
+cd "C:\Users\User\Desktop\שיפורי סוכן באפליקציית תזונה"
+streamlit run app_admin.py --server.port 8506
+
+
+# ─── בדיקת תיקון meal_timing (BREAKFAST PROTEIN) ────────────────────────────
+# בודק שאין יותר violations על ארוחת בוקר עם חלבון (הודו / טונה / דג דניס)
+# תוצאה צפויה: 0 timing violations בפלט
+
+cd "C:\Users\User\Desktop\שיפורי סוכן באפליקציית תזונה"
+python -m pytest nutrition_app/tests/ -v -k "timing or planner or meal" 2>&1 | findstr /I "PASSED FAILED ERROR timing"
