@@ -42,7 +42,11 @@
       "Bash(findstr :8502)",
       "Bash(taskkill /PID 41692 /F)",
       "Bash(python -m py_compile nutrition_app/models/water.py nutrition_app/repositories/water_repository.py pages/8_calendar.py pages/9_history.py nutrition_app/user_manager.py app_user.py)",
-      "Bash(ls -la app_*.py)"
+      "Bash(ls -la app_*.py)",
+      "Bash(python -c ':*)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"from chatbot.grok_client import get_client; print\\('OK'\\)\")",
+      "Bash(python -c:*)"
     ]
   }
 }
