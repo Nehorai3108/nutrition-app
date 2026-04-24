@@ -1,0 +1,165 @@
+[
+  {
+    "added_at": "2026-04-23T12:37:47+00:00",
+    "added_by": "recipe_scout",
+    "candidates": [
+      {
+        "candidate_id": "36d140ce-e456-4463-8e31-6380aed3cd5e",
+        "title_en": "Greek Chicken Cauliflower Rice Bowl",
+        "title_he": "קערת כרובית-אורז עוף יווני",
+        "ingredients": [
+          { "name": "חזה עוף", "quantity": 400, "unit": "גרם" },
+          { "name": "כרובית, טחונה גס (אורז כרובית)", "quantity": 600, "unit": "גרם" },
+          { "name": "שמן זית", "quantity": 30, "unit": "מ\"ל" },
+          { "name": "שיני שום, כתושות", "quantity": 3, "unit": "יחידות" },
+          { "name": "לימון — גרידה ומיץ", "quantity": 1, "unit": "יחידות" },
+          { "name": "אורגנו יבש", "quantity": 3, "unit": "גרם" },
+          { "name": "פפריקה מתוקה", "quantity": 2, "unit": "גרם" },
+          { "name": "מלח ופלפל שחור", "quantity": 3, "unit": "גרם" },
+          { "name": "פלפל אדום, קצוץ", "quantity": 100, "unit": "גרם" },
+          { "name": "עלי תרד טריים", "quantity": 60, "unit": "גרם" },
+          { "name": "גבינה פטה, מפוררת", "quantity": 40, "unit": "גרם" }
+        ],
+        "instructions": [
+          "1. פורסים את חזה העוף לסטריפס. ממרים עם שמן זית, שום, גרידת לימון, אורגנו, פפריקה, מלח ופלפל. משהים 10 דקות.",
+          "2. חותכים את הכרובית לפרחים ומעבדים במעבד מזון במחזורים קצרים עד לקבלת גרגרים בגודל אורז.",
+          "3. מחממים מחבת על אש גבוהה. מטגנים את הסטריפס 3-4 דקות מכל צד עד שהם שחומים ומוכנים לחלוטין. מעבירים לצלחת.",
+          "4. באותה מחבת מוסיפים עוד מעט שמן. מאדים את הפלפל האדום 2 דקות, מוסיפים את הכרובית-אורז ומטגנים על אש גבוהה 4-5 דקות תוך ערבוב מתמיד עד שהוא מוזהב.",
+          "5. מוסיפים את עלי התרד לכרובית ומערבבים עד שהם נבולים, כדקה.",
+          "6. מחלקים לקערות, מניחים מעל את העוף, מפזרים פטה ומטפטפים מיץ לימון."
+        ],
+        "source_url": "https://thecleaneatingcouple.com/greek-chicken-cauliflower-rice-bowls/",
+        "source_name": "The Clean Eating Couple",
+        "source_image_url": null,
+        "preliminary_macros": {
+          "calories_per_serving": 366,
+          "protein_g": 50,
+          "carbs_g": 7,
+          "fat_g": 15,
+          "fiber_g": 3,
+          "servings": 2
+        },
+        "needs_usda_lookup": false,
+        "gap_addressed": "low_carb + high_protein_low_carb",
+        "why_this_recipe": "ממלאת את הפער הקריטי ביותר בבסיס הנתונים — מנה low-carb ועתירת חלבון שאין לה מקבילה קרובה ב-270 המתכונים הקיימים. קערת הכרובית-אורז היא תחליף ישראלי פופולרי לאורז רגיל אצל משתמשי חיטוב."
+      },
+      {
+        "candidate_id": "db1d75eb-7c7e-4c84-9f26-22fe63db7402",
+        "title_en": "Mini Egg Muffins with Vegetables",
+        "title_he": "מאפיני ביצים עם ירקות",
+        "ingredients": [
+          { "name": "ביצים גדולות", "quantity": 6, "unit": "יחידות" },
+          { "name": "פלפל אדום, קצוץ דק", "quantity": 80, "unit": "גרם" },
+          { "name": "תרד קפוא, מופשר וסחוט", "quantity": 60, "unit": "גרם" },
+          { "name": "בצל ירוק, קצוץ", "quantity": 30, "unit": "גרם" },
+          { "name": "גבינה צהובה מגוררת", "quantity": 40, "unit": "גרם" },
+          { "name": "מלח", "quantity": 2, "unit": "גרם" },
+          { "name": "פלפל שחור", "quantity": 1, "unit": "גרם" },
+          { "name": "שמן קוקוס או חמאה לשימון", "quantity": 10, "unit": "גרם" }
+        ],
+        "instructions": [
+          "1. מחממים תנור ל-180 מעלות. משמנים היטב 12 שקעי תבנית מאפינס (או מרפדים בכוסיות נייר).",
+          "2. טורפים את הביצים עם מלח ופלפל בקערה.",
+          "3. מוסיפים לתערובת הביצים את הפלפל האדום, התרד, הבצל הירוק ורוב הגבינה. מערבבים.",
+          "4. יוצקים את התערובת לשקעי התבנית — כ-3/4 גובה כל שקע.",
+          "5. מפזרים מעל את יתרת הגבינה.",
+          "6. אופים 18-22 דקות עד שהמאפינס נפוחים, זהובים ומוכנים במרכז. מצננים 5 דקות לפני ההגשה."
+        ],
+        "source_url": "https://allnutritious.com/egg-muffin-cups/",
+        "source_name": "All Nutritious",
+        "source_image_url": null,
+        "preliminary_macros": {
+          "calories_per_serving": 107,
+          "protein_g": 9,
+          "carbs_g": 2,
+          "fat_g": 7,
+          "fiber_g": 0.5,
+          "servings": 6,
+          "serving_size_note": "2 muffins per serving"
+        },
+        "needs_usda_lookup": false,
+        "gap_addressed": "low_carb + keto + high_protein",
+        "why_this_recipe": "מאפיני ביצים הם אחד מהדגמים הקלאסיים לארוחת בוקר קטוגנית — מוכנים מראש, נשמרים 4 ימים במקרר, ומספקים חלבון גבוה עם כמעט אפס פחמימות. פחות מ-30 דקות הכנה."
+      },
+      {
+        "candidate_id": "6b1ebd7f-190a-492f-90d8-77ff36a255fd",
+        "title_en": "Coconut Turmeric Chicken Thighs",
+        "title_he": "שוקי עוף בשמנת קוקוס וכורכום",
+        "ingredients": [
+          { "name": "שוקי עוף ללא עור", "quantity": 600, "unit": "גרם" },
+          { "name": "חלב קוקוס (שימורים, שומן מלא)", "quantity": 200, "unit": "מ\"ל" },
+          { "name": "שמן קוקוס או שמן זית", "quantity": 20, "unit": "מ\"ל" },
+          { "name": "כורכום טחון", "quantity": 4, "unit": "גרם" },
+          { "name": "כמון טחון", "quantity": 3, "unit": "גרם" },
+          { "name": "פפריקה מעושנת", "quantity": 2, "unit": "גרם" },
+          { "name": "שיני שום, כתושות", "quantity": 4, "unit": "יחידות" },
+          { "name": "ג'ינג'ר טרי מגורר", "quantity": 10, "unit": "גרם" },
+          { "name": "מיץ לימון", "quantity": 20, "unit": "מ\"ל" },
+          { "name": "מלח ופלפל שחור", "quantity": 3, "unit": "גרם" },
+          { "name": "כוסברה טרייה לקישוט", "quantity": 10, "unit": "גרם" }
+        ],
+        "instructions": [
+          "1. מתבלים את שוקי העוף בכורכום, כמון, פפריקה, מלח ופלפל מכל הצדדים.",
+          "2. מחממים שמן במחבת גדולה על אש בינונית-גבוהה. מאדים את השום והג'ינג'ר כדקה.",
+          "3. מוסיפים את שוקי העוף ומשחימים 3-4 דקות מכל צד.",
+          "4. יוצקים את חלב הקוקוס ומיץ הלימון. מביאים לרתיחה.",
+          "5. מנמיכים לאש קטנה, מכסים ומבשלים 20-25 דקות עד שהעוף רך לחלוטין והרוטב מסמיך.",
+          "6. מגישים עם כוסברה טרייה ולצד כרובית-אורז או ירקות מאודים."
+        ],
+        "source_url": "https://www.asaucykitchen.com/coconut-turmeric-chicken-thighs/",
+        "source_name": "A Saucy Kitchen",
+        "source_image_url": null,
+        "preliminary_macros": {
+          "calories_per_serving": 291,
+          "protein_g": 23,
+          "carbs_g": 5,
+          "fat_g": 19,
+          "fiber_g": 1,
+          "servings": 4
+        },
+        "needs_usda_lookup": false,
+        "gap_addressed": "low_carb + keto + high_protein_low_carb",
+        "why_this_recipe": "מנה שמכסה שלושה פערים בו-זמנית: low-carb, קטו, ועתיר חלבון. הכורכום הוא תבלין נפוץ ואהוב במטבח הישראלי, וחלב הקוקוס נמצא בכל רשת שיווק — מרכיבים נגישים לחלוטין."
+      },
+      {
+        "candidate_id": "888e06e6-3a39-4a8b-a65c-ab35518bf323",
+        "title_en": "Tuna Salad Lettuce Wraps",
+        "title_he": "עטיפות חסה עם סלט טונה",
+        "ingredients": [
+          { "name": "טונה בשמן, מסוננת", "quantity": 280, "unit": "גרם" },
+          { "name": "עלי חסה חמאה גדולים", "quantity": 8, "unit": "יחידות" },
+          { "name": "סלרי, קצוץ דק", "quantity": 60, "unit": "גרם" },
+          { "name": "בצל סגול, קצוץ דק", "quantity": 40, "unit": "גרם" },
+          { "name": "מיונז (או יוגורט יווני לגרסה קלה יותר)", "quantity": 40, "unit": "גרם" },
+          { "name": "מיץ לימון", "quantity": 15, "unit": "מ\"ל" },
+          { "name": "חרדל דיז'ון", "quantity": 10, "unit": "גרם" },
+          { "name": "מלח ופלפל שחור", "quantity": 2, "unit": "גרם" },
+          { "name": "פטרוזיליה טרייה קצוצה", "quantity": 10, "unit": "גרם" }
+        ],
+        "instructions": [
+          "1. מסננים היטב את הטונה ומניחים בקערה.",
+          "2. מוסיפים סלרי, בצל סגול, מיונז (או יוגורט), מיץ לימון, חרדל ופטרוזיליה. מערבבים עד לאיחוד.",
+          "3. מתבלים במלח ופלפל לפי הטעם.",
+          "4. שוטפים ומייבשים את עלי החסה. מניחים 2 עלים זה על גבי זה לעמידות.",
+          "5. מניחים כף גדושה של סלט הטונה בכל עלה.",
+          "6. מגישים מיד — בתוספת פרוסות מלפפון או עגבנייה שרי לצד."
+        ],
+        "source_url": "https://highproteinkitchen.com/easy-tuna-salad-lettuce-wraps/",
+        "source_name": "High Protein Kitchen",
+        "source_image_url": null,
+        "preliminary_macros": {
+          "calories_per_serving": 181,
+          "protein_g": 17,
+          "carbs_g": 6,
+          "fat_g": 10,
+          "fiber_g": 1,
+          "servings": 4,
+          "serving_size_note": "2 wraps per serving"
+        },
+        "needs_usda_lookup": false,
+        "gap_addressed": "low_carb + high_protein_low_carb",
+        "why_this_recipe": "מנה שמוכנה תוך 10 דקות ללא בישול — אידיאלית לצהריים מהירים. טונה בשימורים היא אחד ממקורות החלבון הנגישים ביותר בישראל, ועטיפות חסה הן תחליף low-carb לפיתה שרוב המשתמשים מחפשים."
+      }
+    ]
+  }
+]
