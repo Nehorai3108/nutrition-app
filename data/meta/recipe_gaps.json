@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-04-23T12:37:47+00:00",
+  "generated_by": "recipe_scout",
+  "total_recipes_analyzed": 270,
+  "gap_analysis": [
+    {
+      "gap_id": "low_carb",
+      "label": "מתכונים דלי פחמימות",
+      "current_count": 4,
+      "percentage_of_db": 1.5,
+      "severity": "critical",
+      "notes": "רק 4 מתכונים מתויגים כ-low-carb מתוך 270. פער קריטי לאפליקציית תזונה."
+    },
+    {
+      "gap_id": "keto",
+      "label": "מתכונים קטוגניים",
+      "current_count": 0,
+      "percentage_of_db": 0,
+      "severity": "critical",
+      "notes": "אפס מתכונים קטוגניים בבסיס הנתונים."
+    },
+    {
+      "gap_id": "high_protein_low_carb",
+      "label": "עתיר חלבון + דל פחמימות",
+      "current_count": 3,
+      "percentage_of_db": 1.1,
+      "severity": "critical",
+      "notes": "שילוב high-protein + low-carb הוא מהנפוצים ביותר בקרב משתמשי תזונה ישראלים — כמעט לא קיים."
+    },
+    {
+      "gap_id": "high_protein",
+      "label": "מתכונים עתירי חלבון",
+      "current_count": 25,
+      "percentage_of_db": 9.3,
+      "severity": "medium",
+      "notes": "25 מתכונים — רובם בשר, מועטים מהצומח."
+    },
+    {
+      "gap_id": "breakfast_variety",
+      "label": "מגוון ארוחות בוקר",
+      "current_count": 59,
+      "percentage_of_db": 21.9,
+      "severity": "low",
+      "notes": "59 מתכוני בוקר — רובם חלביים, מועטים low-carb."
+    }
+  ],
+  "top_3_priority_gaps": [
+    "low_carb",
+    "keto",
+    "high_protein_low_carb"
+  ]
+}
