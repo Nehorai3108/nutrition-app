@@ -1,9 +1,9 @@
 [theme]
 base = "dark"
-primaryColor = "#7c5cff"
-backgroundColor = "#0f1020"
-secondaryBackgroundColor = "#1a1a2e"
-textColor = "#e8e8ff"
+primaryColor = "#4f8ef7"
+backgroundColor = "#0d0f14"
+secondaryBackgroundColor = "#161b26"
+textColor = "#f4f6fb"
 font = "sans serif"
 
 [client]
@@ -12,3 +12,4 @@ showErrorDetails = true
 
 [server]
 runOnSave = true
+address = "0.0.0.0"

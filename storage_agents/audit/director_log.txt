@@ -286,3 +286,5 @@
 [2026-04-16 16:56:46] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
 [2026-04-16 16:56:48] tasks=6 health=17 summary=נמצאו 6 בעיות. ציון בריאות: 17/100. פירוט: 1 משימות improve_variety, 5 משימות fix_meal_timing.
 >>>>>>> Stashed changes
+[2026-04-24 07:21:02] tasks=7 health=2 summary=נמצאו 7 בעיות. ציון בריאות: 2/100. פירוט: 1 משימות improve_variety, 6 משימות fix_meal_timing.
+[2026-04-24 07:41:30] tasks=1 health=92 summary=נמצאו 1 בעיות. ציון בריאות: 92/100. פירוט: 1 משימות improve_variety.

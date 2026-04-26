@@ -1,0 +1,19 @@
+{
+  "user_id": "ui_user_001",
+  "name": "ישראל ישראלי",
+  "gender": "male",
+  "date_of_birth": "1990-05-15",
+  "height_cm": 178.0,
+  "weight_kg": 82.0,
+  "activity_level": "moderately_active",
+  "goal": "lose_weight",
+  "meal_preferences": {
+    "kashrut": "parve",
+    "allergies": [],
+    "preferred_foods": [],
+    "disliked_foods": [],
+    "meals_per_day": 5
+  },
+  "updated_at": "2026-04-24T06:37:10.041809",
+  "notes": null
+}
