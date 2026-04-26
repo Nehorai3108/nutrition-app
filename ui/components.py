@@ -20,56 +20,96 @@ _CSS_FLAG = "_nut_ui_css_injected"
 
 
 def inject_global_css() -> None:
-    """Inject the design-system CSS once per session.
+    """Inject the design-system CSS on every render.
 
-    Safe to call from every page top-level. Subsequent calls are no-ops
-    within the same Streamlit run.
+    Called from every page top-level. Streamlit re-renders from scratch
+    on each interaction so CSS must be re-injected every run.
     """
-    # Force-inject every run because Streamlit re-renders the page from
-    # scratch on each interaction. The flag merely prevents duplicates
-    # within a single render pass.
-    if st.session_state.get(_CSS_FLAG):
-        return
-    st.session_state[_CSS_FLAG] = True
 
     css = f"""
     <style>
-        /* ─── RTL ─────────────────────────────────────────────────────── */
-        .main .block-container {{ direction: rtl; }}
-        section[data-testid="stSidebar"] > div {{ direction: rtl; }}
-        h1, h2, h3, h4, h5 {{ text-align: right; color: {t.TEXT}; }}
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        /* ─── Global & RTL ────────────────────────────────────────────── */
+        html, body, [class*="css"] {{
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }}
+        .main .block-container {{
+            direction: rtl;
+            padding-top: 0.75rem;
+            max-width: 1100px;
+        }}
+        section[data-testid="stSidebar"] > div {{
+            direction: rtl;
+            background: {t.SURFACE} !important;
+            border-right: 1px solid {t.BORDER};
+        }}
+        h1, h2, h3, h4, h5 {{ text-align: right; color: {t.TEXT}; font-family: 'Inter', sans-serif !important; }}
         input[type="number"], input[type="text"], input[type="password"], textarea {{
             text-align: right;
         }}
 
-        /* ─── Larger hit targets (WCAG 2.5.5) ─────────────────────────── */
+        /* ─── Buttons ─────────────────────────────────────────────────── */
         .stButton > button,
-        .stDownloadButton > button,
-        button[data-testid="baseButton-primary"],
-        button[data-testid="baseButton-secondary"] {{
+        .stDownloadButton > button {{
             min-height: {t.HIT_TARGET};
             border-radius: {t.RADIUS};
             font-weight: 600;
-            transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+            font-size: 0.92rem;
+            letter-spacing: 0.01em;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
         }}
-        .stButton > button:hover {{
+        button[data-testid="baseButton-primary"] {{
+            background: {t.GRAD_PRIMARY} !important;
+            box-shadow: {t.SHADOW_PRI};
+        }}
+        button[data-testid="baseButton-primary"]:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(124,92,255,0.4) !important;
+        }}
+        button[data-testid="baseButton-secondary"] {{
+            background: {t.SURFACE_2} !important;
+            border-color: {t.BORDER_2} !important;
+        }}
+        button[data-testid="baseButton-secondary"]:hover {{
+            border-color: {t.PRIMARY} !important;
+            background: {t.SURFACE_3} !important;
             transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(124, 92, 255, 0.25);
         }}
-        .stButton > button:active {{
-            transform: translateY(0);
+        .stButton > button:active {{ transform: translateY(0) scale(0.98); }}
+
+        button:focus-visible, input:focus-visible,
+        textarea:focus-visible, select:focus-visible,
+        a:focus-visible, [tabindex]:focus-visible {{
+            outline: 2px solid {t.ACCENT} !important;
+            outline-offset: 3px !important;
+            border-radius: {t.RADIUS_SM};
         }}
 
-        /* Visible focus ring everywhere */
-        button:focus-visible,
-        input:focus-visible,
-        textarea:focus-visible,
-        select:focus-visible,
-        a:focus-visible,
-        [tabindex]:focus-visible {{
-            outline: 3px solid {t.PRIMARY} !important;
-            outline-offset: 2px !important;
-            border-radius: {t.RADIUS_SM};
+        /* ─── Metrics ─────────────────────────────────────────────────── */
+        [data-testid="metric-container"] {{
+            background: {t.SURFACE_2};
+            border: 1px solid {t.BORDER};
+            border-radius: {t.RADIUS_LG};
+            padding: 16px 18px;
+            transition: all 0.2s ease;
+        }}
+        [data-testid="metric-container"]:hover {{
+            border-color: {t.PRIMARY};
+            box-shadow: {t.SHADOW_PRI};
+            transform: translateY(-1px);
+        }}
+
+        /* ─── Expanders ───────────────────────────────────────────────── */
+        [data-testid="stExpander"] {{
+            background: {t.SURFACE} !important;
+            border: 1px solid {t.BORDER} !important;
+            border-radius: {t.RADIUS_LG} !important;
+            overflow: hidden;
+        }}
+        [data-testid="stExpander"]:hover {{
+            border-color: {t.BORDER_2} !important;
         }}
 
         /* ─── Cards ───────────────────────────────────────────────────── */
@@ -77,48 +117,72 @@ def inject_global_css() -> None:
             background: {t.SURFACE};
             border: 1px solid {t.BORDER};
             border-radius: {t.RADIUS_LG};
-            padding: 18px 20px;
+            padding: 20px 22px;
             margin: 10px 0;
+            backdrop-filter: blur(8px);
+            position: relative;
+            overflow: hidden;
         }}
-        .nut-card-clickable {{ cursor: pointer; transition: all 0.18s ease; }}
+        .nut-card::before {{
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: {t.GRAD_CARD};
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }}
+        .nut-card-clickable {{ cursor: pointer; transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1); }}
         .nut-card-clickable:hover {{
-            background: {t.SURFACE_2};
             border-color: {t.PRIMARY};
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: {t.SHADOW_PRI};
         }}
+        .nut-card-clickable:hover::before {{ opacity: 1; }}
 
         /* ─── Page header ─────────────────────────────────────────────── */
         .nut-pageheader {{
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px 18px;
-            background: linear-gradient(135deg, {t.SURFACE} 0%, {t.SURFACE_2} 100%);
+            gap: 16px;
+            padding: 18px 22px;
+            background: {t.GRAD_HEADER};
             border: 1px solid {t.BORDER};
-            border-radius: {t.RADIUS_LG};
-            margin: 6px 0 18px 0;
+            border-radius: {t.RADIUS_XL};
+            margin: 4px 0 20px 0;
+            position: relative;
+            overflow: hidden;
+        }}
+        .nut-pageheader::after {{
+            content: '';
+            position: absolute;
+            top: -40px; left: -40px;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(124,92,255,0.15) 0%, transparent 70%);
+            pointer-events: none;
         }}
         .nut-pageheader .nut-ph-icon {{
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 52px;
-            height: 52px;
-            border-radius: {t.RADIUS};
-            background: {t.PRIMARY};
+            width: 56px; height: 56px;
+            border-radius: {t.RADIUS_LG};
+            background: {t.GRAD_PRIMARY};
             color: #ffffff;
             flex-shrink: 0;
+            box-shadow: {t.SHADOW_PRI};
         }}
         .nut-pageheader .nut-ph-title {{
-            font-size: 1.55rem;
-            font-weight: 700;
+            font-size: 1.65rem;
+            font-weight: 800;
             color: {t.TEXT};
             line-height: 1.15;
+            letter-spacing: -0.02em;
         }}
         .nut-pageheader .nut-ph-subtitle {{
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             color: {t.TEXT_MUTED};
-            margin-top: 2px;
+            margin-top: 3px;
         }}
 
         /* ─── Section header ──────────────────────────────────────────── */
@@ -126,54 +190,78 @@ def inject_global_css() -> None:
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: {t.TEXT};
-            margin: 18px 0 10px 0;
-            padding-bottom: 6px;
-            border-bottom: 2px solid {t.BORDER};
+            margin: 22px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid {t.BORDER};
+            position: relative;
         }}
-        .nut-section svg {{ color: {t.PRIMARY}; }}
+        .nut-section::after {{
+            content: '';
+            position: absolute;
+            bottom: -1px; right: 0;
+            width: 48px; height: 2px;
+            background: {t.GRAD_PRIMARY};
+            border-radius: 2px;
+        }}
 
         /* ─── Chips & badges ──────────────────────────────────────────── */
         .nut-chip {{
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
+            gap: 5px;
+            padding: 4px 11px;
             border-radius: 999px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
-            background: {t.SURFACE_2};
-            color: {t.TEXT};
-            border: 1px solid {t.BORDER};
+            background: {t.SURFACE_3};
+            color: {t.TEXT_MUTED};
+            border: 1px solid {t.BORDER_2};
             margin: 2px;
+            letter-spacing: 0.02em;
         }}
-        .nut-chip-meat   {{ background:{t.KASHRUT_BG['meat']};   color:{t.KASHRUT_COLORS['meat']};   border-color:{t.KASHRUT_COLORS['meat']}; }}
-        .nut-chip-dairy  {{ background:{t.KASHRUT_BG['dairy']};  color:{t.KASHRUT_COLORS['dairy']};  border-color:{t.KASHRUT_COLORS['dairy']}; }}
-        .nut-chip-parve  {{ background:{t.KASHRUT_BG['parve']};  color:{t.KASHRUT_COLORS['parve']};  border-color:{t.KASHRUT_COLORS['parve']}; }}
+        .nut-chip-meat  {{ background:{t.KASHRUT_BG['meat']};  color:{t.KASHRUT_COLORS['meat']};  border-color:{t.KASHRUT_COLORS['meat']}33; }}
+        .nut-chip-dairy {{ background:{t.KASHRUT_BG['dairy']}; color:{t.KASHRUT_COLORS['dairy']}; border-color:{t.KASHRUT_COLORS['dairy']}33; }}
+        .nut-chip-parve {{ background:{t.KASHRUT_BG['parve']}; color:{t.KASHRUT_COLORS['parve']}; border-color:{t.KASHRUT_COLORS['parve']}33; }}
 
         /* ─── Status text ─────────────────────────────────────────────── */
         .nut-status-ok   {{ color: {t.SUCCESS}; font-weight: 700; }}
         .nut-status-warn {{ color: {t.WARNING}; font-weight: 700; }}
         .nut-status-fail {{ color: {t.DANGER};  font-weight: 700; }}
 
-        /* ─── Macro tile ──────────────────────────────────────────────── */
+        /* ─── Macro tiles ─────────────────────────────────────────────── */
         .nut-macro-grid {{
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
-            margin: 10px 0;
+            margin: 12px 0;
         }}
         .nut-macro-tile {{
             background: {t.SURFACE_2};
             border-radius: {t.RADIUS};
-            padding: 10px 8px;
+            padding: 12px 8px;
             text-align: center;
             border: 1px solid {t.BORDER};
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease;
         }}
-        .nut-macro-tile .nut-macro-val {{ font-size: 1.05rem; font-weight: 700; }}
-        .nut-macro-tile .nut-macro-lbl {{ font-size: 0.72rem; color: {t.TEXT_MUTED}; margin-top: 2px; }}
+        .nut-macro-tile:hover {{ transform: translateY(-2px); }}
+        .nut-macro-tile::before {{
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: {t.RADIUS} {t.RADIUS} 0 0;
+        }}
+        .nut-mt-cal::before     {{ background: {t.CAL_GRAD}; }}
+        .nut-mt-protein::before {{ background: {t.PROTEIN_GRAD}; }}
+        .nut-mt-carbs::before   {{ background: {t.CARBS_GRAD}; }}
+        .nut-mt-fat::before     {{ background: {t.FAT_GRAD}; }}
+        .nut-macro-tile .nut-macro-val {{ font-size: 1.1rem; font-weight: 700; }}
+        .nut-macro-tile .nut-macro-lbl {{ font-size: 0.7rem; color: {t.TEXT_MUTED}; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }}
         .nut-mt-cal     .nut-macro-val {{ color: {t.CAL_COLOR}; }}
         .nut-mt-protein .nut-macro-val {{ color: {t.PROTEIN_COLOR}; }}
         .nut-mt-carbs   .nut-macro-val {{ color: {t.CARBS_COLOR}; }}
@@ -182,62 +270,113 @@ def inject_global_css() -> None:
         /* ─── Welcome cards ───────────────────────────────────────────── */
         .nut-welcome-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 14px;
-            margin: 14px 0;
+            margin: 16px 0;
         }}
         .nut-welcome-card {{
             background: {t.SURFACE};
             border: 1px solid {t.BORDER};
-            border-radius: {t.RADIUS_LG};
-            padding: 28px 18px;
+            border-radius: {t.RADIUS_XL};
+            padding: 28px 18px 24px;
             text-align: center;
             text-decoration: none;
             color: {t.TEXT};
             display: block;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }}
+        .nut-welcome-card::before {{
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: {t.GRAD_CARD};
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }}
         .nut-welcome-card:hover {{
-            background: {t.SURFACE_2};
             border-color: {t.PRIMARY};
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(124, 92, 255, 0.18);
+            transform: translateY(-4px);
+            box-shadow: {t.SHADOW_PRI};
         }}
+        .nut-welcome-card:hover::before {{ opacity: 1; }}
         .nut-welcome-icon {{
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            background: {t.PRIMARY};
+            width: 64px; height: 64px;
+            border-radius: {t.RADIUS_LG};
+            background: {t.GRAD_PRIMARY};
             color: #fff;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            box-shadow: {t.SHADOW_PRI};
+            position: relative;
         }}
-        .nut-welcome-title {{ font-weight: 700; font-size: 1.1rem; color: {t.TEXT}; }}
-        .nut-welcome-sub {{ font-size: 0.85rem; color: {t.TEXT_MUTED}; margin-top: 6px; line-height: 1.5; }}
+        .nut-welcome-title {{ font-weight: 700; font-size: 1.05rem; color: {t.TEXT}; letter-spacing: -0.01em; }}
+        .nut-welcome-sub {{ font-size: 0.82rem; color: {t.TEXT_MUTED}; margin-top: 6px; line-height: 1.5; }}
 
         /* ─── Login form ──────────────────────────────────────────────── */
         .nut-login-card {{
             max-width: 420px;
             margin: 60px auto;
-            padding: 32px 28px;
+            padding: 36px 32px;
             background: {t.SURFACE};
             border: 1px solid {t.BORDER};
-            border-radius: {t.RADIUS_LG};
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            border-radius: {t.RADIUS_XL};
+            box-shadow: {t.SHADOW_LG}, 0 0 0 1px rgba(124,92,255,0.08);
         }}
 
         /* ─── Recipe images ───────────────────────────────────────────── */
         .nut-recipe-image {{
             width: 100%;
-            height: 280px;
+            height: 220px;
             object-fit: cover;
             border-radius: {t.RADIUS};
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             display: block;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
+        }}
+
+        /* ─── Divider ─────────────────────────────────────────────────── */
+        hr {{
+            border: none !important;
+            border-top: 1px solid {t.BORDER} !important;
+            margin: 18px 0 !important;
+        }}
+
+        /* ─── Dataframes ──────────────────────────────────────────────── */
+        [data-testid="stDataFrame"] {{
+            border-radius: {t.RADIUS_LG} !important;
+            overflow: hidden;
+            border: 1px solid {t.BORDER} !important;
+        }}
+
+        /* ─── Alerts / info boxes ─────────────────────────────────────── */
+        [data-testid="stAlert"] {{
+            border-radius: {t.RADIUS_LG} !important;
+            border-left-width: 4px !important;
+        }}
+
+        /* ─── Hide auto-generated Streamlit nav ───────────────────────── */
+        [data-testid="stSidebarNav"] {{ display: none !important; }}
+
+        /* ─── Custom Hebrew nav links ─────────────────────────────────── */
+        [data-testid="stPageLink"] a {{
+            border-radius: {t.RADIUS} !important;
+            padding: 8px 12px !important;
+            font-weight: 500 !important;
+            color: {t.TEXT_MUTED} !important;
+            transition: all 0.18s ease !important;
+            display: block;
+        }}
+        [data-testid="stPageLink"] a:hover {{
+            background: {t.SURFACE_2} !important;
+            color: {t.TEXT} !important;
+        }}
+        [data-testid="stPageLink-active"] a {{
+            background: {t.PRIMARY_DIM} !important;
+            color: {t.PRIMARY} !important;
+            font-weight: 600 !important;
         }}
     </style>
     """
@@ -396,23 +535,83 @@ def meal_badge_html(meal_key: str) -> str:
 # ── Macro grid ──────────────────────────────────────────────────────────────
 
 def macro_grid_html(cal: int, protein: int, carbs: int, fat: int) -> str:
-    """Render a 4-column macro tile grid as HTML."""
+    """Render a 4-column macro tile grid as HTML — Cal AI style."""
     return (
         f'<div class="nut-macro-grid">'
         f'<div class="nut-macro-tile nut-mt-cal">'
         f'<div class="nut-macro-val">{cal}</div>'
         f'<div class="nut-macro-lbl">קק״ל</div></div>'
         f'<div class="nut-macro-tile nut-mt-protein">'
-        f'<div class="nut-macro-val">{protein}ג</div>'
+        f'<div class="nut-macro-val">{protein}g</div>'
         f'<div class="nut-macro-lbl">חלבון</div></div>'
         f'<div class="nut-macro-tile nut-mt-carbs">'
-        f'<div class="nut-macro-val">{carbs}ג</div>'
+        f'<div class="nut-macro-val">{carbs}g</div>'
         f'<div class="nut-macro-lbl">פחמימות</div></div>'
         f'<div class="nut-macro-tile nut-mt-fat">'
-        f'<div class="nut-macro-val">{fat}ג</div>'
+        f'<div class="nut-macro-val">{fat}g</div>'
         f'<div class="nut-macro-lbl">שומן</div></div>'
         f'</div>'
     )
+
+
+def calorie_ring_html(consumed: int, target: int,
+                      protein: int = 0, carbs: int = 0, fat: int = 0) -> str:
+    """Cal AI style circular calorie ring with macro breakdown."""
+    pct = min(consumed / max(target, 1), 1.0)
+    remaining = max(target - consumed, 0)
+    r, cx, cy = 54, 70, 70
+    circumference = 2 * 3.14159 * r
+    filled = circumference * pct
+    gap = circumference - filled
+    color = t.ACCENT if pct < 0.85 else (t.WARNING if pct < 1.0 else t.DANGER)
+
+    return f"""
+    <div style="display:flex;align-items:center;gap:24px;padding:16px 0">
+      <div style="position:relative;width:140px;height:140px;flex-shrink:0">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="{cx}" cy="{cy}" r="{r}"
+            fill="none" stroke="{t.SURFACE_3}" stroke-width="12"/>
+          <circle cx="{cx}" cy="{cy}" r="{r}"
+            fill="none" stroke="{color}" stroke-width="12"
+            stroke-dasharray="{filled:.1f} {gap:.1f}"
+            stroke-dashoffset="{circumference * 0.25:.1f}"
+            stroke-linecap="round"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;
+                    align-items:center;justify-content:center;text-align:center">
+          <div style="font-size:1.5rem;font-weight:800;color:{t.TEXT};line-height:1">{consumed}</div>
+          <div style="font-size:0.7rem;color:{t.TEXT_MUTED};margin-top:2px">קק״ל</div>
+          <div style="font-size:0.65rem;color:{t.ACCENT};margin-top:4px;font-weight:600">
+            {remaining} נותרו
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:0.8rem;color:{t.TEXT_MUTED}">יעד</span>
+          <span style="font-size:0.9rem;font-weight:700;color:{t.TEXT}">{target} קק״ל</span>
+        </div>
+        <div style="height:1px;background:{t.BORDER}"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div style="text-align:center">
+            <div style="font-size:1rem;font-weight:700;color:{t.PROTEIN_COLOR}">{protein}g</div>
+            <div style="font-size:0.68rem;color:{t.TEXT_MUTED};margin-top:2px">חלבון</div>
+            <div style="height:3px;background:{t.PROTEIN_GRAD};border-radius:2px;margin-top:4px"></div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:1rem;font-weight:700;color:{t.CARBS_COLOR}">{carbs}g</div>
+            <div style="font-size:0.68rem;color:{t.TEXT_MUTED};margin-top:2px">פחמימות</div>
+            <div style="height:3px;background:{t.CARBS_GRAD};border-radius:2px;margin-top:4px"></div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:1rem;font-weight:700;color:{t.FAT_COLOR}">{fat}g</div>
+            <div style="font-size:0.68rem;color:{t.TEXT_MUTED};margin-top:2px">שומן</div>
+            <div style="height:3px;background:{t.FAT_GRAD};border-radius:2px;margin-top:4px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
 
 
 # ── Recipe card ─────────────────────────────────────────────────────────────
@@ -466,22 +665,20 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
         )
 
     return (
-        f'<a href="{href}" target="_self" '
-        f'style="text-decoration:none;color:inherit">'
-        f'<div class="nut-card nut-card-clickable">'
-        f'{image_block}'
-        f'<div style="display:flex;justify-content:space-between;'
-        f'align-items:center;gap:8px;flex-wrap:wrap">'
-        f'<div style="font-size:1.15rem;font-weight:700;color:{t.TEXT}">'
-        f'{name_he}</div>'
-        f'<div style="display:flex;gap:4px;align-items:center">'
-        f'{kashrut_badge_html(kashrut)}{rank_html}</div>'
+        f'<a href="{href}" target="_self" style="text-decoration:none;color:inherit">'
+        f'<div class="nut-card nut-card-clickable" style="padding:0;overflow:hidden">'
+        f'{"<div style=\'position:relative\'>" + image_block + "</div>" if image_block else ""}'
+        f'<div style="padding:16px 18px">'
+        f'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px">'
+        f'<div style="font-size:1.1rem;font-weight:700;color:{t.TEXT};line-height:1.3">{name_he}</div>'
+        f'<div style="display:flex;gap:4px;align-items:center;flex-shrink:0">{kashrut_badge_html(kashrut)}{rank_html}</div>'
         f'</div>'
-        f'<div style="font-size:0.82rem;color:{t.TEXT_MUTED};margin:4px 0 8px 0">'
-        f'{name_en} · ⏱ {prep} דק׳ · 🍽 {portions} מנות'
-        f'{" · " + match_html if match_html else ""}</div>'
+        f'<div style="font-size:0.8rem;color:{t.TEXT_MUTED};margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">'
+        f'<span>⏱ {prep} דק׳</span><span>🍽 {portions} מנות</span>'
+        f'{"<span style=\'color:" + match_color + ";font-weight:600\'>" + str(match_pct) + "% התאמה</span>" if match_pct is not None else ""}'
+        f'</div>'
         f'{macro_grid_html(cal, protein, carbs, fat)}'
-        f'</div></a>'
+        f'</div></div></a>'
     )
 
 
@@ -575,27 +772,31 @@ def nav_menu(active: Optional[str] = None) -> None:
             default_index=default_idx,
             styles={
                 "container": {
-                    "padding": "6px",
+                    "padding": "6px 8px",
                     "background-color": t.SURFACE,
                     "border": f"1px solid {t.BORDER}",
-                    "border-radius": t.RADIUS_LG,
-                    "margin-bottom": "14px",
+                    "border-radius": t.RADIUS_XL,
+                    "margin-bottom": "16px",
                     "direction": "rtl",
+                    "box-shadow": t.SHADOW_SM,
                 },
-                "icon": {"color": t.PRIMARY, "font-size": "18px"},
+                "icon": {"color": t.ACCENT, "font-size": "17px"},
                 "nav-link": {
-                    "font-size": "0.95rem",
-                    "color": t.TEXT,
+                    "font-size": "0.88rem",
+                    "font-weight": "500",
+                    "color": t.TEXT_MUTED,
                     "text-align": "center",
-                    "padding": "10px 14px",
-                    "margin": "0 4px",
+                    "padding": "9px 12px",
+                    "margin": "0 2px",
                     "border-radius": t.RADIUS,
                     "min-height": t.HIT_TARGET,
+                    "transition": "all 0.2s ease",
                 },
                 "nav-link-selected": {
-                    "background-color": t.PRIMARY,
+                    "background": f"linear-gradient(135deg, {t.PRIMARY} 0%, #b06aff 100%)",
                     "color": "#fff",
                     "font-weight": "700",
+                    "box-shadow": t.SHADOW_PRI,
                 },
             },
         )

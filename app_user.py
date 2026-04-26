@@ -37,6 +37,7 @@ from nutrition_app.models.daily_summary import DailySummary
 from nutrition_app.repositories.daily_summary_repository import DailySummaryRepository
 from nutrition_app.repositories.water_repository import WaterRepository as _WaterRepo
 from nutrition_app.repositories.workout_repository import WorkoutRepository as _WorkoutRepo
+from nutrition_app.repositories.food_log_repository import FoodLogRepository as _FoodLogRepo, FoodLogEntry as _FoodLogEntry
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage", "nutrition.db")
 
@@ -157,6 +158,18 @@ GOAL_LABEL_SHORT = {
 }
 
 with st.sidebar:
+    # ── Hebrew navigation ─────────────────────────────────────────────────
+    st.page_link("app_user.py",                       label="🏠 ראשי",              use_container_width=True)
+    st.page_link("pages/0_profile.py",                label="👤 פרופיל",            use_container_width=True)
+    st.page_link("pages/2_recipes.py",                label="🍴 מתכונים",           use_container_width=True)
+    st.page_link("pages/4_inventory.py",              label="📦 מלאי",              use_container_width=True)
+    st.page_link("pages/6_daily_menu.py",             label="📋 תפריט יומי",        use_container_width=True)
+    st.page_link("pages/7_workout_tracker.py",        label="💪 מעקב אימונים",      use_container_width=True)
+    st.page_link("pages/7_weekly_workout_plan.py",    label="📅 תכנית אימונים",     use_container_width=True)
+    st.page_link("pages/8_calendar.py",               label="📆 לוח שנה",           use_container_width=True)
+    st.page_link("pages/9_history.py",                label="📊 היסטוריה",          use_container_width=True)
+    st.divider()
+
     # ── Profile card ──────────────────────────────────────────────────────
     st.markdown(f"### 👤 {name}")
     st.caption(f"⚖️ {weight}ק״ג &nbsp;·&nbsp; 🎯 {GOAL_LABEL_SHORT.get(goal_choice, '')}")
@@ -535,6 +548,7 @@ if not run_btn and "last_plan" not in st.session_state:
     _summary_repo = DailySummaryRepository()
     _water_repo_db = _WaterRepo()
     _workout_repo_db = _WorkoutRepo()
+    _food_log_repo = _FoodLogRepo()
     _DASH_USER = "ui_user_001"
 
     # ── Week bar ─────────────────────────────────────────────────────────────
@@ -587,7 +601,8 @@ if not run_btn and "last_plan" not in st.session_state:
     water_intakes = _water_repo_db.get_water_intakes_for_date(_DASH_USER, sel_date)
     water_total = sum(w.amount_ml for w in water_intakes)
     water_goal = _water_repo_db.get_water_goal(_DASH_USER).daily_goal_ml
-    workouts = _workout_repo_db.resolve_workouts_for_date(_DASH_USER, sel_date)
+    _workout_data = _workout_repo_db.get_workout_data(_DASH_USER)
+    workouts = _workout_data.daily_log.get(sel_date.isoformat(), [])
 
     # Calculate BMR from current user profile (always available, no meal plan required)
     _dash_user_obj = UserProfile(
@@ -604,7 +619,14 @@ if not run_btn and "last_plan" not in st.session_state:
         for w in workouts
     )
 
-    cal_eaten = summary.calories_eaten if summary else 0
+    # Food log — only actual declared meals count
+    _log_totals = _food_log_repo.get_totals(_DASH_USER, sel_date)
+    _food_log = _food_log_repo.get_log(_DASH_USER, sel_date)
+    cal_eaten = _log_totals["calories"]
+    prot_logged = _log_totals["protein"]
+    carbs_logged = _log_totals["carbs"]
+    fat_logged = _log_totals["fat"]
+    # Target comes from the generated plan (or BMR if no plan)
     cal_target = summary.calories_target if summary else 0
     # Deficit = (BMR + workout calories burned) - calories eaten
     # Positive → in deficit (burning more than eating)
@@ -612,53 +634,162 @@ if not run_btn and "last_plan" not in st.session_state:
     cal_balance = (bmr + burned) - cal_eaten
     balance_label = f"{'גרעון' if cal_balance > 0 else 'עודף'} {abs(cal_balance):.0f} קק״ל"
 
-    # ── Calorie card ─────────────────────────────────────────────────────────
-    st.markdown(f"### {'היום' if sel_date == today else sel_date.strftime('%d/%m/%Y')}")
-    cal_col, burn_col, bal_col = st.columns(3)
-    with cal_col:
-        st.metric(
-            "קלוריות שנאכלו",
-            f"{cal_eaten:.0f}",
-            f"יעד: {cal_target:.0f}" if cal_target else "עדיין לא הופקה תכנית",
-        )
-    with burn_col:
-        burn_delta = f"BMR: {bmr:.0f}" + (f" + {burned:.0f} אימון" if burned > 0 else "")
-        st.metric("🔥 קלוריות נשרפו", f"{burned:.0f}", burn_delta)
-    with bal_col:
-        # Deficit → positive → good for weight loss → green
-        delta_color = "normal" if cal_balance > 0 else "inverse"
-        st.metric(
-            "גרעון / עודף",
-            balance_label,
-            delta=f"BMR {bmr:.0f} + אימון {burned:.0f}",
-            delta_color="off",
+    # ── Cal AI style dashboard ────────────────────────────────────────────────
+    from ui import theme as _t
+    prot_e = int(prot_logged)
+    carbs_e = int(carbs_logged)
+    fat_e = int(fat_logged)
+    prot_t = int(summary.protein_target) if summary and summary.protein_target else 0
+    carbs_t = int(summary.carbs_target) if summary and summary.carbs_target else 0
+    fat_t = int(summary.fat_target) if summary and summary.fat_target else 0
+    cal_t = int(cal_target) if cal_target else int(bmr)
+
+    import math as _math
+    date_label = 'היום' if sel_date == today else sel_date.strftime('%d/%m/%Y')
+
+    def _ring_card(val, total, color, label, unit, sub_label="", sub_val=""):
+        pct = min(val / max(total, 1), 1.0)
+        r2, cx2, cy2 = 58, 70, 70
+        circ2 = 2 * _math.pi * r2
+        filled2 = circ2 * pct
+        gap2 = circ2 - filled2
+        pct_txt = f"{int(pct * 100)}%"
+        sub_html = f'<div style="font-size:0.7rem;color:{_t.TEXT_DIM};margin-top:3px">{sub_label} {sub_val}</div>' if sub_label else ''
+        return (
+            f'<div style="background:{_t.SURFACE};border:1px solid {_t.BORDER};border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;align-items:center">'
+            f'<div style="font-size:0.8rem;font-weight:600;color:{_t.TEXT_MUTED};margin-bottom:12px">{label}</div>'
+            f'<div style="position:relative;width:140px;height:140px">'
+            f'<svg width="140" height="140" viewBox="0 0 140 140">'
+            f'<circle cx="{cx2}" cy="{cy2}" r="{r2}" fill="none" stroke="{_t.SURFACE_3}" stroke-width="12"/>'
+            f'<circle cx="{cx2}" cy="{cy2}" r="{r2}" fill="none" stroke="{color}" stroke-width="12" stroke-dasharray="{filled2:.1f} {gap2:.1f}" stroke-dashoffset="{circ2*0.25:.1f}" stroke-linecap="round"/>'
+            f'</svg>'
+            f'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">'
+            f'<div style="font-size:1.6rem;font-weight:800;color:{_t.TEXT};line-height:1">{int(val)}</div>'
+            f'<div style="font-size:0.65rem;color:{_t.TEXT_MUTED};margin-top:3px">{unit}</div>'
+            f'</div></div>'
+            f'<div style="text-align:center;margin-top:10px">'
+            f'<div style="font-size:0.82rem;font-weight:700;color:{color}">{pct_txt}</div>'
+            f'<div style="font-size:0.7rem;color:{_t.TEXT_DIM};margin-top:2px">מתוך {int(total)} {unit}</div>'
+            f'{sub_html}'
+            f'</div></div>'
         )
 
-    # ── Macro row ─────────────────────────────────────────────────────────────
-    st.divider()
-    m_cols = st.columns(3)
-    macros = [
-        ("🥩 חלבון", summary.protein_eaten if summary else 0, summary.protein_target if summary else 0, "g"),
-        ("🍞 פחמימות", summary.carbs_eaten if summary else 0, summary.carbs_target if summary else 0, "g"),
-        ("🥑 שומן", summary.fat_eaten if summary else 0, summary.fat_target if summary else 0, "g"),
-    ]
-    for col, (label, eaten, target, unit) in zip(m_cols, macros):
-        with col:
-            pct = int(eaten / target * 100) if target > 0 else 0
-            st.markdown(f"**{label}**")
-            st.markdown(f"**{eaten:.0f}** / {target:.0f}{unit}")
-            st.progress(min(pct / 100, 1.0))
-            st.caption(f"{pct}%")
+    cal_ring_color = _t.ACCENT if cal_eaten / max(cal_t, 1) < 0.85 else (_t.WARNING if cal_eaten / max(cal_t, 1) < 1.0 else _t.DANGER)
+    workout_goal_kcal = 500
+    w_pct_val = water_total / water_goal if water_goal > 0 else 0
 
-    # ── Water bar ─────────────────────────────────────────────────────────────
+    _n_logged = _log_totals["count"]
+    cal_label = f"🍽️ קלוריות — {date_label}" + (f" ({_n_logged} פריטים)" if _n_logged else "")
+    ring1 = _ring_card(cal_eaten, cal_t, cal_ring_color, cal_label, "קק״ל", "יעד:", str(cal_t))
+    ring2 = _ring_card(burned, workout_goal_kcal, _t.WARNING, "🔥 הספק אימון", "קק״ל", "יעד:", f"{workout_goal_kcal}")
+    ring3 = _ring_card(water_total, water_goal, _t.INFO, "💧 שתיית מים", "ml", "יעד:", f"{int(water_goal)}ml")
+
+    rings_html = (
+        f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:0 0 16px 0">'
+        f'{ring1}{ring2}{ring3}'
+        f'</div>'
+    )
+    st.markdown(rings_html, unsafe_allow_html=True)
+
+    # ── Macro bars ────────────────────────────────────────────────────────────
+    prot_w = f"{min(prot_e/max(prot_t,1),1)*100:.1f}"
+    carbs_w = f"{min(carbs_e/max(carbs_t,1),1)*100:.1f}"
+    fat_w = f"{min(fat_e/max(fat_t,1),1)*100:.1f}"
+    macros_html = (
+        f'<div style="background:{_t.SURFACE};border:1px solid {_t.BORDER};border-radius:20px;padding:20px 24px;margin-bottom:16px">'
+        f'<div style="font-size:0.85rem;font-weight:600;color:{_t.TEXT_MUTED};margin-bottom:16px">מאקרו</div>'
+        f'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+        f'<div style="width:34px;height:34px;border-radius:10px;background:{_t.PROTEIN_BG};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">💪</div>'
+        f'<div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:5px">'
+        f'<span style="font-size:0.85rem;font-weight:600;color:{_t.TEXT}">חלבון</span>'
+        f'<span style="font-size:0.82rem;color:{_t.PROTEIN_COLOR};font-weight:600">{prot_e}g / {prot_t}g</span>'
+        f'</div><div style="height:7px;background:{_t.SURFACE_3};border-radius:99px;overflow:hidden">'
+        f'<div style="height:100%;width:{prot_w}%;background:{_t.PROTEIN_GRAD};border-radius:99px"></div>'
+        f'</div></div></div>'
+        f'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+        f'<div style="width:34px;height:34px;border-radius:10px;background:{_t.CARBS_BG};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🌾</div>'
+        f'<div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:5px">'
+        f'<span style="font-size:0.85rem;font-weight:600;color:{_t.TEXT}">פחמימות</span>'
+        f'<span style="font-size:0.82rem;color:{_t.CARBS_COLOR};font-weight:600">{carbs_e}g / {carbs_t}g</span>'
+        f'</div><div style="height:7px;background:{_t.SURFACE_3};border-radius:99px;overflow:hidden">'
+        f'<div style="height:100%;width:{carbs_w}%;background:{_t.CARBS_GRAD};border-radius:99px"></div>'
+        f'</div></div></div>'
+        f'<div style="display:flex;align-items:center;gap:12px">'
+        f'<div style="width:34px;height:34px;border-radius:10px;background:{_t.FAT_BG};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥑</div>'
+        f'<div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:5px">'
+        f'<span style="font-size:0.85rem;font-weight:600;color:{_t.TEXT}">שומן</span>'
+        f'<span style="font-size:0.82rem;color:{_t.FAT_COLOR};font-weight:600">{fat_e}g / {fat_t}g</span>'
+        f'</div><div style="height:7px;background:{_t.SURFACE_3};border-radius:99px;overflow:hidden">'
+        f'<div style="height:100%;width:{fat_w}%;background:{_t.FAT_GRAD};border-radius:99px"></div>'
+        f'</div></div></div>'
+        f'</div>'
+    )
+    st.markdown(macros_html, unsafe_allow_html=True)
+
+    # ── Food log — declare what was actually eaten ────────────────────────────
     st.divider()
-    w_pct = water_total / water_goal if water_goal > 0 else 0
-    wl, wr = st.columns([4, 1])
-    with wl:
-        st.markdown(f"**💧 מים:** {water_total:.0f} ml / {water_goal:.0f} ml")
-        st.progress(min(w_pct, 1.0))
-    with wr:
-        st.metric("", f"{w_pct * 100:.0f}%")
+    st.markdown("### 🍽️ מה אכלתי היום")
+
+    MEAL_TYPE_HEB = {
+        "breakfast": "🌅 ארוחת בוקר",
+        "morning_snack": "☕ חטיף בוקר",
+        "lunch": "🍽️ ארוחת צהריים",
+        "afternoon_snack": "🍎 חטיף אחה״צ",
+        "dinner": "🌙 ארוחת ערב",
+        "evening_snack": "🌜 חטיף ערב",
+    }
+
+    # Show existing log entries
+    if _food_log:
+        for entry in _food_log:
+            col_info, col_del = st.columns([5, 1])
+            meal_label = MEAL_TYPE_HEB.get(entry.meal_type, entry.meal_type)
+            col_info.markdown(
+                f"**{entry.food_name}** · {entry.grams:.0f}ג' · "
+                f"{entry.calories:.0f} קק״ל · {meal_label}"
+            )
+            if col_del.button("🗑️", key=f"del_log_{entry.entry_id}", help="הסר"):
+                _food_log_repo.remove_entry(_DASH_USER, sel_date, entry.entry_id)
+                st.rerun()
+    else:
+        st.caption("עוד לא רשמת ארוחות להיום.")
+
+    # Add food form
+    with st.expander("➕ הוסף ארוחה", expanded=False):
+        with st.form("add_food_log_form", clear_on_submit=True):
+            food_opts = [(f.food_id, f.name_he) for f in _all_food_items]
+            selected_food = st.selectbox(
+                "בחר מזון",
+                options=[fid for fid, _ in food_opts],
+                format_func=lambda fid: FOOD_ID_TO_NAME.get(fid, fid),
+                key="log_food_sel",
+            )
+            log_grams = st.number_input("כמות (גרם)", min_value=1, max_value=2000, value=100, step=10, key="log_grams")
+            log_meal = st.selectbox(
+                "ארוחה",
+                options=list(MEAL_TYPE_HEB.keys()),
+                format_func=lambda k: MEAL_TYPE_HEB[k],
+                key="log_meal_type",
+            )
+            submitted = st.form_submit_button("✅ הוסף לרשומות", use_container_width=True, type="primary")
+            if submitted and selected_food:
+                food_obj = _catalog.get_food_by_id(selected_food)
+                if food_obj:
+                    ratio = log_grams / 100.0
+                    n = food_obj.nutrition_per_100g
+                    new_entry = _FoodLogEntry(
+                        food_id=food_obj.food_id,
+                        food_name=food_obj.name_he,
+                        grams=float(log_grams),
+                        calories=round(n.calories_kcal * ratio, 1),
+                        protein=round(n.protein_g * ratio, 1),
+                        carbs=round(n.carbs_g * ratio, 1),
+                        fat=round(n.fat_g * ratio, 1),
+                        meal_type=log_meal,
+                        timestamp=datetime.now().isoformat(),
+                    )
+                    _food_log_repo.add_entry(_DASH_USER, sel_date, new_entry)
+                    st.rerun()
 
     # ── Recent activity feed ─────────────────────────────────────────────────
     st.divider()

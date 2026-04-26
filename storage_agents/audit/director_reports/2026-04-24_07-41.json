@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-04-24T07:41:30.160454+00:00",
+  "tasks_created": [
+    {
+      "task_id": "d2734a30-1b2c-4d72-ba7c-91e9c881cb5f",
+      "type": "improve_variety",
+      "agent": "agent_5_planner",
+      "priority": "medium",
+      "details": "food_id food_011 appears in 5/7 plans. Force rotation."
+    }
+  ],
+  "system_health_score": 92,
+  "summary": "נמצאו 1 בעיות. ציון בריאות: 92/100. פירוט: 1 משימות improve_variety."
+}

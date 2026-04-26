@@ -1,0 +1,16 @@
+{
+  "2026-04-24": [
+    {
+      "food_id": "food_184",
+      "food_name": "אורז בר",
+      "grams": 100.0,
+      "calories": 101.0,
+      "protein": 4.0,
+      "carbs": 21.3,
+      "fat": 0.3,
+      "meal_type": "morning_snack",
+      "timestamp": "2026-04-24T11:28:25.352809",
+      "entry_id": "7581a92d-d1a8-4b3d-8b6f-257dc0f9d541"
+    }
+  ]
+}

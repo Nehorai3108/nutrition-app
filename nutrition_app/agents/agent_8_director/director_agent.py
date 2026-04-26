@@ -38,25 +38,29 @@ MEAL_SUITABLE_CATEGORIES: Dict[MealType, List[FoodCategory]] = {
     MealType.BREAKFAST: [
         FoodCategory.DAIRY, FoodCategory.GRAIN, FoodCategory.FRUIT,
         FoodCategory.FAT, FoodCategory.BEVERAGE, FoodCategory.NUT_SEED,
+        FoodCategory.PROTEIN, FoodCategory.CONDIMENT, FoodCategory.VEGETABLE,
     ],
     MealType.MORNING_SNACK: [
         FoodCategory.FRUIT, FoodCategory.DAIRY, FoodCategory.NUT_SEED,
-        FoodCategory.BEVERAGE,
+        FoodCategory.BEVERAGE, FoodCategory.GRAIN, FoodCategory.PROTEIN,
     ],
     MealType.LUNCH: [
         FoodCategory.PROTEIN, FoodCategory.GRAIN, FoodCategory.VEGETABLE,
         FoodCategory.FAT, FoodCategory.LEGUME, FoodCategory.CARBOHYDRATE,
+        FoodCategory.CONDIMENT, FoodCategory.DAIRY,
     ],
     MealType.AFTERNOON_SNACK: [
         FoodCategory.FRUIT, FoodCategory.DAIRY, FoodCategory.NUT_SEED,
-        FoodCategory.BEVERAGE,
+        FoodCategory.BEVERAGE, FoodCategory.GRAIN, FoodCategory.PROTEIN,
     ],
     MealType.DINNER: [
         FoodCategory.PROTEIN, FoodCategory.VEGETABLE, FoodCategory.GRAIN,
         FoodCategory.FAT, FoodCategory.LEGUME, FoodCategory.CARBOHYDRATE,
+        FoodCategory.CONDIMENT, FoodCategory.DAIRY,
     ],
     MealType.EVENING_SNACK: [
         FoodCategory.DAIRY, FoodCategory.FRUIT, FoodCategory.NUT_SEED,
+        FoodCategory.BEVERAGE, FoodCategory.GRAIN,
     ],
 }
 
