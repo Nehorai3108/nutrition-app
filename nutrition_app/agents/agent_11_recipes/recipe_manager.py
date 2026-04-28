@@ -258,12 +258,20 @@ class RecipeManager:
                 return False
 
         # Search text (case-insensitive substring against name_he and name_en)
+        # Also checks Hebrew root prefix: "חביתה" matches "חביתת" (construct state)
         if f.search_text:
-            query = f.search_text.lower()
+            query = f.search_text.lower().strip()
             name_he = recipe.get("name_he", "").lower()
             name_en = recipe.get("name_en", "").lower()
-            if query not in name_he and query not in name_en:
-                return False
+            tags = " ".join(recipe.get("tags", [])).lower()
+            # Direct substring match
+            if query in name_he or query in name_en or query in tags:
+                pass  # match
+            else:
+                # Hebrew morphology: try stripping last char for construct state
+                root = query[:-1] if len(query) > 2 else query
+                if root not in name_he and root not in name_en:
+                    return False
 
         return True
 

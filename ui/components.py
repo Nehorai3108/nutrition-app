@@ -34,15 +34,111 @@ def inject_global_css() -> None:
         html, body, [class*="css"] {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }}
+
+        /* ── RTL for all text-bearing Streamlit containers ────────────── */
+        [data-testid="stMarkdownContainer"],
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] div,
+        [data-testid="stMarkdownContainer"] li,
+        [data-testid="stMarkdownContainer"] span {{
+            direction: rtl !important;
+            unicode-bidi: embed !important;
+        }}
+        /* Preserve flex layout direction (don't flip row ordering) */
+        [data-testid="stMarkdownContainer"] div[style*="display:flex"],
+        [data-testid="stMarkdownContainer"] div[style*="display: flex"] {{
+            direction: rtl !important;
+        }}
+        /* Expander summary labels */
+        [data-testid="stExpander"] summary p,
+        [data-testid="stExpander"] details > summary,
+        [data-testid="stExpanderToggleIcon"] + p {{
+            direction: rtl !important;
+            text-align: right !important;
+        }}
+        /* Tab labels */
+        [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p,
+        [data-baseweb="tab"] span,
+        button[role="tab"] {{
+            direction: rtl !important;
+            unicode-bidi: embed !important;
+        }}
+        /* Form labels (number input, selectbox, slider, text input, radio) */
+        .stNumberInput label,
+        .stSelectbox label,
+        .stTextInput label,
+        .stSlider label,
+        .stTextArea label,
+        .stRadio label,
+        .stCheckbox label,
+        .stRadio > div > label,
+        [data-testid="stWidgetLabel"],
+        [data-testid="stWidgetLabel"] p {{
+            direction: rtl !important;
+            text-align: right !important;
+        }}
+        /* Radio option text */
+        .stRadio [data-testid="stMarkdownContainer"] p {{
+            direction: rtl !important;
+        }}
+        /* Selectbox options and current value */
+        [data-baseweb="select"] [data-testid="stMarkdownContainer"] p,
+        [data-baseweb="select"] span {{
+            direction: rtl !important;
+        }}
+        /* Alert / info / warning / error boxes */
+        [data-testid="stAlert"] p,
+        [data-testid="stAlert"] div {{
+            direction: rtl !important;
+            text-align: right !important;
+        }}
+        /* st.caption, st.write, st.text */
+        [data-testid="stText"],
+        [data-testid="stCaptionContainer"] p {{
+            direction: rtl !important;
+            text-align: right !important;
+        }}
+        /* ─── Hide Streamlit chrome ───────────────────────────────────── */
+        header[data-testid="stHeader"] {{ display: none !important; }}
+        footer {{ display: none !important; }}
+        #MainMenu {{ display: none !important; }}
+        [data-testid="stToolbar"] {{ display: none !important; }}
+        [data-testid="stDecoration"] {{ display: none !important; }}
+        /* Hide collapsed sidebar toggle arrow (black strip on left) */
+        [data-testid="collapsedControl"] {{ display: none !important; }}
+        section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
+
         .main .block-container {{
             direction: rtl;
             padding-top: 0.75rem;
-            max-width: 1100px;
+            padding-bottom: 90px;
+            max-width: 480px;
+            margin: 0 auto;
         }}
         section[data-testid="stSidebar"] > div {{
             direction: rtl;
             background: {t.SURFACE} !important;
             border-right: 1px solid {t.BORDER};
+        }}
+        section[data-testid="stSidebar"] {{
+            min-width: 220px !important;
+            max-width: 260px !important;
+        }}
+        section[data-testid="stSidebar"] .stButton > button {{
+            min-height: 36px !important;
+            font-size: 0.82rem !important;
+            padding: 4px 10px !important;
+        }}
+        section[data-testid="stSidebar"] h3,
+        section[data-testid="stSidebar"] h4 {{
+            font-size: 0.9rem !important;
+            margin: 4px 0 !important;
+        }}
+        section[data-testid="stSidebar"] hr {{
+            margin: 6px 0 !important;
+        }}
+        section[data-testid="stSidebar"] [data-testid="stMetric"] {{
+            padding: 4px 0 !important;
         }}
         h1, h2, h3, h4, h5 {{ text-align: right; color: {t.TEXT}; font-family: 'Inter', sans-serif !important; }}
         input[type="number"], input[type="text"], input[type="password"], textarea {{
@@ -78,6 +174,23 @@ def inject_global_css() -> None:
             transform: translateY(-1px);
         }}
         .stButton > button:active {{ transform: translateY(0) scale(0.98); }}
+
+        /* ─── Secondary buttons — compact, minimal ───────────────────── */
+        button[data-testid="baseButton-secondary"] {{
+            background: transparent !important;
+            border: 1px solid {t.BORDER} !important;
+            color: {t.TEXT_MUTED} !important;
+            box-shadow: none !important;
+            min-height: 36px !important;
+            font-size: 0.82rem !important;
+            font-weight: 500 !important;
+        }}
+        button[data-testid="baseButton-secondary"]:hover {{
+            border-color: {t.PRIMARY} !important;
+            color: {t.PRIMARY} !important;
+            background: transparent !important;
+            transform: none !important;
+        }}
 
         button:focus-visible, input:focus-visible,
         textarea:focus-visible, select:focus-visible,
@@ -378,9 +491,146 @@ def inject_global_css() -> None:
             color: {t.PRIMARY} !important;
             font-weight: 600 !important;
         }}
+
+        /* ─── Mobile responsive ───────────────────────────────────────── */
+        .nut-rings-grid {{
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin: 0 0 16px 0;
+        }}
+        .nut-macro-card {{
+            background: {t.SURFACE};
+            border: 1px solid {t.BORDER};
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }}
+
+        @media (max-width: 700px) {{
+            .nut-rings-grid {{ grid-template-columns: 1fr !important; }}
+            .main .block-container {{
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+                padding-top: 0.75rem !important;
+            }}
+            .stButton > button {{
+                min-height: 52px !important;
+                font-size: 1rem !important;
+            }}
+            /* Recipe cards — compact on mobile */
+            .nut-recipe-image {{
+                height: 140px !important;
+            }}
+            .nut-card {{ margin: 6px 0 !important; }}
+            .nut-card-body {{ padding: 10px 12px !important; }}
+            .nut-card .nut-macro-grid {{
+                gap: 5px !important;
+                margin: 8px 0 !important;
+            }}
+            .nut-macro-tile {{
+                padding: 8px 4px !important;
+            }}
+            .nut-macro-tile .nut-macro-val {{ font-size: 0.9rem !important; }}
+            .nut-macro-tile .nut-macro-lbl {{ font-size: 0.6rem !important; }}
+        }}
+
+        /* ─── Bottom nav bar ──────────────────────────────────────────── */
+        .nut-bottom-nav {{
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 9999;
+            background: {t.SURFACE};
+            border-top: 1px solid {t.BORDER};
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 env(safe-area-inset-bottom, 12px) 0;
+            backdrop-filter: blur(20px);
+        }}
+        .nut-nav-item {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: {t.TEXT_DIM};
+            font-size: 0.65rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            min-width: 52px;
+        }}
+        .nut-nav-item:hover {{ color: {t.TEXT}; }}
+        .nut-nav-item.active {{ color: {t.PRIMARY}; }}
+        .nut-nav-item .nav-icon {{ font-size: 1.4rem; line-height: 1; }}
+
+        /* ─── Premium ring card ───────────────────────────────────────── */
+        .nut-ring-card {{
+            background: {t.SURFACE};
+            border: 1px solid {t.BORDER_2};
+            border-radius: 24px;
+            padding: 20px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }}
+        .nut-ring-card::before {{
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 24px 24px 0 0;
+        }}
+        .nut-ring-cal::before   {{ background: {t.GRAD_ACCENT}; }}
+        .nut-ring-sport::before {{ background: linear-gradient(90deg, {t.WARNING}, #f97316); }}
+        .nut-ring-water::before {{ background: linear-gradient(90deg, {t.INFO}, {t.ACCENT}); }}
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
+
+
+
+def bottom_nav(active: str = "home") -> None:
+    """Fixed bottom nav — SVG icons, HTML links with correct Streamlit URL slugs."""
+    SVG = {
+        "home":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+        "food":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
+        "workout": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M6 4v6m0 4v6M18 4v6m0 4v6M2 9h4m12 0h4M2 15h4m12 0h4"/></svg>',
+        "history": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+        "profile": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    }
+    items = [
+        ("home",    "/",                  "בית"),
+        ("food",    "/daily_menu",        "תזונה"),
+        ("workout", "/workout_tracker",   "אימון"),
+        ("history", "/history",           "היסטוריה"),
+        ("profile", "/profile",           "פרופיל"),
+    ]
+    html = (
+        '<style>'
+        '.gn{position:fixed;bottom:0;left:0;right:0;z-index:9999;'
+        'background:#0d0f14;border-top:1px solid #1e2433;'
+        'display:flex;justify-content:space-around;align-items:center;'
+        'padding:6px 0 max(env(safe-area-inset-bottom),10px)}'
+        '.gn a{display:flex;flex-direction:column;align-items:center;gap:4px;'
+        'text-decoration:none;color:#3a4254;min-width:52px;padding:6px 4px;'
+        'font-size:0.6rem;font-weight:500;transition:color .15s}'
+        '.gn a svg{stroke:#3a4254;transition:stroke .15s}'
+        '.gn a:hover,.gn a:hover svg{color:#8892a4;stroke:#8892a4}'
+        '.gn a.on,.gn a.on svg{color:#4f8ef7 !important;stroke:#4f8ef7 !important}'
+        '</style>'
+        '<nav class="gn">'
+    )
+    for key, href, label in items:
+        cls = "on" if key == active else ""
+        html += f'<a href="{href}" class="{cls}">{SVG[key]}<span>{label}</span></a>'
+    html += '</nav>'
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def reset_css_flag() -> None:
@@ -668,9 +918,9 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
         f'<a href="{href}" target="_self" style="text-decoration:none;color:inherit">'
         f'<div class="nut-card nut-card-clickable" style="padding:0;overflow:hidden">'
         f'{"<div style=\'position:relative\'>" + image_block + "</div>" if image_block else ""}'
-        f'<div style="padding:16px 18px">'
+        f'<div class="nut-card-body" style="padding:16px 18px">'
         f'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px">'
-        f'<div style="font-size:1.1rem;font-weight:700;color:{t.TEXT};line-height:1.3">{name_he}</div>'
+        f'<div style="font-size:1rem;font-weight:700;color:{t.TEXT};line-height:1.3">{name_he}</div>'
         f'<div style="display:flex;gap:4px;align-items:center;flex-shrink:0">{kashrut_badge_html(kashrut)}{rank_html}</div>'
         f'</div>'
         f'<div style="font-size:0.8rem;color:{t.TEXT_MUTED};margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">'
