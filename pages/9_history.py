@@ -261,7 +261,7 @@ with tab_hist:
                 f'<div dir="rtl" style="font-size:0.67rem;color:#545e70">{meal_label}</div>'
                 f'</div>'
                 f'<div dir="rtl" style="font-size:0.85rem;font-weight:800;color:#4f8ef7">'
-                f'{round(fe.calories_consumed)} קק״ל</div>'
+                f'{round(fe.calories)} קק״ל</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
