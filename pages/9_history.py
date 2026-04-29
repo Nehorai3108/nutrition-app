@@ -20,14 +20,12 @@ inject_global_css()
 
 # ── Calendar cell CSS (targets ONLY 7-column grids via :has selector) ──────────
 st.markdown("""<style>
-/* Remove extra padding from 7-col grid columns */
 [data-testid="stHorizontalBlock"]:has(>[data-testid="column"]:nth-child(7))
 >[data-testid="column"] {
     padding-left: 2px !important;
     padding-right: 2px !important;
     min-width: 0 !important;
 }
-/* Transform 7-col grid buttons into calendar day cells */
 [data-testid="stHorizontalBlock"]:has(>[data-testid="column"]:nth-child(7))
 .stButton button {
     padding: 4px 1px !important;
@@ -35,28 +33,23 @@ st.markdown("""<style>
     height: 80px !important;
     border-radius: 14px !important;
     width: 100% !important;
-    line-height: 1.45 !important;
+    line-height: 1.5 !important;
     font-size: 0.78rem !important;
 }
-/* Allow multiline text inside calendar buttons */
 [data-testid="stHorizontalBlock"]:has(>[data-testid="column"]:nth-child(7))
 .stButton button p {
     white-space: pre-line !important;
     margin: 0 !important;
     text-align: center !important;
     font-size: 0.78rem !important;
-    line-height: 1.45 !important;
+    line-height: 1.5 !important;
 }
-/* Primary (selected) button override */
 [data-testid="stHorizontalBlock"]:has(>[data-testid="column"]:nth-child(7))
 .stButton button[kind="primary"] {
     background: linear-gradient(160deg,#1e3a5f,#1a2e52) !important;
     border: 2px solid #4f8ef7 !important;
     color: #e8f0ff !important;
 }
-/* Secondary (unselected) button override */
-[data-testid="stHorizontalBlock"]:has(>[data-testid="column"]:nth-child(7))
-.stButton button[kind="secondaryFormSubmit"],
 [data-testid="stHorizontalBlock"]:has(>[data-testid="column"]:nth-child(7))
 .stButton button[kind="secondary"] {
     background: #161b26 !important;
@@ -73,14 +66,10 @@ today        = date.today()
 
 HEB_WD = {0: "שני", 1: "שלישי", 2: "רביעי", 3: "חמישי",
            4: "שישי", 5: "שבת", 6: "ראשון"}
-# Sunday-first display order for Hebrew calendar (ראשון first)
-# weekday(): Mon=0 … Sun=6  →  display order: Sun(6),Mon(0)…Sat(5)
-DISPLAY_ORDER = [6, 0, 1, 2, 3, 4, 5]          # Sun Mon Tue Wed Thu Fri Sat
-HEB_WD_SHORT  = {6: "א׳", 0: "ב׳", 1: "ג׳", 2: "ד׳", 3: "ה׳", 4: "ו׳", 5: "ש׳"}
+HEB_WD_SHORT = {6: "א׳", 0: "ב׳", 1: "ג׳", 2: "ד׳", 3: "ה׳", 4: "ו׳", 5: "ש׳"}
 
-CALORIE_TARGET = 2000  # fallback
+CALORIE_TARGET = 2000
 
-# ── Weekly plan storage ────────────────────────────────────────────────────────
 PLANS_DIR = Path(__file__).parent.parent / "storage_agents" / "weekly_plans"
 PLANS_DIR.mkdir(parents=True, exist_ok=True)
 PLAN_FILE = PLANS_DIR / f"{USER_ID}.json"
@@ -100,22 +89,21 @@ def _save_plan(plan: dict):
 
 
 def _week_sunday(offset: int = 0) -> date:
-    """Return Sunday of the week at `offset` weeks from today (Hebrew week starts Sunday)."""
-    wd = today.weekday()   # Mon=0…Sun=6
-    days_since_sunday = (wd + 1) % 7   # Sun→0, Mon→1 … Sat→6
-    sunday = today - timedelta(days=days_since_sunday) + timedelta(weeks=offset)
-    return sunday
+    wd = today.weekday()
+    days_since_sunday = (wd + 1) % 7
+    return today - timedelta(days=days_since_sunday) + timedelta(weeks=offset)
 
 
-def _cal_emoji(cal: int) -> str:
+def _cal_label(cal: int) -> str:
+    """Return short calorie status text (no emoji)."""
     if cal == 0:
-        return "⬜"
+        return "—"
     elif cal >= CALORIE_TARGET * 0.85:
-        return "🟢"
+        return f"{cal}"
     elif cal >= CALORIE_TARGET * 0.45:
-        return "🟡"
+        return f"{cal}"
     else:
-        return "🔴"
+        return f"{cal}"
 
 
 # ── Header ─────────────────────────────────────────────────────────────────────
@@ -128,7 +116,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_hist, tab_plan = st.tabs(["📅 היסטוריה", "📋 תכנון שבועי"])
+tab_hist, tab_plan = st.tabs(["היסטוריה", "תכנון שבועי"])
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — HISTORY CALENDAR
@@ -143,21 +131,22 @@ with tab_hist:
     # ── Week navigation ────────────────────────────────────────────────────────
     nav1, nav2, nav3 = st.columns([1, 4, 1])
     with nav1:
-        if st.button("◀ קדימה", key="hist_prev", use_container_width=True):
+        if st.button("< קדימה", key="hist_prev", use_container_width=True):
             st.session_state["hist_woff"] += 1
             st.rerun()
     with nav3:
-        if st.button("אחורה ▶", key="hist_next", use_container_width=True,
+        if st.button("אחורה >", key="hist_next", use_container_width=True,
                      disabled=(st.session_state["hist_woff"] >= 0)):
             st.session_state["hist_woff"] -= 1
             st.rerun()
 
     woff        = st.session_state["hist_woff"]
     week_sunday = _week_sunday(woff)
-    week_days   = [week_sunday + timedelta(days=i) for i in range(7)]  # Sun…Sat
+    week_days   = [week_sunday + timedelta(days=i) for i in range(7)]
+    week_end    = week_sunday + timedelta(days=6)
 
     with nav2:
-        wlabel = f'{week_sunday.strftime("%d/%m")} – {(week_sunday+timedelta(days=6)).strftime("%d/%m/%Y")}'
+        wlabel = f'{week_sunday.strftime("%d/%m")} – {week_end.strftime("%d/%m/%Y")}'
         if woff == 0:
             wlabel = f"השבוע · {wlabel}"
         elif woff == -1:
@@ -182,21 +171,22 @@ with tab_hist:
     # ── 7-column calendar grid ─────────────────────────────────────────────────
     day_cols = st.columns(7, gap="small")
     for i, col in enumerate(day_cols):
-        row     = week_data[i]
-        d       = row["date"]
-        is_sel  = (d.isoformat() == st.session_state["hist_sel"])
+        row        = week_data[i]
+        d          = row["date"]
+        is_sel     = (d.isoformat() == st.session_state["hist_sel"])
         is_today_d = (d == today)
 
-        # Build button label (3 lines)
-        day_name  = HEB_WD_SHORT[d.weekday()]
-        today_dot = " ●" if is_today_d else ""
-        cal_icon  = _cal_emoji(row["cal"])
-        activity  = ""
-        if row["wtr"] > 0: activity += "💧"
-        if row["wos"] > 0: activity += "🏋"
-        # Line 1: day name  Line 2: date number (big)  Line 3: heat + activity
-        label = f"{day_name}{today_dot}\n{d.day}\n{cal_icon}{' '+activity if activity else ''}"
+        day_name   = HEB_WD_SHORT[d.weekday()]
+        today_mark = " *" if is_today_d else ""
 
+        # Line 3: calorie count + activity abbreviations
+        cal_txt  = str(row["cal"]) if row["cal"] > 0 else "—"
+        activity = ""
+        if row["wtr"] > 0: activity += " מ"
+        if row["wos"] > 0: activity += " כ"
+        line3 = cal_txt + activity
+
+        label    = f"{day_name}{today_mark}\n{d.day}\n{line3}"
         btn_type = "primary" if is_sel else "secondary"
         if col.button(label, key=f"hsel_{d.isoformat()}",
                       type=btn_type, use_container_width=True):
@@ -205,11 +195,12 @@ with tab_hist:
 
     # ── Legend ─────────────────────────────────────────────────────────────────
     st.markdown(
-        '<div dir="rtl" style="display:flex;gap:12px;justify-content:center;'
+        '<div dir="rtl" style="display:flex;gap:16px;justify-content:center;'
         'font-size:0.62rem;color:#545e70;margin:6px 0 16px">'
-        '<span>🟢 יעד</span><span>🟡 חלקי</span>'
-        '<span>🔴 נמוך</span><span>⬜ ריק</span>'
-        '<span>💧 מים</span><span>🏋 אימון</span>'
+        '<span>* = היום</span>'
+        '<span>מ = מים</span>'
+        '<span>כ = כושר</span>'
+        '<span>— = אין נתונים</span>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -220,7 +211,6 @@ with tab_hist:
         sel_date = date.fromisoformat(sel_date_str)
     except Exception:
         sel_date = today
-    week_end = week_sunday + timedelta(days=6)
     if not (week_sunday <= sel_date <= week_end):
         sel_date = today if (week_sunday <= today <= week_end) else week_sunday
         st.session_state["hist_sel"] = sel_date.isoformat()
@@ -245,11 +235,11 @@ with tab_hist:
     # Food
     food_entries = food_repo.get_log(USER_ID, sel_date) or []
     totals = food_repo.get_totals(USER_ID, sel_date)
+    st.markdown(
+        '<div dir="rtl" style="font-size:0.75rem;color:#a0aec0;margin-bottom:4px;font-weight:700">תזונה</div>',
+        unsafe_allow_html=True,
+    )
     if food_entries:
-        st.markdown(
-            '<div dir="rtl" style="font-size:0.75rem;color:#a0aec0;margin-bottom:4px">🍽️ תזונה</div>',
-            unsafe_allow_html=True,
-        )
         for fe in food_entries:
             meal_label = MEAL_LABELS.get(fe.meal_type, fe.meal_type)
             st.markdown(
@@ -276,31 +266,37 @@ with tab_hist:
         )
     else:
         st.markdown(
-            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:8px">'
-            '🍽️ אין רישומי תזונה ליום זה</div>',
+            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:8px">אין רישומי תזונה ליום זה</div>',
             unsafe_allow_html=True,
         )
 
     # Water
+    st.markdown(
+        '<div dir="rtl" style="font-size:0.75rem;color:#a0aec0;margin-bottom:4px;font-weight:700">מים</div>',
+        unsafe_allow_html=True,
+    )
     water_entries = water_repo.get_water_intakes_for_date(USER_ID, sel_date)
     total_water   = int(sum(w.amount_ml for w in water_entries))
     if total_water > 0:
         st.markdown(
             f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
             f'border-radius:10px;padding:8px 12px;margin-bottom:8px">'
-            f'💧 <span style="font-size:0.88rem;font-weight:800;color:#38bdf8">{total_water} מ״ל</span>'
+            f'<span style="font-size:0.88rem;font-weight:800;color:#38bdf8">{total_water} מ״ל</span>'
             f'<span style="font-size:0.7rem;color:#545e70"> ({len(water_entries)} כוסות)</span>'
             f'</div>',
             unsafe_allow_html=True,
         )
     else:
         st.markdown(
-            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:8px">'
-            '💧 אין רישומי מים ליום זה</div>',
+            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:8px">אין רישומי מים ליום זה</div>',
             unsafe_allow_html=True,
         )
 
     # Workouts
+    st.markdown(
+        '<div dir="rtl" style="font-size:0.75rem;color:#a0aec0;margin-bottom:4px;font-weight:700">אימונים</div>',
+        unsafe_allow_html=True,
+    )
     day_wos = workout_data_all.daily_log.get(sel_date.isoformat(), [])
     if day_wos:
         for wo in day_wos:
@@ -309,7 +305,7 @@ with tab_hist:
                 f'border-radius:10px;padding:8px 12px;margin-bottom:4px;'
                 f'display:flex;justify-content:space-between;align-items:center">'
                 f'<div dir="rtl" style="font-size:0.82rem;font-weight:700;color:#f4f6fb">'
-                f'🏋️ {wo.get("type","")}</div>'
+                f'{wo.get("type","")}</div>'
                 f'<div dir="rtl" style="font-size:0.75rem;color:#f59e0b">'
                 f'{wo.get("duration_minutes",0)} דקות · {wo.get("intensity","")}</div>'
                 f'</div>',
@@ -317,8 +313,7 @@ with tab_hist:
             )
     else:
         st.markdown(
-            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:8px">'
-            '🏋️ אין רישומי אימונים ליום זה</div>',
+            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:8px">אין רישומי אימונים ליום זה</div>',
             unsafe_allow_html=True,
         )
 
@@ -337,11 +332,11 @@ with tab_plan:
     # ── Week navigation ────────────────────────────────────────────────────────
     pn1, pn2, pn3 = st.columns([1, 4, 1])
     with pn1:
-        if st.button("◀ קדימה", key="plan_prev", use_container_width=True):
+        if st.button("< קדימה", key="plan_prev", use_container_width=True):
             st.session_state["plan_woff"] += 1
             st.rerun()
     with pn3:
-        if st.button("אחורה ▶", key="plan_next", use_container_width=True):
+        if st.button("אחורה >", key="plan_next", use_container_width=True):
             st.session_state["plan_woff"] -= 1
             st.rerun()
 
@@ -352,10 +347,10 @@ with tab_plan:
 
     with pn2:
         wlabel = f'{plan_sunday.strftime("%d/%m")} – {plan_end.strftime("%d/%m/%Y")}'
-        if pwoff == 0:   wlabel = f"השבוע · {wlabel}"
-        elif pwoff == 1: wlabel = f"שבוע הבא · {wlabel}"
-        elif pwoff == -1:wlabel = f"שבוע שעבר · {wlabel}"
-        else:            wlabel = f"שבוע {pwoff:+d} · {wlabel}"
+        if pwoff == 0:    wlabel = f"השבוע · {wlabel}"
+        elif pwoff == 1:  wlabel = f"שבוע הבא · {wlabel}"
+        elif pwoff == -1: wlabel = f"שבוע שעבר · {wlabel}"
+        else:             wlabel = f"שבוע {pwoff:+d} · {wlabel}"
         st.markdown(
             f'<div dir="rtl" style="text-align:center;font-size:0.8rem;color:#a0aec0;padding:4px 0">'
             f'{wlabel}</div>',
@@ -365,25 +360,25 @@ with tab_plan:
     # ── 7-column planner grid ──────────────────────────────────────────────────
     plan_cols = st.columns(7, gap="small")
     for i, col in enumerate(plan_cols):
-        d       = plan_days[i]
-        dp      = plan.get(d.isoformat(), {})
-        n_meals = len(dp.get("meals", []))
-        n_wos   = len(dp.get("workouts", []))
-        is_sel  = (d.isoformat() == st.session_state["plan_sel"])
+        d          = plan_days[i]
+        dp         = plan.get(d.isoformat(), {})
+        n_meals    = len(dp.get("meals", []))
+        n_wos      = len(dp.get("workouts", []))
+        is_sel     = (d.isoformat() == st.session_state["plan_sel"])
         is_today_d = (d == today)
 
-        day_name  = HEB_WD_SHORT[d.weekday()]
-        today_dot = " ●" if is_today_d else ""
+        day_name   = HEB_WD_SHORT[d.weekday()]
+        today_mark = " *" if is_today_d else ""
 
         if n_meals == 0 and n_wos == 0:
             content_line = "ריק"
         else:
             parts = []
-            if n_meals: parts.append(f"🍽️×{n_meals}")
-            if n_wos:   parts.append(f"🏋×{n_wos}")
+            if n_meals: parts.append(f"א{n_meals}")
+            if n_wos:   parts.append(f"כ{n_wos}")
             content_line = " ".join(parts)
 
-        label    = f"{day_name}{today_dot}\n{d.day}\n{content_line}"
+        label    = f"{day_name}{today_mark}\n{d.day}\n{content_line}"
         btn_type = "primary" if is_sel else "secondary"
         if col.button(label, key=f"psel_{d.isoformat()}",
                       type=btn_type, use_container_width=True):
@@ -420,13 +415,13 @@ with tab_plan:
         "LUNCH": "ארוחת צהריים", "AFTERNOON_SNACK": "ביניים אחה״צ",
         "DINNER": "ארוחת ערב", "EVENING_SNACK": "ביניים ערב",
     }
-    WORKOUT_TYPES    = ["ריצה", "הליכה", "אופניים", "שחייה", "כוח", "יוגה", "פילאטיס", "HIIT", "אחר"]
+    WORKOUT_TYPES     = ["ריצה", "הליכה", "אופניים", "שחייה", "כוח", "יוגה", "פילאטיס", "HIIT", "אחר"]
     INTENSITY_OPTIONS = {"LOW": "נמוכה", "MODERATE": "בינונית", "HIGH": "גבוהה"}
 
     # ── Planned meals ──────────────────────────────────────────────────────────
     st.markdown(
         '<div dir="rtl" style="font-size:0.78rem;color:#a3e635;margin-bottom:6px;font-weight:700">'
-        '🍽️ ארוחות מתוכננות</div>',
+        'ארוחות מתוכננות</div>',
         unsafe_allow_html=True,
     )
     meals = day_plan.get("meals", [])
@@ -445,18 +440,17 @@ with tab_plan:
                 f'</div>',
                 unsafe_allow_html=True,
             )
-            if mc2.button("🗑", key=f"del_meal_{pday_key}_{mi}"):
+            if mc2.button("×", key=f"del_meal_{pday_key}_{mi}"):
                 plan[pday_key]["meals"].pop(mi)
                 _save_plan(plan)
                 st.rerun()
     else:
         st.markdown(
-            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:6px">'
-            'אין ארוחות מתוכננות</div>',
+            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:6px">אין ארוחות מתוכננות</div>',
             unsafe_allow_html=True,
         )
 
-    with st.expander("➕ הוסף ארוחה"):
+    with st.expander("+ הוסף ארוחה"):
         with st.form(f"add_meal_{pday_key}", clear_on_submit=True):
             nm_name = st.text_input("שם המנה / מאכל", key=f"mn_{pday_key}")
             nm_type = st.selectbox("סוג ארוחה",
@@ -464,7 +458,7 @@ with tab_plan:
                                    format_func=lambda x: MEAL_TYPE_OPTIONS[x],
                                    key=f"mt_{pday_key}")
             nm_cal  = st.number_input("קלוריות משוערות", 0, 3000, 0, 50, key=f"mc_{pday_key}")
-            if st.form_submit_button("הוסף ✓"):
+            if st.form_submit_button("הוסף"):
                 if nm_name.strip():
                     plan[pday_key]["meals"].append({
                         "name": nm_name.strip(), "type": nm_type, "calories": int(nm_cal)
@@ -476,7 +470,7 @@ with tab_plan:
     # ── Planned workouts ───────────────────────────────────────────────────────
     st.markdown(
         '<div dir="rtl" style="font-size:0.78rem;color:#f59e0b;margin-top:14px;'
-        'margin-bottom:6px;font-weight:700">🏋️ אימונים מתוכננים</div>',
+        'margin-bottom:6px;font-weight:700">אימונים מתוכננים</div>',
         unsafe_allow_html=True,
     )
     workouts = day_plan.get("workouts", [])
@@ -494,18 +488,17 @@ with tab_plan:
                 f'</div>',
                 unsafe_allow_html=True,
             )
-            if wc2.button("🗑", key=f"del_wo_{pday_key}_{wi}"):
+            if wc2.button("×", key=f"del_wo_{pday_key}_{wi}"):
                 plan[pday_key]["workouts"].pop(wi)
                 _save_plan(plan)
                 st.rerun()
     else:
         st.markdown(
-            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:6px">'
-            'אין אימונים מתוכננים</div>',
+            '<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:6px">אין אימונים מתוכננים</div>',
             unsafe_allow_html=True,
         )
 
-    with st.expander("➕ הוסף אימון"):
+    with st.expander("+ הוסף אימון"):
         with st.form(f"add_wo_{pday_key}", clear_on_submit=True):
             nw_type = st.selectbox("סוג אימון", WORKOUT_TYPES, key=f"wt_{pday_key}")
             wf1, wf2 = st.columns(2)
@@ -514,7 +507,7 @@ with tab_plan:
                                     options=list(INTENSITY_OPTIONS.keys()),
                                     format_func=lambda x: INTENSITY_OPTIONS[x],
                                     key=f"wi_{pday_key}")
-            if st.form_submit_button("הוסף ✓"):
+            if st.form_submit_button("הוסף"):
                 plan[pday_key]["workouts"].append({
                     "type": nw_type, "duration_minutes": int(nw_dur), "intensity": nw_int
                 })
