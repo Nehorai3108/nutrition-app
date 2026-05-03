@@ -430,7 +430,7 @@ with tabs[-2]:
                 food_obj = _catalog.get_food_by_id(entry.food_id)
                 with st.form(f"edit_food_form_{entry.entry_id}", clear_on_submit=True):
                     e_grams = st.number_input("גרם", min_value=1, max_value=2000,
-                                              value=int(entry.grams), step=10)
+                                              value=max(1, int(entry.grams)), step=10)
                     _edit_meal_opts = [k for k in MEAL_TYPE_HEB.keys() if k != "snack"]
                     e_meal  = st.selectbox("ארוחה", options=_edit_meal_opts,
                                            format_func=lambda k: MEAL_TYPE_HEB[k],
