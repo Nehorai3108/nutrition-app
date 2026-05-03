@@ -291,10 +291,11 @@ with tabs[-2]:
                         unsafe_allow_html=True,
                     )
                     _n_portions = _col_por.number_input(
-                        "מנות", min_value=1, max_value=6, value=_sug_por, step=1,
+                        "כמות", min_value=1, max_value=6, value=_sug_por, step=1,
                         key=f"rec_por_{_rec_id}",
                         label_visibility="visible",
                     )
+                    _approx_g = _n_portions * 100
                     _render_search_result(
                         name=_rec_name, food_id=f"recipe_{_rec_id}",
                         meal_key=search_meal, target_cal=_search_target,
@@ -302,9 +303,9 @@ with tabs[-2]:
                         prot_out=_prot_per * _n_portions,
                         carbs_out=_carbs_per * _n_portions,
                         fat_out=_fat_per * _n_portions,
-                        portion_label=f"{_n_portions} מנות",
+                        portion_label=f'{_n_portions} מנות<br><span style="font-size:0.85rem;font-weight:500;color:#6b7a94">כ-{_approx_g} גרם</span>',
                         btn_suffix=f"{_rec_id}_{_n_portions}",
-                        grams=float(_n_portions * 100),
+                        grams=float(_approx_g),
                     )
                     with st.expander("מרכיבים והוראות"):
                         _ings = _rec.get("ingredients", [])

@@ -205,7 +205,7 @@ def _build_calendar() -> str:
 
         link = f"?mode={mode}&woff={woff}&day={dk}"
         cells += f"""
-        <a href="{link}" style="text-decoration:none;display:block">
+        <a href="{link}" target="_self" style="text-decoration:none;display:block">
           <div style="background:{cell_bg};border:{cell_bdr};border-radius:12px;
                       padding:7px 2px 5px;text-align:center;
                       display:flex;flex-direction:column;align-items:center;
@@ -232,7 +232,7 @@ def _build_calendar() -> str:
     )
 
 
-st.markdown(_build_calendar(), unsafe_allow_html=True)
+st.markdown(" ".join(_build_calendar().split()), unsafe_allow_html=True)
 
 # ── Legend ─────────────────────────────────────────────────────────────────────
 if mode == "history":
