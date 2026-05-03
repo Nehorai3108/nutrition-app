@@ -209,7 +209,7 @@ def _render_search_result(
 
 
 # Smart search tab
-with tabs[-2]:
+with tabs[-3]:
     # ── Mode toggle ───────────────────────────────────────────────────────────
     _search_mode = st.radio(
         "",
@@ -359,7 +359,7 @@ with tabs[-2]:
             )
 
 # Manual tab
-with tabs[-1]:
+with tabs[-2]:
     st.markdown(
         '<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-bottom:14px">הוסף מוצר ידנית לפי גרמים</div>',
         unsafe_allow_html=True,
@@ -457,7 +457,7 @@ with tabs[-1]:
                         _food_log_repo.remove_entry(USER_ID, date.today(), entry.entry_id)
                         st.rerun()
 
-for tab, (meal_key, meal_label, _) in zip(tabs[:-2], MEAL_SECTIONS):
+for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
     with tab:
         target_cal = meal_calories.get(meal_key, 400)
 
