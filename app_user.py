@@ -818,7 +818,7 @@ if not run_btn and "last_plan" not in st.session_state:
                     _fe_grams = st.number_input(
                         "גרם" if not _fe_is_recipe else "מנות × 100ג",
                         min_value=1, max_value=3000,
-                        value=int(_fe.grams), step=10 if not _fe_is_recipe else 100,
+                        value=max(1, int(_fe.grams)), step=10 if not _fe_is_recipe else 100,
                     )
                     _fe_meal = st.selectbox(
                         "ארוחה", options=list(MEAL_HEB.keys()),
