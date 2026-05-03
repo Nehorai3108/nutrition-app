@@ -806,7 +806,9 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'<div dir="rtl" style="flex:1">'
                 f'<div dir="rtl" style="font-size:0.84rem;font-weight:600;color:#f4f6fb">{_fe.food_name}</div>'
                 f'<div dir="rtl" style="font-size:0.68rem;color:#545e70;margin-top:2px">'
-                f'{MEAL_HEB.get(_fe.meal_type, _fe.meal_type)} · {_fe.grams:.0f}ג׳</div></div>'
+                f'{MEAL_HEB.get(_fe.meal_type, _fe.meal_type)} · {_fe.grams:.0f}ג׳'
+                + (f' · {datetime.fromisoformat(_fe.timestamp).strftime("%H:%M")}' if _fe.timestamp else "") +
+                f'</div></div>'
                 f'<div dir="rtl" style="font-size:0.82rem;font-weight:700;color:{_fe_color}">{int(_fe.calories)} קק״ל</div>'
                 f'</div>',
                 unsafe_allow_html=True,
