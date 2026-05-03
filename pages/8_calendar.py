@@ -19,7 +19,7 @@ from nutrition_app.repositories.water_repository import WaterRepository
 # ── Page config ───────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="לוח שנה",
+    page_title="BiteFit · יומן",
     page_icon="📅",
     layout="wide",
 )

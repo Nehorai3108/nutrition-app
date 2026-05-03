@@ -28,3 +28,11 @@
 - `agent_io/` directory created (did not previously exist)
 - All 4 candidates passed quality filters: metric quantities, 6-step instructions, 8-11 ingredients, standard kitchen equipment, reputable sources
 - needs_usda_lookup: false for all 4 (macro data confirmed via search snippets from source sites)
+
+## Recipe Scout — 2026-05-03 08:25 UTC — הכנסה ישירה ל-DB (בקשת משתמש)
+
+- Recipes inserted directly to DB: 5
+- Method: PRAGMA journal_mode=OFF (bypass Windows mount I/O issue)
+- Recipes: שקשוקה, מרק עדשים אדומות, מחבת גרגרי חומוס ים-תיכונית, חציל צלוי עם טחינה, חזה עוף בתנור עם לימון ועשבי תיבול
+- Notes: 4 מתוך 5 מסומנים needs_usda_lookup. שקשוקה כוללת מאקרו מאומת (207 קל', 14g חלבון לכל מנה).
+

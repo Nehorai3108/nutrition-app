@@ -23,7 +23,7 @@ from chatbot.sidebar_widget import render_chatbot_sidebar
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="פרטי מתכון",
+    page_title="BiteFit · מתכון",
     page_icon="🍽",
     layout="wide",
     initial_sidebar_state="collapsed",

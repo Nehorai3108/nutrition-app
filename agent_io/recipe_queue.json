@@ -8,17 +8,61 @@
         "title_en": "Greek Chicken Cauliflower Rice Bowl",
         "title_he": "קערת כרובית-אורז עוף יווני",
         "ingredients": [
-          { "name": "חזה עוף", "quantity": 400, "unit": "גרם" },
-          { "name": "כרובית, טחונה גס (אורז כרובית)", "quantity": 600, "unit": "גרם" },
-          { "name": "שמן זית", "quantity": 30, "unit": "מ\"ל" },
-          { "name": "שיני שום, כתושות", "quantity": 3, "unit": "יחידות" },
-          { "name": "לימון — גרידה ומיץ", "quantity": 1, "unit": "יחידות" },
-          { "name": "אורגנו יבש", "quantity": 3, "unit": "גרם" },
-          { "name": "פפריקה מתוקה", "quantity": 2, "unit": "גרם" },
-          { "name": "מלח ופלפל שחור", "quantity": 3, "unit": "גרם" },
-          { "name": "פלפל אדום, קצוץ", "quantity": 100, "unit": "גרם" },
-          { "name": "עלי תרד טריים", "quantity": 60, "unit": "גרם" },
-          { "name": "גבינה פטה, מפוררת", "quantity": 40, "unit": "גרם" }
+          {
+            "name": "חזה עוף",
+            "quantity": 400,
+            "unit": "גרם"
+          },
+          {
+            "name": "כרובית, טחונה גס (אורז כרובית)",
+            "quantity": 600,
+            "unit": "גרם"
+          },
+          {
+            "name": "שמן זית",
+            "quantity": 30,
+            "unit": "מ\"ל"
+          },
+          {
+            "name": "שיני שום, כתושות",
+            "quantity": 3,
+            "unit": "יחידות"
+          },
+          {
+            "name": "לימון — גרידה ומיץ",
+            "quantity": 1,
+            "unit": "יחידות"
+          },
+          {
+            "name": "אורגנו יבש",
+            "quantity": 3,
+            "unit": "גרם"
+          },
+          {
+            "name": "פפריקה מתוקה",
+            "quantity": 2,
+            "unit": "גרם"
+          },
+          {
+            "name": "מלח ופלפל שחור",
+            "quantity": 3,
+            "unit": "גרם"
+          },
+          {
+            "name": "פלפל אדום, קצוץ",
+            "quantity": 100,
+            "unit": "גרם"
+          },
+          {
+            "name": "עלי תרד טריים",
+            "quantity": 60,
+            "unit": "גרם"
+          },
+          {
+            "name": "גבינה פטה, מפוררת",
+            "quantity": 40,
+            "unit": "גרם"
+          }
         ],
         "instructions": [
           "1. פורסים את חזה העוף לסטריפס. ממרים עם שמן זית, שום, גרידת לימון, אורגנו, פפריקה, מלח ופלפל. משהים 10 דקות.",
@@ -48,14 +92,46 @@
         "title_en": "Mini Egg Muffins with Vegetables",
         "title_he": "מאפיני ביצים עם ירקות",
         "ingredients": [
-          { "name": "ביצים גדולות", "quantity": 6, "unit": "יחידות" },
-          { "name": "פלפל אדום, קצוץ דק", "quantity": 80, "unit": "גרם" },
-          { "name": "תרד קפוא, מופשר וסחוט", "quantity": 60, "unit": "גרם" },
-          { "name": "בצל ירוק, קצוץ", "quantity": 30, "unit": "גרם" },
-          { "name": "גבינה צהובה מגוררת", "quantity": 40, "unit": "גרם" },
-          { "name": "מלח", "quantity": 2, "unit": "גרם" },
-          { "name": "פלפל שחור", "quantity": 1, "unit": "גרם" },
-          { "name": "שמן קוקוס או חמאה לשימון", "quantity": 10, "unit": "גרם" }
+          {
+            "name": "ביצים גדולות",
+            "quantity": 6,
+            "unit": "יחידות"
+          },
+          {
+            "name": "פלפל אדום, קצוץ דק",
+            "quantity": 80,
+            "unit": "גרם"
+          },
+          {
+            "name": "תרד קפוא, מופשר וסחוט",
+            "quantity": 60,
+            "unit": "גרם"
+          },
+          {
+            "name": "בצל ירוק, קצוץ",
+            "quantity": 30,
+            "unit": "גרם"
+          },
+          {
+            "name": "גבינה צהובה מגוררת",
+            "quantity": 40,
+            "unit": "גרם"
+          },
+          {
+            "name": "מלח",
+            "quantity": 2,
+            "unit": "גרם"
+          },
+          {
+            "name": "פלפל שחור",
+            "quantity": 1,
+            "unit": "גרם"
+          },
+          {
+            "name": "שמן קוקוס או חמאה לשימון",
+            "quantity": 10,
+            "unit": "גרם"
+          }
         ],
         "instructions": [
           "1. מחממים תנור ל-180 מעלות. משמנים היטב 12 שקעי תבנית מאפינס (או מרפדים בכוסיות נייר).",
@@ -86,17 +162,61 @@
         "title_en": "Coconut Turmeric Chicken Thighs",
         "title_he": "שוקי עוף בשמנת קוקוס וכורכום",
         "ingredients": [
-          { "name": "שוקי עוף ללא עור", "quantity": 600, "unit": "גרם" },
-          { "name": "חלב קוקוס (שימורים, שומן מלא)", "quantity": 200, "unit": "מ\"ל" },
-          { "name": "שמן קוקוס או שמן זית", "quantity": 20, "unit": "מ\"ל" },
-          { "name": "כורכום טחון", "quantity": 4, "unit": "גרם" },
-          { "name": "כמון טחון", "quantity": 3, "unit": "גרם" },
-          { "name": "פפריקה מעושנת", "quantity": 2, "unit": "גרם" },
-          { "name": "שיני שום, כתושות", "quantity": 4, "unit": "יחידות" },
-          { "name": "ג'ינג'ר טרי מגורר", "quantity": 10, "unit": "גרם" },
-          { "name": "מיץ לימון", "quantity": 20, "unit": "מ\"ל" },
-          { "name": "מלח ופלפל שחור", "quantity": 3, "unit": "גרם" },
-          { "name": "כוסברה טרייה לקישוט", "quantity": 10, "unit": "גרם" }
+          {
+            "name": "שוקי עוף ללא עור",
+            "quantity": 600,
+            "unit": "גרם"
+          },
+          {
+            "name": "חלב קוקוס (שימורים, שומן מלא)",
+            "quantity": 200,
+            "unit": "מ\"ל"
+          },
+          {
+            "name": "שמן קוקוס או שמן זית",
+            "quantity": 20,
+            "unit": "מ\"ל"
+          },
+          {
+            "name": "כורכום טחון",
+            "quantity": 4,
+            "unit": "גרם"
+          },
+          {
+            "name": "כמון טחון",
+            "quantity": 3,
+            "unit": "גרם"
+          },
+          {
+            "name": "פפריקה מעושנת",
+            "quantity": 2,
+            "unit": "גרם"
+          },
+          {
+            "name": "שיני שום, כתושות",
+            "quantity": 4,
+            "unit": "יחידות"
+          },
+          {
+            "name": "ג'ינג'ר טרי מגורר",
+            "quantity": 10,
+            "unit": "גרם"
+          },
+          {
+            "name": "מיץ לימון",
+            "quantity": 20,
+            "unit": "מ\"ל"
+          },
+          {
+            "name": "מלח ופלפל שחור",
+            "quantity": 3,
+            "unit": "גרם"
+          },
+          {
+            "name": "כוסברה טרייה לקישוט",
+            "quantity": 10,
+            "unit": "גרם"
+          }
         ],
         "instructions": [
           "1. מתבלים את שוקי העוף בכורכום, כמון, פפריקה, מלח ופלפל מכל הצדדים.",
@@ -126,15 +246,51 @@
         "title_en": "Tuna Salad Lettuce Wraps",
         "title_he": "עטיפות חסה עם סלט טונה",
         "ingredients": [
-          { "name": "טונה בשמן, מסוננת", "quantity": 280, "unit": "גרם" },
-          { "name": "עלי חסה חמאה גדולים", "quantity": 8, "unit": "יחידות" },
-          { "name": "סלרי, קצוץ דק", "quantity": 60, "unit": "גרם" },
-          { "name": "בצל סגול, קצוץ דק", "quantity": 40, "unit": "גרם" },
-          { "name": "מיונז (או יוגורט יווני לגרסה קלה יותר)", "quantity": 40, "unit": "גרם" },
-          { "name": "מיץ לימון", "quantity": 15, "unit": "מ\"ל" },
-          { "name": "חרדל דיז'ון", "quantity": 10, "unit": "גרם" },
-          { "name": "מלח ופלפל שחור", "quantity": 2, "unit": "גרם" },
-          { "name": "פטרוזיליה טרייה קצוצה", "quantity": 10, "unit": "גרם" }
+          {
+            "name": "טונה בשמן, מסוננת",
+            "quantity": 280,
+            "unit": "גרם"
+          },
+          {
+            "name": "עלי חסה חמאה גדולים",
+            "quantity": 8,
+            "unit": "יחידות"
+          },
+          {
+            "name": "סלרי, קצוץ דק",
+            "quantity": 60,
+            "unit": "גרם"
+          },
+          {
+            "name": "בצל סגול, קצוץ דק",
+            "quantity": 40,
+            "unit": "גרם"
+          },
+          {
+            "name": "מיונז (או יוגורט יווני לגרסה קלה יותר)",
+            "quantity": 40,
+            "unit": "גרם"
+          },
+          {
+            "name": "מיץ לימון",
+            "quantity": 15,
+            "unit": "מ\"ל"
+          },
+          {
+            "name": "חרדל דיז'ון",
+            "quantity": 10,
+            "unit": "גרם"
+          },
+          {
+            "name": "מלח ופלפל שחור",
+            "quantity": 2,
+            "unit": "גרם"
+          },
+          {
+            "name": "פטרוזיליה טרייה קצוצה",
+            "quantity": 10,
+            "unit": "גרם"
+          }
         ],
         "instructions": [
           "1. מסננים היטב את הטונה ומניחים בקערה.",
@@ -159,6 +315,43 @@
         "needs_usda_lookup": false,
         "gap_addressed": "low_carb + high_protein_low_carb",
         "why_this_recipe": "מנה שמוכנה תוך 10 דקות ללא בישול — אידיאלית לצהריים מהירים. טונה בשימורים היא אחד ממקורות החלבון הנגישים ביותר בישראל, ועטיפות חסה הן תחליף low-carb לפיתה שרוב המשתמשים מחפשים."
+      }
+    ]
+  },
+  {
+    "added_at": "2026-05-03T08:25:10.724027+00:00",
+    "added_by": "recipe_scout",
+    "run_notes": "הוכנסו ישירות ל-DB לפי בקשת המשתמש. PRAGMA journal_mode=OFF שימש לעקוף בעיית I/O בFSמ-Windows.",
+    "candidates": [
+      {
+        "candidate_id": "a3f72b1c-9e84-4d02-b5c7-1d8e9f3a2b45",
+        "title_he": "שקשוקה",
+        "status": "inserted_to_db",
+        "gap_addressed": "Israeli/Mediterranean + quick meal"
+      },
+      {
+        "candidate_id": "b8d91c2e-7f53-4a16-c3d8-2e9f4b5c6a71",
+        "title_he": "מרק עדשים אדומות",
+        "status": "inserted_to_db",
+        "gap_addressed": "vegetarian protein + Israeli"
+      },
+      {
+        "candidate_id": "c2e84d3f-1a62-5b27-d4e9-3f0a5c6d7b82",
+        "title_he": "מחבת גרגרי חומוס ים-תיכונית",
+        "status": "inserted_to_db",
+        "gap_addressed": "vegetarian protein + quick meal"
+      },
+      {
+        "candidate_id": "d5f97e4a-2b73-6c38-e5f0-4a1b6d7e8c93",
+        "title_he": "חציל צלוי עם טחינה",
+        "status": "inserted_to_db",
+        "gap_addressed": "low_carb + Israeli/Mediterranean"
+      },
+      {
+        "candidate_id": "e7a08f5b-3c84-7d49-f6a1-5b2c7e8f9d04",
+        "title_he": "חזה עוף בתנור עם לימון ועשבי תיבול",
+        "status": "inserted_to_db",
+        "gap_addressed": "high_protein_low_carb"
       }
     ]
   }

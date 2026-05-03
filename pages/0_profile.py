@@ -15,7 +15,7 @@ from nutrition_app.agents.agent_2_nutrition import NutritionEngine
 from nutrition_app.models.user import UserProfile
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
-st.set_page_config(page_title="פרופיל", page_icon="👤", layout="wide")
+st.set_page_config(page_title="BiteFit · פרופיל", page_icon="👤", layout="wide")
 inject_global_css()
 
 USER_ID = "ui_user_001"

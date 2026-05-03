@@ -17,7 +17,7 @@ from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_chat_parser import parse_hebrew_meal
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 
-st.set_page_config(page_title="הזנה שיחתית", page_icon="💬", layout="wide",
+st.set_page_config(page_title="BiteFit · צ'אט", page_icon="💬", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
