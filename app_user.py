@@ -44,7 +44,7 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage", "
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="GYMNET",
+    page_title="BiteFit",
     page_icon="🏠",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -538,7 +538,7 @@ with st.sidebar:
 
 st.markdown(
     f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 12px">'
-    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb;letter-spacing:-0.01em">GYMNET</div>'
+    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb;letter-spacing:-0.01em">BiteFit</div>'
     f'<div dir="rtl" style="font-size:0.75rem;color:#545e70">{date.today().strftime("%d/%m/%Y")}</div>'
     f'</div>',
     unsafe_allow_html=True,

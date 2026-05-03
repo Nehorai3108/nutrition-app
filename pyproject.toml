@@ -1,7 +1,7 @@
 [project]
-name = "nutrition-app"
-version = "0.1.0"
-description = "Modular, deterministic, agent-based nutrition planning system"
+name = "bitefit"
+version = "1.0.0"
+description = "BiteFit — Smart nutrition & fitness tracking app"
 requires-python = ">=3.10"
 dependencies = [
     "streamlit>=1.32",

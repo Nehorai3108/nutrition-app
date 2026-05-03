@@ -18,7 +18,7 @@ from ui.components import (
 )
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-st.set_page_config(page_title="מלאי אישי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="BiteFit · מלאי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
 

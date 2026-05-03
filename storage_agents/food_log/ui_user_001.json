@@ -87,6 +87,56 @@
       "meal_type": "breakfast",
       "timestamp": "2026-04-28T09:43:49.019667",
       "entry_id": "fcf8275d-a6a9-421a-9316-24ab7884e9d7"
+    },
+    {
+      "food_id": "recipe_recipe_193",
+      "food_name": "סלט פירות עם יוגורט",
+      "grams": 100.0,
+      "calories": 200.0,
+      "protein": 6.0,
+      "carbs": 38.0,
+      "fat": 3.0,
+      "meal_type": "morning_snack",
+      "timestamp": "2026-04-28T20:04:01.918099",
+      "entry_id": "487631ce-b8af-467c-a61f-24e2ff94a958"
+    }
+  ],
+  "2026-05-03": [
+    {
+      "food_id": "food_156",
+      "food_name": "אבקת חרוב",
+      "grams": 100.0,
+      "calories": 222.0,
+      "protein": 4.6,
+      "carbs": 49.0,
+      "fat": 0.7,
+      "meal_type": "breakfast",
+      "timestamp": "2026-05-03T11:21:31.675491",
+      "entry_id": "77fcff12-f28c-463e-80df-b6b7b3d90bdc"
+    },
+    {
+      "food_id": "snack_free",
+      "food_name": "שוקולד",
+      "grams": 0.0,
+      "calories": 100.0,
+      "protein": 0.0,
+      "carbs": 0.0,
+      "fat": 0.0,
+      "meal_type": "snack",
+      "timestamp": "2026-05-03T11:21:40.609085",
+      "entry_id": "e65ef2a1-3aa5-4e6d-a8d4-8354faa51ee1"
+    },
+    {
+      "food_id": "food_035",
+      "food_name": "אבטיח",
+      "grams": 50.0,
+      "calories": 15.0,
+      "protein": 0.3,
+      "carbs": 3.8,
+      "fat": 0.1,
+      "meal_type": "snack",
+      "timestamp": "2026-05-03T11:35:20.070487",
+      "entry_id": "457dbb18-59a7-4b56-9324-df53658db451"
     }
   ]
 }

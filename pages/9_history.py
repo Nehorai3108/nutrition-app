@@ -14,7 +14,7 @@ from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository
 from nutrition_app.repositories.food_log_repository import FoodLogRepository
 
-st.set_page_config(page_title="היסטוריה", page_icon=None, layout="wide",
+st.set_page_config(page_title="BiteFit · היסטוריה", page_icon=None, layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 

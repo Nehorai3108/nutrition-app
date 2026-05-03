@@ -29,7 +29,7 @@ _profile_repo = ProfileRepository()
 _profile = _profile_repo.load(USER_ID)
 _user_allergens: list = _profile.get("meal_preferences", {}).get("allergies", [])
 
-st.set_page_config(page_title="תפריט יומי", page_icon="🍽️", layout="wide",
+st.set_page_config(page_title="BiteFit · תפריט", page_icon="🍽️", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
@@ -118,7 +118,7 @@ inventory_names: set = set()
 st.markdown(
     f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;'
     f'padding:4px 2px 16px">'
-    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb">תזונה</div>'
+    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#4f8ef7;letter-spacing:-0.01em">BiteFit</div>'
     f'<div dir="rtl" style="font-size:0.75rem;color:#545e70">{date.today().strftime("%d/%m/%Y")}</div>'
     f'</div>',
     unsafe_allow_html=True,
