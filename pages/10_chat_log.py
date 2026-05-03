@@ -8,6 +8,7 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from datetime import date, datetime
+from typing import Optional
 import streamlit as st
 
 from ui.components import inject_global_css, bottom_nav
@@ -26,8 +27,78 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 def _get_catalog():
     return FoodCatalog(db_path=_DB_PATH)
 
-catalog      = _get_catalog()
+catalog       = _get_catalog()
 food_log_repo = FoodLogRepository()
+
+# ── Smart food matcher ────────────────────────────────────────────────────────
+_HEB_STOPWORDS = {"עם", "של", "ה", "ו", "ל", "מ", "ב", "את", "לבן", "שחור", "טרי", "מבושל"}
+
+def _smart_match(query: str, grams_hint: Optional[float], quantity: float):
+    """
+    Try multiple search strategies to find the best food match.
+    Returns a dict ready for pending_entries, or None.
+    """
+    import re as _re
+    words = [w for w in query.split() if len(w) > 1]
+
+    # Build search candidates: full → last-2-words → each-word → first-word
+    candidates = []
+    candidates.append(query)                              # full
+    if len(words) >= 2:
+        candidates.append(" ".join(words[-2:]))           # last 2 words
+        candidates.append(" ".join(words[:-1]))           # all but last
+    for w in reversed(words):                             # each word, longest first
+        if w not in _HEB_STOPWORDS:
+            candidates.append(w)
+
+    food = None
+    for cand in candidates:
+        results = catalog.search_foods(cand.strip(), limit=1)
+        if results:
+            food = results[0]
+            break
+
+    if not food:
+        return None
+
+    n = food.nutrition_per_100g
+    # Determine grams: explicit > unit-based > default_serving * quantity
+    if grams_hint and grams_hint > 0:
+        g = grams_hint
+    else:
+        g = food.default_serving_g * quantity
+
+    g = max(1.0, round(g, 0))
+    ratio = g / 100.0
+    return {
+        "food_id":   food.food_id,
+        "food_name": food.name_he,
+        "grams":     g,
+        "calories":  round(n.calories_kcal * ratio, 1),
+        "protein":   round(n.protein_g     * ratio, 1),
+        "carbs":     round(n.carbs_g       * ratio, 1),
+        "fat":       round(n.fat_g         * ratio, 1),
+        "nutrition_per_100g": {
+            "calories_kcal": n.calories_kcal,
+            "protein_g":     n.protein_g,
+            "carbs_g":       n.carbs_g,
+            "fat_g":         n.fat_g,
+        },
+    }
+
+
+def _process_text(text: str):
+    """Parse Hebrew text and return (matched_list, not_found_list, meal_type)."""
+    from typing import List, Tuple
+    result  = parse_hebrew_meal(text)
+    matched, not_found = [], []
+    for item in result.items:
+        entry = _smart_match(item.food_query, item.grams, item.quantity)
+        if entry:
+            matched.append(entry)
+        else:
+            not_found.append(item.food_query)
+    return matched, not_found, result.meal_type
 USER_ID      = "ui_user_001"
 
 MEAL_HEB = {
@@ -85,34 +156,10 @@ if st.session_state.show_examples and not st.session_state.chat_messages:
             st.session_state.show_examples = False
             # Process the example
             st.session_state.chat_messages.append({"role": "user", "text": ex})
-            _result = parse_hebrew_meal(ex)
-            _matched, _not_found = [], []
-            for _item in _result.items:
-                _foods = catalog.search_foods(_item.food_query, limit=1)
-                if not _foods:
-                    _short = _item.food_query.split()[0] if _item.food_query.split() else _item.food_query
-                    _foods = catalog.search_foods(_short, limit=1)
-                if _foods:
-                    _f = _foods[0]
-                    _n = _f.nutrition_per_100g
-                    _g = _item.grams if _item.grams else _f.default_serving_g * _item.quantity
-                    _matched.append({
-                        "food_id": _f.food_id, "food_name": _f.name_he,
-                        "grams": round(_g, 0),
-                        "calories": round(_n.calories_kcal * _g / 100, 1),
-                        "protein":  round(_n.protein_g   * _g / 100, 1),
-                        "carbs":    round(_n.carbs_g     * _g / 100, 1),
-                        "fat":      round(_n.fat_g       * _g / 100, 1),
-                        "nutrition_per_100g": {
-                            "calories_kcal": _n.calories_kcal, "protein_g": _n.protein_g,
-                            "carbs_g": _n.carbs_g, "fat_g": _n.fat_g,
-                        },
-                    })
-                else:
-                    _not_found.append(_item.food_query)
+            _matched, _not_found, _meal_type = _process_text(ex)
             if _matched:
                 st.session_state.pending_entries = _matched
-                st.session_state.detected_meal_type = _result.meal_type
+                st.session_state.detected_meal_type = _meal_type
                 _names = ", ".join(e["food_name"] for e in _matched)
                 _reply = f"מצאתי: **{_names}**\n\nבדוק כמויות ואשר:"
                 if _not_found:
@@ -275,37 +322,11 @@ if submitted and user_text.strip():
     st.session_state.show_examples = False
     st.session_state.chat_messages.append({"role": "user", "text": user_text})
 
-    result = parse_hebrew_meal(user_text)
-    matched, not_found = [], []
-
-    for item in result.items:
-        foods = catalog.search_foods(item.food_query, limit=1)
-        if not foods:
-            short = item.food_query.split()[0] if item.food_query.split() else item.food_query
-            foods = catalog.search_foods(short, limit=1)
-        if foods:
-            food = foods[0]
-            n = food.nutrition_per_100g
-            grams = item.grams if item.grams else food.default_serving_g * item.quantity
-            matched.append({
-                "food_id":   food.food_id,
-                "food_name": food.name_he,
-                "grams":     round(grams, 0),
-                "calories":  round(n.calories_kcal * grams / 100, 1),
-                "protein":   round(n.protein_g     * grams / 100, 1),
-                "carbs":     round(n.carbs_g       * grams / 100, 1),
-                "fat":       round(n.fat_g         * grams / 100, 1),
-                "nutrition_per_100g": {
-                    "calories_kcal": n.calories_kcal, "protein_g": n.protein_g,
-                    "carbs_g": n.carbs_g, "fat_g": n.fat_g,
-                },
-            })
-        else:
-            not_found.append(item.food_query)
+    matched, not_found, detected_meal = _process_text(user_text)
 
     if matched:
         st.session_state.pending_entries = matched
-        st.session_state.detected_meal_type = result.meal_type
+        st.session_state.detected_meal_type = detected_meal
         names = ", ".join(e["food_name"] for e in matched)
         total = int(sum(e["calories"] for e in matched))
         reply = f"מצאתי **{len(matched)} פריטים** ({total} קק״ל):\n**{names}**\n\nבדוק כמויות ואשר:"
