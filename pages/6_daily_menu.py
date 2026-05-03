@@ -15,6 +15,7 @@ from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredie
 from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
 from nutrition_app.user_manager import get_all_users, load_inventory
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
+from nutrition_app.repositories.profile_repository import ProfileRepository
 
 from ui.components import inject_global_css, recipe_card_html, bottom_nav
 from ui.images import image_data_uri as _image_data_uri
@@ -22,6 +23,11 @@ from nutrition_app.agents.agent_3_food import FoodCatalog
 
 USER_ID = "ui_user_001"
 _food_log_repo = FoodLogRepository()
+
+# Load user allergies from profile
+_profile_repo = ProfileRepository()
+_profile = _profile_repo.load(USER_ID)
+_user_allergens: list = _profile.get("meal_preferences", {}).get("allergies", [])
 
 st.set_page_config(page_title="תפריט יומי", page_icon="🍽️", layout="wide",
                    initial_sidebar_state="collapsed")
@@ -119,7 +125,7 @@ st.markdown(
 )
 
 # ── Meal tab selector ─────────────────────────────────────────────────────────
-tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", "✏️ ידני"]
+tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", "✏️ ידני", "🍫 נשנוש"]
 tabs = st.tabs(tab_labels)
 
 _catalog = get_catalog()
@@ -130,6 +136,7 @@ MEAL_TYPE_HEB = {
     "breakfast": "ארוחת בוקר", "morning_snack": "חטיף בוקר",
     "lunch": "ארוחת צהריים", "afternoon_snack": "חטיף אחה״צ",
     "dinner": "ארוחת ערב", "evening_snack": "חטיף ערב",
+    "snack": "נשנוש",
 }
 
 # ── helper: render a nutrition result card + add button ───────────────────────
@@ -364,7 +371,8 @@ with tabs[-1]:
         )
         col_g, col_m = st.columns(2)
         man_grams = col_g.number_input("גרם", min_value=1, max_value=2000, value=100, step=10)
-        man_meal  = col_m.selectbox("ארוחה", options=list(MEAL_TYPE_HEB.keys()),
+        _man_meal_opts = [k for k in MEAL_TYPE_HEB.keys() if k != "snack"]
+        man_meal  = col_m.selectbox("ארוחה", options=_man_meal_opts,
                                     format_func=lambda k: MEAL_TYPE_HEB[k])
         if st.form_submit_button("הוסף", use_container_width=True, type="primary"):
             food_obj = _catalog.get_food_by_id(sel_food)
@@ -394,7 +402,18 @@ with tabs[-1]:
         )
         for entry in reversed(today_log):
             m_color = {"breakfast":"#f59e0b","morning_snack":"#a78bfa","lunch":"#4f8ef7",
-                       "afternoon_snack":"#34d399","dinner":"#f87171","evening_snack":"#818cf8"}.get(entry.meal_type,"#545e70")
+                       "afternoon_snack":"#34d399","dinner":"#f87171","evening_snack":"#818cf8",
+                       "snack":"#fb923c"}.get(entry.meal_type,"#545e70")
+            # Parse timestamp for display
+            try:
+                _ts = datetime.fromisoformat(entry.timestamp)
+                _time_str = _ts.strftime("%H:%M")
+            except Exception:
+                _time_str = ""
+            _meal_label = MEAL_TYPE_HEB.get(entry.meal_type, entry.meal_type)
+            _meta = f'{_meal_label} · {entry.grams:.0f}ג׳'
+            if _time_str:
+                _meta += f' · {_time_str}'
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:14px;'
                 f'padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
@@ -402,7 +421,7 @@ with tabs[-1]:
                 f'<div dir="rtl" style="flex:1">'
                 f'<div dir="rtl" style="font-size:0.84rem;font-weight:600;color:#f4f6fb">{entry.food_name}</div>'
                 f'<div dir="rtl" style="font-size:0.68rem;color:#545e70;margin-top:2px">'
-                f'{MEAL_TYPE_HEB.get(entry.meal_type,entry.meal_type)} · {entry.grams:.0f}ג׳</div></div>'
+                f'{_meta}</div></div>'
                 f'<div dir="rtl" style="font-size:0.82rem;font-weight:700;color:{m_color}">{int(entry.calories)} קק״ל</div>'
                 f'</div>',
                 unsafe_allow_html=True,
@@ -412,10 +431,11 @@ with tabs[-1]:
                 with st.form(f"edit_food_form_{entry.entry_id}", clear_on_submit=True):
                     e_grams = st.number_input("גרם", min_value=1, max_value=2000,
                                               value=int(entry.grams), step=10)
-                    e_meal  = st.selectbox("ארוחה", options=list(MEAL_TYPE_HEB.keys()),
+                    _edit_meal_opts = [k for k in MEAL_TYPE_HEB.keys() if k != "snack"]
+                    e_meal  = st.selectbox("ארוחה", options=_edit_meal_opts,
                                            format_func=lambda k: MEAL_TYPE_HEB[k],
-                                           index=list(MEAL_TYPE_HEB.keys()).index(entry.meal_type)
-                                           if entry.meal_type in MEAL_TYPE_HEB else 0)
+                                           index=_edit_meal_opts.index(entry.meal_type)
+                                           if entry.meal_type in _edit_meal_opts else 0)
                     c1, c2 = st.columns(2)
                     if c1.form_submit_button("שמור", use_container_width=True, type="primary"):
                         _food_log_repo.remove_entry(USER_ID, date.today(), entry.entry_id)
@@ -456,6 +476,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-2], MEAL_SECTIONS):
                 meal_type=meal_key,
                 target_calories=target_cal,
                 inventory_names=inventory_names if inventory_names else None,
+                allergens=_user_allergens if _user_allergens else None,
             )[:3]
         except Exception:
             suggestions = []
@@ -536,6 +557,106 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-2], MEAL_SECTIONS):
                     st.markdown("**הוראות הכנה:**")
                     for i, step in enumerate(steps, 1):
                         st.markdown(f"**{i}.** {step}")
+
+# ── Snack tab (last tab) ─────────────────────────────────────────────────────
+with tabs[-1]:
+    st.markdown(
+        '<div dir="rtl" style="font-size:0.9rem;font-weight:700;color:#f4f6fb;margin-bottom:4px">הוסף נשנוש חופשי</div>'
+        '<div dir="rtl" style="font-size:0.75rem;color:#8892a4;margin-bottom:16px">אכלת משהו קטן? הוסף אותו כאן ללא קשר לארוחות</div>',
+        unsafe_allow_html=True,
+    )
+
+    _snack_mode = st.radio(
+        "",
+        options=["free", "catalog"],
+        format_func=lambda m: {"free": "הזנה חופשית (שם + קלוריות)", "catalog": "מהרשימה"}[m],
+        horizontal=True,
+        key="snack_mode_radio",
+        label_visibility="collapsed",
+    )
+
+    if _snack_mode == "free":
+        with st.form("snack_free_form", clear_on_submit=True):
+            _snack_name = st.text_input("שם המאכל", placeholder="לדוגמה: קוביית שוקולד")
+            _sc1, _sc2, _sc3, _sc4 = st.columns(4)
+            _snack_cal   = _sc1.number_input("קלוריות", min_value=1, max_value=2000, value=100, step=5)
+            _snack_prot  = _sc2.number_input("חלבון (g)", min_value=0.0, max_value=200.0, value=0.0, step=0.5)
+            _snack_carbs = _sc3.number_input("פחמימות (g)", min_value=0.0, max_value=200.0, value=0.0, step=0.5)
+            _snack_fat   = _sc4.number_input("שומן (g)", min_value=0.0, max_value=200.0, value=0.0, step=0.5)
+            if st.form_submit_button("הוסף נשנוש", use_container_width=True, type="primary"):
+                if _snack_name.strip():
+                    _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                        food_id="snack_free",
+                        food_name=_snack_name.strip(),
+                        grams=0.0,
+                        calories=float(_snack_cal),
+                        protein=float(_snack_prot),
+                        carbs=float(_snack_carbs),
+                        fat=float(_snack_fat),
+                        meal_type="snack",
+                        timestamp=datetime.now().isoformat(),
+                    ))
+                    st.success(f"נוסף: {_snack_name.strip()} · {_snack_cal} קק״ל")
+                    st.rerun()
+                else:
+                    st.warning("יש להזין שם מאכל")
+    else:
+        with st.form("snack_catalog_form", clear_on_submit=True):
+            _snack_food_id = st.selectbox(
+                "בחר מוצר",
+                options=[f.food_id for f in _all_foods],
+                format_func=lambda fid: _food_id_to_name.get(fid, fid),
+            )
+            _snack_grams = st.number_input("גרמים", min_value=1, max_value=500, value=30, step=5)
+            if st.form_submit_button("הוסף נשנוש", use_container_width=True, type="primary"):
+                _sf = _catalog.get_food_by_id(_snack_food_id)
+                if _sf:
+                    _sr = _snack_grams / 100.0
+                    _sn = _sf.nutrition_per_100g
+                    _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                        food_id=_sf.food_id,
+                        food_name=_sf.name_he,
+                        grams=float(_snack_grams),
+                        calories=round(_sn.calories_kcal * _sr, 1),
+                        protein=round(_sn.protein_g * _sr, 1),
+                        carbs=round(_sn.carbs_g * _sr, 1),
+                        fat=round(_sn.fat_g * _sr, 1),
+                        meal_type="snack",
+                        timestamp=datetime.now().isoformat(),
+                    ))
+                    st.success(f"נוסף: {_sf.name_he} · {round(_sn.calories_kcal * _sr)} קק״ל")
+                    st.rerun()
+
+    # Show today's snacks
+    _today_snacks = [e for e in _food_log_repo.get_log(USER_ID, date.today()) if e.meal_type == "snack"]
+    if _today_snacks:
+        st.markdown(
+            '<div dir="rtl" style="font-size:0.82rem;font-weight:700;color:#f4f6fb;margin:16px 0 8px">נשנושים היום</div>',
+            unsafe_allow_html=True,
+        )
+        _snack_total = sum(e.calories for e in _today_snacks)
+        for _se in reversed(_today_snacks):
+            try:
+                _sts = datetime.fromisoformat(_se.timestamp).strftime("%H:%M")
+            except Exception:
+                _sts = ""
+            st.markdown(
+                f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:14px;'
+                f'padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
+                f'<div dir="rtl" style="width:3px;height:28px;border-radius:99px;background:#fb923c;flex-shrink:0"></div>'
+                f'<div dir="rtl" style="flex:1">'
+                f'<div dir="rtl" style="font-size:0.84rem;font-weight:600;color:#f4f6fb">{_se.food_name}</div>'
+                f'<div dir="rtl" style="font-size:0.68rem;color:#545e70;margin-top:2px">'
+                f'נשנוש{(" · " + _sts) if _sts else ""}</div></div>'
+                f'<div dir="rtl" style="font-size:0.82rem;font-weight:700;color:#fb923c">{int(_se.calories)} קק״ל</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+        st.markdown(
+            f'<div dir="rtl" style="text-align:left;font-size:0.75rem;color:#8892a4;margin-top:4px">'
+            f'סה״כ נשנושים: <strong style="color:#fb923c">{int(_snack_total)} קק״ל</strong></div>',
+            unsafe_allow_html=True,
+        )
 
 st.markdown('<div dir="rtl" style="height:80px"></div>', unsafe_allow_html=True)
 bottom_nav("food")

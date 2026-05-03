@@ -437,12 +437,54 @@ class RecipeManager:
             kashrut_valid=kashrut_valid,
         )
 
+    # Mapping from Hebrew allergy name → English ingredient keywords to exclude
+    ALLERGEN_INGREDIENT_KEYWORDS: Dict[str, List[str]] = {
+        "לקטוז": ["milk", "cheese", "cream", "yogurt", "butter", "dairy",
+                  "whey", "lactose", "mozzarella", "parmesan", "cottage",
+                  "ricotta", "brie", "feta", "cheddar", "gouda"],
+        "גלוטן": ["wheat", "flour", "bread", "pasta", "barley", "rye",
+                  "gluten", "couscous", "bulgur", "semolina", "oat",
+                  "noodle", "pita", "cracker", "biscuit"],
+        "בוטנים": ["peanut", "peanuts", "groundnut"],
+        "אגוזים": ["almond", "cashew", "walnut", "pecan", "hazelnut",
+                   "pistachio", "macadamia", "nut", "nuts"],
+        "ביצים": ["egg", "eggs"],
+        "דגים":  ["fish", "salmon", "tuna", "cod", "tilapia", "trout",
+                  "herring", "anchovy", "sardine", "halibut", "sea bass"],
+        "סויה":  ["soy", "tofu", "tempeh", "edamame", "miso", "soybean"],
+        "שומשום": ["sesame", "tahini"],
+    }
+
+    def _recipe_contains_allergen(self, recipe: dict, allergens: List[str]) -> bool:
+        """Return True if the recipe likely contains any of the given allergens."""
+        # Check kashrut: dairy recipes contain lactose
+        if "לקטוז" in allergens and recipe.get("kashrut", "").lower() == "dairy":
+            return True
+
+        # Build a set of all ingredient name_en values (lowercase)
+        ing_names_en = set()
+        for ing in recipe.get("ingredients", []):
+            name_en = ing.get("food_name_en", "").lower()
+            if name_en:
+                ing_names_en.add(name_en)
+                # also check individual words
+                for word in name_en.split():
+                    ing_names_en.add(word)
+
+        for allergen in allergens:
+            keywords = self.ALLERGEN_INGREDIENT_KEYWORDS.get(allergen, [])
+            for kw in keywords:
+                if any(kw in ing for ing in ing_names_en):
+                    return True
+        return False
+
     def recommend_meal(
         self,
         meal_type: str,
         target_calories: float,
         kashrut: Optional[str] = None,
         inventory_names: Optional[Set[str]] = None,
+        allergens: Optional[List[str]] = None,
     ) -> List[dict]:
         """Find top 5 recipes for a specific meal slot.
 
@@ -450,6 +492,7 @@ class RecipeManager:
             meal_type: e.g. "BREAKFAST", "LUNCH"
             target_calories: calorie target for this slot
             kashrut: optional kashrut filter ("dairy", "meat", "parve")
+            allergens: list of Hebrew allergy names to exclude (e.g. ["לקטוז", "גלוטן"])
 
         Returns:
             Up to 5 best-matching recipes sorted by fit score.
@@ -461,6 +504,13 @@ class RecipeManager:
             candidates = [
                 r for r in candidates
                 if r.get("kashrut", "parve").lower() == kashrut.lower()
+            ]
+
+        # Filter out recipes containing user allergens
+        if allergens:
+            candidates = [
+                r for r in candidates
+                if not self._recipe_contains_allergen(r, allergens)
             ]
 
         # Estimate macro targets from calorie target using typical ratios
