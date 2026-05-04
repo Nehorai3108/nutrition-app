@@ -252,10 +252,24 @@ def _match_food(name: str, quantity: float, unit: str):
     }
 
 
-def _ask_groq(history: list, user_msg: str):
+def _ask_groq(history: list, user_msg: str, pending: list = None):
     """Send to Groq, return (reply_text, food_data_or_None)."""
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     messages += history
+
+    # If there are pending entries, inject them as context so the AI can correct them
+    if pending:
+        pending_summary = ", ".join(
+            f'{e["food_name"]} {int(e["grams"])}גרם' for e in pending
+        )
+        context_msg = (
+            f"[SYSTEM CONTEXT - not said by user] "
+            f"Currently pending (waiting for user approval): {pending_summary}. "
+            f"If the user asks to change quantity/food — return FULL updated JSON with ALL items corrected."
+        )
+        messages.append({"role": "user", "content": context_msg})
+        messages.append({"role": "assistant", "content": "הבנתי, אני זוכר מה בכרטיסייה."})
+
     messages.append({"role": "user", "content": user_msg})
 
     resp = groq_client.chat.completions.create(
@@ -323,6 +337,11 @@ if st.session_state.pending_entries:
     st.markdown(
         '<div dir="rtl" style="background:#0d1f0d;border:1px solid #1a4d1a;border-radius:16px;'
         'padding:14px 16px;margin:8px 0 4px">', unsafe_allow_html=True)
+
+    st.markdown(
+        '<div dir="rtl" style="font-size:0.72rem;color:#8892a4;margin-bottom:8px">'
+        '💡 שנה כמויות ישירות בשדות למטה, או כתוב לביטי לתקן</div>',
+        unsafe_allow_html=True)
 
     meal_type_sel = st.selectbox(
         "ארוחה", options=list(MEAL_HEB.keys()),
@@ -413,7 +432,10 @@ if submitted and user_text.strip():
 
     with st.spinner("ביטי חושב..."):
         try:
-            reply_text, food_data = _ask_groq(st.session_state.groq_history, user_text)
+            reply_text, food_data = _ask_groq(
+                st.session_state.groq_history, user_text,
+                pending=st.session_state.pending_entries or None
+            )
         except Exception as e:
             reply_text = "אופס, תקלה טכנית. נסה שוב 🙏"
             food_data = None
