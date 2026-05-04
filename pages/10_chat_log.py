@@ -349,29 +349,61 @@ st.markdown(
     '<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-bottom:12px">'
     'ספר לביטי מה אכלת — בעברית טבעית</div>', unsafe_allow_html=True)
 
-# ── Chat history ──────────────────────────────────────────────────────────────
-for msg in st.session_state.chat_messages:
-    if msg["role"] == "assistant":
+# ── Chat history — scrollable container, always same size ─────────────────────
+chat_box = st.container(height=460, border=False)
+with chat_box:
+    if not st.session_state.chat_messages:
         st.markdown(
-            f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
-            f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
-            f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
-            f'border:1px solid #252d3d">🥗</div>'
-            f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
-            f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
-            f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
-            f'{msg["text"].replace(chr(10),"<br>")}</div></div>',
+            '<div dir="rtl" style="color:#545e70;font-size:0.82rem;text-align:center;'
+            'margin-top:60px">היי! אני ביטי 🥗<br>ספר לי מה אכלת היום</div>',
             unsafe_allow_html=True)
-    else:
-        st.markdown(
-            f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;flex-direction:row-reverse">'
-            f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#4f8ef7;'
-            f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">👤</div>'
-            f'<div dir="rtl" style="background:#1a3a6b;border:1px solid #2d5096;'
-            f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:88%;'
-            f'font-size:0.86rem;color:#e8f0ff;line-height:1.55;direction:rtl">'
-            f'{msg["text"]}</div></div>',
-            unsafe_allow_html=True)
+    for msg in st.session_state.chat_messages:
+        if msg["role"] == "assistant":
+            st.markdown(
+                f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
+                f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
+                f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
+                f'border:1px solid #252d3d">🥗</div>'
+                f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
+                f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
+                f'{msg["text"].replace(chr(10),"<br>")}</div></div>',
+                unsafe_allow_html=True)
+        else:
+            st.markdown(
+                f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;flex-direction:row-reverse">'
+                f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#4f8ef7;'
+                f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">👤</div>'
+                f'<div dir="rtl" style="background:#1a3a6b;border:1px solid #2d5096;'
+                f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:88%;'
+                f'font-size:0.86rem;color:#e8f0ff;line-height:1.55;direction:rtl">'
+                f'{msg["text"]}</div></div>',
+                unsafe_allow_html=True)
+    # Anchor: JS will scroll to this element
+    st.markdown('<div id="chat-bottom-anchor"></div>', unsafe_allow_html=True)
+
+# Auto-scroll the chat container to bottom after every render
+st.markdown("""
+<script>
+(function() {
+    function scrollChat() {
+        var anchor = window.parent.document.getElementById('chat-bottom-anchor');
+        if (anchor) {
+            anchor.scrollIntoView({block: 'end', behavior: 'instant'});
+            return true;
+        }
+        return false;
+    }
+    // Try immediately, then retry until found
+    if (!scrollChat()) {
+        var tries = 0;
+        var t = setInterval(function() {
+            if (scrollChat() || ++tries > 20) clearInterval(t);
+        }, 80);
+    }
+})();
+</script>
+""", unsafe_allow_html=True)
 
 # ── Pending confirmation card (appears right after chat) ──────────────────────
 if st.session_state.pending_entries:
