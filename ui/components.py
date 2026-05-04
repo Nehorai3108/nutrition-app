@@ -608,7 +608,7 @@ def bottom_nav(active: str = "home") -> None:
     items = [
         ("home",    "/",                  "בית"),
         ("food",    "/daily_menu",        "תזונה"),
-        ("chat",    "/chat_log",          "הזנה"),
+        ("chat",    "/chat_log",          "צאט"),
         ("workout", "/workout_tracker",   "אימון"),
         ("history", "/history",           "היסטוריה"),
         ("profile", "/profile",           "פרופיל"),
