@@ -310,10 +310,53 @@ st.markdown(
     '<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-bottom:12px">'
     'ספר לביטי מה אכלת — בעברית טבעית</div>', unsafe_allow_html=True)
 
-# ── Chat history ───────────────────────────────────────────────────────────────
+# ── CSS layout ────────────────────────────────────────────────────────────────
+st.markdown("""
+<style>
+/* Scrollable chat area */
+.chat-scroll {
+    overflow-y: auto;
+    max-height: 42vh;
+    padding-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+}
+/* Auto-scroll to bottom */
+.chat-scroll { scroll-behavior: smooth; }
+
+/* Fixed bottom panel */
+.bottom-panel {
+    position: fixed;
+    bottom: 64px;
+    left: 0; right: 0;
+    z-index: 9000;
+    background: #0d0f14;
+    border-top: 1px solid #1e2433;
+    padding: 0;
+}
+/* Pending card inside bottom panel */
+.pending-card {
+    background: #0d1f0d;
+    border-top: 2px solid #1a4d1a;
+    padding: 10px 16px 4px;
+    max-height: 45vh;
+    overflow-y: auto;
+}
+/* Input bar */
+.input-bar {
+    padding: 8px 16px 10px;
+    background: #0d0f14;
+}
+/* Push page content up so fixed bottom doesn't cover it */
+.main-spacer { height: 200px; }
+</style>
+""", unsafe_allow_html=True)
+
+# ── Chat history (scrollable) ──────────────────────────────────────────────────
+chat_html = '<div class="chat-scroll" id="chat-scroll">'
 for msg in st.session_state.chat_messages:
     if msg["role"] == "assistant":
-        st.markdown(
+        chat_html += (
             f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
             f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
             f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
@@ -321,26 +364,37 @@ for msg in st.session_state.chat_messages:
             f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
             f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
             f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
-            f'{msg["text"].replace(chr(10),"<br>")}</div></div>', unsafe_allow_html=True)
+            f'{msg["text"].replace(chr(10),"<br>")}</div></div>'
+        )
     else:
-        st.markdown(
+        chat_html += (
             f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;flex-direction:row-reverse">'
             f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#4f8ef7;'
             f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">👤</div>'
             f'<div dir="rtl" style="background:#1a3a6b;border:1px solid #2d5096;'
             f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:88%;'
             f'font-size:0.86rem;color:#e8f0ff;line-height:1.55;direction:rtl">'
-            f'{msg["text"]}</div></div>', unsafe_allow_html=True)
+            f'{msg["text"]}</div></div>'
+        )
+chat_html += '</div>'
+chat_html += """<script>
+var el = document.getElementById('chat-scroll');
+if(el){ el.scrollTop = el.scrollHeight; }
+</script>"""
+st.markdown(chat_html, unsafe_allow_html=True)
 
-# ── Pending confirmation card ──────────────────────────────────────────────────
+# ── Spacer so fixed bottom doesn't cover content ──────────────────────────────
+pending_count = len(st.session_state.pending_entries)
+spacer_h = 80 + (pending_count * 70) + (120 if pending_count else 0)
+st.markdown(f'<div style="height:{spacer_h}px"></div>', unsafe_allow_html=True)
+
+# ── Pending confirmation card (fixed bottom, above input) ─────────────────────
 if st.session_state.pending_entries:
-    st.markdown(
-        '<div dir="rtl" style="background:#0d1f0d;border:1px solid #1a4d1a;border-radius:16px;'
-        'padding:14px 16px;margin:8px 0 4px">', unsafe_allow_html=True)
+    st.markdown('<div class="pending-card">', unsafe_allow_html=True)
 
     st.markdown(
-        '<div dir="rtl" style="font-size:0.72rem;color:#8892a4;margin-bottom:8px">'
-        '💡 שנה כמויות ישירות בשדות למטה, או כתוב לביטי לתקן</div>',
+        '<div dir="rtl" style="font-size:0.72rem;color:#8892a4;margin-bottom:6px">'
+        '💡 ערוך כמויות ישירות או כתוב לביטי לתקן</div>',
         unsafe_allow_html=True)
 
     meal_type_sel = st.selectbox(
@@ -354,7 +408,7 @@ if st.session_state.pending_entries:
     for i, entry in enumerate(st.session_state.pending_entries):
         c_name, c_gram, c_del = st.columns([4, 2, 1])
         c_name.markdown(
-            f'<div dir="rtl" style="font-size:0.86rem;font-weight:700;color:#f4f6fb;padding-top:6px">'
+            f'<div dir="rtl" style="font-size:0.84rem;font-weight:700;color:#f4f6fb;padding-top:6px">'
             f'{entry["food_name"]}</div>'
             f'<div dir="rtl" style="font-size:0.68rem;color:#4ade80">'
             f'🔥 {entry["calories"]:.0f} קק״ל · {entry["protein"]:.0f}g חלבון</div>',
@@ -381,11 +435,10 @@ if st.session_state.pending_entries:
 
     total_cal = int(sum(e["calories"] for e in st.session_state.pending_entries))
     st.markdown(
-        f'<div dir="rtl" style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:center">'
-        f'<div dir="rtl" style="font-size:0.72rem;color:#8892a4">סה״כ לאישור</div>'
+        f'<div dir="rtl" style="margin:6px 0 6px;display:flex;justify-content:space-between;align-items:center">'
+        f'<div dir="rtl" style="font-size:0.72rem;color:#8892a4">סה״כ</div>'
         f'<div dir="rtl" style="font-size:1rem;font-weight:800;color:#4ade80">{total_cal} קק״ל</div></div>',
         unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
     if c1.button("✅ הוסף לרשומות", type="primary", use_container_width=True):
@@ -412,15 +465,9 @@ if st.session_state.pending_entries:
         st.session_state.groq_history.append({"role":"assistant","content":txt})
         st.rerun()
 
-# ── Spacer + fixed input ───────────────────────────────────────────────────────
-st.markdown('<div style="height:120px"></div>', unsafe_allow_html=True)
-st.markdown("""
-<style>
-.chat-input-wrap{position:fixed;bottom:64px;left:0;right:0;z-index:9998;
-background:linear-gradient(to top,#0d0f14 80%,transparent);padding:12px 16px 8px}
-</style>
-<div class="chat-input-wrap"></div>""", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
+# ── Fixed input bar ────────────────────────────────────────────────────────────
 with st.form("chat_form", clear_on_submit=True):
     col_in, col_btn = st.columns([5, 1])
     user_text = col_in.text_input("", placeholder='מה אכלת? למשל: "שתי ביצים עם גבינה לבוקר"',
