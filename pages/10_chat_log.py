@@ -45,36 +45,127 @@ MEAL_HEB = {
     "snack":           "🍫 נשנוש",
 }
 
-SYSTEM_PROMPT = """You are "Biti", a warm Israeli nutrition assistant in the BiteFit app.
-Your job: help users log their meals accurately and in a friendly way.
+SYSTEM_PROMPT = """You are "Biti" — an intelligent, warm Israeli nutrition AI assistant inside the BiteFit app.
+You speak like a knowledgeable friend who happens to be a nutritionist: direct, caring, and smart.
 
-Rules:
-1. Always reply in Hebrew, short and human (1-3 sentences max)
-2. When the user mentions food — return JSON. Otherwise reply conversationally.
-3. Remember context: "ומה עם הלחם?" after a meal = the bread from that same meal
-4. If critical info is missing — ask ONE specific question
-5. Never invent nutrition values — the system handles that
-6. Food names in the JSON must be in Hebrew
+YOUR PERSONALITY:
+- Warm but not cheesy. Helpful but not robotic.
+- Give real nutritional insight when relevant (e.g. "חזה עוף — מקור חלבון מצוין, בחירה חכמה 💪")
+- Ask smart follow-up questions when needed
+- Remember everything said in the conversation
 
-When there is food to log, return EXACTLY this format (JSON inside ```json):
+YOUR JOB:
+1. Log food accurately when the user describes what they ate
+2. Answer nutrition questions with real knowledge
+3. Handle clarifications: if user says "טוסט זה לחם" → update the food to לחם and re-log
+4. If the user corrects themselves → re-log with corrected info (replace, don't add)
+
+STRICT RULES:
+- Always reply in Hebrew only
+- Food names in JSON must be in Hebrew
+- Never invent calorie counts — the system calculates those
+- When logging food: use common Israeli serving sizes if quantity not mentioned
+  (e.g. פרוסת לחם=30g, ביצה=55g, כוס=240ml, כף=15g)
+
+WHEN THERE IS FOOD TO LOG — return this exact format:
 ```json
 {
   "meal_type": "breakfast|morning_snack|lunch|afternoon_snack|dinner|evening_snack",
   "foods": [
-    {"name": "Hebrew food name", "quantity": 1, "unit": "יחידה|גרם|כוס|פרוסה|כף|קציצה|פחית|גביע|לחמנייה"}
+    {"name": "שם המזון בעברית", "quantity": 1, "unit": "פרוסה|גרם|יחידה|כוס|כף|קציצה|פחית|גביע"}
   ],
-  "reply": "Short friendly Hebrew reply"
+  "reply": "תגובה חכמה וקצרה בעברית"
 }
 ```
 
-If no food — plain Hebrew text only (NO json block).
+IF NO FOOD TO LOG — reply in plain Hebrew only (no json block at all).
 
-Examples:
-- "שתי ביצים עם גבינה" → json with foods:[{name:"ביצה",quantity:2,unit:"יחידה"},{name:"גבינה לבנה",quantity:1,unit:"יחידה"}], reply:"רשמתי! שתי ביצים עם גבינה 🍳"
-- "חזה עוף 200 גרם" → json with foods:[{name:"חזה עוף",quantity:200,unit:"גרם"}], reply:"מעולה! חזה עוף 200 גרם נרשם ✅"
-- "ומה עם הלחם?" → json with foods:[{name:"לחם",quantity:1,unit:"פרוסה"}], reply:"הלחם נרשם! כמה פרוסות בדיוק?"
-- "מה אפשר לאכול אחרי אימון?" → plain Hebrew advice, no json"""
+EXAMPLES:
+- "טוסט עם גבינה צהובה" → foods:[{name:"לחם לבן",qty:2,unit:"פרוסה"},{name:"גבינה צהובה",qty:1,unit:"יחידה"}], reply:"רשמתי טוסט עם גבינה! ארוחת בוקר קלאסית 😄"
+- "חזה עוף 200 גרם" → foods:[{name:"חזה עוף",qty:200,unit:"גרם"}], reply:"200 גרם חזה — כ-44 גרם חלבון. בחירה מצוינת 💪"
+- "טוסט זה לחם לבן" → re-log with לחם לבן, reply:"תיקנתי! רשמתי לחם לבן במקום טוסט ✅"
+- "מה כדאי לאכול אחרי אימון?" → plain Hebrew advice about post-workout nutrition, no json"""
 
+
+# ── Food aliases: common Israeli names → searchable DB terms ──────────────────
+FOOD_ALIASES = {
+    "טוסט":          "לחם לבן",
+    "כריך":          "לחם לבן",
+    "לחמנייה":       "לחם לבן",
+    "באגט":          "לחם לבן",
+    "פוקצ'ה":        "לחם לבן",
+    "חביתה":         "ביצה",
+    "שקשוקה":        "ביצה",
+    "עין":           "ביצה",       # ביצת עין
+    "מקושקשת":       "ביצה",
+    "קוטג'":         "גבינת קוטג'",
+    "קוטג׳":         "גבינת קוטג'",
+    "בולגרית":       "גבינה בולגרית",
+    "צהובה":         "גבינה צהובה",
+    "לבנה":          "גבינה לבנה",
+    "שמנת":          "שמנת",
+    "חזה":           "חזה עוף",
+    "שניצל":         "שניצל עוף",
+    "כנפיים":        "כנפי עוף",
+    "ירך":           "ירך עוף",
+    "פרגית":         "עוף",
+    "קבב":           "בשר בקר",
+    "המבורגר":       "בשר בקר טחון",
+    "סטייק":         "סטייק בקר",
+    "טונה":          "טונה בשמן",
+    "סלמון":         "דג סלמון",
+    "לוקוס":         "דג לוקוס",
+    "אורז":          "אורז לבן",
+    "פסטה":          "פסטה",
+    "ספגטי":         "פסטה ספגטי",
+    "פנה":           "פסטה פנה",
+    "קינואה":        "קינואה",
+    "קוסקוס":        "קוסקוס",
+    "עדשים":         "עדשים כתומות",
+    "חומוס גרגרים":  "גרגרי חומוס",
+    "גרנולה":        "גרנולה",
+    "שיבולת שועל":   "שיבולת שועל",
+    "קוואקר":        "שיבולת שועל",
+    "יוגורט":        "יוגורט",
+    "לבן":           "יוגורט",
+    "חלב":           "חלב",
+    "תפוח":          "תפוח עץ",
+    "בננה":          "בננה",
+    "תפוז":          "תפוז",
+    "אבוקדו":        "אבוקדו",
+    "עגבנייה":       "עגבנייה",
+    "מלפפון":        "מלפפון",
+    "גזר":           "גזר",
+    "חסה":           "חסה",
+    "פלפל":          "פלפל אדום",
+    "ברוקולי":       "ברוקולי",
+    "תרד":           "תרד",
+    "תפוח אדמה":     "תפוח אדמה",
+    "בטטה":          "בטטה",
+    "חצילים":        "חציל",
+    "קישוא":         "קישוא",
+    "שמן זית":       "שמן זית",
+    "חמאה":          "חמאה",
+    "טחינה":         "טחינה גולמית",
+    "חומוס":         "חומוס מוכן",
+    "גואקמולה":      "ממרח אבוקדו",
+    "ריבה":          "ריבה",
+    "דבש":           "דבש",
+    "שוקולד":        "שוקולד מריר",
+    "גלידה":         "גלידה",
+    "קפה":           "קפה שחור",
+    "אספרסו":        "קפה שחור",
+    "לאטה":          "קפה עם חלב",
+    "קפוצינו":       "קפה עם חלב",
+    "שוקו":          "משקה שוקולד",
+    "מיץ תפוזים":    "מיץ תפוזים",
+    "פיתה":          "פיתה",
+    "לאפה":          "פיתה",
+    "טורטיה":        "טורטייה",
+    "במבה":          "במבה",
+    "ביסלי":         "ביסלי",
+    "קרקר":          "קרקר",
+}
 
 UNIT_TO_GRAMS = {
     "גרם": 1, "גר": 1, "ג": 1,
@@ -93,17 +184,37 @@ UNIT_TO_GRAMS = {
     "לחמנייה": 50,
 }
 
-_STOPWORDS = {"עם","של","ה","ו","ל","מ","ב","את","לבן","שחור","טרי","מבושל","מטוגן"}
+_STOPWORDS = {"עם","של","ה","ו","ל","מ","ב","את","שחור","טרי","מבושל","מטוגן"}
+
+def _resolve_alias(name: str) -> str:
+    """Map common food names/slang to DB-searchable terms."""
+    # Exact match
+    if name in FOOD_ALIASES:
+        return FOOD_ALIASES[name]
+    # Partial match — longest wins
+    best, best_len = name, 0
+    for alias, canonical in FOOD_ALIASES.items():
+        if alias in name and len(alias) > best_len:
+            best, best_len = canonical, len(alias)
+    return best
 
 def _match_food(name: str, quantity: float, unit: str):
-    words = [w for w in name.split() if len(w) > 1]
-    candidates = [name]
+    # Apply alias resolution first
+    resolved = _resolve_alias(name)
+    words = [w for w in resolved.split() if len(w) > 1]
+    candidates = [resolved]
+    if resolved != name:
+        candidates.append(name)      # also try original
     if len(words) >= 2:
         candidates.append(" ".join(words[-2:]))
         candidates.append(" ".join(words[:-1]))
         candidates.append(words[0])
     for w in reversed(words):
         if w not in _STOPWORDS:
+            candidates.append(w)
+    # Also try original name words as fallback
+    for w in name.split():
+        if len(w) > 1 and w not in _STOPWORDS:
             candidates.append(w)
 
     food = None
