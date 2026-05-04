@@ -89,11 +89,15 @@ EXAMPLES:
 
 # ── Food aliases: common Israeli names → searchable DB terms ──────────────────
 FOOD_ALIASES = {
-    "טוסט":          "לחם לבן",
-    "כריך":          "לחם לבן",
-    "לחמנייה":       "לחם לבן",
-    "באגט":          "לחם לבן",
-    "פוקצ'ה":        "לחם לבן",
+    "טוסט":          "toast",
+    "לחם לבן":       "לחם",
+    "לחם מלא":       "לחם",
+    "לחם שחור":      "לחם",
+    "לחם פרוס":      "לחם",
+    "כריך":          "לחם",
+    "לחמנייה":       "לחמנייה",
+    "באגט":          "לחם",
+    "פוקצ'ה":        "לחם",
     "חביתה":         "ביצה",
     "שקשוקה":        "ביצה",
     "עין":           "ביצה",       # ביצת עין
@@ -127,7 +131,7 @@ FOOD_ALIASES = {
     "שיבולת שועל":   "שיבולת שועל",
     "קוואקר":        "שיבולת שועל",
     "יוגורט":        "יוגורט",
-    "לבן":           "יוגורט",
+
     "חלב":           "חלב",
     "תפוח":          "תפוח עץ",
     "בננה":          "בננה",
@@ -199,22 +203,23 @@ def _resolve_alias(name: str) -> str:
     return best
 
 def _match_food(name: str, quantity: float, unit: str):
-    # Apply alias resolution first
+    # 1. Try alias on full name first
     resolved = _resolve_alias(name)
-    words = [w for w in resolved.split() if len(w) > 1]
-    candidates = [resolved]
+
+    # 2. Build search candidates (no alias on sub-words — avoids false matches)
+    candidates = []
     if resolved != name:
-        candidates.append(name)      # also try original
-    if len(words) >= 2:
-        candidates.append(" ".join(words[-2:]))
-        candidates.append(" ".join(words[:-1]))
-        candidates.append(words[0])
-    for w in reversed(words):
-        if w not in _STOPWORDS:
-            candidates.append(w)
-    # Also try original name words as fallback
-    for w in name.split():
-        if len(w) > 1 and w not in _STOPWORDS:
+        candidates.append(resolved)   # aliased full name
+    candidates.append(name)           # original full name
+
+    # Sub-word candidates from ORIGINAL name only (no alias resolution)
+    orig_words = [w for w in name.split() if len(w) > 1]
+    if len(orig_words) >= 2:
+        candidates.append(" ".join(orig_words[:2]))   # first 2 words
+        candidates.append(" ".join(orig_words[-2:]))  # last 2 words
+        candidates.append(" ".join(orig_words[:-1]))  # all but last
+    for w in orig_words:
+        if w not in _STOPWORDS and len(w) > 2:
             candidates.append(w)
 
     food = None
