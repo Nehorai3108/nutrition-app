@@ -109,102 +109,164 @@ with tab_personal:
                                 format_func=lambda g: GOAL_LABELS[g],
                                 index=goal_opts.index(cur_goal))
 
-    # ── Pace + target weight (only when changing weight) ─────────────────────
+    # ── Target weight + weeks slider ─────────────────────────────────────────
     if new_goal != Goal.MAINTAIN:
         st.divider()
-        pc1, pc2 = st.columns(2)
+        tw_default = float(profile.get("target_weight_kg") or new_weight)
+        # Guard: target weight must be on the correct side of current weight
+        if new_goal == Goal.LOSE_WEIGHT:
+            tw_default = min(tw_default, new_weight - 0.5)
+            tw_max = new_weight - 0.5
+            tw_min = 35.0
+        else:
+            tw_default = max(tw_default, new_weight + 0.5)
+            tw_max = 200.0
+            tw_min = new_weight + 0.5
 
-        with pc1:
-            pace_opts = ["slow", "moderate", "fast"]
-            cur_pace = profile.get("pace", "moderate")
-            if cur_pace not in pace_opts:
-                cur_pace = "moderate"
-            new_pace = st.radio(
-                "קצב שינוי",
-                options=pace_opts,
-                format_func=lambda p: PACE_LABELS[p],
-                index=pace_opts.index(cur_pace),
-                horizontal=True,
-            )
-            st.caption(PACE_DESCRIPTIONS[new_goal.value][new_pace])
+        tw_default = max(tw_min, min(tw_max, tw_default))
+        new_target_weight = st.number_input(
+            "משקל יעד (ק״ג)",
+            min_value=float(tw_min), max_value=float(tw_max),
+            value=float(tw_default), step=0.5,
+        )
 
-        with pc2:
-            tw_default = float(profile.get("target_weight_kg") or new_weight)
-            new_target_weight = st.number_input(
-                "משקל יעד (ק״ג)",
-                min_value=35.0, max_value=200.0,
-                value=tw_default, step=0.5,
-                help="משקל שתרצה להגיע אליו"
-            )
+        # Weeks slider → derive kg/week
+        delta_kg = abs(new_target_weight - new_weight)
+        # Safe range: fastest = 1 kg/week, slowest = 0.15 kg/week
+        min_weeks = max(1, round(delta_kg / 1.0))
+        max_weeks = round(delta_kg / 0.15)
+        max_weeks = max(max_weeks, min_weeks + 1)
+
+        saved_weeks = int(profile.get("weeks_to_goal", max(min_weeks, round((min_weeks + max_weeks) / 2))))
+        saved_weeks = max(min_weeks, min(max_weeks, saved_weeks))
+
+        new_weeks = st.slider(
+            "כמה שבועות עד היעד?",
+            min_value=min_weeks,
+            max_value=max_weeks,
+            value=saved_weeks,
+            step=1,
+        )
+        new_weekly_kg = round(delta_kg / max(new_weeks, 1), 3)
+        kcal_adj = round(new_weekly_kg * 7700 / 7)
+        direction = "גירעון" if new_goal == Goal.LOSE_WEIGHT else "עודף"
+        st.caption(
+            f"קצב: **{new_weekly_kg:.2f} ק״ג/שבוע** · "
+            f"{direction}: **{kcal_adj} קק״ל/יום**"
+        )
+        new_pace = "moderate"  # fallback for engine calls that use pace
     else:
-        new_pace = "moderate"
         new_target_weight = new_weight
+        new_weekly_kg     = 0.0
+        new_weeks         = 0
+        new_pace          = "moderate"
 
-    # ── Live calculation preview ──────────────────────────────────────────────
+    # ── Live calculation card ─────────────────────────────────────────────────
     st.divider()
-    st.markdown("#### 📊 חישוב מיידי לפי הנתונים הנוכחיים")
 
     try:
-        age_now = (date.today() - new_dob).days // 365
         _prev_user = UserProfile(
-            user_id=USER_ID,
-            name=new_name or "user",
-            gender=new_gender,
-            date_of_birth=new_dob,
-            height_cm=new_height,
-            weight_kg=new_weight,
-            activity_level=new_activity,
-            goal=new_goal,
+            user_id=USER_ID, name=new_name or "user",
+            gender=new_gender, date_of_birth=new_dob,
+            height_cm=new_height, weight_kg=new_weight,
+            activity_level=new_activity, goal=new_goal,
         )
         _engine = NutritionEngine()
         _t = _engine.calculate_targets(
             _prev_user,
-            pace=new_pace,
-            target_weight_kg=new_target_weight if new_goal != Goal.MAINTAIN else None
+            weekly_change_kg=new_weekly_kg if new_goal != Goal.MAINTAIN else None,
+            target_weight_kg=new_target_weight if new_goal != Goal.MAINTAIN else None,
         )
 
-        lc1, lc2, lc3, lc4 = st.columns(4)
-        lc1.metric("BMR", f"{_t.bmr_kcal:.0f}", help="קלוריות במנוחה מוחלטת")
-        lc2.metric("TDEE", f"{_t.tdee_kcal:.0f}", help="קלוריות כולל פעילות יומית")
-        lc3.metric("🎯 יעד יומי", f"{_t.target_calories_kcal:.0f} קק״ל",
-                   delta=f"{_t.target_calories_kcal - _t.tdee_kcal:+.0f} מ-TDEE")
-        if new_target_weight and new_target_weight != new_weight and new_goal != Goal.MAINTAIN:
-            weeks_str = ""
-            if _t.notes and "שבועות" in _t.notes:
-                weeks_str = _t.notes.split(",")[-1].strip()
-            lc4.metric("ציר זמן", weeks_str or "—")
-        else:
-            lc4.metric("מאזן", f"{_t.target_calories_kcal - _t.tdee_kcal:+.0f} קק״ל/יום")
+        _diff     = int(_t.target_calories_kcal - _t.tdee_kcal)
+        _diff_str = f"{_diff:+d}"
+        _goal_color = "#4ade80" if new_goal == Goal.GAIN_WEIGHT else ("#f87171" if new_goal == Goal.LOSE_WEIGHT else "#4f8ef7")
+        _total_macro_kcal = _t.protein_g * 4 + _t.carbs_g * 4 + _t.fat_g * 9
+        _p_pct = round(_t.protein_g * 4 / max(_total_macro_kcal, 1) * 100)
+        _c_pct = round(_t.carbs_g   * 4 / max(_total_macro_kcal, 1) * 100)
+        _f_pct = round(_t.fat_g     * 9 / max(_total_macro_kcal, 1) * 100)
 
-        mc1, mc2, mc3 = st.columns(3)
-        mc1.metric("🥩 חלבון", f"{_t.protein_g:.0f}g",
-                   help=f"~{_t.protein_g/new_weight:.1f}g לק״ג משקל גוף")
-        mc2.metric("🍞 פחמימות", f"{_t.carbs_g:.0f}g")
-        mc3.metric("🥑 שומן", f"{_t.fat_g:.0f}g")
+        def _bar(pct, color):
+            return (
+                f'<div style="background:#252d3d;border-radius:99px;height:8px;overflow:hidden">'
+                f'<div style="width:{pct}%;height:100%;background:{color};border-radius:99px"></div>'
+                f'</div>'
+            )
 
-        # Nutritionist explanation
-        goal_deficit = _t.target_calories_kcal - _t.tdee_kcal
-        if new_goal == Goal.LOSE_WEIGHT:
-            weekly_loss = abs(goal_deficit) * 7 / 7700
-            st.info(
-                f"💡 **ניתוח תזונאי:** ה-TDEE שלך הוא {_t.tdee_kcal:.0f} קק״ל. "
-                f"גירעון של {abs(goal_deficit):.0f} קק״ל ביום = ירידה של **{weekly_loss:.2f} ק״ג/שבוע**. "
-                f"המלצה לחלבון: **{_t.protein_g:.0f}g/יום** ({_t.protein_g/new_weight:.1f}g/ק״ג) "
-                f"לשמירה על מסת שריר."
+        st.markdown(
+            f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:20px;padding:20px 18px">'
+
+            # Top row: big calorie number + BMR/TDEE chips
+            f'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">'
+            f'<div>'
+            f'<div style="font-size:0.72rem;color:#8892a4;margin-bottom:4px;direction:rtl">יעד קלורי יומי</div>'
+            f'<div style="font-size:2.6rem;font-weight:900;color:{_goal_color};line-height:1;letter-spacing:-0.04em">'
+            f'{int(_t.target_calories_kcal)}</div>'
+            f'<div style="font-size:0.72rem;color:#8892a4;margin-top:4px">קק״ל</div>'
+            f'</div>'
+            f'<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">'
+            f'<div style="background:#1e2433;border-radius:10px;padding:6px 12px;text-align:center">'
+            f'<div style="font-size:0.58rem;color:#545e70">BMR</div>'
+            f'<div style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{int(_t.bmr_kcal)}</div>'
+            f'</div>'
+            f'<div style="background:#1e2433;border-radius:10px;padding:6px 12px;text-align:center">'
+            f'<div style="font-size:0.58rem;color:#545e70">TDEE</div>'
+            f'<div style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{int(_t.tdee_kcal)}</div>'
+            f'</div>'
+            f'<div style="background:#1e2433;border-radius:10px;padding:6px 12px;text-align:center">'
+            f'<div style="font-size:0.58rem;color:#545e70">{"גירעון" if _diff < 0 else "עודף"}</div>'
+            f'<div style="font-size:0.88rem;font-weight:700;color:{_goal_color}">{_diff_str}</div>'
+            f'</div>'
+            f'</div>'
+            f'</div>'
+
+            # Macro bars
+            f'<div style="display:flex;flex-direction:column;gap:10px">'
+
+            f'<div>'
+            f'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600">🥩 חלבון</span>'
+            f'<span style="font-size:0.75rem;color:#4f8ef7;font-weight:700">{int(_t.protein_g)}g &nbsp;·&nbsp; {_p_pct}%</span>'
+            f'</div>'
+            f'{_bar(_p_pct, "#4f8ef7")}'
+            f'</div>'
+
+            f'<div>'
+            f'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600">🍞 פחמימות</span>'
+            f'<span style="font-size:0.75rem;color:#f59e0b;font-weight:700">{int(_t.carbs_g)}g &nbsp;·&nbsp; {_c_pct}%</span>'
+            f'</div>'
+            f'{_bar(_c_pct, "#f59e0b")}'
+            f'</div>'
+
+            f'<div>'
+            f'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600">🥑 שומן</span>'
+            f'<span style="font-size:0.75rem;color:#f472b6;font-weight:700">{int(_t.fat_g)}g &nbsp;·&nbsp; {_f_pct}%</span>'
+            f'</div>'
+            f'{_bar(_f_pct, "#f472b6")}'
+            f'</div>'
+
+            f'</div>'
+
+            # Footer insight
+            f'<div style="margin-top:16px;padding-top:14px;border-top:1px solid #252d3d;'
+            f'font-size:0.72rem;color:#8892a4;line-height:1.6;direction:rtl">'
+            + (
+                f'גירעון של {abs(_diff)} קק״ל/יום = ירידה של <b style="color:{_goal_color}">'
+                f'{new_weekly_kg:.2f} ק״ג/שבוע</b>. '
+                f'חלבון {int(_t.protein_g)}g ({_t.protein_g/new_weight:.1f}g/ק״ג) לשמירה על שריר.'
+                if new_goal == Goal.LOSE_WEIGHT else
+                f'עודף של {_diff} קק״ל/יום = עלייה של <b style="color:{_goal_color}">'
+                f'{new_weekly_kg:.2f} ק״ג/שבוע</b>. '
+                f'חלבון {int(_t.protein_g)}g לבניית שריר. דגש על פחמימות סביב אימון.'
+                if new_goal == Goal.GAIN_WEIGHT else
+                f'TDEE שלך: {int(_t.tdee_kcal)} קק״ל. אכול {int(_t.target_calories_kcal)} קק״ל כדי לשמור על משקלך.'
             )
-        elif new_goal == Goal.GAIN_WEIGHT:
-            weekly_gain = goal_deficit * 7 / 7700
-            st.info(
-                f"💡 **ניתוח תזונאי:** עודף של {goal_deficit:.0f} קק״ל ביום = עלייה של **{weekly_gain:.2f} ק״ג/שבוע**. "
-                f"חלבון: **{_t.protein_g:.0f}g/יום** לבניית שריר. "
-                f"דגש על פחמימות לפני ואחרי אימון לאנרגיה ואנבוליזם."
-            )
-        else:
-            st.info(
-                f"💡 **ניתוח תזונאי:** אתה שורף {_t.tdee_kcal:.0f} קק״ל ביום. "
-                f"שמירה על משקל = אכילה של {_t.target_calories_kcal:.0f} קק״ל. "
-                f"חלבון מינימלי: **{_t.protein_g:.0f}g/יום**."
-            )
+            + f'</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
     except Exception as e:
         st.warning(f"מלא פרטים כדי לראות חישוב ({e})")
@@ -221,6 +283,8 @@ with tab_personal:
             "activity_level":   new_activity.value,
             "goal":             new_goal.value,
             "pace":             new_pace,
+            "weekly_change_kg": new_weekly_kg,
+            "weeks_to_goal":    new_weeks,
             "target_weight_kg": new_target_weight,
             "notes":            profile.get("notes") or None,
         })
