@@ -101,7 +101,7 @@ STRICT RULES:
 - Never invent calorie counts
 - When user corrects → return FULL updated JSON with ALL foods
 
-WHEN THERE IS FOOD TO LOG — return EXACTLY this format:
+WHEN THERE IS FOOD TO LOG — return EXACTLY this format (ALWAYS wrap in ```json code block):
 ```json
 {{
   "meal_type": "breakfast|morning_snack|lunch|afternoon_snack|dinner|evening_snack",
@@ -327,11 +327,20 @@ def _ask_groq(history: list, user_msg: str, pending: list = None):
     )
     raw = resp.choices[0].message.content.strip()
 
-    # Try to extract JSON block
-    json_match = re.search(r"```json\s*([\s\S]*?)\s*```", raw)
-    if json_match:
+    # 1. Try ```json ... ``` block
+    json_str = None
+    m = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", raw)
+    if m:
+        json_str = m.group(1)
+    else:
+        # 2. Try raw JSON object anywhere in the response
+        m2 = re.search(r'(\{[\s\S]*"meal_type"[\s\S]*"foods"[\s\S]*\})', raw)
+        if m2:
+            json_str = m2.group(1)
+
+    if json_str:
         try:
-            data = json.loads(json_match.group(1))
+            data = json.loads(json_str)
             reply = data.get("reply", "")
             return reply, data
         except Exception:
