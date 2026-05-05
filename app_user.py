@@ -573,11 +573,13 @@ if not run_btn and "last_plan" not in st.session_state:
     _user_obj = UserProfile(user_id=_DASH_USER, name=name, gender=gender_choice,
                             date_of_birth=dob, height_cm=height, weight_kg=weight,
                             activity_level=activity_choice, goal=goal_choice)
-    _targets  = NutritionEngine().calculate_targets(_user_obj)
-    cal_t     = int(summary.calories_target)   if summary and summary.calories_target   else int(_targets.bmr_kcal)
-    prot_t    = int(summary.protein_target)    if summary and summary.protein_target    else int(_targets.protein_g)
-    carbs_t   = int(summary.carbs_target)      if summary and summary.carbs_target      else int(_targets.carbs_g)
-    fat_t     = int(summary.fat_target)        if summary and summary.fat_target        else int(_targets.fat_g)
+    _saved_pace = _profile.get("pace", "moderate")
+    _targets  = NutritionEngine().calculate_targets(_user_obj, pace=_saved_pace)
+    # Always use live calculated targets from current profile — never stale summary
+    cal_t   = int(_targets.target_calories_kcal)
+    prot_t  = int(_targets.protein_g)
+    carbs_t = int(_targets.carbs_g)
+    fat_t   = int(_targets.fat_g)
 
     _cal_diff     = cal_t - int(cal_eaten)
     cal_over      = _cal_diff < 0
