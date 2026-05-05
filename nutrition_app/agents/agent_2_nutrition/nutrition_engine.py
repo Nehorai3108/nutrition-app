@@ -40,29 +40,63 @@ ACTIVITY_MULTIPLIERS = {
     "extra_active": 1.9,
 }
 
-# ─── Calorie Adjustment by Goal ─────────────────────────────────────
+# ─── Calorie Deficit/Surplus by Goal + Pace ─────────────────────────
+# pace: "slow" / "moderate" / "fast"
+# 1 kg body fat ≈ 7700 kcal
 GOAL_CALORIE_ADJUSTMENT = {
-    "lose_weight": -500,     # 500 kcal deficit
-    "maintain": 0,
-    "gain_weight": +300,     # 300 kcal surplus
+    "lose_weight": {
+        "slow":     -275,   # ~0.25 kg/week
+        "moderate": -550,   # ~0.5  kg/week
+        "fast":     -1100,  # ~1.0  kg/week
+    },
+    "maintain": {
+        "slow": 0, "moderate": 0, "fast": 0,
+    },
+    "gain_weight": {
+        "slow":     +200,   # lean bulk ~0.2 kg/week
+        "moderate": +350,   # ~0.35 kg/week
+        "fast":     +500,   # ~0.5  kg/week
+    },
 }
 
-# ─── Macro Distribution (% of total calories) ───────────────────────
-MACRO_DISTRIBUTION = {
-    "lose_weight":  {"protein_pct": 0.30, "carbs_pct": 0.40, "fat_pct": 0.30},
-    "maintain":     {"protein_pct": 0.25, "carbs_pct": 0.45, "fat_pct": 0.30},
-    "gain_weight":  {"protein_pct": 0.25, "carbs_pct": 0.50, "fat_pct": 0.25},
+# ─── Protein targets (g per kg body weight) ─────────────────────────
+# Evidence-based ranges (ISSN, ACSM guidelines):
+PROTEIN_PER_KG = {
+    "lose_weight": 2.0,   # High protein preserves muscle during deficit
+    "maintain":    1.8,
+    "gain_weight": 1.8,   # Enough to support hypertrophy
 }
+
+# ─── Fat: minimum for hormonal health (g per kg body weight) ─────────
+FAT_MIN_PER_KG = 0.8   # ~0.8–1.0 g/kg is hormonal floor
 
 
 class NutritionEngine:
     """Deterministic nutrition calculator. No AI, no heuristics."""
 
-    def calculate_targets(self, user: UserProfile) -> NutritionTargets:
-        bmr = self._calculate_bmr(user)
+    def calculate_targets(self, user: UserProfile,
+                          pace: str = "moderate",
+                          target_weight_kg: float = None) -> NutritionTargets:
+        bmr  = self._calculate_bmr(user)
         tdee = self._calculate_tdee(bmr, user.activity_level.value)
-        target_calories = self._calculate_target_calories(tdee, user.goal.value)
-        protein_g, carbs_g, fat_g = self._calculate_macros(target_calories, user.goal.value)
+        target_calories = self._calculate_target_calories(tdee, user.goal.value, pace)
+        protein_g, carbs_g, fat_g = self._calculate_macros(
+            target_calories, user.goal.value, user.weight_kg
+        )
+
+        # Weeks to goal (if target weight provided)
+        weeks_to_goal = None
+        if target_weight_kg and target_weight_kg != user.weight_kg:
+            delta_kg = abs(target_weight_kg - user.weight_kg)
+            weekly_delta_kg = abs(
+                GOAL_CALORIE_ADJUSTMENT[user.goal.value].get(pace, 0)
+            ) / 7700.0
+            if weekly_delta_kg > 0:
+                weeks_to_goal = round(delta_kg / weekly_delta_kg)
+
+        notes = f"pace={pace}"
+        if weeks_to_goal:
+            notes += f", ~{weeks_to_goal} שבועות ליעד"
 
         return NutritionTargets(
             user_id=user.user_id,
@@ -74,7 +108,8 @@ class NutritionEngine:
             fat_g=fat_g,
             fiber_g_min=25.0,
             fiber_g_max=38.0,
-            calculation_method="mifflin_st_jeor",
+            calculation_method="mifflin_st_jeor_v2",
+            notes=notes,
         )
 
     def _calculate_bmr(self, user: UserProfile) -> float:
@@ -84,34 +119,53 @@ class NutritionEngine:
         Female: 10 * weight(kg) + 6.25 * height(cm) - 5 * age(y) - 161
         """
         base = 10 * user.weight_kg + 6.25 * user.height_cm - 5 * user.age
-        if user.gender == Gender.MALE:
-            bmr = base + 5
-        else:
-            bmr = base - 161
+        bmr = base + 5 if user.gender == Gender.MALE else base - 161
         return round(bmr, 1)
 
     def _calculate_tdee(self, bmr: float, activity_level: str) -> float:
         multiplier = ACTIVITY_MULTIPLIERS[activity_level]
         return round(bmr * multiplier, 1)
 
-    def _calculate_target_calories(self, tdee: float, goal: str) -> float:
-        adjustment = GOAL_CALORIE_ADJUSTMENT[goal]
+    def _calculate_target_calories(self, tdee: float, goal: str, pace: str) -> float:
+        adjustment = GOAL_CALORIE_ADJUSTMENT[goal].get(pace, 0)
         target = tdee + adjustment
-        # Minimum safe calorie floor
+        # Safety floor: never below 1200 kcal
         target = max(target, 1200.0)
         return round(target, 1)
 
-    def _calculate_macros(self, target_calories: float, goal: str) -> tuple:
+    def _calculate_macros(self, target_calories: float,
+                          goal: str, weight_kg: float) -> tuple:
         """
-        Returns (protein_g, carbs_g, fat_g) based on goal-specific distribution.
-        Protein: 4 kcal/g
-        Carbs:   4 kcal/g
-        Fat:     9 kcal/g
+        Evidence-based macro calculation:
+        - Protein: fixed g/kg body weight (preserves muscle, supports goals)
+        - Fat:     minimum g/kg for hormonal health, then fill based on goal
+        - Carbs:   remaining calories
         """
-        dist = MACRO_DISTRIBUTION[goal]
-        protein_g = round((target_calories * dist["protein_pct"]) / 4.0, 1)
-        carbs_g = round((target_calories * dist["carbs_pct"]) / 4.0, 1)
-        fat_g = round((target_calories * dist["fat_pct"]) / 9.0, 1)
+        # Protein: g/kg → kcal → g
+        protein_g = round(PROTEIN_PER_KG[goal] * weight_kg, 1)
+        protein_kcal = protein_g * 4
+
+        # Fat: minimum floor
+        fat_g_min = round(FAT_MIN_PER_KG * weight_kg, 1)
+
+        # Remaining calories for fat + carbs
+        remaining = target_calories - protein_kcal
+
+        if goal == "lose_weight":
+            # Higher fat, lower carbs helps satiety
+            fat_pct_of_remaining = 0.40
+        elif goal == "gain_weight":
+            # More carbs for energy and anabolic signalling
+            fat_pct_of_remaining = 0.25
+        else:  # maintain
+            fat_pct_of_remaining = 0.33
+
+        fat_kcal = max(remaining * fat_pct_of_remaining, fat_g_min * 9)
+        fat_g = round(fat_kcal / 9, 1)
+
+        carbs_kcal = target_calories - protein_kcal - fat_g * 9
+        carbs_g = round(max(carbs_kcal, 0) / 4, 1)
+
         return protein_g, carbs_g, fat_g
 
     def validate_targets(self, targets: NutritionTargets) -> list:
