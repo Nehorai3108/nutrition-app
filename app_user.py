@@ -573,8 +573,15 @@ if not run_btn and "last_plan" not in st.session_state:
     _user_obj = UserProfile(user_id=_DASH_USER, name=name, gender=gender_choice,
                             date_of_birth=dob, height_cm=height, weight_kg=weight,
                             activity_level=activity_choice, goal=goal_choice)
-    _saved_pace = _profile.get("pace", "moderate")
-    _targets  = NutritionEngine().calculate_targets(_user_obj, pace=_saved_pace)
+    _saved_pace       = _profile.get("pace", "moderate")
+    _saved_weekly_kg  = _profile.get("weekly_change_kg")
+    _saved_target_w   = _profile.get("target_weight_kg")
+    _targets  = NutritionEngine().calculate_targets(
+        _user_obj,
+        pace=_saved_pace,
+        weekly_change_kg=float(_saved_weekly_kg) if _saved_weekly_kg else None,
+        target_weight_kg=float(_saved_target_w)  if _saved_target_w  else None,
+    )
     # Always use live calculated targets from current profile — never stale summary
     cal_t   = int(_targets.target_calories_kcal)
     prot_t  = int(_targets.protein_g)

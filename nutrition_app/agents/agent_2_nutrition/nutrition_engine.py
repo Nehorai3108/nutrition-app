@@ -76,25 +76,43 @@ class NutritionEngine:
 
     def calculate_targets(self, user: UserProfile,
                           pace: str = "moderate",
-                          target_weight_kg: float = None) -> NutritionTargets:
+                          target_weight_kg: float = None,
+                          weekly_change_kg: float = None) -> NutritionTargets:
+        """
+        weekly_change_kg: if provided, overrides pace.
+          e.g. 0.5 → 0.5 kg/week loss (for lose_weight) or gain (for gain_weight)
+        """
         bmr  = self._calculate_bmr(user)
         tdee = self._calculate_tdee(bmr, user.activity_level.value)
-        target_calories = self._calculate_target_calories(tdee, user.goal.value, pace)
+
+        if weekly_change_kg is not None and weekly_change_kg > 0:
+            # Convert kg/week → kcal/day  (1 kg body fat ≈ 7700 kcal)
+            kcal_per_day = round(weekly_change_kg * 7700 / 7)
+            if user.goal.value == "lose_weight":
+                adjustment = -kcal_per_day
+            elif user.goal.value == "gain_weight":
+                adjustment = +kcal_per_day
+            else:
+                adjustment = 0
+            target_calories = max(round(tdee + adjustment, 1), 1200.0)
+            weekly_delta_kg = weekly_change_kg
+        else:
+            target_calories = self._calculate_target_calories(tdee, user.goal.value, pace)
+            weekly_delta_kg = abs(
+                GOAL_CALORIE_ADJUSTMENT[user.goal.value].get(pace, 0)
+            ) / 7700.0
+
         protein_g, carbs_g, fat_g = self._calculate_macros(
             target_calories, user.goal.value, user.weight_kg
         )
 
-        # Weeks to goal (if target weight provided)
+        # Weeks to goal
         weeks_to_goal = None
-        if target_weight_kg and target_weight_kg != user.weight_kg:
+        if target_weight_kg and target_weight_kg != user.weight_kg and weekly_delta_kg > 0:
             delta_kg = abs(target_weight_kg - user.weight_kg)
-            weekly_delta_kg = abs(
-                GOAL_CALORIE_ADJUSTMENT[user.goal.value].get(pace, 0)
-            ) / 7700.0
-            if weekly_delta_kg > 0:
-                weeks_to_goal = round(delta_kg / weekly_delta_kg)
+            weeks_to_goal = round(delta_kg / weekly_delta_kg)
 
-        notes = f"pace={pace}"
+        notes = f"weekly={weekly_change_kg or ''}kg"
         if weeks_to_goal:
             notes += f", ~{weeks_to_goal} שבועות ליעד"
 
