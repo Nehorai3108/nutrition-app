@@ -114,7 +114,15 @@ WHEN THERE IS FOOD TO LOG — return EXACTLY this format:
 
 IF NO FOOD TO LOG — reply in plain Hebrew only (no json block).
 
+CRITICAL FOOD MAPPINGS — never confuse these:
+- חביתה / ביצת עין / מקושקשת / שקשוקה → name:"ביצה" (NOT חלה, NOT לחם)
+- חלה → name:"חלה" (only if user explicitly says חלה)
+- לחם לבן / טוסט / כריך → name:"לחם לבן"
+- חזה / חזה עוף → name:"חזה עוף"
+- שניצל → name:"שניצל עוף"
+
 EXAMPLES:
+- "חביתה עם 2 ביצים" → foods:[{{name:"ביצה",qty:3,unit:"יחידה"}}]
 - "3 שניצלים עם אורז" → foods:[{{name:"שניצל עוף",qty:3,unit:"יחידה"}},{{name:"אורז לבן",qty:1,unit:"כוס"}}]
 - "2 ביצים עם גבינה לבנה" → foods:[{{name:"ביצה",qty:2,unit:"יחידה"}},{{name:"גבינה לבנה",qty:1,unit:"יחידה"}}]
 - "חזה עוף 200 גרם" → foods:[{{name:"חזה עוף",qty:200,unit:"גרם"}}]
@@ -420,7 +428,53 @@ def _render_chat():
 
 _render_chat()
 
-# ── Pending confirmation card (appears right after chat) ──────────────────────
+# ── Input — immediately after chat, ABOVE the food card ───────────────────────
+with st.form("chat_form", clear_on_submit=True):
+    col_in, col_btn = st.columns([5, 1])
+    user_text = col_in.text_input("כתוב כאן", placeholder="מה אכלת?",
+                                   label_visibility="collapsed", key="chat_input")
+    submitted = col_btn.form_submit_button("שלח ➤", use_container_width=True, type="primary")
+
+if submitted and user_text.strip():
+    st.session_state.chat_messages.append({"role": "user", "text": user_text})
+
+    with st.spinner("ביטי חושב..."):
+        try:
+            reply_text, food_data = _ask_groq(
+                st.session_state.groq_history, user_text,
+                pending=st.session_state.pending_entries or None
+            )
+        except Exception as e:
+            reply_text = "אופס, תקלה טכנית. נסה שוב 🙏"
+            food_data = None
+
+    st.session_state.groq_history.append({"role": "user", "content": user_text})
+    if reply_text:
+        st.session_state.groq_history.append({"role": "assistant", "content": reply_text})
+
+    if food_data:
+        meal_type = food_data.get("meal_type", "lunch")
+        st.session_state.detected_meal = meal_type
+        matched, not_found = [], []
+        for f in food_data.get("foods", []):
+            entry = _match_food(f["name"], float(f.get("quantity", 1)), f.get("unit", "יחידה"))
+            if entry:
+                matched.append(entry)
+            else:
+                not_found.append(f["name"])
+        if matched:
+            st.session_state.pending_entries = matched
+            if not_found:
+                reply_text += f"\n\n⚠️ לא מצאתי במאגר: *{', '.join(not_found)}*"
+        else:
+            reply_text = "לא מצאתי את המזונות במאגר. נסה לנסח אחרת."
+
+    if reply_text:
+        st.session_state.chat_messages.append({"role": "assistant", "text": reply_text})
+
+    st.rerun()
+
+# ── Pending confirmation card — BELOW input ───────────────────────────────────
 if st.session_state.pending_entries:
     st.markdown(
         '<div dir="rtl" style="background:#0d1f0d;border:1px solid #1a4d1a;'
@@ -501,54 +555,5 @@ if st.session_state.pending_entries:
         st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-# ── Divider before input ───────────────────────────────────────────────────────
-st.markdown('<div style="height:16px"></div>', unsafe_allow_html=True)
-
-# ── Input (bottom of page, always last element) ────────────────────────────────
-with st.form("chat_form", clear_on_submit=True):
-    col_in, col_btn = st.columns([5, 1])
-    user_text = col_in.text_input("", placeholder='מה אכלת? למשל: "שתי ביצים עם גבינה לבוקר"',
-                                   label_visibility="collapsed", key="chat_input")
-    submitted = col_btn.form_submit_button("שלח ➤", use_container_width=True, type="primary")
-
-if submitted and user_text.strip():
-    st.session_state.chat_messages.append({"role":"user","text":user_text})
-
-    with st.spinner("ביטי חושב..."):
-        try:
-            reply_text, food_data = _ask_groq(
-                st.session_state.groq_history, user_text,
-                pending=st.session_state.pending_entries or None
-            )
-        except Exception as e:
-            reply_text = "אופס, תקלה טכנית. נסה שוב 🙏"
-            food_data = None
-
-    st.session_state.groq_history.append({"role":"user","content":user_text})
-    if reply_text:
-        st.session_state.groq_history.append({"role":"assistant","content":reply_text})
-
-    if food_data:
-        meal_type = food_data.get("meal_type","lunch")
-        st.session_state.detected_meal = meal_type
-        matched, not_found = [], []
-        for f in food_data.get("foods", []):
-            entry = _match_food(f["name"], float(f.get("quantity",1)), f.get("unit","יחידה"))
-            if entry:
-                matched.append(entry)
-            else:
-                not_found.append(f["name"])
-        if matched:
-            st.session_state.pending_entries = matched
-            if not_found:
-                reply_text += f"\n\n⚠️ לא מצאתי במאגר: *{', '.join(not_found)}*"
-        else:
-            reply_text = "לא מצאתי את המזונות במאגר. נסה לנסח אחרת."
-
-    if reply_text:
-        st.session_state.chat_messages.append({"role":"assistant","text":reply_text})
-
-    st.rerun()
 
 bottom_nav("chat")
