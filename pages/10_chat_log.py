@@ -339,71 +339,86 @@ if "groq_history"     not in st.session_state: st.session_state.groq_history    
 if "pending_entries"  not in st.session_state: st.session_state.pending_entries  = []
 if "detected_meal"    not in st.session_state: st.session_state.detected_meal    = "lunch"
 
-# ── Header ─────────────────────────────────────────────────────────────────────
-st.markdown(
-    f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 4px">'
-    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#4f8ef7">BiteFit</div>'
-    f'<div dir="rtl" style="font-size:0.75rem;color:#545e70">{date.today().strftime("%d/%m/%Y")}</div>'
-    f'</div>', unsafe_allow_html=True)
-st.markdown(
-    '<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-bottom:12px">'
-    'ספר לביטי מה אכלת — בעברית טבעית</div>', unsafe_allow_html=True)
+# ── Get user first name ────────────────────────────────────────────────────────
+def _get_user_name() -> str:
+    try:
+        import json as _json
+        _path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                             "storage_agents", "users.json")
+        _data = _json.load(open(_path, encoding="utf-8"))
+        for _u in _data.values():
+            if _u.get("name"):
+                return _u["name"]
+    except Exception:
+        pass
+    return "חבר"
 
-# ── Chat history — scrollable container, always same size ─────────────────────
-chat_box = st.container(height=460, border=False)
-with chat_box:
-    if not st.session_state.chat_messages:
-        st.markdown(
-            '<div dir="rtl" style="color:#545e70;font-size:0.82rem;text-align:center;'
-            'margin-top:60px">היי! אני ביטי 🥗<br>ספר לי מה אכלת היום</div>',
-            unsafe_allow_html=True)
-    for msg in st.session_state.chat_messages:
-        if msg["role"] == "assistant":
-            st.markdown(
-                f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
-                f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
-                f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
-                f'border:1px solid #252d3d">🥗</div>'
-                f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
-                f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
-                f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
-                f'{msg["text"].replace(chr(10),"<br>")}</div></div>',
-                unsafe_allow_html=True)
-        else:
-            st.markdown(
-                f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;flex-direction:row-reverse">'
-                f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:#4f8ef7;'
-                f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">👤</div>'
-                f'<div dir="rtl" style="background:#1a3a6b;border:1px solid #2d5096;'
-                f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:88%;'
-                f'font-size:0.86rem;color:#e8f0ff;line-height:1.55;direction:rtl">'
-                f'{msg["text"]}</div></div>',
-                unsafe_allow_html=True)
-    # Anchor: JS will scroll to this element
-    st.markdown('<div id="chat-bottom-anchor"></div>', unsafe_allow_html=True)
+_USER_NAME = _get_user_name()
 
-# Auto-scroll the chat container to bottom after every render
-st.markdown("""
-<script>
-(function() {
-    function scrollChat() {
-        var anchor = window.parent.document.getElementById('chat-bottom-anchor');
-        if (anchor) {
-            anchor.scrollIntoView({block: 'end', behavior: 'instant'});
-            return true;
-        }
-        return false;
-    }
-    // Try immediately, then retry until found
-    if (!scrollChat()) {
-        var tries = 0;
-        var t = setInterval(function() {
-            if (scrollChat() || ++tries > 20) clearInterval(t);
-        }, 80);
-    }
-})();
-</script>
-""", unsafe_allow_html=True)
+# ── Build all chat HTML as one block + scroll JS ───────────────────────────────
+def _render_chat():
+    msgs = st.session_state.chat_messages
+
+    # Build message bubbles HTML
+    bubbles = ""
+    if not msgs:
+        bubbles = (
+            f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
+            f'<div style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
+            f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
+            f'border:1px solid #252d3d">&#x1F957;</div>'
+            f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+            f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
+            f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
+            f'שלום {_USER_NAME}, איך אוכל לעזור?</div></div>'
+        )
+    else:
+        for msg in msgs:
+            txt = msg["text"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")
+            if msg["role"] == "assistant":
+                bubbles += (
+                    f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
+                    f'<div style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
+                    f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
+                    f'border:1px solid #252d3d">&#x1F957;</div>'
+                    f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                    f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
+                    f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
+                    f'{txt}</div></div>'
+                )
+            else:
+                bubbles += (
+                    f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;'
+                    f'align-items:flex-start;flex-direction:row-reverse">'
+                    f'<div style="width:30px;height:30px;border-radius:50%;background:#4f8ef7;'
+                    f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">&#x1F464;</div>'
+                    f'<div dir="rtl" style="background:#1a3a6b;border:1px solid #2d5096;'
+                    f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:88%;'
+                    f'font-size:0.86rem;color:#e8f0ff;line-height:1.55;direction:rtl">'
+                    f'{txt}</div></div>'
+                )
+
+    st.markdown(
+        f'<div id="chat-scroll-box" style="'
+        f'max-height:58vh;overflow-y:auto;padding:4px 2px 8px;'
+        f'display:flex;flex-direction:column;">'
+        f'{bubbles}'
+        f'<div id="chat-end"></div>'
+        f'</div>'
+        f'<script>'
+        f'(function(){{'
+        f'  var b=document.getElementById("chat-scroll-box");'
+        f'  if(b) b.scrollTop=b.scrollHeight;'
+        f'  setTimeout(function(){{'
+        f'    var b2=document.getElementById("chat-scroll-box");'
+        f'    if(b2) b2.scrollTop=b2.scrollHeight;'
+        f'  }},200);'
+        f'}})();'
+        f'</script>',
+        unsafe_allow_html=True
+    )
+
+_render_chat()
 
 # ── Pending confirmation card (appears right after chat) ──────────────────────
 if st.session_state.pending_entries:

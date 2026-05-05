@@ -102,33 +102,36 @@ def ensure_firewall():
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+    # Force UTF-8 output so emoji don't crash on Hebrew Windows
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
     print("\n" + "=" * 55)
-    print("  🍏  BiteFit — Starting up")
+    print("  BiteFit -- Starting up")
     print("=" * 55)
 
     # Firewall
-    print("\n📡 Network:")
+    print("\n[Network]")
     ensure_firewall()
 
     # IPs
     ips = get_ips()
     if not ips:
-        print("  ⚠️  Could not detect IP address.")
+        print("  Could not detect IP address.")
     else:
         print()
         best_url = None
         for adapter, ip in ips.items():
             url = f"http://{ip}:{PORT}"
-            label = "📱 Phone URL"
+            label = "Phone URL"
             if "Tailscale" in adapter:
-                label = "🔒 Tailscale (works on ANY network)"
+                label = "Tailscale (works on ANY network)"
             print(f"  {label}:  {url}")
             if not best_url or "Tailscale" in adapter:
                 best_url = url
 
         # Show QR for best URL
         if best_url:
-            print(f"\n  📷 Scan this QR code from your phone:\n")
+            print(f"\n  Scan QR from your phone:\n")
             print_qr(best_url)
             print(f"\n  URL: {best_url}")
 
@@ -136,13 +139,29 @@ def main():
     print("  Starting Streamlit... (Ctrl+C to stop)")
     print("=" * 55 + "\n")
 
-    # Start streamlit
+    # Kill any existing streamlit on this port
+    try:
+        import subprocess as sp
+        result = sp.run(f'netstat -ano | findstr :{PORT}', shell=True,
+                        capture_output=True, text=True)
+        for line in result.stdout.splitlines():
+            parts = line.strip().split()
+            if parts and parts[0] == 'TCP' and f':{PORT}' in parts[1] and parts[3] == 'LISTENING':
+                pid = parts[-1]
+                sp.run(f'taskkill /PID {pid} /F', shell=True, capture_output=True)
+                print(f"  Closed old process (PID {pid})")
+                import time; time.sleep(1)
+                break
+    except Exception:
+        pass
+
+    # Start streamlit — browser opens automatically
     python = sys.executable
     app_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_user.py")
     subprocess.run([python, "-m", "streamlit", "run", app_file,
                     "--server.port", str(PORT),
                     "--server.address", "0.0.0.0",
-                    "--server.headless", "true"])
+                    "--browser.gatherUsageStats", "false"])
 
 
 if __name__ == "__main__":
