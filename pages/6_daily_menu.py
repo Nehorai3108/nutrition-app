@@ -20,6 +20,7 @@ from nutrition_app.repositories.profile_repository import ProfileRepository
 from ui.components import inject_global_css, recipe_card_html, bottom_nav
 from ui.images import image_data_uri as _image_data_uri
 from nutrition_app.agents.agent_3_food import FoodCatalog
+from nutrition_app.utils.household_units import get_unit_info, grams_to_household, suggested_quantity
 
 USER_ID = "ui_user_001"
 _food_log_repo = FoodLogRepository()
@@ -341,10 +342,27 @@ with tabs[-3]:
         if _search_food:
             _n100   = _search_food.nutrition_per_100g
             _cal100 = _n100.calories_kcal
-            _sug_g  = max(50, min(round((_search_target / max(_cal100, 1)) * 100 / 10) * 10, 500))
+            _s_unit_info = get_unit_info(_search_food.name_he)
 
-            _portion_g = st.slider("גרמים", min_value=50, max_value=500, step=10,
-                                   value=_sug_g, key="search_portion_slider")
+            if _s_unit_info:
+                _s_unit_he, _s_gpunit = _s_unit_info
+                _sug_n, _, _ = suggested_quantity(_search_food.name_he, _search_target, _cal100)
+                _s_n_units = st.number_input(
+                    f"כמות ({_s_unit_he})",
+                    min_value=0.5, max_value=30.0,
+                    value=float(_sug_n), step=0.5,
+                    key="search_portion_units",
+                )
+                _portion_g = _s_n_units * _s_gpunit
+                _s_qty_str = str(int(_s_n_units)) if _s_n_units == int(_s_n_units) else f"{_s_n_units:.1f}"
+                _s_plural  = "ות" if _s_unit_he == "יחידה" and _s_n_units > 1 else ""
+                _s_plabel  = f"{_s_qty_str} {_s_unit_he}{_s_plural}"
+            else:
+                _sug_g = max(50, min(round((_search_target / max(_cal100, 1)) * 100 / 10) * 10, 500))
+                _portion_g = st.slider("גרמים", min_value=10, max_value=500, step=10,
+                                       value=_sug_g, key="search_portion_slider")
+                _s_plabel = f"{int(_portion_g)}ג"
+
             _r = _portion_g / 100.0
             _render_search_result(
                 name=_search_food.name_he, food_id=_search_food.food_id,
@@ -353,8 +371,8 @@ with tabs[-3]:
                 prot_out=_n100.protein_g * _r,
                 carbs_out=_n100.carbs_g * _r,
                 fat_out=_n100.fat_g * _r,
-                portion_label=f"{_portion_g}ג",
-                btn_suffix=str(_portion_g),
+                portion_label=_s_plabel,
+                btn_suffix=str(int(_portion_g)),
                 grams=float(_portion_g),
             )
 
@@ -374,6 +392,16 @@ with tabs[-2]:
         _man_meal_opts = [k for k in MEAL_TYPE_HEB.keys() if k != "snack"]
         man_meal  = col_m.selectbox("ארוחה", options=_man_meal_opts,
                                     format_func=lambda k: MEAL_TYPE_HEB[k])
+        # Show household equivalent hint (outside the columns, inside form)
+        _man_food_obj_hint = _catalog.get_food_by_id(sel_food)
+        if _man_food_obj_hint:
+            _man_hint = grams_to_household(_man_food_obj_hint.name_he, float(man_grams))
+            if not _man_hint.endswith("ג"):  # only show if a real unit was found
+                st.markdown(
+                    f'<div dir="rtl" style="font-size:0.75rem;color:#8892a4;margin:-6px 0 4px">'
+                    f'≈ {_man_hint}</div>',
+                    unsafe_allow_html=True,
+                )
         if st.form_submit_button("הוסף", use_container_width=True, type="primary"):
             food_obj = _catalog.get_food_by_id(sel_food)
             if food_obj:
@@ -595,14 +623,34 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                         for _mf in _ms_results:
                             _mn100   = _mf.nutrition_per_100g
                             _mcal100 = _mn100.calories_kcal
-                            _msg     = max(10, min(
-                                round((target_cal / max(_mcal100, 1)) * 100 / 10) * 10, 500
-                            ))
-                            _mg = st.slider(
-                                f"{_mf.name_he} — גרמים",
-                                min_value=10, max_value=500, step=10, value=_msg,
-                                key=f"ms_g_{meal_key}_{_mf.food_id}",
-                            )
+                            _unit_info = get_unit_info(_mf.name_he)
+
+                            if _unit_info:
+                                _unit_he, _gpunit = _unit_info
+                                _sug_n, _, _ = suggested_quantity(
+                                    _mf.name_he, target_cal, _mcal100
+                                )
+                                _n_units = st.number_input(
+                                    f"{_mf.name_he} — {_unit_he}",
+                                    min_value=0.5, max_value=30.0,
+                                    value=float(_sug_n), step=0.5,
+                                    key=f"ms_g_{meal_key}_{_mf.food_id}",
+                                )
+                                _mg = _n_units * _gpunit
+                                _qty_str = str(int(_n_units)) if _n_units == int(_n_units) else f"{_n_units:.1f}"
+                                _plural = "ות" if _unit_he == "יחידה" and _n_units > 1 else ""
+                                _plabel = f"{_qty_str} {_unit_he}{_plural}"
+                            else:
+                                _msg = max(10, min(
+                                    round((target_cal / max(_mcal100, 1)) * 100 / 10) * 10, 500
+                                ))
+                                _mg = st.slider(
+                                    f"{_mf.name_he} — גרמים",
+                                    min_value=10, max_value=500, step=10, value=_msg,
+                                    key=f"ms_g_{meal_key}_{_mf.food_id}",
+                                )
+                                _plabel = f"{int(_mg)}ג"
+
                             _mr = _mg / 100.0
                             _render_search_result(
                                 name=_mf.name_he,
@@ -613,8 +661,8 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                                 prot_out=_mn100.protein_g * _mr,
                                 carbs_out=_mn100.carbs_g * _mr,
                                 fat_out=_mn100.fat_g * _mr,
-                                portion_label=f"{_mg}ג",
-                                btn_suffix=f"ms_{meal_key}_{_mg}_{_mf.food_id}",
+                                portion_label=_plabel,
+                                btn_suffix=f"ms_{meal_key}_{int(_mg)}_{_mf.food_id}",
                                 grams=float(_mg),
                             )
                 else:
