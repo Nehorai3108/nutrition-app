@@ -484,7 +484,6 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
 
         if not suggestions:
             st.info("אין מתכונים מתאימים לארוחה זו.")
-            continue
 
         for idx, recipe in enumerate(suggestions):
             portions    = max(recipe.get("portions", 1), 1)
@@ -558,6 +557,137 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                     st.markdown("**הוראות הכנה:**")
                     for i, step in enumerate(steps, 1):
                         st.markdown(f"**{i}.** {step}")
+
+        # ── In-meal food search ───────────────────────────────────────────────
+        st.markdown('<div dir="rtl" style="height:10px"></div>', unsafe_allow_html=True)
+        with st.expander("🔍 לא מצאת מה שרצית? חפש כאן"):
+            _ms_mode = st.radio(
+                "",
+                options=["ingredient", "recipe"],
+                format_func=lambda m: {
+                    "ingredient": "🥚 רכיב / מוצר",
+                    "recipe":     "🍳 מנה מוכנה",
+                }[m],
+                horizontal=True,
+                key=f"ms_mode_{meal_key}",
+                label_visibility="collapsed",
+            )
+
+            # ── Ingredient search ─────────────────────────────────────────────
+            if _ms_mode == "ingredient":
+                _ms_query = st.text_input(
+                    "",
+                    placeholder="חפש: ביצה, אבוקדו, לחם...",
+                    key=f"ms_q_{meal_key}",
+                    label_visibility="collapsed",
+                )
+                _ms_q = _ms_query.strip()
+                if _ms_q:
+                    _ms_results = _catalog.search_foods(_ms_q, limit=5)
+                    if not _ms_results:
+                        st.markdown(
+                            f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                            f'border-radius:12px;padding:14px;text-align:center;color:#545e70;'
+                            f'font-size:0.8rem">לא נמצא עבור "{_ms_q}"</div>',
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        for _mf in _ms_results:
+                            _mn100   = _mf.nutrition_per_100g
+                            _mcal100 = _mn100.calories_kcal
+                            _msg     = max(10, min(
+                                round((target_cal / max(_mcal100, 1)) * 100 / 10) * 10, 500
+                            ))
+                            _mg = st.slider(
+                                f"{_mf.name_he} — גרמים",
+                                min_value=10, max_value=500, step=10, value=_msg,
+                                key=f"ms_g_{meal_key}_{_mf.food_id}",
+                            )
+                            _mr = _mg / 100.0
+                            _render_search_result(
+                                name=_mf.name_he,
+                                food_id=_mf.food_id,
+                                meal_key=meal_key.lower(),
+                                target_cal=target_cal,
+                                cal_out=_mn100.calories_kcal * _mr,
+                                prot_out=_mn100.protein_g * _mr,
+                                carbs_out=_mn100.carbs_g * _mr,
+                                fat_out=_mn100.fat_g * _mr,
+                                portion_label=f"{_mg}ג",
+                                btn_suffix=f"ms_{meal_key}_{_mg}_{_mf.food_id}",
+                                grams=float(_mg),
+                            )
+                else:
+                    st.markdown(
+                        '<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                        'border-radius:12px;padding:14px;text-align:center;color:#545e70;'
+                        'font-size:0.8rem">הקלד שם מוצר לחיפוש</div>',
+                        unsafe_allow_html=True,
+                    )
+
+            # ── Recipe search ─────────────────────────────────────────────────
+            else:
+                _msr_query = st.text_input(
+                    "",
+                    placeholder="חפש מנה: שקשוקה, חביתה, עוף...",
+                    key=f"msr_q_{meal_key}",
+                    label_visibility="collapsed",
+                )
+                _msr_q = _msr_query.strip()
+                if _msr_q:
+                    _msr_results = recipe_mgr.search_recipes(
+                        RecipeFilter(search_text=_msr_q, max_results=5)
+                    )
+                    if not _msr_results:
+                        st.markdown(
+                            f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                            f'border-radius:12px;padding:14px;text-align:center;color:#545e70;'
+                            f'font-size:0.8rem">לא נמצאו מנות עבור "{_msr_q}"</div>',
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        for _mrec in _msr_results:
+                            _mportions = max(_mrec.get("portions", 1), 1)
+                            _mnut      = _mrec.get("total_nutrition", {})
+                            _mcpp      = _mnut.get("calories", 0) / _mportions
+                            _mppp      = _mnut.get("protein",  0) / _mportions
+                            _mcarb     = _mnut.get("carbs",    0) / _mportions
+                            _mfat      = _mnut.get("fat",      0) / _mportions
+                            _mrid      = _mrec.get("recipe_id", "")
+                            _mrname    = _mrec.get("name_he", "מנה")
+                            _msug_por  = max(1, min(round(target_cal / max(_mcpp, 1)), 4))
+
+                            _col_n, _col_p = st.columns([3, 1])
+                            _col_n.markdown(
+                                f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;'
+                                f'color:#f4f6fb;padding-top:8px">{_mrname}</div>',
+                                unsafe_allow_html=True,
+                            )
+                            _mn_por = _col_p.number_input(
+                                "מנות", min_value=1, max_value=6, value=_msug_por, step=1,
+                                key=f"ms_rp_{meal_key}_{_mrid}",
+                                label_visibility="visible",
+                            )
+                            _render_search_result(
+                                name=_mrname,
+                                food_id=f"recipe_{_mrid}",
+                                meal_key=meal_key.lower(),
+                                target_cal=target_cal,
+                                cal_out=_mcpp * _mn_por,
+                                prot_out=_mppp * _mn_por,
+                                carbs_out=_mcarb * _mn_por,
+                                fat_out=_mfat * _mn_por,
+                                portion_label=f"{_mn_por} מנות",
+                                btn_suffix=f"ms_{meal_key}_{_mrid}_{_mn_por}",
+                                grams=float(_mn_por * 100),
+                            )
+                else:
+                    st.markdown(
+                        '<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                        'border-radius:12px;padding:14px;text-align:center;color:#545e70;'
+                        'font-size:0.8rem">הקלד שם מנה לחיפוש</div>',
+                        unsafe_allow_html=True,
+                    )
 
 # ── Snack tab (last tab) ─────────────────────────────────────────────────────
 with tabs[-1]:
