@@ -140,8 +140,40 @@ MEAL_TYPE_HEB = {
     "snack": "נשנוש",
 }
 
+# ── helper: scale recipe to calorie target ───────────────────────────────────
+def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
+    """
+    Scale a recipe's ingredients and nutrition to hit target_cal.
+    Returns (scaled_ingredients, scaled_cal, scaled_prot, scaled_carbs, scaled_fat, scaled_grams).
+    """
+    portions   = max(recipe.get("portions", 1), 1)
+    nut        = recipe.get("total_nutrition", {})
+    cal_per    = nut.get("calories", 0) / portions
+    prot_per   = nut.get("protein",  0) / portions
+    carbs_per  = nut.get("carbs",    0) / portions
+    fat_per    = nut.get("fat",      0) / portions
+
+    # How many portions to reach target (round to nearest 0.5, min 0.5)
+    raw_scale  = target_cal / max(cal_per, 1)
+    scale      = max(0.5, round(raw_scale * 2) / 2)
+
+    # Scale each ingredient's quantity
+    scaled_ings = []
+    for ing in recipe.get("ingredients", []):
+        scaled_ings.append({**ing, "quantity": ing.get("quantity", 0) * scale})
+
+    return (
+        scaled_ings,
+        round(cal_per  * scale, 1),
+        round(prot_per * scale, 1),
+        round(carbs_per* scale, 1),
+        round(fat_per  * scale, 1),
+        round(scale * 200),   # approx grams
+    )
+
+
 # ── helper: ingredient chips ─────────────────────────────────────────────────
-def _ingredient_chips_html(ingredients: list, max_show: int = 5) -> str:
+def _ingredient_chips_html(ingredients: list, max_show: int = 6) -> str:
     """Render ingredient list as compact inline chips (like a recipe card)."""
     chips = []
     for ing in ingredients[:max_show]:
@@ -318,19 +350,17 @@ with tabs[-3]:
                     _rec_id      = _rec.get("recipe_id", "")
                     _rec_name    = _rec.get("name_he", "מנה")
 
-                    _ings = _rec.get("ingredients", [])
-                    _ing_chips = _ingredient_chips_html(_ings) if _ings else ""
-                    _approx_g  = 200  # ~1 portion
+                    _s_ings, _s_cal, _s_prot, _s_carbs, _s_fat, _s_g = \
+                        _scale_recipe(_rec, _search_target)
+                    _ing_chips = _ingredient_chips_html(_s_ings) if _s_ings else _rec_name
                     _render_search_result(
                         name=_rec_name, food_id=f"recipe_{_rec_id}",
                         meal_key=search_meal, target_cal=_search_target,
-                        cal_out=_cal_per_por,
-                        prot_out=_prot_per,
-                        carbs_out=_carbs_per,
-                        fat_out=_fat_per,
-                        portion_label=_ing_chips or _rec_name,
-                        btn_suffix=f"{_rec_id}_1",
-                        grams=float(_approx_g),
+                        cal_out=_s_cal, prot_out=_s_prot,
+                        carbs_out=_s_carbs, fat_out=_s_fat,
+                        portion_label=_ing_chips,
+                        btn_suffix=f"{_rec_id}_s",
+                        grams=float(_s_g),
                         is_recipe=True,
                     )
                     with st.expander("הוראות הכנה"):
@@ -527,21 +557,13 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
             st.info("אין מתכונים מתאימים לארוחה זו.")
 
         for idx, recipe in enumerate(suggestions):
-            portions    = max(recipe.get("portions", 1), 1)
-            nut         = recipe.get("total_nutrition", {})
-            cal_total   = nut.get("calories", 0)
-            prot_total  = nut.get("protein",  0)
-            carbs_total = nut.get("carbs",    0)
-            fat_total   = nut.get("fat",      0)
-            cal         = round(cal_total   / portions)
-            prot        = round(prot_total  / portions, 1)
-            carbs       = round(carbs_total / portions, 1)
-            fat_        = round(fat_total   / portions, 1)
-            recipe_id   = recipe.get("recipe_id", "")
-            name_he     = recipe.get("name_he", "מתכון")
-            ingredients = recipe.get("ingredients", [])
+            recipe_id  = recipe.get("recipe_id", "")
+            name_he    = recipe.get("name_he", "מתכון")
 
-            match_pct = max(0, round(100 - abs(cal - target_cal) / max(target_cal, 1) * 100))
+            # Scale ingredients + nutrition to hit this meal's calorie target
+            s_ings, s_cal, s_prot, s_carbs, s_fat, s_grams = _scale_recipe(recipe, target_cal)
+
+            match_pct = max(0, round(100 - abs(s_cal - target_cal) / max(target_cal, 1) * 100))
             _img_uri  = _image_data_uri(recipe.get("image_path", ""))
 
             st.markdown(
@@ -554,13 +576,13 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 unsafe_allow_html=True,
             )
 
-            # ── Ingredient chips ──────────────────────────────────────
-            if ingredients:
-                st.markdown(_ingredient_chips_html(ingredients), unsafe_allow_html=True)
+            # ── Scaled ingredient chips ───────────────────────────────
+            if s_ings:
+                st.markdown(_ingredient_chips_html(s_ings), unsafe_allow_html=True)
 
             # ── Add to food log ───────────────────────────────────────────
-            btn_key    = f"add_{meal_key}_{recipe_id}_{idx}"
-            added_key  = f"added_{meal_key}_{recipe_id}_{idx}"
+            btn_key   = f"add_{meal_key}_{recipe_id}_{idx}"
+            added_key = f"added_{meal_key}_{recipe_id}_{idx}"
 
             if st.session_state.get(added_key):
                 st.markdown(
@@ -571,21 +593,20 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 )
             else:
                 if st.button(
-                    f"הוסף לתפריט היומי · {cal} קק״ל",
+                    f"הוסף לתפריט היומי · {int(s_cal)} קק״ל",
                     key=btn_key,
                     use_container_width=True,
                     type="primary",
                 ):
-                    meal_type_lower = meal_key.lower()
                     _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
                         food_id=f"recipe_{recipe_id}",
                         food_name=name_he,
-                        grams=float(portions * 100),
-                        calories=float(cal),
-                        protein=float(prot),
-                        carbs=float(carbs),
-                        fat=float(fat_),
-                        meal_type=meal_type_lower,
+                        grams=float(s_grams),
+                        calories=float(s_cal),
+                        protein=float(s_prot),
+                        carbs=float(s_carbs),
+                        fat=float(s_fat),
+                        meal_type=meal_key.lower(),
                         timestamp=datetime.now().isoformat(),
                     ))
                     st.session_state[added_key] = True
@@ -720,20 +741,21 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                             _mfat      = _mnut.get("fat",      0) / _mportions
                             _mrid      = _mrec.get("recipe_id", "")
                             _mrname    = _mrec.get("name_he", "מנה")
-                            _mrings    = _mrec.get("ingredients", [])
-                            _mr_chips  = _ingredient_chips_html(_mrings) if _mrings else _mrname
+                            _mr_sings, _mr_scal, _mr_sprot, _mr_scarbs, _mr_sfat, _mr_sg = \
+                                _scale_recipe(_mrec, target_cal)
+                            _mr_chips = _ingredient_chips_html(_mr_sings) if _mr_sings else _mrname
                             _render_search_result(
                                 name=_mrname,
                                 food_id=f"recipe_{_mrid}",
                                 meal_key=meal_key.lower(),
                                 target_cal=target_cal,
-                                cal_out=_mcpp,
-                                prot_out=_mppp,
-                                carbs_out=_mcarb,
-                                fat_out=_mfat,
+                                cal_out=_mr_scal,
+                                prot_out=_mr_sprot,
+                                carbs_out=_mr_scarbs,
+                                fat_out=_mr_sfat,
                                 portion_label=_mr_chips,
-                                btn_suffix=f"ms_{meal_key}_{_mrid}_1",
-                                grams=200.0,
+                                btn_suffix=f"ms_{meal_key}_{_mrid}_s",
+                                grams=float(_mr_sg),
                                 is_recipe=True,
                             )
                 else:
