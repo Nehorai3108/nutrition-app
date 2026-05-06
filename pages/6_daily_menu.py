@@ -299,11 +299,12 @@ with tabs[-3]:
                         unsafe_allow_html=True,
                     )
                     _n_portions = _col_por.number_input(
-                        "כמות", min_value=1, max_value=6, value=_sug_por, step=1,
+                        "יחידות", min_value=1, max_value=6, value=_sug_por, step=1,
                         key=f"rec_por_{_rec_id}",
                         label_visibility="visible",
                     )
                     _approx_g = _n_portions * 100
+                    _por_label = f'{_n_portions} יחידה' if _n_portions == 1 else f'{_n_portions} יחידות'
                     _render_search_result(
                         name=_rec_name, food_id=f"recipe_{_rec_id}",
                         meal_key=search_meal, target_cal=_search_target,
@@ -311,7 +312,7 @@ with tabs[-3]:
                         prot_out=_prot_per * _n_portions,
                         carbs_out=_carbs_per * _n_portions,
                         fat_out=_fat_per * _n_portions,
-                        portion_label=f'{_n_portions} מנות<br><span style="font-size:0.85rem;font-weight:500;color:#6b7a94">כ-{_approx_g} גרם</span>',
+                        portion_label=_por_label,
                         btn_suffix=f"{_rec_id}_{_n_portions}",
                         grams=float(_approx_g),
                     )
@@ -712,10 +713,11 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                                 unsafe_allow_html=True,
                             )
                             _mn_por = _col_p.number_input(
-                                "מנות", min_value=1, max_value=6, value=_msug_por, step=1,
+                                "יחידות", min_value=1, max_value=6, value=_msug_por, step=1,
                                 key=f"ms_rp_{meal_key}_{_mrid}",
                                 label_visibility="visible",
                             )
+                            _ms_por_label = f'{_mn_por} יחידה' if _mn_por == 1 else f'{_mn_por} יחידות'
                             _render_search_result(
                                 name=_mrname,
                                 food_id=f"recipe_{_mrid}",
@@ -725,7 +727,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                                 prot_out=_mppp * _mn_por,
                                 carbs_out=_mcarb * _mn_por,
                                 fat_out=_mfat * _mn_por,
-                                portion_label=f"{_mn_por} מנות",
+                                portion_label=_ms_por_label,
                                 btn_suffix=f"ms_{meal_key}_{_mrid}_{_mn_por}",
                                 grams=float(_mn_por * 100),
                             )

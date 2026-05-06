@@ -926,7 +926,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
         f'<div style="display:flex;gap:4px;align-items:center;flex-shrink:0">{kashrut_badge_html(kashrut)}{rank_html}</div>'
         f'</div>'
         f'<div style="font-size:0.8rem;color:{t.TEXT_MUTED};margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">'
-        f'<span>⏱ {prep} דק׳</span><span>🍽 {portions} מנות</span>'
+        f'<span>⏱ {prep} דק׳</span>'
         f'{"<span style=\'color:" + match_color + ";font-weight:600\'>" + str(match_pct) + "% התאמה</span>" if match_pct is not None else ""}'
         f'</div>'
         f'{macro_grid_html(cal, protein, carbs, fat)}'
