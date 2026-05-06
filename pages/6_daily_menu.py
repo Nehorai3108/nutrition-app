@@ -140,11 +140,34 @@ MEAL_TYPE_HEB = {
     "snack": "נשנוש",
 }
 
+# ── helper: ingredient chips ─────────────────────────────────────────────────
+def _ingredient_chips_html(ingredients: list, max_show: int = 5) -> str:
+    """Render ingredient list as compact inline chips (like a recipe card)."""
+    chips = []
+    for ing in ingredients[:max_show]:
+        label = format_ingredient_display(ing)
+        if label:
+            chips.append(
+                f'<span style="background:#1a2235;border:1px solid #252d3d;'
+                f'border-radius:99px;padding:3px 10px;font-size:0.72rem;'
+                f'color:#c4cdd8;white-space:nowrap">{label}</span>'
+            )
+    if not chips:
+        return ""
+    more = (f'<span style="font-size:0.7rem;color:#545e70;align-self:center">'
+            f'+{len(ingredients)-max_show}</span>') if len(ingredients) > max_show else ""
+    return (
+        f'<div dir="rtl" style="display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 4px">'
+        + "".join(chips) + more + "</div>"
+    )
+
+
 # ── helper: render a nutrition result card + add button ───────────────────────
 def _render_search_result(
     name: str, food_id: str, meal_key: str, target_cal: int,
     cal_out: float, prot_out: float, carbs_out: float, fat_out: float,
     portion_label: str, btn_suffix: str, grams: float = 0.0,
+    is_recipe: bool = False,
 ):
     _cal_diff   = round(cal_out) - target_cal
     _diff_color = "#4ade80" if abs(_cal_diff) <= 40 else ("#f59e0b" if abs(_cal_diff) <= 100 else "#f87171")
@@ -160,8 +183,12 @@ def _render_search_result(
         f'padding:3px 10px;font-size:0.7rem;color:{_meal_color};font-weight:600">'
         f'{MEAL_TYPE_HEB[meal_key]}</div></div>'
         f'<div dir="rtl" style="display:flex;align-items:flex-end;gap:6px;margin-bottom:14px">'
-        f'<div dir="rtl" style="font-size:2.4rem;font-weight:900;color:#f4f6fb;line-height:1">{portion_label}</div>'
-        f'<div dir="rtl" style="flex:1"></div>'
+        + (
+            f'<div dir="rtl" style="flex:1;font-size:0.82rem;color:#c4cdd8;line-height:1.6">{portion_label}</div>'
+            if is_recipe else
+            f'<div dir="rtl" style="font-size:2.4rem;font-weight:900;color:#f4f6fb;line-height:1">{portion_label}</div>'
+            f'<div dir="rtl" style="flex:1"></div>'
+        ) +
         f'<div dir="rtl" style="text-align:right">'
         f'<div dir="rtl" style="font-size:2rem;font-weight:900;color:{_diff_color};line-height:1">{round(cal_out)}</div>'
         f'<div dir="rtl" style="font-size:0.7rem;color:#8892a4">קק״ל</div>'
@@ -291,39 +318,24 @@ with tabs[-3]:
                     _rec_id      = _rec.get("recipe_id", "")
                     _rec_name    = _rec.get("name_he", "מנה")
 
-                    _sug_por = max(1, min(round(_search_target / max(_cal_per_por, 1)), 4))
-                    _col_name, _col_por = st.columns([3, 1])
-                    _col_name.markdown(
-                        f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb;'
-                        f'padding-top:8px">{_rec_name}</div>',
-                        unsafe_allow_html=True,
-                    )
-                    _n_portions = _col_por.number_input(
-                        "יחידות", min_value=1, max_value=6, value=_sug_por, step=1,
-                        key=f"rec_por_{_rec_id}",
-                        label_visibility="visible",
-                    )
-                    _approx_g = _n_portions * 100
-                    _por_label = f'{_n_portions} יחידה' if _n_portions == 1 else f'{_n_portions} יחידות'
+                    _ings = _rec.get("ingredients", [])
+                    _ing_chips = _ingredient_chips_html(_ings) if _ings else ""
+                    _approx_g  = 200  # ~1 portion
                     _render_search_result(
                         name=_rec_name, food_id=f"recipe_{_rec_id}",
                         meal_key=search_meal, target_cal=_search_target,
-                        cal_out=_cal_per_por * _n_portions,
-                        prot_out=_prot_per * _n_portions,
-                        carbs_out=_carbs_per * _n_portions,
-                        fat_out=_fat_per * _n_portions,
-                        portion_label=_por_label,
-                        btn_suffix=f"{_rec_id}_{_n_portions}",
+                        cal_out=_cal_per_por,
+                        prot_out=_prot_per,
+                        carbs_out=_carbs_per,
+                        fat_out=_fat_per,
+                        portion_label=_ing_chips or _rec_name,
+                        btn_suffix=f"{_rec_id}_1",
                         grams=float(_approx_g),
+                        is_recipe=True,
                     )
-                    with st.expander("מרכיבים והוראות"):
-                        _ings = _rec.get("ingredients", [])
-                        if _ings:
-                            for _ing in _ings:
-                                st.markdown(f"• {format_ingredient_display(_ing)}")
+                    with st.expander("הוראות הכנה"):
                         _steps = get_instructions(_rec_id)
                         if _steps:
-                            st.markdown("---")
                             for _si, _step in enumerate(_steps, 1):
                                 st.markdown(f"**{_si}.** {_step}")
                     st.markdown('<div dir="rtl" style="height:4px"></div>', unsafe_allow_html=True)
@@ -542,6 +554,10 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 unsafe_allow_html=True,
             )
 
+            # ── Ingredient chips ──────────────────────────────────────
+            if ingredients:
+                st.markdown(_ingredient_chips_html(ingredients), unsafe_allow_html=True)
+
             # ── Add to food log ───────────────────────────────────────────
             btn_key    = f"add_{meal_key}_{recipe_id}_{idx}"
             added_key  = f"added_{meal_key}_{recipe_id}_{idx}"
@@ -704,32 +720,21 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                             _mfat      = _mnut.get("fat",      0) / _mportions
                             _mrid      = _mrec.get("recipe_id", "")
                             _mrname    = _mrec.get("name_he", "מנה")
-                            _msug_por  = max(1, min(round(target_cal / max(_mcpp, 1)), 4))
-
-                            _col_n, _col_p = st.columns([3, 1])
-                            _col_n.markdown(
-                                f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;'
-                                f'color:#f4f6fb;padding-top:8px">{_mrname}</div>',
-                                unsafe_allow_html=True,
-                            )
-                            _mn_por = _col_p.number_input(
-                                "יחידות", min_value=1, max_value=6, value=_msug_por, step=1,
-                                key=f"ms_rp_{meal_key}_{_mrid}",
-                                label_visibility="visible",
-                            )
-                            _ms_por_label = f'{_mn_por} יחידה' if _mn_por == 1 else f'{_mn_por} יחידות'
+                            _mrings    = _mrec.get("ingredients", [])
+                            _mr_chips  = _ingredient_chips_html(_mrings) if _mrings else _mrname
                             _render_search_result(
                                 name=_mrname,
                                 food_id=f"recipe_{_mrid}",
                                 meal_key=meal_key.lower(),
                                 target_cal=target_cal,
-                                cal_out=_mcpp * _mn_por,
-                                prot_out=_mppp * _mn_por,
-                                carbs_out=_mcarb * _mn_por,
-                                fat_out=_mfat * _mn_por,
-                                portion_label=_ms_por_label,
-                                btn_suffix=f"ms_{meal_key}_{_mrid}_{_mn_por}",
-                                grams=float(_mn_por * 100),
+                                cal_out=_mcpp,
+                                prot_out=_mppp,
+                                carbs_out=_mcarb,
+                                fat_out=_mfat,
+                                portion_label=_mr_chips,
+                                btn_suffix=f"ms_{meal_key}_{_mrid}_1",
+                                grams=200.0,
+                                is_recipe=True,
                             )
                 else:
                     st.markdown(
