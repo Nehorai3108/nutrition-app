@@ -638,9 +638,10 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                     st.rerun()
 
             with st.expander("מרכיבים והוראות הכנה"):
-                if ingredients:
+                _orig_ings = recipe.get("ingredients", [])
+                if _orig_ings:
                     st.markdown("**מרכיבים:**")
-                    for ing in ingredients:
+                    for ing in _orig_ings:
                         st.markdown(f"• {format_ingredient_display(ing)}")
                 steps = get_instructions(recipe_id)
                 if steps:
