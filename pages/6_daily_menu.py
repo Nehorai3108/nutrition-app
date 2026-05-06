@@ -140,6 +140,21 @@ MEAL_TYPE_HEB = {
     "snack": "נשנוש",
 }
 
+# ── Nutrition fallback for ingredients not in catalog (kcal/100g) ─────────────
+_INGREDIENT_FALLBACK = {
+    "breadcrumbs":   {"kcal": 395, "prot": 13.0, "carbs": 73.0, "fat": 5.0},
+    "ground turkey": {"kcal": 149, "prot": 19.0, "carbs":  0.0, "fat": 7.5},
+    "cumin":         {"kcal": 375, "prot": 18.0, "carbs": 44.0, "fat": 22.0},
+    "fried onion":   {"kcal":  40, "prot":  1.1, "carbs":  9.3, "fat": 0.1},
+    "raisins":       {"kcal": 299, "prot":  3.1, "carbs": 79.0, "fat": 0.5},
+    "cinnamon":      {"kcal": 247, "prot":  4.0, "carbs": 81.0, "fat": 1.2},
+    "turmeric":      {"kcal": 312, "prot":  9.7, "carbs": 68.0, "fat": 3.3},
+    "paprika":       {"kcal": 282, "prot": 14.1, "carbs": 54.0, "fat": 13.0},
+    "salt":          {"kcal":   0, "prot":  0.0, "carbs":  0.0, "fat": 0.0},
+    "pepper":        {"kcal": 255, "prot": 10.4, "carbs": 64.0, "fat": 3.3},
+}
+
+
 # ── helper: scale recipe to calorie target ───────────────────────────────────
 def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
     """
@@ -167,6 +182,15 @@ def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
             base_prot  += n.protein_g     * r
             base_carbs += n.carbs_g       * r
             base_fat   += n.fat_g         * r
+        else:
+            # Try fallback nutrition table for common missing ingredients
+            fb = _INGREDIENT_FALLBACK.get(name_en.lower())
+            if fb:
+                r = qty_g / 100.0
+                base_cal   += fb["kcal"]  * r
+                base_prot  += fb["prot"]  * r
+                base_carbs += fb["carbs"] * r
+                base_fat   += fb["fat"]   * r
 
     # Fall back to recipe DB if catalog lookup gave nothing
     if base_cal < 1:
@@ -784,6 +808,13 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                                 grams=float(_mr_sg),
                                 is_recipe=True,
                             )
+                            with st.expander("הוראות הכנה"):
+                                _mr_steps = get_instructions(_mrid)
+                                if _mr_steps:
+                                    for _msi, _mstep in enumerate(_mr_steps, 1):
+                                        st.markdown(f"**{_msi}.** {_mstep}")
+                                else:
+                                    st.markdown("אין הוראות הכנה זמינות למתכון זה.")
                 else:
                     st.markdown(
                         '<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
