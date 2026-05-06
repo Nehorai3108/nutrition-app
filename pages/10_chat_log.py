@@ -13,6 +13,8 @@ from groq import Groq
 
 from ui.components import inject_global_css, bottom_nav
 from nutrition_app.agents.agent_3_food import FoodCatalog
+from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
+from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 
 st.set_page_config(page_title="BiteFit · הזנה", page_icon="💬", layout="wide",
@@ -31,16 +33,36 @@ def _get_groq():
     return Groq(api_key=st.secrets["groq_api_key"])
 
 @st.cache_resource
+def _get_recipe_mgr():
+    return RecipeManager()
+
+@st.cache_resource
 def _build_food_list() -> str:
-    """Build a compact food catalog string for the AI system prompt."""
+    """Build food + recipe catalog string for the AI system prompt."""
     cat = FoodCatalog(db_path=_DB_PATH)
     foods = cat.search_foods("", limit=500)
     lines = []
     for f in foods:
         lines.append(f"{f.name_he} ({int(f.default_serving_g)}g)")
+
+    # Add recipes so AI knows complex dishes by name
+    try:
+        mgr = RecipeManager()
+        recipes = mgr.search_recipes(RecipeFilter(max_results=200))
+        for r in recipes:
+            name_he = r.get("name_he", "")
+            portions = max(r.get("portions", 1), 1)
+            nut = r.get("total_nutrition", {})
+            cal = round(nut.get("calories", 0) / portions)
+            if name_he and cal:
+                lines.append(f"{name_he} [מתכון, {cal}קק״ל/מנה]")
+    except Exception:
+        pass
+
     return ", ".join(lines)
 
 catalog       = _get_catalog()
+recipe_mgr    = _get_recipe_mgr()
 groq_client   = _get_groq()
 food_log_repo = FoodLogRepository()
 USER_ID       = "ui_user_001"
@@ -100,6 +122,12 @@ STRICT RULES:
 - Food names in JSON must match the database list above as closely as possible
 - Never invent calorie counts
 - When user corrects → return FULL updated JSON with ALL foods
+
+COMPLEX DISHES — when the user says a dish name (שקשוקה, פסטה בולונז, סלט ירקות, אורז עם עוף etc.):
+- First check if it appears in the food list above as [מתכון] → use that name exactly
+- If not a known recipe, decompose it into individual DB ingredients:
+  e.g. "אורז עם עוף ובצל" → [{name:"אורז לבן",qty:3,unit:"כף"},{name:"חזה עוף",qty:1,unit:"יחידה"},{name:"בצל",qty:0.5,unit:"יחידה"}]
+- Always use names from the DB food list above
 
 WHEN THERE IS FOOD TO LOG — return EXACTLY this format (ALWAYS wrap in ```json code block):
 ```json
@@ -270,33 +298,71 @@ def _match_food(name: str, quantity: float, unit: str):
         if results:
             food = results[0]
             break
-    if not food:
-        return None
 
-    unit_g = UNIT_TO_GRAMS.get(unit)
-    if unit_g:
-        grams = unit_g * quantity
-    else:
-        grams = food.default_serving_g * quantity
+    # ── Ingredient found in catalog ──────────────────────────────────────
+    if food:
+        unit_g = UNIT_TO_GRAMS.get(unit)
+        if unit_g:
+            grams = unit_g * quantity
+        else:
+            grams = food.default_serving_g * quantity
 
-    grams = max(1.0, round(grams, 0))
-    n = food.nutrition_per_100g
-    ratio = grams / 100.0
-    return {
-        "food_id":   food.food_id,
-        "food_name": food.name_he,
-        "grams":     grams,
-        "calories":  round(n.calories_kcal * ratio, 1),
-        "protein":   round(n.protein_g     * ratio, 1),
-        "carbs":     round(n.carbs_g       * ratio, 1),
-        "fat":       round(n.fat_g         * ratio, 1),
-        "nutrition_per_100g": {
-            "calories_kcal": n.calories_kcal,
-            "protein_g":     n.protein_g,
-            "carbs_g":       n.carbs_g,
-            "fat_g":         n.fat_g,
-        },
-    }
+        grams = max(1.0, round(grams, 0))
+        n = food.nutrition_per_100g
+        ratio = grams / 100.0
+        return {
+            "food_id":   food.food_id,
+            "food_name": food.name_he,
+            "grams":     grams,
+            "calories":  round(n.calories_kcal * ratio, 1),
+            "protein":   round(n.protein_g     * ratio, 1),
+            "carbs":     round(n.carbs_g       * ratio, 1),
+            "fat":       round(n.fat_g         * ratio, 1),
+            "nutrition_per_100g": {
+                "calories_kcal": n.calories_kcal,
+                "protein_g":     n.protein_g,
+                "carbs_g":       n.carbs_g,
+                "fat_g":         n.fat_g,
+            },
+        }
+
+    # ── Fallback: search recipes (complex dishes) ────────────────────────
+    for cand in candidates:
+        recipe_results = recipe_mgr.search_recipes(
+            RecipeFilter(search_text=cand.strip(), max_results=1)
+        )
+        if recipe_results:
+            rec = recipe_results[0]
+            portions   = max(rec.get("portions", 1), 1)
+            nut        = rec.get("total_nutrition", {})
+            cal_per    = nut.get("calories", 0) / portions
+            prot_per   = nut.get("protein",  0) / portions
+            carbs_per  = nut.get("carbs",    0) / portions
+            fat_per    = nut.get("fat",      0) / portions
+            rec_id     = rec.get("recipe_id", "")
+            rec_name   = rec.get("name_he", name)
+
+            # quantity here means number of portions
+            n_portions = max(1, int(round(quantity)))
+            approx_g   = n_portions * 200  # ~200g per portion estimate
+
+            return {
+                "food_id":   f"recipe_{rec_id}",
+                "food_name": rec_name,
+                "grams":     float(approx_g),
+                "calories":  round(cal_per  * n_portions, 1),
+                "protein":   round(prot_per * n_portions, 1),
+                "carbs":     round(carbs_per* n_portions, 1),
+                "fat":       round(fat_per  * n_portions, 1),
+                "nutrition_per_100g": {
+                    "calories_kcal": round(cal_per  / 2, 1),
+                    "protein_g":     round(prot_per / 2, 1),
+                    "carbs_g":       round(carbs_per/ 2, 1),
+                    "fat_g":         round(fat_per  / 2, 1),
+                },
+            }
+
+    return None
 
 
 def _ask_groq(history: list, user_msg: str, pending: list = None):
