@@ -143,32 +143,57 @@ MEAL_TYPE_HEB = {
 # ── helper: scale recipe to calorie target ───────────────────────────────────
 def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
     """
-    Scale a recipe's ingredients and nutrition to hit target_cal.
-    Returns (scaled_ingredients, scaled_cal, scaled_prot, scaled_carbs, scaled_fat, scaled_grams).
+    Scale a recipe's ingredients to hit target_cal.
+    Calories are calculated from FoodCatalog (not the recipe DB totals,
+    which are often inaccurate). Falls back to recipe DB if catalog miss.
+    Returns (scaled_ingredients, cal, prot, carbs, fat, approx_grams).
     """
-    portions   = max(recipe.get("portions", 1), 1)
-    nut        = recipe.get("total_nutrition", {})
-    cal_per    = nut.get("calories", 0) / portions
-    prot_per   = nut.get("protein",  0) / portions
-    carbs_per  = nut.get("carbs",    0) / portions
-    fat_per    = nut.get("fat",      0) / portions
+    ingredients = recipe.get("ingredients", [])
 
-    # How many portions to reach target (round to nearest 0.5, min 0.5)
-    raw_scale  = target_cal / max(cal_per, 1)
-    scale      = max(0.5, round(raw_scale * 2) / 2)
+    # ── Step 1: calculate REAL calories from catalog ──────────────────
+    base_cal = base_prot = base_carbs = base_fat = 0.0
+    for ing in ingredients:
+        qty_g   = ing.get("quantity", 0)
+        name_en = ing.get("food_name_en", "")
+        name_he = ing.get("food_name", "")
+        # Try English first, then Hebrew
+        hits = _catalog.search_foods(name_en, limit=1) if name_en else []
+        if not hits and name_he:
+            hits = _catalog.search_foods(name_he, limit=1)
+        if hits:
+            n = hits[0].nutrition_per_100g
+            r = qty_g / 100.0
+            base_cal   += n.calories_kcal * r
+            base_prot  += n.protein_g     * r
+            base_carbs += n.carbs_g       * r
+            base_fat   += n.fat_g         * r
 
-    # Scale each ingredient's quantity
-    scaled_ings = []
-    for ing in recipe.get("ingredients", []):
-        scaled_ings.append({**ing, "quantity": ing.get("quantity", 0) * scale})
+    # Fall back to recipe DB if catalog lookup gave nothing
+    if base_cal < 1:
+        portions  = max(recipe.get("portions", 1), 1)
+        nut       = recipe.get("total_nutrition", {})
+        base_cal   = nut.get("calories", 0) / portions
+        base_prot  = nut.get("protein",  0) / portions
+        base_carbs = nut.get("carbs",    0) / portions
+        base_fat   = nut.get("fat",      0) / portions
+
+    # ── Step 2: scale to target (nearest 0.5, min 0.5) ───────────────
+    raw_scale = target_cal / max(base_cal, 1)
+    scale     = max(0.5, round(raw_scale * 2) / 2)
+
+    # ── Step 3: scale ingredient quantities ───────────────────────────
+    scaled_ings = [
+        {**ing, "quantity": ing.get("quantity", 0) * scale}
+        for ing in ingredients
+    ]
 
     return (
         scaled_ings,
-        round(cal_per  * scale, 1),
-        round(prot_per * scale, 1),
-        round(carbs_per* scale, 1),
-        round(fat_per  * scale, 1),
-        round(scale * 200),   # approx grams
+        round(base_cal   * scale, 1),
+        round(base_prot  * scale, 1),
+        round(base_carbs * scale, 1),
+        round(base_fat   * scale, 1),
+        round(scale * 200),
     )
 
 
