@@ -137,6 +137,44 @@
       "meal_type": "snack",
       "timestamp": "2026-05-03T11:35:20.070487",
       "entry_id": "457dbb18-59a7-4b56-9324-df53658db451"
+    },
+    {
+      "food_id": "food_002",
+      "food_name": "אורז לבן",
+      "grams": 260.0,
+      "calories": 338.0,
+      "protein": 7.0,
+      "carbs": 72.8,
+      "fat": 0.8,
+      "meal_type": "breakfast",
+      "timestamp": "2026-05-03T17:13:56.957537",
+      "entry_id": "d06d9a56-aca2-4f29-b307-6c0740bf3304"
+    }
+  ],
+  "2026-05-05": [
+    {
+      "food_id": "food_012",
+      "food_name": "טונה",
+      "grams": 100.0,
+      "calories": 116.0,
+      "protein": 25.5,
+      "carbs": 0.0,
+      "fat": 1.0,
+      "meal_type": "lunch",
+      "timestamp": "2026-05-05T21:26:35.359438",
+      "entry_id": "2d78cf42-edf5-4eca-a883-1d3dec249b83"
+    },
+    {
+      "food_id": "food_010",
+      "food_name": "גבינת קוטג׳",
+      "grams": 100.0,
+      "calories": 98.0,
+      "protein": 11.0,
+      "carbs": 3.4,
+      "fat": 4.3,
+      "meal_type": "lunch",
+      "timestamp": "2026-05-05T21:26:35.361527",
+      "entry_id": "44c5c862-8301-41a0-8d4a-59acfe87afd1"
     }
   ]
 }

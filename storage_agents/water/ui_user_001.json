@@ -114,6 +114,16 @@
         "source": "bottle",
         "notes": null
       }
+    ],
+    "2026-05-05": [
+      {
+        "water_id": "ca7f6bdc",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-05-05T21:26:50.687873",
+        "amount_ml": 250,
+        "source": "bottle",
+        "notes": null
+      }
     ]
   },
   "goal": {
@@ -122,5 +132,5 @@
     "created_at": "2026-04-15T04:17:03.432501",
     "updated_at": "2026-04-15T04:17:33.952408"
   },
-  "updated_at": "2026-05-03T16:51:10.034764"
+  "updated_at": "2026-05-05T21:26:59.057949"
 }
