@@ -520,7 +520,11 @@ if submitted and user_text.strip():
                 pending=st.session_state.pending_entries or None
             )
         except Exception as e:
-            reply_text = "אופס, תקלה טכנית. נסה שוב 🙏"
+            import traceback
+            err_detail = traceback.format_exc()
+            # Store error for debug display
+            st.session_state["_last_chat_error"] = err_detail
+            reply_text = f"אופס, תקלה טכנית. נסה שוב 🙏\n\n`{type(e).__name__}: {e}`"
             food_data = None
 
     st.session_state.groq_history.append({"role": "user", "content": user_text})
@@ -528,21 +532,26 @@ if submitted and user_text.strip():
         st.session_state.groq_history.append({"role": "assistant", "content": reply_text})
 
     if food_data:
-        meal_type = food_data.get("meal_type", "lunch")
-        st.session_state.detected_meal = meal_type
-        matched, not_found = [], []
-        for f in food_data.get("foods", []):
-            entry = _match_food(f["name"], float(f.get("quantity", 1)), f.get("unit", "יחידה"))
-            if entry:
-                matched.append(entry)
+        try:
+            meal_type = food_data.get("meal_type", "lunch")
+            st.session_state.detected_meal = meal_type
+            matched, not_found = [], []
+            for f in food_data.get("foods", []):
+                entry = _match_food(f["name"], float(f.get("quantity", 1)), f.get("unit", "יחידה"))
+                if entry:
+                    matched.append(entry)
+                else:
+                    not_found.append(f["name"])
+            if matched:
+                st.session_state.pending_entries = matched
+                if not_found:
+                    reply_text += f"\n\n⚠️ לא מצאתי במאגר: *{', '.join(not_found)}*"
             else:
-                not_found.append(f["name"])
-        if matched:
-            st.session_state.pending_entries = matched
-            if not_found:
-                reply_text += f"\n\n⚠️ לא מצאתי במאגר: *{', '.join(not_found)}*"
-        else:
-            reply_text = "לא מצאתי את המזונות במאגר. נסה לנסח אחרת."
+                reply_text = "לא מצאתי את המזונות במאגר. נסה לנסח אחרת."
+        except Exception as e2:
+            import traceback
+            st.session_state["_last_chat_error"] = traceback.format_exc()
+            reply_text += f"\n\n⚠️ שגיאה בעיבוד: `{type(e2).__name__}: {e2}`"
 
     if reply_text:
         st.session_state.chat_messages.append({"role": "assistant", "text": reply_text})
@@ -630,5 +639,13 @@ if st.session_state.pending_entries:
         st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
+
+# ── Debug info (only shown when there is an error) ───────────────────────────
+if st.session_state.get("_last_chat_error"):
+    with st.expander("🔧 פרטי שגיאה אחרונה (למפתח)"):
+        st.code(st.session_state["_last_chat_error"], language="python")
+        if st.button("נקה שגיאה"):
+            del st.session_state["_last_chat_error"]
+            st.rerun()
 
 bottom_nav("chat")
