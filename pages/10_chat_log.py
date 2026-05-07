@@ -126,7 +126,7 @@ STRICT RULES:
 COMPLEX DISHES — when the user says a dish name (שקשוקה, פסטה בולונז, סלט ירקות, אורז עם עוף etc.):
 - First check if it appears in the food list above as [מתכון] → use that name exactly
 - If not a known recipe, decompose it into individual DB ingredients:
-  e.g. "אורז עם עוף ובצל" → [{name:"אורז לבן",qty:3,unit:"כף"},{name:"חזה עוף",qty:1,unit:"יחידה"},{name:"בצל",qty:0.5,unit:"יחידה"}]
+  e.g. "אורז עם עוף ובצל" → [{{"name":"אורז לבן","qty":3,"unit":"כף"}},{{"name":"חזה עוף","qty":1,"unit":"יחידה"}},{{"name":"בצל","qty":0.5,"unit":"יחידה"}}]
 - Always use names from the DB food list above
 
 WHEN THERE IS FOOD TO LOG — return EXACTLY this format (ALWAYS wrap in ```json code block):
