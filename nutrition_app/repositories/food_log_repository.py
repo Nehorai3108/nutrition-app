@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""food_log_repository.py — יומן אכילה יומי למשתמש"""
+"""food_log_repository.py — יומן אכילה יומי למשתמש
+
+Supports two backends:
+  • Supabase (cloud)  — when SUPABASE_URL / SUPABASE_ANON_KEY are in secrets
+  • Local JSON files  — fallback for local development
+"""
 
 import os
 import json
@@ -25,24 +30,72 @@ class FoodLogEntry:
 
 
 class FoodLogRepository:
-    """Stores actual food eaten per user per day.
+    """
+    Stores food eaten per user per day.
 
-    Storage: storage_agents/food_log/{user_id}.json
-    Format:  { "YYYY-MM-DD": [ {entry}, ... ], ... }
+    Auto-selects backend:
+      - Supabase when credentials present in st.secrets
+      - Local JSON (storage_agents/food_log/{user_id}.json) otherwise
     """
 
     def __init__(self, base_dir: Optional[str] = None):
+        # Local JSON fallback
         if base_dir is None:
             base_dir = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                "storage_agents",
-                "food_log",
+                "storage_agents", "food_log",
             )
-        self.base_dir = base_dir
-        os.makedirs(self.base_dir, exist_ok=True)
+        self._base_dir = base_dir
+        os.makedirs(self._base_dir, exist_ok=True)
+
+    # ── Backend selector ──────────────────────────────────────────────────────
+
+    def _use_supabase(self) -> bool:
+        try:
+            from nutrition_app.db.supabase_client import is_supabase_configured
+            return is_supabase_configured()
+        except Exception:
+            return False
+
+    def _sb(self):
+        from nutrition_app.db.supabase_client import get_supabase
+        return get_supabase()
+
+    # ── Supabase backend ──────────────────────────────────────────────────────
+
+    def _sb_get_log(self, user_id: str, day: date_cls) -> List[FoodLogEntry]:
+        rows = (
+            self._sb().table("food_log")
+            .select("*")
+            .eq("user_id", user_id)
+            .eq("date", day.isoformat())
+            .execute()
+        ).data or []
+        return [_row_to_entry(r) for r in rows]
+
+    def _sb_add_entry(self, user_id: str, day: date_cls, entry: FoodLogEntry):
+        self._sb().table("food_log").insert({
+            "user_id":   user_id,
+            "date":      day.isoformat(),
+            "food_id":   entry.food_id,
+            "food_name": entry.food_name,
+            "grams":     entry.grams,
+            "calories":  entry.calories,
+            "protein":   entry.protein,
+            "carbs":     entry.carbs,
+            "fat":       entry.fat,
+            "meal_type": entry.meal_type,
+            "timestamp": entry.timestamp,
+            "entry_id":  entry.entry_id,
+        }).execute()
+
+    def _sb_remove_entry(self, user_id: str, day: date_cls, entry_id: str):
+        self._sb().table("food_log").delete().eq("entry_id", entry_id).execute()
+
+    # ── Local JSON backend ────────────────────────────────────────────────────
 
     def _path(self, user_id: str) -> str:
-        return os.path.join(self.base_dir, f"{user_id}.json")
+        return os.path.join(self._base_dir, f"{user_id}.json")
 
     def _load(self, user_id: str) -> dict:
         path = self._path(user_id)
@@ -54,24 +107,32 @@ class FoodLogRepository:
         except (json.JSONDecodeError, OSError):
             return {}
 
-    def _save(self, user_id: str, data: dict) -> None:
+    def _save(self, user_id: str, data: dict):
         with open(self._path(user_id), "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-    def get_log(self, user_id: str, day: date_cls) -> List[FoodLogEntry]:
-        data = self._load(user_id)
-        entries = data.get(day.isoformat(), [])
-        return [FoodLogEntry(**e) for e in entries]
+    # ── Public API ────────────────────────────────────────────────────────────
 
-    def add_entry(self, user_id: str, day: date_cls, entry: FoodLogEntry) -> None:
+    def get_log(self, user_id: str, day: date_cls) -> List[FoodLogEntry]:
+        if self._use_supabase():
+            return self._sb_get_log(user_id, day)
         data = self._load(user_id)
-        iso = day.isoformat()
-        data.setdefault(iso, []).append(asdict(entry))
+        return [FoodLogEntry(**e) for e in data.get(day.isoformat(), [])]
+
+    def add_entry(self, user_id: str, day: date_cls, entry: FoodLogEntry):
+        if self._use_supabase():
+            self._sb_add_entry(user_id, day, entry)
+            return
+        data = self._load(user_id)
+        data.setdefault(day.isoformat(), []).append(asdict(entry))
         self._save(user_id, data)
 
-    def remove_entry(self, user_id: str, day: date_cls, entry_id: str) -> None:
+    def remove_entry(self, user_id: str, day: date_cls, entry_id: str):
+        if self._use_supabase():
+            self._sb_remove_entry(user_id, day, entry_id)
+            return
         data = self._load(user_id)
-        iso = day.isoformat()
+        iso  = day.isoformat()
         data[iso] = [e for e in data.get(iso, []) if e.get("entry_id") != entry_id]
         if not data[iso]:
             data.pop(iso, None)
@@ -86,3 +147,20 @@ class FoodLogRepository:
             "fat":      sum(e.fat      for e in entries),
             "count":    len(entries),
         }
+
+
+# ── Helper ────────────────────────────────────────────────────────────────────
+
+def _row_to_entry(row: dict) -> FoodLogEntry:
+    return FoodLogEntry(
+        food_id   = row.get("food_id", ""),
+        food_name = row.get("food_name", ""),
+        grams     = float(row.get("grams", 0)),
+        calories  = float(row.get("calories", 0)),
+        protein   = float(row.get("protein", 0)),
+        carbs     = float(row.get("carbs", 0)),
+        fat       = float(row.get("fat", 0)),
+        meal_type = row.get("meal_type", "lunch"),
+        timestamp = row.get("timestamp", ""),
+        entry_id  = row.get("entry_id", str(uuid.uuid4())),
+    )

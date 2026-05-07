@@ -1,0 +1,28 @@
+{
+  "name": "BiteFit — מעקב תזונה",
+  "short_name": "BiteFit",
+  "description": "מעקב תזונה חכם עם AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d111c",
+  "theme_color": "#0d111c",
+  "orientation": "portrait",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "https://em-content.zobj.net/source/apple/391/green-salad_1f957.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://em-content.zobj.net/source/apple/391/green-salad_1f957.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness"],
+  "screenshots": []
+}

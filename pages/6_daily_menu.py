@@ -18,11 +18,12 @@ from nutrition_app.repositories.food_log_repository import FoodLogRepository, Fo
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
 from ui.components import inject_global_css, recipe_card_html, bottom_nav
+from ui.user_auth import require_auth, logout_button
 from ui.images import image_data_uri as _image_data_uri
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.utils.household_units import get_unit_info, grams_to_household, suggested_quantity
 
-USER_ID = "ui_user_001"
+USER_ID = require_auth()
 _food_log_repo = FoodLogRepository()
 
 # Load user allergies from profile
@@ -33,6 +34,10 @@ _user_allergens: list = _profile.get("meal_preferences", {}).get("allergies", []
 st.set_page_config(page_title="BiteFit · תפריט", page_icon="🍽️", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
+
+with st.sidebar:
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    logout_button()
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                         "storage", "nutrition.db")
