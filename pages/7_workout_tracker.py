@@ -10,6 +10,7 @@ from datetime import date, timedelta
 import streamlit as st
 
 from ui.components import inject_global_css, bottom_nav
+from ui.user_auth import require_auth, logout_button
 from nutrition_app.models.enums import WorkoutType, WorkoutIntensity
 from nutrition_app.models.workout import WorkoutEntry
 from nutrition_app.repositories.workout_repository import WorkoutRepository
@@ -20,7 +21,11 @@ st.set_page_config(page_title="אימונים", page_icon=None, layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
-USER_ID = "ui_user_001"
+with st.sidebar:
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    logout_button()
+
+USER_ID = require_auth()
 _repo = WorkoutRepository()
 
 # Load user weight for calorie estimation

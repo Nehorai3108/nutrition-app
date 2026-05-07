@@ -10,6 +10,7 @@ from pathlib import Path
 import streamlit as st
 
 from ui.components import inject_global_css, bottom_nav
+from ui.user_auth import require_auth, logout_button
 from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository
 from nutrition_app.repositories.food_log_repository import FoodLogRepository
@@ -17,6 +18,10 @@ from nutrition_app.repositories.food_log_repository import FoodLogRepository
 st.set_page_config(page_title="BiteFit · היסטוריה", page_icon=None, layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
+
+with st.sidebar:
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    logout_button()
 
 # ── CSS: transform 7-col grid buttons into calendar cells ─────────────────────
 st.markdown("""<style>
@@ -47,7 +52,7 @@ button[kind="secondary"] {
 }
 </style>""", unsafe_allow_html=True)
 
-USER_ID      = "ui_user_001"
+USER_ID      = require_auth()
 workout_repo = WorkoutRepository()
 water_repo   = WaterRepository()
 food_repo    = FoodLogRepository()

@@ -12,6 +12,7 @@ import streamlit as st
 from groq import Groq
 
 from ui.components import inject_global_css, bottom_nav
+from ui.user_auth import require_auth, logout_button
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
@@ -20,6 +21,10 @@ from nutrition_app.repositories.food_log_repository import FoodLogRepository, Fo
 st.set_page_config(page_title="BiteFit · הזנה", page_icon="💬", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
+
+with st.sidebar:
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    logout_button()
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                         "storage", "nutrition.db")
@@ -63,7 +68,7 @@ catalog       = _get_catalog()
 recipe_mgr    = _get_recipe_mgr()
 groq_client   = _get_groq()
 food_log_repo = FoodLogRepository()
-USER_ID       = "ui_user_001"
+USER_ID       = require_auth()
 FOOD_LIST     = _build_food_list()
 
 MEAL_HEB = {

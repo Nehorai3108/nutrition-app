@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
 from ui.components import inject_global_css, page_header, section_header
+from ui.user_auth import require_auth, logout_button
 from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository
 
@@ -27,7 +28,11 @@ st.set_page_config(
 # ── Design system ─────────────────────────────────────────────────────────
 inject_global_css()
 
-USER_ID = "ui_user_001"
+with st.sidebar:
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    logout_button()
+
+USER_ID = require_auth()
 
 # ── Page header ───────────────────────────────────────────────────────────
 page_header(

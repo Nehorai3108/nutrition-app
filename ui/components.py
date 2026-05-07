@@ -593,6 +593,22 @@ def inject_global_css() -> None:
     """
     st.markdown(css, unsafe_allow_html=True)
 
+    # ── PWA: manifest + service-worker registration ───────────────────────────
+    st.markdown(
+        '<link rel="manifest" href="/app/static/manifest.json">'
+        '<meta name="mobile-web-app-capable" content="yes">'
+        '<meta name="apple-mobile-web-app-capable" content="yes">'
+        '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">'
+        '<meta name="apple-mobile-web-app-title" content="BiteFit">'
+        '<meta name="theme-color" content="#0d111c">'
+        '<script>'
+        'if("serviceWorker" in navigator){'
+        '  navigator.serviceWorker.register("/app/static/sw.js")'
+        '    .catch(function(){});'
+        '}'
+        '</script>',
+        unsafe_allow_html=True,
+    )
 
 
 def bottom_nav(active: str = "home") -> None:
