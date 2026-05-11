@@ -27,7 +27,11 @@ USER_ID = require_auth()
 repo    = ProfileRepository()
 profile = repo.load(USER_ID)
 
-page_header("פרופיל משתמש", icon_name="user", subtitle="עדכן פרטים, העדפות ויעדים")
+page_header(
+    "פרופיל משתמש",
+    icon_name="user",
+    subtitle="נתונים ביומטריים, העדפות ויעדים — של המשתמש המחובר",
+)
 
 saved_msg = st.empty()
 
