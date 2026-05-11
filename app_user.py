@@ -53,6 +53,34 @@ st.set_page_config(
 # ── Design system ────────────────────────────────────────────────────────────
 inject_global_css()
 
+# ── Auth gate ────────────────────────────────────────────────────────────────
+# Login is required before anything else on the home page. We use the existing
+# require_auth() (ui/user_auth.py) when Supabase is configured. When it is NOT
+# configured (local dev), require_auth returns "ui_user_001" so the dev flow
+# keeps working. If Supabase IS configured and there is no logged-in user, this
+# call renders the login UI and calls st.stop() so nothing below executes.
+#
+# NOTE for data-layer-agent: some repository tests will fail until repository
+# implementations are updated to honor `user_id` everywhere (see contract in
+# storage_audit/data_layer_audit.md). Auth tests and call-site signatures are
+# correct here. # data-layer-agent will fix.
+from auth.login_ui import render_login_ui, logout_button as _auth_logout_button
+from auth.supabase_client import is_supabase_configured, get_current_user
+
+if is_supabase_configured() and "user_id" not in st.session_state:
+    # Mirror any legacy session-state set by ui/user_auth.py
+    _existing = st.session_state.get("bitefit_user")
+    if isinstance(_existing, dict) and _existing.get("id"):
+        st.session_state["user_id"] = _existing["id"]
+        st.session_state["user_email"] = _existing.get("email", "")
+    else:
+        render_login_ui()
+        st.stop()
+
+# Resolve current user_id. In local dev (no Supabase) use the canonical
+# fallback so existing storage_agents/ JSON files remain accessible.
+_USER_ID: str = st.session_state.get("user_id", "ui_user_001")
+
 # ── Constants ────────────────────────────────────────────────────────────────
 
 MEAL_LABELS = {
@@ -111,7 +139,7 @@ from nutrition_app.repositories.profile_repository import ProfileRepository as _
 from nutrition_app.user_manager import load_inventory as _load_inv
 
 _profile_repo = _ProfileRepo()
-_profile = _profile_repo.load("ui_user_001")
+_profile = _profile_repo.load(_USER_ID)
 
 # Resolve profile values (used by pipeline below)
 name          = _profile.get("name", "ישראל ישראלי")
@@ -126,7 +154,7 @@ activity_choice = ActivityLevel(_profile.get("activity_level", "moderately_activ
 goal_choice     = Goal(_profile.get("goal", "lose_weight"))
 
 # Build food selection + inventory from stored inventory (managed via inventory page)
-_stored_inv = _load_inv("ui_user_001")   # list of {food_id, name_he, quantity_g}
+_stored_inv = _load_inv(_USER_ID)   # list of {food_id, name_he, quantity_g}
 _scanned_inv = st.session_state.get("scanned_inventory", {})
 
 # Merge stored + scanned inventory
@@ -173,7 +201,13 @@ with st.sidebar:
     # ── Profile card ──────────────────────────────────────────────────────
     st.markdown(f"### {name}")
     st.caption(f"⚖️ {weight}ק״ג &nbsp;·&nbsp; 🎯 {GOAL_LABEL_SHORT.get(goal_choice, '')}")
+    _user_email_display = st.session_state.get("user_email") or (
+        st.session_state.get("bitefit_user", {}) or {}
+    ).get("email", "")
+    if _user_email_display:
+        st.caption(f"👤 {_user_email_display}")
     st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
+    _auth_logout_button(key="_home_logout_btn")
 
     st.divider()
 
@@ -233,7 +267,7 @@ with st.sidebar:
     with st.expander("🏋️ אימוני היום", expanded=False):
         _workout_repo = WorkoutRepository()
         _today = date.today()
-        _raw_data = _workout_repo.get_workout_data("ui_user_001")
+        _raw_data = _workout_repo.get_workout_data(_USER_ID)
         _has_daily_override = _today.isoformat() in _raw_data.daily_log
         _plan_workouts = _raw_data.weekly_plan.workouts_by_day.get(
             _today.strftime("%A").lower(), []
@@ -259,10 +293,10 @@ with st.sidebar:
                 with col_del:
                     if icon_button("מחק", "delete", key=f"del_w_{i}",
                                    help="הסר אימון מהיום", type="secondary"):
-                        _workout_repo.remove_daily_workout("ui_user_001", _today, i)
+                        _workout_repo.remove_daily_workout(_USER_ID, _today, i)
                         st.rerun()
             if icon_button("נקה הכל", "clear", key="clear_daily_workouts", type="secondary"):
-                _workout_repo.clear_daily_workouts("ui_user_001", _today)
+                _workout_repo.clear_daily_workouts(_USER_ID, _today)
                 st.rerun()
             st.divider()
 
@@ -290,7 +324,7 @@ with st.sidebar:
                     # ✅ Confirm as-is
                     if c1.button("✅ בוצע", key=f"confirm_w_{i}", use_container_width=True):
                         w.estimated_calories_burned = estimate_calories_burned(w, weight)
-                        _workout_repo.add_daily_workout("ui_user_001", _today, w)
+                        _workout_repo.add_daily_workout(_USER_ID, _today, w)
                         st.success(f"✅ {_desc} אושר!")
                         st.rerun()
                     # ✏️ Edit before confirming
@@ -344,7 +378,7 @@ with st.sidebar:
                             distance_km=float(_e_dist) if _e_dist > 0 else None,
                         )
                         _new_w.estimated_calories_burned = estimate_calories_burned(_new_w, weight)
-                        _workout_repo.add_daily_workout("ui_user_001", _today, _new_w)
+                        _workout_repo.add_daily_workout(_USER_ID, _today, _new_w)
                         st.session_state[_editing_key] = False
                         st.success("✅ אימון מעודכן נשמר!")
                         st.rerun()
@@ -424,7 +458,7 @@ with st.sidebar:
                 st.warning("יש להזין משך אימון גדול מ-0.")
             else:
                 workout_entry_input.estimated_calories_burned = estimate_calories_burned(workout_entry_input, weight)
-                _workout_repo.add_daily_workout("ui_user_001", _today, workout_entry_input)
+                _workout_repo.add_daily_workout(_USER_ID, _today, workout_entry_input)
                 st.success("האימון נוסף.")
                 st.rerun()
 
@@ -437,7 +471,7 @@ with st.sidebar:
     st.divider()
 
     # ── Water Tracking ───────────────────────────────────────────────────────
-    _WATER_USER_ID = "ui_user_001"
+    _WATER_USER_ID = _USER_ID
     water_repo = _WaterRepo()
     water_data = water_repo.get_water_data(_WATER_USER_ID)
     today_water = water_repo.get_water_intakes_for_date(_WATER_USER_ID, date.today())
@@ -549,7 +583,7 @@ if not run_btn and "last_plan" not in st.session_state:
     import math as _math
     from ui import theme as _t
 
-    _DASH_USER = "ui_user_001"
+    _DASH_USER = _USER_ID
     today = date.today()
 
     # ── Load data ─────────────────────────────────────────────────────────────
@@ -892,7 +926,7 @@ if run_btn:
 
         # Step 1: User Profile
         user = UserProfile(
-            user_id="ui_user_001",
+            user_id=_USER_ID,
             name=name or "משתמש",
             gender=gender_choice,
             date_of_birth=dob,
