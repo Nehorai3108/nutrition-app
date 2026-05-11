@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nutrition App Research — Week of April 25, 2026 (W17)</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 820px; margin: 0 auto; padding: 32px 24px; color: #1a1a1a; line-height: 1.55; background: #fafafa; }
+  h1 { font-size: 26px; margin: 0 0 4px; color: #0f3d5a; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 19px; margin-top: 36px; padding-bottom: 6px; border-bottom: 2px solid #0f3d5a; color: #0f3d5a; }
+  h3 { font-size: 16px; margin-top: 24px; margin-bottom: 6px; color: #2a2a2a; }
+  .summary { background: #fff; padding: 16px 20px; border-left: 4px solid #0f3d5a; border-radius: 4px; }
+  .competitor { background: #fff; padding: 14px 18px; margin: 10px 0; border-radius: 6px; border: 1px solid #e5e5e5; }
+  .competitor h3 { margin-top: 0; color: #0f3d5a; }
+  .competitor ul { margin: 6px 0 0 0; padding-left: 22px; }
+  .competitor li { margin-bottom: 5px; }
+  .trend { background: #fffaf0; padding: 12px 18px; margin: 10px 0; border-radius: 6px; border-left: 3px solid #d68000; }
+  .trend .label { font-weight: 600; color: #8a4a00; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rec { background: #fff; padding: 18px 22px; margin: 14px 0; border-radius: 8px; border: 1px solid #e5e5e5; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .rec h3 { margin-top: 0; color: #0f3d5a; }
+  .badges { margin: 6px 0 12px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .yellow { background: #fff4cc; color: #7a5500; }
+  .green  { background: #d4edda; color: #155724; }
+  .red    { background: #f8d7da; color: #721c24; }
+  .effort { background: #e7e7e7; color: #444; }
+  .rec dl { margin: 8px 0 0; }
+  .rec dt { font-weight: 600; color: #555; margin-top: 8px; font-size: 13px; }
+  .rec dd { margin: 2px 0 0 0; }
+  .footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid #ddd; font-size: 12px; color: #888; }
+  .alert { background: #fdecea; padding: 10px 14px; border-left: 3px solid #c0392b; border-radius: 4px; margin: 16px 0; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>Nutrition App Research — Week of April 25, 2026 (W17)</h1>
+<div class="subtitle">Market Intelligence brief for תזונאי · Generated 2026-04-25 · Recipients: Dvir (dviryona8@gmail.com), Neo (nehoraios08@gmail.com)</div>
+
+<div class="alert">
+  <strong>Email delivery note:</strong> No email connector is configured in this environment, so this brief was not auto-emailed. The HTML file is saved to Desktop/אפליקציית תזונאי/nutrition_research/2026-W17.html and the structured JSON is at Desktop/approval_version_nutt_app/market_brief.json. Forward manually, or connect a Gmail / Outlook MCP for next run.
+</div>
+
+<h2>1. Landscape Summary</h2>
+<div class="summary">
+  The big story of the past 7 days is that <strong>multimodal AI logging</strong> (photo + voice + text + barcode in one flow) has officially become table stakes — Lifesum shipped its biggest update in 5 years moving to a chat-style interface, MyFitnessPal's April "Today" redesign is live but receiving a vocal user backlash for burying the diary behind extra taps, and both Lose It and Yazio now lead with AI photo logging in their app store metadata. Meanwhile Noom partnered with b.well (Apr 9) to integrate medical records for Medicare members, signaling that <strong>GLP-1 + medical-data integration</strong> is the next battleground. For the Israeli market, dominant local competitor <em>קלוריה</em> continues to outflank global apps purely on a Hebrew-first UI and a 50,000+ Israeli-product database (Tnuva, Strauss, Osem) — which directly maps to our biggest competitive gap.
+</div>
+
+<h2>2. Competitor Highlights</h2>
+
+<div class="competitor">
+  <h3>MyFitnessPal</h3>
+  <ul>
+    <li><strong>Apr 24</strong>: Forced rollout of new "Today" tab (v26.16.0+). Diary buried behind a "View All" button. MFP confirmed there is no rollback option, and set up a dedicated complaints webform — <em>real user backlash, real lesson for us about adding taps.</em></li>
+    <li>Added Streaks view + Healthy Habits cards (water/exercise/steps).</li>
+    <li>Continues quietly building GLP-1 companion content (recipes + community forums) — defensive move against GLP-1-only apps like Pep, Shotsy, MeAgain.</li>
+  </ul>
+</div>
+
+<div class="competitor">
+  <h3>Yazio</h3>
+  <ul>
+    <li>Rebranded the app store listing to <strong>"YAZIO: AI Calorie Tracker"</strong> — AI photo logging is now the #1 marketed feature, not a side function.</li>
+    <li>Launched "Buddies" social feature with one-tap share to Instagram/Facebook Stories — explicit play for organic growth via social proof.</li>
+    <li>Simplified custom recipe creation (instructions field is now optional) — mirrors the "less friction" theme across the category.</li>
+  </ul>
+</div>
+
+<div class="competitor">
+  <h3>Lose It!</h3>
+  <ul>
+    <li>Shipped <strong>biggest redesign in 10+ years</strong>: "Snap It" (photo) + "Say It" (voice) AI logging are now the headline flows.</li>
+    <li>Moved barcode scanner ("Scan It") from Free into Premium — aggressive monetization signal that scanning is high-value enough to gate.</li>
+    <li>Refreshed 30+ themes and added a date-picker popover on the dashboard — small UX wins with measurable retention impact.</li>
+  </ul>
+</div>
+
+<div class="competitor">
+  <h3>Noom</h3>
+  <ul>
+    <li><strong>Apr 9</strong>: Launched "Noom Health Record Connect" with b.well — Medicare members can sync EHRs into the app for personalized content. Signals a B2B2C / payer-channel pivot.</li>
+    <li>GLP-1 Companion (Muscle Defense workouts, side-effect guides, protein tools) now bundled FREE for medication users — used as a top-of-funnel hook.</li>
+    <li>Welli AI assistant + photo logging now positioned alongside the original CBT/psychology hook — Noom is no longer a pure "behavior change" brand.</li>
+  </ul>
+</div>
+
+<div class="competitor">
+  <h3>Lifesum</h3>
+  <ul>
+    <li><strong>Biggest update in 5 years</strong>: full Multimodal Tracking (photo / voice / type / scan) in a chat-style interface explicitly modeled on AI chat UX.</li>
+    <li>Added Polish, Finnish, and Czech localization — confirms the EU/regional-language playbook is paying off (and reinforces the case for a Hebrew-first niche).</li>
+    <li>Added "re-onboarding" for returning users, recognizing churn-and-return as a real pattern in nutrition apps rather than fighting it.</li>
+  </ul>
+</div>
+
+<h2>3. Trends Worth Acting On</h2>
+
+<div class="trend">
+  <div class="label">Trend 1 — Design + AI</div>
+  <h3>Multimodal AI logging is now the default, not a differentiator</h3>
+  <p><strong>Evidence:</strong> Yazio rebranded to "AI Calorie Tracker"; Lose It made Snap It / Say It headline features; Lifesum shipped Multimodal Tracking; MyFitnessPal and Noom both ship photo logging. <strong>5 of 5 reference competitors do this.</strong></p>
+  <p><strong>Relevance for us:</strong> Our app does NOT have AI photo or voice logging. We will look 18 months behind the curve to anyone who tries us alongside a global competitor. This is the single biggest closeable gap.</p>
+</div>
+
+<div class="trend">
+  <div class="label">Trend 2 — UX</div>
+  <h3>Chat-style / conversational UI replacing form-based logging</h3>
+  <p><strong>Evidence:</strong> Lifesum's new interface "mirrors modern AI chats". MyFitnessPal's user backlash this week is specifically about cards/clicks rather than fluid input. Voice interface usage in AI apps grew 65% YoY.</p>
+  <p><strong>Relevance for us:</strong> Hebrew users naturally type in conversational Hebrew (e.g. "אכלתי שתי פיתות עם חומוס וסלט"). A chat-style entry that parses Hebrew is more natural here than in English markets. We already have Agent 6 (AI) — the substrate exists.</p>
+</div>
+
+<div class="trend">
+  <div class="label">Trend 3 — Marketing / Moat</div>
+  <h3>Local-database moats outperform feature parity in non-English markets</h3>
+  <p><strong>Evidence:</strong> Israeli local app קלוריה tracks 50,000+ Israeli products (Tnuva, Strauss, Osem) and dominates Hebrew-language searches despite being feature-poorer than MyFitnessPal. Lifesum's strategic decision to add Polish/Finnish/Czech, not more AI, signals language+local data is the EU growth lever.</p>
+  <p><strong>Relevance for us:</strong> USDA-backed food data is excellent for raw ingredients and useless for the SKUs Israeli home cooks pull from the pantry. Most defensible moat we can build.</p>
+</div>
+
+<h2>4. Three Concrete Recommendations</h2>
+
+<div class="rec">
+  <h3>Rec #1 — Israeli Product Barcode Database</h3>
+  <div class="badges">
+    <span class="badge yellow">YELLOW</span>
+    <span class="badge effort">Effort: Large</span>
+  </div>
+  <dl>
+    <dt>What to build</dt>
+    <dd>An Israeli packaged-food database (target: 5,000 SKUs in v1, 20,000 in v2) covering Tnuva, Strauss, Osem, Tara, Telma, Tirat Tzvi, Yotvata, Wissotzky. Add a barcode scanner to the food-logging flow that hits this DB first, USDA fallback second. Source: GS1 Israel barcode registry, retailer APIs (Shufersal, Rami Levy if reachable), plus a manual seed of the top 200 SKUs by household penetration.</dd>
+    <dt>Inspired by</dt>
+    <dd>MyFitnessPal/Lose It barcode flows + the Israeli incumbent קלוריה's local-product moat + Lifesum's EU-language localization strategy.</dd>
+    <dt>Why it matters for us</dt>
+    <dd>Single most defensible moat. Global competitors will not invest in an Israeli SKU database. Our current USDA catalog is irrelevant the moment a user picks up a Tnuva yogurt cup. From a unit-economics view: barcode scans dramatically lift D7 retention in every comparable app — Lose It thought it was valuable enough to <em>paywall</em>, which is a willingness-to-pay data point.</dd>
+    <dt>User segment</dt>
+    <dd>Israeli home cooks logging packaged groceries — likely 70%+ of all food-log entries.</dd>
+  </dl>
+</div>
+
+<div class="rec">
+  <h3>Rec #2 — Hebrew Conversational Meal Entry</h3>
+  <div class="badges">
+    <span class="badge yellow">YELLOW</span>
+    <span class="badge effort">Effort: Medium</span>
+  </div>
+  <dl>
+    <dt>What to build</dt>
+    <dd>Promote Agent 6 (AI) from passive formatter to active conversational input layer. Add a chat-style entry box where the user types Hebrew naturally ("אכלתי שתי פיתות, חומוס, וביצה קשה לארוחת בוקר") → Agent 6 parses → Agent 3 resolves foods → posts a structured log entry the user confirms with one tap. Hebrew voice-to-text on the same pipeline is a fast-follow.</dd>
+    <dt>Inspired by</dt>
+    <dd>Lifesum's chat-style redesign + Lose It's "Say It" voice logging + MyFitnessPal's redesign backlash (lesson: don't add taps — speed up entry instead).</dd>
+    <dt>Why it matters for us</dt>
+    <dd>Hebrew is a low-resource language for global apps' food parsers. We already have Agent 3 (food matching) and Agent 6 (AI) in the architecture — we are uniquely positioned to nail Hebrew because we control the food-resolution layer. Cheapest credible answer to "why aren't you on AI photo logging yet?" — we can claim multimodal-lite without vision-model cost.</dd>
+    <dt>User segment</dt>
+    <dd>Power users logging multiple meals/day (the 20% generating 80% of entries) and Hebrew-first users for whom typing beats menu navigation.</dd>
+  </dl>
+</div>
+
+<div class="rec">
+  <h3>Rec #3 — Shabbat &amp; Holiday Meal Templates (תבניות חג)</h3>
+  <div class="badges">
+    <span class="badge yellow">YELLOW</span>
+    <span class="badge effort">Effort: Medium</span>
+  </div>
+  <dl>
+    <dt>What to build</dt>
+    <dd>A "תבניות" (Templates) library of pre-built Shabbat, Pesach, Rosh Hashana, and Sukkot meal patterns the user can one-tap apply to their planner. Each template is a coherent multi-course meal (Friday-night dinner: challah + chicken soup + roast chicken + sides + dessert) with portion defaults sized for typical Israeli family servings. Editable post-application.</dd>
+    <dt>Inspired by</dt>
+    <dd>Lifesum's "re-onboarding for returning users" + the gap that NO global competitor addresses Jewish/Israeli holiday eating cycles, which dominate the calendar 30+ days a year.</dd>
+    <dt>Why it matters for us</dt>
+    <dd>Israeli users churn during chag because manually logging a 6-course Shabbat dinner is hostile work. Holiday patterns are also where calorie surprises happen — exactly when serious users want a tracker most. Distinctly Israeli, technically cheap (mostly content), and tweet-able marketing: <em>"the only nutrition app that actually understands Friday night"</em>.</dd>
+    <dt>User segment</dt>
+    <dd>Religious + traditional Israeli families (~50% of addressable market) who currently abandon tracking on chag.</dd>
+  </dl>
+</div>
+
+<div class="footer">
+  Self-check: 3/3 recs are YELLOW (target was 60%+) · 2/3 are distinctly Israeli-context · Theme cluster: "reduce friction for Israeli home cooks logging real Israeli food".<br>
+  Generated by the Market Intelligence Agent for תזונאי. Next run: Friday April 28, 2026.
+</div>
+
+</body>
+</html>

@@ -36,12 +36,13 @@ class ProfileRepository:
 
     def __init__(self, base_dir: Optional[str] = None):
         if base_dir is None:
-            base_dir = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                "storage_agents", "profiles",
-            )
-        self.base_dir = base_dir
-        os.makedirs(self.base_dir, exist_ok=True)
+            # base_dir is kept for backward-compat; new default uses per-user dirs
+            self.base_dir = None
+            self._use_per_user_dirs = True
+        else:
+            self.base_dir = base_dir
+            self._use_per_user_dirs = False
+            os.makedirs(self.base_dir, exist_ok=True)
 
     # ── Backend selector ──────────────────────────────────────────────────────
 
@@ -99,6 +100,9 @@ class ProfileRepository:
     # ── Local JSON backend ────────────────────────────────────────────────────
 
     def _path(self, user_id: str) -> str:
+        if self._use_per_user_dirs:
+            from nutrition_app.storage_paths import user_profile_file
+            return str(user_profile_file(user_id))
         return os.path.join(self.base_dir, f"{user_id}.json")
 
     def _local_load(self, user_id: str) -> dict:
@@ -127,10 +131,4 @@ class ProfileRepository:
     def load(self, user_id: str) -> dict:
         if self._use_supabase():
             return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
-        return self._local_load(user_id)
-
-    def save(self, profile: dict) -> None:
-        if self._use_supabase():
-            self._sb_save(profile)
-        else:
-            self._local_save(profile)
+        return se

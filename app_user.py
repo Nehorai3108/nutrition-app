@@ -620,14 +620,18 @@ if not run_btn and "last_plan" not in st.session_state:
     f1 = c1*_ring_pct; g1 = c1-f1
 
     # ── Macro mini-ring helper ────────────────────────────────────────────────
-    def _mrng(val, total, color, label):
+    # Returns (input_html, label_html) — caller places input before label in flex row
+    def _mrng(val, total, color, label, eaten, cid):
         pct  = min(val/max(total,1),1.0)
         r,cx,cy,sz,sw = 24,30,30,60,5
         circ = 2*_math.pi*r; filled=circ*pct; gap=circ-filled
         rem  = max(int(total)-int(val),0)
-        return (
-            f'<div dir="rtl" style="flex:1;background:#161b26;border:1px solid #252d3d;border-radius:16px;'
-            f'padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:6px">'
+        inp = f'<input type="checkbox" id="{cid}" style="display:none">'
+        lbl = (
+            f'<label for="{cid}" dir="rtl" '
+            f'style="flex:1;background:#161b26;border:1px solid #252d3d;border-radius:16px;'
+            f'padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" '
+            f'title="לחץ להחלפה">'
             f'<div dir="rtl" style="position:relative;width:{sz}px;height:{sz}px">'
             f'<svg width="{sz}" height="{sz}" viewBox="0 0 {sz} {sz}">'
             f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#252d3d" stroke-width="{sw}"/>'
@@ -638,11 +642,18 @@ if not run_btn and "last_plan" not in st.session_state:
             f'<div dir="rtl" style="font-size:0.6rem;font-weight:800;color:{color}">{int(pct*100)}%</div>'
             f'</div></div>'
             f'<div dir="rtl" style="text-align:center">'
+            f'<div class="mrm-{cid}">'
             f'<div dir="rtl" style="font-size:0.8rem;font-weight:800;color:#f4f6fb">{rem}g</div>'
             f'<div dir="rtl" style="font-size:0.58rem;color:#545e70;margin-top:1px">נותר</div>'
+            f'</div>'
+            f'<div class="mre-{cid}">'
+            f'<div dir="rtl" style="font-size:0.8rem;font-weight:800;color:{color}">{int(eaten)}g</div>'
+            f'<div dir="rtl" style="font-size:0.58rem;color:#545e70;margin-top:1px">נאכל</div>'
+            f'</div>'
             f'<div dir="rtl" style="font-size:0.62rem;color:#8892a4;margin-top:2px;font-weight:600">{label}</div>'
-            f'</div></div>'
+            f'</div></label>'
         )
+        return inp, lbl
 
     # ── Feed items ────────────────────────────────────────────────────────────
     MEAL_HEB = {"breakfast":"ארוחת בוקר","morning_snack":"חטיף בוקר",
@@ -680,22 +691,47 @@ if not run_btn and "last_plan" not in st.session_state:
         )
 
     # ── Render full dashboard ─────────────────────────────────────────────────
+    _mp_i, _mp_l   = _mrng(prot_eaten,  prot_t,  "#4f8ef7", "חלבון",   prot_eaten,  "mc-p")
+    _mc_i, _mc_l   = _mrng(carbs_eaten, carbs_t, "#f59e0b", "פחמימות", carbs_eaten, "mc-c")
+    _mf_i, _mf_l   = _mrng(fat_eaten,   fat_t,   "#f472b6", "שומן",    fat_eaten,   "mc-f")
+
     dashboard_html = (
+        # CSS for checkbox-toggle (works in dangerouslySetInnerHTML — no JS needed)
+        f'<style>'
+        f'#ctl+label .ceat{{display:none}}'
+        f'#ctl:checked+label .crem{{display:none}}'
+        f'#ctl:checked+label .ceat{{display:block}}'
+        f'#mc-p+label .mre-mc-p,#mc-c+label .mre-mc-c,#mc-f+label .mre-mc-f{{display:none}}'
+        f'#mc-p:checked+label .mrm-mc-p{{display:none}}'
+        f'#mc-p:checked+label .mre-mc-p{{display:block}}'
+        f'#mc-c:checked+label .mrm-mc-c{{display:none}}'
+        f'#mc-c:checked+label .mre-mc-c{{display:block}}'
+        f'#mc-f:checked+label .mrm-mc-f{{display:none}}'
+        f'#mc-f:checked+label .mre-mc-f{{display:block}}'
+        f'</style>'
+
         # Week strip
         f'<div dir="rtl" style="display:flex;justify-content:space-between;margin:0 2px 16px">'
         f'{week_strip}</div>'
 
-        # Main calorie card
+        # Main calorie card — hidden checkbox + label as clickable left side
         f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:24px;'
         f'padding:20px 20px 18px;margin-bottom:10px;'
         f'display:flex;align-items:center;justify-content:space-between;gap:12px">'
 
-        # Left: numbers
-        f'<div>'
+        f'<input type="checkbox" id="ctl" style="display:none">'
+        f'<label for="ctl" style="cursor:pointer;display:block" title="לחץ להחלפה">'
+        f'<div class="crem">'
         f'<div dir="rtl" style="font-size:3rem;font-weight:900;color:{cal_color};line-height:1;letter-spacing:-0.04em">'
         f'{cal_remaining}</div>'
         f'<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-top:5px;font-weight:500">'
         f'{"חריגה" if cal_over else "קלוריות נותרות"}</div>'
+        f'</div>'
+        f'<div class="ceat">'
+        f'<div dir="rtl" style="font-size:3rem;font-weight:900;color:{cal_color};line-height:1;letter-spacing:-0.04em">'
+        f'{int(cal_eaten)}</div>'
+        f'<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-top:5px;font-weight:500">קלוריות שנאכלו</div>'
+        f'</div>'
         f'<div dir="rtl" style="display:flex;gap:18px;margin-top:14px">'
         f'<div><div dir="rtl" style="font-size:0.62rem;color:#545e70;margin-bottom:2px">אכלת</div>'
         f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{int(cal_eaten)}</div></div>'
@@ -703,9 +739,9 @@ if not run_btn and "last_plan" not in st.session_state:
         f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{int(burned)}</div></div>'
         f'<div><div dir="rtl" style="font-size:0.62rem;color:#545e70;margin-bottom:2px">יעד</div>'
         f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{cal_t}</div></div>'
-        f'</div></div>'
+        f'</div></label>'
 
-        # Right: ring
+        # Right: ring (unchanged)
         f'<div dir="rtl" style="position:relative;width:{sz1}px;height:{sz1}px;flex-shrink:0">'
         f'<svg width="{sz1}" height="{sz1}" viewBox="0 0 {sz1} {sz1}" '
         f'style="filter:drop-shadow(0 0 8px {cal_color}55)">'
@@ -721,11 +757,9 @@ if not run_btn and "last_plan" not in st.session_state:
         f'</div></div>'
         f'</div>'
 
-        # Macro row
+        # Macro row — each ring is input+label pair (inputs are display:none flex non-items)
         f'<div dir="rtl" style="display:flex;gap:8px;margin-bottom:16px">'
-        f'{_mrng(prot_eaten, prot_t,  "#4f8ef7", "חלבון")}'
-        f'{_mrng(carbs_eaten, carbs_t, "#f59e0b", "פחמימות")}'
-        f'{_mrng(fat_eaten,  fat_t,   "#f472b6", "שומן")}'
+        f'{_mp_i}{_mp_l}{_mc_i}{_mc_l}{_mf_i}{_mf_l}'
         f'</div>'
 
         # Water strip
@@ -1137,59 +1171,4 @@ with tab_plan:
                                 for step_i, step in enumerate(steps, 1):
                                     st.markdown(f"**{step_i}.** {step}")
                 else:
-                    st.info("אין מתכונים מתאימים לארוחה זו.")
-
-# ── Tab 3: Daily Summary ──────────────────────────────────────────────────────
-
-with tab_summary:
-    st.markdown("### סיכום יומי")
-
-    # Calories
-    dev = plan.calorie_deviation_pct
-    st.metric(
-        "סה\"כ קלוריות",
-        f"{plan.total_calories:.0f} קק\"ל",
-        delta=f"{dev:+.1f}% מהיעד ({targets.target_calories_kcal:.0f} קק\"ל)",
-        delta_color="inverse",
-    )
-
-    st.divider()
-
-    # Macro comparison
-    def macro_row(label, actual, target, unit="ג"):
-        pct = (actual / target * 100) if target > 0 else 0
-        col_l, col_a, col_t, col_bar = st.columns([2, 1, 1, 3])
-        col_l.write(f"**{label}**")
-        col_a.write(f"{actual:.0f}{unit}")
-        col_t.write(f"יעד: {target:.0f}{unit}")
-        col_bar.progress(min(int(pct), 100))
-
-    macro_row("🥩 חלבון", plan.total_protein, targets.protein_g)
-    macro_row("🍞 פחמימות", plan.total_carbs, targets.carbs_g)
-    macro_row("🥑 שומן", plan.total_fat, targets.fat_g)
-
-    st.divider()
-    st.caption(f"מספר ארוחות: {len(plan.meals)}   |   Run ID: {plan.run_id}")
-
-# ── Tab 4: Inventory ──────────────────────────────────────────────────────────
-
-with tab_inventory:
-    st.markdown("### ניכוי מלאי")
-
-    if not changeset.changes:
-        st.info("לא בוצע ניכוי מלאי (לא נבחרו פריטים עם מלאי).")
-    else:
-        for change in changeset.changes:
-            food = food_lookup.get(change.food_id)
-            food_name = food.name_he if food else change.food_id
-
-            c_name, c_before, c_arrow, c_after, c_delta = st.columns([3, 1, 0.5, 1, 1])
-            c_name.write(f"**{food_name}**")
-            c_before.write(f"{change.quantity_before:.0f}ג")
-            c_arrow.write("→")
-            c_after.write(f"{change.quantity_after:.0f}ג")
-            remaining_pct = (change.quantity_after / change.quantity_before * 100) if change.quantity_before > 0 else 0
-            c_delta.write(f"({change.quantity_delta:+.0f}ג)")
-
-        st.divider()
-        st.success(f"✓  {len(changeset.changes)} פריטים עודכנו במלאי")
+                    st.info("אין מתכונים מתאימים ל�

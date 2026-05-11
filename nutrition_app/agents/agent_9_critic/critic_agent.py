@@ -41,6 +41,13 @@ _BASE_DIR = os.path.join(
     "storage_agents",
 )
 
+from nutrition_app.storage_paths import (  # noqa: E402
+    system_tasks_dir,
+    system_audit_dir,
+    user_plans_dir,
+    legacy_plans_dir,
+)
+
 
 class CriticAgent:
     """
@@ -48,11 +55,26 @@ class CriticAgent:
     Approves or rejects, re-queues failures.
     """
 
-    def __init__(self, storage_dir: Optional[str] = None):
+    def __init__(
+        self,
+        storage_dir: Optional[str] = None,
+        user_id: Optional[str] = None,
+    ):
         self._storage_dir = storage_dir or _BASE_DIR
-        self._tasks_dir = os.path.join(self._storage_dir, "tasks")
-        self._audit_dir = os.path.join(self._storage_dir, "audit")
-        self._plans_dir = os.path.join(self._storage_dir, "plans")
+        self._user_id = user_id
+
+        from pathlib import Path as _Path
+        _root = _Path(self._storage_dir).parent if (
+            _Path(self._storage_dir).name == "storage_agents"
+        ) else None
+
+        self._tasks_dir = str(system_tasks_dir(_root))
+        self._audit_dir = str(system_audit_dir(_root))
+
+        if user_id:
+            self._plans_dir = str(user_plans_dir(user_id, _root))
+        else:
+            self._plans_dir = str(legacy_plans_dir(_root))
 
         os.makedirs(self._tasks_dir, exist_ok=True)
         os.makedirs(self._audit_dir, exist_ok=True)
@@ -347,13 +369,4 @@ class CriticAgent:
         return plans[0] if plans else None
 
     def _append_log(self, verdicts: list):
-        log_path = os.path.join(self._audit_dir, "critic_log.txt")
-        now = datetime.now(timezone.utc)
-        approved = sum(1 for v in verdicts if v["verdict"] == "APPROVED")
-        rejected = sum(1 for v in verdicts if v["verdict"] == "REJECTED")
-        line = (
-            f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] "
-            f"reviewed={len(verdicts)} approved={approved} rejected={rejected}\n"
-        )
-        with open(log_path, "a", encoding="utf-8") as f:
-            f.write(line)
+   
