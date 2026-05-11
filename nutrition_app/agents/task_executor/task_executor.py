@@ -38,15 +38,37 @@ _BASE_DIR = os.path.join(
     "storage_agents",
 )
 
+from nutrition_app.storage_paths import (  # noqa: E402
+    system_tasks_dir,
+    system_audit_dir,
+    user_plans_dir,
+    legacy_plans_dir,
+)
+
 
 class TaskExecutor:
     """Executes Director-created tasks with real implementations."""
 
-    def __init__(self, storage_dir: Optional[str] = None):
+    def __init__(
+        self,
+        storage_dir: Optional[str] = None,
+        user_id: Optional[str] = None,
+    ):
         self._storage_dir = storage_dir or _BASE_DIR
-        self._tasks_dir = os.path.join(self._storage_dir, "tasks")
-        self._audit_dir = os.path.join(self._storage_dir, "audit")
-        self._plans_dir = os.path.join(self._storage_dir, "plans")
+        self._user_id = user_id
+
+        from pathlib import Path as _Path
+        _root = _Path(self._storage_dir).parent if (
+            _Path(self._storage_dir).name == "storage_agents"
+        ) else None
+
+        self._tasks_dir = str(system_tasks_dir(_root))
+        self._audit_dir = str(system_audit_dir(_root))
+
+        if user_id:
+            self._plans_dir = str(user_plans_dir(user_id, _root))
+        else:
+            self._plans_dir = str(legacy_plans_dir(_root))
 
         for d in [self._tasks_dir, self._audit_dir, self._plans_dir]:
             os.makedirs(d, exist_ok=True)
@@ -438,14 +460,4 @@ class TaskExecutor:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2, default=str)
 
-    def _append_log(self, completed: list):
-        log_path = os.path.join(self._audit_dir, "audit.log")
-        now = datetime.now(timezone.utc)
-        succeeded = sum(1 for t in completed if t.get("result", {}).get("success"))
-        failed = len(completed) - succeeded
-        line = (
-            f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] "
-            f"executed={len(completed)} succeeded={succeeded} failed={failed}\n"
-        )
-        with open(log_path, "a", encoding="utf-8") as f:
-            f.write(line)
+    def _append_log(se

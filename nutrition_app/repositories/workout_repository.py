@@ -18,19 +18,11 @@ from nutrition_app.models.workout import (
 
 _WEEKDAY_NAMES = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
-
-def _storage_dir() -> str:
-    folder = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-        "storage_agents",
-        "workouts",
-    )
-    os.makedirs(folder, exist_ok=True)
-    return folder
+from nutrition_app.storage_paths import user_workouts_file  # noqa: E402
 
 
 def _path(user_id: str) -> str:
-    return os.path.join(_storage_dir(), f"{user_id}.json")
+    return str(user_workouts_file(user_id))
 
 
 class WorkoutRepository:

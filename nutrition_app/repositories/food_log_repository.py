@@ -41,12 +41,12 @@ class FoodLogRepository:
     def __init__(self, base_dir: Optional[str] = None):
         # Local JSON fallback
         if base_dir is None:
-            base_dir = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                "storage_agents", "food_log",
-            )
-        self._base_dir = base_dir
-        os.makedirs(self._base_dir, exist_ok=True)
+            self._base_dir = None
+            self._use_per_user_dirs = True
+        else:
+            self._base_dir = base_dir
+            self._use_per_user_dirs = False
+            os.makedirs(self._base_dir, exist_ok=True)
 
     # ── Backend selector ──────────────────────────────────────────────────────
 
@@ -95,6 +95,9 @@ class FoodLogRepository:
     # ── Local JSON backend ────────────────────────────────────────────────────
 
     def _path(self, user_id: str) -> str:
+        if self._use_per_user_dirs:
+            from nutrition_app.storage_paths import user_food_log_file
+            return str(user_food_log_file(user_id))
         return os.path.join(self._base_dir, f"{user_id}.json")
 
     def _load(self, user_id: str) -> dict:
@@ -162,5 +165,5 @@ def _row_to_entry(row: dict) -> FoodLogEntry:
         fat       = float(row.get("fat", 0)),
         meal_type = row.get("meal_type", "lunch"),
         timestamp = row.get("timestamp", ""),
-        entry_id  = row.get("entry_id", str(uuid.uuid4())),
+        entry_id  = row.get("entry_id", ""),
     )

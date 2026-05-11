@@ -90,16 +90,18 @@ MAX_MACRO_DEVIATION_PCT = 10.0    # ±10% per macro
 
 # ─── Storage paths ──────────────────────────────────────────────────
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-_PLANS_DIR = os.path.join(_BASE_DIR, "storage_agents", "plans")
 _DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "..", "data")
+
+from nutrition_app.storage_paths import user_plans_dir, legacy_plans_dir  # noqa: E402
 
 
 class MealPlanner:
     """Deterministic meal plan builder. No AI, no writes."""
 
-    def __init__(self, food_catalog_lookup=None):
+    def __init__(self, food_catalog_lookup=None, user_id: str | None = None):
         self._food_lookup: Dict[str, FoodItem] = food_catalog_lookup or {}
         self._recently_used: Set[str] = set()
+        self._user_id = user_id
         self._load_recently_used()
 
     def set_food_lookup(self, foods: dict):
@@ -121,17 +123,24 @@ class MealPlanner:
         except (json.JSONDecodeError, OSError, KeyError):
             pass
 
+    def _get_plans_dir(self) -> str:
+        """Return the plans directory for this planner instance."""
+        if self._user_id:
+            return str(user_plans_dir(self._user_id))
+        return str(legacy_plans_dir())
+
     def _load_recently_used(self):
         """Load food IDs used in the last 3 plans for rotation."""
-        if not os.path.isdir(_PLANS_DIR):
+        plans_dir = self._get_plans_dir()
+        if not os.path.isdir(plans_dir):
             return
         files = sorted(
-            [f for f in os.listdir(_PLANS_DIR) if f.endswith(".json")],
+            [f for f in os.listdir(plans_dir) if f.endswith(".json")],
             reverse=True,
         )
         for f in files[:3]:
             try:
-                with open(os.path.join(_PLANS_DIR, f), "r", encoding="utf-8") as fh:
+                with open(os.path.join(plans_dir, f), "r", encoding="utf-8") as fh:
                     plan_data = json.load(fh)
                 for meal in plan_data.get("meals", []):
                     for item in meal.get("items", []):
@@ -490,11 +499,4 @@ class MealPlanner:
         """Check for meal-type category violations."""
         violations = []
         for meal in plan.meals:
-            allowed = set(MEAL_CATEGORY_RULES.get(meal.meal_type, list(FoodCategory)))
-            for item in meal.items:
-                food = self._food_lookup.get(item.food_id)
-                if food and food.category not in allowed:
-                    violations.append(
-                        f"{meal.meal_type.value}: {food.name_he} ({food.category.value})"
-                    )
-        return violations
+            allowed = set(MEAL_CATEGORY_RULES.get(meal.meal_type, li

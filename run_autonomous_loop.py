@@ -175,15 +175,17 @@ def main() -> int:
     # ── Initialize Agents ──────────────────────────────────────────
     section("אתחול סוכנים")
 
+    _LOOP_USER_ID = "auto_001"
+
     engine = NutritionEngine()
     catalog = FoodCatalog(load_extended=True)
     inventory_mgr = InventoryManager()
-    planner = MealPlanner()
+    planner = MealPlanner(user_id=_LOOP_USER_ID)
     ai_layer = AILayer()
     data_manager = DataManager(base_path=STORAGE_DIR)
-    director = DirectorAgent(storage_dir=STORAGE_DIR)
-    critic = CriticAgent(storage_dir=STORAGE_DIR)
-    executor = TaskExecutor(storage_dir=STORAGE_DIR)
+    director = DirectorAgent(storage_dir=STORAGE_DIR, user_id=_LOOP_USER_ID)
+    critic = CriticAgent(storage_dir=STORAGE_DIR, user_id=_LOOP_USER_ID)
+    executor = TaskExecutor(storage_dir=STORAGE_DIR, user_id=_LOOP_USER_ID)
 
     all_foods = catalog.get_all_foods()
     food_lookup = {f.food_id: f for f in all_foods}
@@ -321,11 +323,12 @@ def main() -> int:
             ok("כל הקריטריונים עברו!")
 
             # Save the plan
+            from nutrition_app.storage_paths import user_plans_dir as _upd
+            _plans_dir = str(_upd(_LOOP_USER_ID))
             plan_path = os.path.join(
-                STORAGE_DIR, "plans",
+                _plans_dir,
                 f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_approved.json"
             )
-            os.makedirs(os.path.dirname(plan_path), exist_ok=True)
             with open(plan_path, "w", encoding="utf-8") as f:
                 json.dump(plan.to_dict(), f, ensure_ascii=False, indent=2, default=str)
 
@@ -344,11 +347,12 @@ def main() -> int:
                 best_issues = issues
 
             # Save intermediate plan for rotation tracking
+            from nutrition_app.storage_paths import user_plans_dir as _upd2
+            _plans_dir2 = str(_upd2(_LOOP_USER_ID))
             plan_path = os.path.join(
-                STORAGE_DIR, "plans",
+                _plans_dir2,
                 f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_iter_{iteration}.json"
             )
-            os.makedirs(os.path.dirname(plan_path), exist_ok=True)
             with open(plan_path, "w", encoding="utf-8") as f:
                 json.dump(plan.to_dict(), f, ensure_ascii=False, indent=2, default=str)
 
@@ -410,8 +414,8 @@ def main() -> int:
         "remaining_issues": best_issues,
     }
 
-    metrics_path = os.path.join(STORAGE_DIR, "audit", "metrics.json")
-    os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
+    from nutrition_app.storage_paths import system_audit_dir as _sad
+    metrics_path = str(_sad() / "metrics.json")
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, ensure_ascii=False, indent=2, default=str)
 
@@ -420,13 +424,4 @@ def main() -> int:
         print("=" * WIDTH)
         print("  PIPELINE הושלם בהצלחה")
         print("=" * WIDTH)
-        return 0
-    else:
-        print("=" * WIDTH)
-        print("  PIPELINE הושלם עם בעיות")
-        print("=" * WIDTH)
-        return 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+  
