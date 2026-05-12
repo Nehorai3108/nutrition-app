@@ -26,6 +26,12 @@ def _set_session(user, session=None) -> None:
     st.session_state[_KEY_LEGACY_USER] = {"id": user.id, "email": user.email}
     if session is not None:
         st.session_state[_KEY_LEGACY_SESSION] = session
+    # Persist to browser cookie so session survives WebSocket reconnects
+    try:
+        from ui.persistent_auth import save_auth_cookie
+        save_auth_cookie(user.id, user.email)
+    except Exception:
+        pass
 
 
 def _do_login(email: str, password: str) -> str | None:
@@ -143,6 +149,11 @@ def logout() -> None:
     """Clear all auth-related session_state keys and rerun."""
     try:
         get_supabase().auth.sign_out()
+    except Exception:
+        pass
+    try:
+        from ui.persistent_auth import clear_auth_cookie
+        clear_auth_cookie()
     except Exception:
         pass
     for k in (

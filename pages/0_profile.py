@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
 from ui.components import inject_global_css, page_header, section_header
+from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from nutrition_app.models.enums import Gender, ActivityLevel, Goal
 from nutrition_app.agents.agent_2_nutrition import NutritionEngine
@@ -23,6 +24,7 @@ with st.sidebar:
     st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
+setup_persistent_auth()
 USER_ID = require_auth()
 repo    = ProfileRepository()
 profile = repo.load(USER_ID)

@@ -10,6 +10,7 @@ from pathlib import Path
 import streamlit as st
 
 from ui.components import inject_global_css, bottom_nav
+from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository

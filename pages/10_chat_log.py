@@ -12,6 +12,7 @@ import streamlit as st
 from groq import Groq
 
 from ui.components import inject_global_css, bottom_nav
+from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager

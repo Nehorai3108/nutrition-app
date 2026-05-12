@@ -53,21 +53,15 @@ st.set_page_config(
 # ── Design system ────────────────────────────────────────────────────────────
 inject_global_css()
 
-# ── Auth gate ────────────────────────────────────────────────────────────────
-# Login is required before anything else on the home page. We use the existing
-# require_auth() (ui/user_auth.py) when Supabase is configured. When it is NOT
-# configured (local dev), require_auth returns "ui_user_001" so the dev flow
-# keeps working. If Supabase IS configured and there is no logged-in user, this
-# call renders the login UI and calls st.stop() so nothing below executes.
-#
-# NOTE for data-layer-agent: some repository tests will fail until repository
-# implementations are updated to honor `user_id` everywhere (see contract in
-# storage_audit/data_layer_audit.md). Auth tests and call-site signatures are
-# correct here. # data-layer-agent will fix.
+# ── Persistent auth (cookie-based) ──────────────────────────────────────────
+from ui.persistent_auth import setup_persistent_auth
 from auth.login_ui import render_login_ui, logout_button as _auth_logout_button
 from auth.supabase_client import is_supabase_configured, get_current_user
 
-# Auth is optional — sync bitefit_user→user_id if present, otherwise fall back.
+# Restore session from browser cookie (survives WebSocket reconnects)
+setup_persistent_auth()
+
+# Sync bitefit_user → user_id if set by a sub-page login
 if "user_id" not in st.session_state:
     _existing = st.session_state.get("bitefit_user")
     if isinstance(_existing, dict) and _existing.get("id"):
@@ -202,8 +196,13 @@ with st.sidebar:
     ).get("email", "")
     if _user_email_display:
         st.caption(f"👤 {_user_email_display}")
-    st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
-    _auth_logout_button(key="_home_logout_btn")
+        st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
+        _auth_logout_button(key="_home_logout_btn")
+    else:
+        # Not logged in — show optional login form in sidebar
+        if is_supabase_configured():
+            with st.expander("🔑 התחבר / הרשם", expanded=False):
+                render_login_ui()
 
     st.divider()
 

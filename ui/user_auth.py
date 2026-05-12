@@ -32,9 +32,13 @@ def is_logged_in() -> bool:
 def require_auth() -> str:
     """
     Call at the top of every page.
-    Auth is optional — returns the logged-in user_id when available,
-    otherwise returns "ui_user_001" so the app always works.
+    Restores session from cookie if available, otherwise returns "ui_user_001".
     """
+    try:
+        from ui.persistent_auth import setup_persistent_auth
+        setup_persistent_auth()
+    except Exception:
+        pass
     return get_user_id()
 
 

@@ -18,11 +18,13 @@ from nutrition_app.repositories.food_log_repository import FoodLogRepository, Fo
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
 from ui.components import inject_global_css, recipe_card_html, bottom_nav
+from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from ui.images import image_data_uri as _image_data_uri
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.utils.household_units import get_unit_info, grams_to_household, suggested_quantity
 
+setup_persistent_auth()
 USER_ID = require_auth()
 _food_log_repo = FoodLogRepository()
 
