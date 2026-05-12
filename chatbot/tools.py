@@ -13,6 +13,7 @@ from nutrition_app.agents.agent_4_inventory import InventoryManager
 from nutrition_app.agents.agent_5_planner import MealPlanner
 from nutrition_app.models.enums import MealType
 from nutrition_app.models.meal import MealItem
+from ui.user_auth import get_user_id
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "nutrition.db")
 
@@ -421,7 +422,7 @@ def _recalculate_targets() -> str:
 
 def _get_inventory() -> str:
     mgr = _get_inventory_manager()
-    state = mgr.get_state("ui_user_001")
+    state = mgr.get_state(get_user_id())
     catalog = _get_catalog()
 
     items = []
@@ -448,19 +449,20 @@ def _update_inventory(args: dict) -> str:
     if not food:
         return json.dumps({"error": f"מזון לא נמצא בקטלוג: {food_id}"})
 
+    user_id = get_user_id()
     if action == "add":
         qty = args.get("quantity_g", food.default_serving_g)
-        mgr.add_item("ui_user_001", food_id, qty, "gram")
+        mgr.add_item(user_id, food_id, qty, "gram")
     elif action == "remove":
-        mgr.remove_item("ui_user_001", food_id)
+        mgr.remove_item(user_id, food_id)
     elif action == "set_quantity":
         qty = args.get("quantity_g", 0)
-        state = mgr.get_state("ui_user_001")
+        state = mgr.get_state(user_id)
         existing = state.get_by_food_id(food_id)
         if existing:
-            mgr.remove_item("ui_user_001", food_id)
+            mgr.remove_item(user_id, food_id)
         if qty > 0:
-            mgr.add_item("ui_user_001", food_id, qty, "gram")
+            mgr.add_item(user_id, food_id, qty, "gram")
     else:
         return json.dumps({"error": f"Unknown action: {action}"})
 
@@ -487,7 +489,7 @@ def _generate_new_meal_plan() -> str:
     match_result = catalog.match_foods(food_names)
 
     # Build inventory state
-    inv_state = mgr.get_state("ui_user_001")
+    inv_state = mgr.get_state(get_user_id())
 
     # Generate plan
     run_id = str(uuid.uuid4())

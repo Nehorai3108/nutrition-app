@@ -17,6 +17,7 @@ from nutrition_app.repositories.workout_repository import WorkoutRepository
 from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, icon_button,
 )
+from ui.user_auth import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
 st.set_page_config(page_title="BiteFit · אימונים", page_icon="🏋️", layout="wide", initial_sidebar_state="collapsed")
@@ -25,6 +26,7 @@ inject_global_css()
 
 with st.sidebar:
     render_chatbot_sidebar()
+    logout_button(key="_weekly_workout_logout_btn")
 nav_menu(active="אימונים")
 page_header(
     "תכנית אימונים שבועית",
@@ -32,7 +34,8 @@ page_header(
     subtitle="הגדר פעם אחת — התפריט יותאם אוטומטית לכל יום. ניתן להוסיף מספר אימונים ליום. לוג יומי בדף הראשי עוקף את התכנית.",
 )
 
-USER_ID = "ui_user_001"  # Matches app_ui.py
+# Auth gate — must come before any repository access.
+USER_ID = require_auth()
 
 WEEKDAYS_HE = [
     ("monday",    "יום שני"),
