@@ -22,14 +22,17 @@ class DailySummaryRepository:
 
     def __init__(self, base_dir: Optional[str] = None):
         if base_dir is None:
-            base_dir = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                "storage_agents", "daily_summaries",
-            )
-        self.base_dir = base_dir
-        os.makedirs(self.base_dir, exist_ok=True)
+            self.base_dir = None
+            self._use_per_user_dirs = True
+        else:
+            self.base_dir = base_dir
+            self._use_per_user_dirs = False
+            os.makedirs(self.base_dir, exist_ok=True)
 
     def _path(self, user_id: str) -> str:
+        if self._use_per_user_dirs:
+            from nutrition_app.storage_paths import user_daily_summaries_file
+            return str(user_daily_summaries_file(user_id))
         return os.path.join(self.base_dir, f"{user_id}.json")
 
     def _load_all(self, user_id: str) -> Dict[str, dict]:
