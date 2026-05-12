@@ -499,4 +499,11 @@ class MealPlanner:
         """Check for meal-type category violations."""
         violations = []
         for meal in plan.meals:
-            allowed = set(MEAL_CATEGORY_RULES.get(meal.meal_type, li
+            allowed = set(MEAL_CATEGORY_RULES.get(meal.meal_type, list(FoodCategory)))
+            for item in meal.items:
+                food = self._food_lookup.get(item.food_id)
+                if food and food.category not in allowed:
+                    violations.append(
+                        f"{meal.meal_type.value}: {food.name_he} ({food.category.value})"
+                    )
+        return violations

@@ -58,17 +58,23 @@ class TaskExecutor:
         self._user_id = user_id
 
         from pathlib import Path as _Path
-        _root = _Path(self._storage_dir).parent if (
-            _Path(self._storage_dir).name == "storage_agents"
-        ) else None
-
-        self._tasks_dir = str(system_tasks_dir(_root))
-        self._audit_dir = str(system_audit_dir(_root))
-
-        if user_id:
-            self._plans_dir = str(user_plans_dir(user_id, _root))
+        _sa_path = _Path(self._storage_dir)
+        # If caller passed the storage_agents dir (or its parent/default), use
+        # the namespaced helpers.  If caller passed a custom dir (e.g. a tmp
+        # dir in tests), fall back to direct sub-paths for backward-compat.
+        if _sa_path.name == "storage_agents":
+            _root = _sa_path.parent
+            self._tasks_dir = str(system_tasks_dir(_root))
+            self._audit_dir = str(system_audit_dir(_root))
+            self._plans_dir = (
+                str(user_plans_dir(user_id, _root)) if user_id
+                else str(legacy_plans_dir(_root))
+            )
         else:
-            self._plans_dir = str(legacy_plans_dir(_root))
+            # Custom storage_dir (e.g. test tmp path) — use original layout
+            self._tasks_dir = str(_sa_path / "tasks")
+            self._audit_dir = str(_sa_path / "audit")
+            self._plans_dir = str(_sa_path / "plans")
 
         for d in [self._tasks_dir, self._audit_dir, self._plans_dir]:
             os.makedirs(d, exist_ok=True)
@@ -460,4 +466,14 @@ class TaskExecutor:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2, default=str)
 
-    def _append_log(se
+    def _append_log(self, completed: list):
+        log_path = os.path.join(self._audit_dir, "audit.log")
+        now = datetime.now(timezone.utc)
+        succeeded = sum(1 for t in completed if t.get("result", {}).get("success"))
+        failed = len(completed) - succeeded
+        line = (
+            f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] "
+            f"executed={len(completed)} succeeded={succeeded} failed={failed}\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(line)
