@@ -50,7 +50,13 @@ class FoodLogRepository:
 
     # ── Backend selector ──────────────────────────────────────────────────────
 
-    def _use_supabase(self) -> bool:
+    def _use_supabase(self, user_id: str = "") -> bool:
+        import re
+        if not re.match(
+            r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+            (user_id or "").lower()
+        ):
+            return False
         try:
             from nutrition_app.db.supabase_client import is_supabase_configured
             return is_supabase_configured()
@@ -117,13 +123,13 @@ class FoodLogRepository:
     # ── Public API ────────────────────────────────────────────────────────────
 
     def get_log(self, user_id: str, day: date_cls) -> List[FoodLogEntry]:
-        if self._use_supabase():
+        if self._use_supabase(user_id):
             return self._sb_get_log(user_id, day)
         data = self._load(user_id)
         return [FoodLogEntry(**e) for e in data.get(day.isoformat(), [])]
 
     def add_entry(self, user_id: str, day: date_cls, entry: FoodLogEntry):
-        if self._use_supabase():
+        if self._use_supabase(user_id):
             self._sb_add_entry(user_id, day, entry)
             return
         data = self._load(user_id)
@@ -131,7 +137,7 @@ class FoodLogRepository:
         self._save(user_id, data)
 
     def remove_entry(self, user_id: str, day: date_cls, entry_id: str):
-        if self._use_supabase():
+        if self._use_supabase(user_id):
             self._sb_remove_entry(user_id, day, entry_id)
             return
         data = self._load(user_id)

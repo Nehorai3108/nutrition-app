@@ -36,17 +36,22 @@ class ProfileRepository:
 
     def __init__(self, base_dir: Optional[str] = None):
         if base_dir is None:
-            # base_dir is kept for backward-compat; new default uses per-user dirs
-            self.base_dir = None
-            self._use_per_user_dirs = True
-        else:
-            self.base_dir = base_dir
-            self._use_per_user_dirs = False
-            os.makedirs(self.base_dir, exist_ok=True)
+            base_dir = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                "storage_agents", "profiles",
+            )
+        self.base_dir = base_dir
+        os.makedirs(self.base_dir, exist_ok=True)
 
     # ── Backend selector ──────────────────────────────────────────────────────
 
-    def _use_supabase(self) -> bool:
+    def _use_supabase(self, user_id: str = "") -> bool:
+        import re
+        if not re.match(
+            r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+            (user_id or "").lower()
+        ):
+            return False  # not a real UUID — use local storage
         try:
             from nutrition_app.db.supabase_client import is_supabase_configured
             return is_supabase_configured()
@@ -100,9 +105,6 @@ class ProfileRepository:
     # ── Local JSON backend ────────────────────────────────────────────────────
 
     def _path(self, user_id: str) -> str:
-        if self._use_per_user_dirs:
-            from nutrition_app.storage_paths import user_profile_file
-            return str(user_profile_file(user_id))
         return os.path.join(self.base_dir, f"{user_id}.json")
 
     def _local_load(self, user_id: str) -> dict:
@@ -129,6 +131,12 @@ class ProfileRepository:
     # ── Public API ────────────────────────────────────────────────────────────
 
     def load(self, user_id: str) -> dict:
-        if self._use_supabase():
+        if self._use_supabase(user_id):
             return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
-        return se
+        return self._local_load(user_id)
+
+    def save(self, profile: dict) -> None:
+        if self._use_supabase(profile.get("user_id", "")):
+            self._sb_save(profile)
+        else:
+            self._local_save(profile)
