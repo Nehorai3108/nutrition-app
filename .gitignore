@@ -15,3 +15,4 @@ storage_agents/recipe_images/.pexels_api_key
 storage_agents/recipe_images/candidates/
 .streamlit/secrets.toml
 worktrees/
+test_groq.py
