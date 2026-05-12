@@ -68,7 +68,12 @@ if "user_id" not in st.session_state:
         st.session_state["user_id"] = _existing["id"]
         st.session_state["user_email"] = _existing.get("email", "")
 
-# Resolve current user_id. Falls back to "ui_user_001" when not logged in.
+# If Supabase is configured and no user is logged in → show login wall
+if is_supabase_configured() and "user_id" not in st.session_state:
+    render_login_ui()
+    st.stop()
+
+# Resolve current user_id.
 _USER_ID: str = st.session_state.get("user_id", "ui_user_001")
 
 # ── Constants ────────────────────────────────────────────────────────────────
@@ -196,13 +201,8 @@ with st.sidebar:
     ).get("email", "")
     if _user_email_display:
         st.caption(f"👤 {_user_email_display}")
-        st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
-        _auth_logout_button(key="_home_logout_btn")
-    else:
-        # Not logged in — show optional login form in sidebar
-        if is_supabase_configured():
-            with st.expander("🔑 התחבר / הרשם", expanded=False):
-                render_login_ui()
+    st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
+    _auth_logout_button(key="_home_logout_btn")
 
     st.divider()
 
