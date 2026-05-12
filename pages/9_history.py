@@ -417,4 +417,3 @@ else:
 
 st.markdown('<div dir="rtl" style="height:80px"></div>', unsafe_allow_html=True)
 bottom_nav("history")
-                                                            

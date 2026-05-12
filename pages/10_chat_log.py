@@ -601,4 +601,3 @@ if st.session_state.get("_last_chat_error"):
             st.rerun()
 
 bottom_nav("chat")
-                                            

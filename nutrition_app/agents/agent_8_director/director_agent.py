@@ -70,14 +70,6 @@ _BASE_DIR = os.path.join(
     "storage_agents",
 )
 
-from nutrition_app.storage_paths import (  # noqa: E402
-    system_tasks_dir,
-    system_audit_dir,
-    system_director_reports_dir,
-    user_plans_dir,
-    legacy_plans_dir,
-)
-
 
 @dataclass
 class DirectorReport:
@@ -101,28 +93,12 @@ class DirectorAgent:
     Never executes tasks — only defines and delegates.
     """
 
-    def __init__(
-        self,
-        storage_dir: Optional[str] = None,
-        user_id: Optional[str] = None,
-    ):
+    def __init__(self, storage_dir: Optional[str] = None):
         self._storage_dir = storage_dir or _BASE_DIR
-        self._user_id = user_id
-
-        # System (global) paths via helpers
-        from pathlib import Path as _Path
-        _root = _Path(self._storage_dir).parent if (
-            _Path(self._storage_dir).name == "storage_agents"
-        ) else None
-        self._tasks_dir = str(system_tasks_dir(_root))
-        self._audit_dir = str(system_audit_dir(_root))
-        self._reports_dir = str(system_director_reports_dir(_root))
-
-        # Plans dir: per-user when user_id given, legacy flat dir otherwise
-        if user_id:
-            self._plans_dir = str(user_plans_dir(user_id, _root))
-        else:
-            self._plans_dir = str(legacy_plans_dir(_root))
+        self._tasks_dir = os.path.join(self._storage_dir, "tasks")
+        self._audit_dir = os.path.join(self._storage_dir, "audit")
+        self._reports_dir = os.path.join(self._audit_dir, "director_reports")
+        self._plans_dir = os.path.join(self._storage_dir, "plans")
 
         # Ensure directories exist
         for d in [self._tasks_dir, self._reports_dir]:
@@ -398,4 +374,18 @@ class DirectorAgent:
             json.dump(existing, f, ensure_ascii=False, indent=2)
 
     def _save_report(self, report: DirectorReport, ts: datetime):
-        filename = ts.strftime("%Y-%m-%d_%H-%M
+        filename = ts.strftime("%Y-%m-%d_%H-%M") + ".json"
+        path = os.path.join(self._reports_dir, filename)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(report.to_dict(), f, ensure_ascii=False, indent=2)
+
+    def _append_log(self, report: DirectorReport, ts: datetime):
+        log_path = os.path.join(self._audit_dir, "director_log.txt")
+        line = (
+            f"[{ts.strftime('%Y-%m-%d %H:%M:%S')}] "
+            f"tasks={len(report.tasks_created)} "
+            f"health={report.system_health_score} "
+            f"summary={report.summary}\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(line)
