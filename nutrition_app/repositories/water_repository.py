@@ -27,21 +27,19 @@ class WaterRepository:
         Initialize the water repository.
 
         Args:
-            base_dir: Base directory for water storage (default: storage_agents/users/<id>/water.json)
+            base_dir: Base directory for water storage (default: storage_agents/water/)
         """
         if base_dir is None:
-            self.base_dir = None
-            self._use_per_user_dirs = True
-        else:
-            self.base_dir = base_dir
-            self._use_per_user_dirs = False
-            os.makedirs(self.base_dir, exist_ok=True)
+            base_dir = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                "storage_agents",
+                "water",
+            )
+        self.base_dir = base_dir
+        os.makedirs(self.base_dir, exist_ok=True)
 
     def _get_filepath(self, user_id: str) -> str:
         """Get the file path for a user's water data."""
-        if self._use_per_user_dirs:
-            from nutrition_app.storage_paths import user_water_file
-            return str(user_water_file(user_id))
         return os.path.join(self.base_dir, f"{user_id}.json")
 
     def _load_file(self, user_id: str) -> Optional[dict]:
@@ -243,4 +241,5 @@ class WaterRepository:
         Returns:
             WaterGoal object
         """
-        water_data = self.g
+        water_data = self.get_water_data(user_id)
+        return water_data.goal or WaterGoal(user_id=user_id, daily_goal_ml=2000.0)
