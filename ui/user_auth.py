@@ -32,15 +32,9 @@ def is_logged_in() -> bool:
 def require_auth() -> str:
     """
     Call at the top of every page.
-    If not logged in → renders login UI and calls st.stop().
-    Returns user_id string when authenticated.
+    Auth is optional — returns the logged-in user_id when available,
+    otherwise returns "ui_user_001" so the app always works.
     """
-    from nutrition_app.db.supabase_client import is_supabase_configured
-    if not is_supabase_configured():
-        return "ui_user_001"          # local dev — no auth
-    if not is_logged_in():
-        _render_login_page()
-        st.stop()
     return get_user_id()
 
 

@@ -67,18 +67,14 @@ inject_global_css()
 from auth.login_ui import render_login_ui, logout_button as _auth_logout_button
 from auth.supabase_client import is_supabase_configured, get_current_user
 
-if is_supabase_configured() and "user_id" not in st.session_state:
-    # Mirror any legacy session-state set by ui/user_auth.py
+# Auth is optional — sync bitefit_user→user_id if present, otherwise fall back.
+if "user_id" not in st.session_state:
     _existing = st.session_state.get("bitefit_user")
     if isinstance(_existing, dict) and _existing.get("id"):
         st.session_state["user_id"] = _existing["id"]
         st.session_state["user_email"] = _existing.get("email", "")
-    else:
-        render_login_ui()
-        st.stop()
 
-# Resolve current user_id. In local dev (no Supabase) use the canonical
-# fallback so existing storage_agents/ JSON files remain accessible.
+# Resolve current user_id. Falls back to "ui_user_001" when not logged in.
 _USER_ID: str = st.session_state.get("user_id", "ui_user_001")
 
 # ── Constants ────────────────────────────────────────────────────────────────
