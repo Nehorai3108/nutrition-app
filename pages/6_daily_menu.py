@@ -46,7 +46,7 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
                         "storage", "nutrition.db")
 
 @st.cache_resource
-def get_mgr(_version=2):
+def get_mgr(_version=3):
     return RecipeManager()
 
 @st.cache_resource
