@@ -53,27 +53,14 @@ st.set_page_config(
 # ── Design system ────────────────────────────────────────────────────────────
 inject_global_css()
 
-# ── Persistent auth (cookie-based) ──────────────────────────────────────────
+# ── Auth — Streamlit Cloud managed login ─────────────────────────────────────
 from ui.persistent_auth import setup_persistent_auth
-from auth.login_ui import render_login_ui, logout_button as _auth_logout_button
-from auth.supabase_client import is_supabase_configured, get_current_user
+from auth.login_ui import logout_button as _auth_logout_button
 
-# Restore session from browser cookie (survives WebSocket reconnects)
+# Identify user via Streamlit's built-in viewer auth (Google/GitHub login).
+# Locally falls back to "ui_user_001".
 setup_persistent_auth()
 
-# Sync bitefit_user → user_id if set by a sub-page login
-if "user_id" not in st.session_state:
-    _existing = st.session_state.get("bitefit_user")
-    if isinstance(_existing, dict) and _existing.get("id"):
-        st.session_state["user_id"] = _existing["id"]
-        st.session_state["user_email"] = _existing.get("email", "")
-
-# If Supabase is configured and no user is logged in → show login wall
-if is_supabase_configured() and "user_id" not in st.session_state:
-    render_login_ui()
-    st.stop()
-
-# Resolve current user_id.
 _USER_ID: str = st.session_state.get("user_id", "ui_user_001")
 
 # ── Constants ────────────────────────────────────────────────────────────────
@@ -199,10 +186,11 @@ with st.sidebar:
     _user_email_display = st.session_state.get("user_email") or (
         st.session_state.get("bitefit_user", {}) or {}
     ).get("email", "")
-    if _user_email_display:
-        st.caption(f"👤 {_user_email_display}")
+    _streamlit_email = getattr(st.experimental_user, "email", "") if hasattr(st, "experimental_user") else ""
+    _display_email = _streamlit_email or _user_email_display
+    if _display_email:
+        st.caption(f"👤 {_display_email}")
     st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
-    _auth_logout_button(key="_home_logout_btn")
 
     st.divider()
 

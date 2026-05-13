@@ -32,19 +32,12 @@ def is_logged_in() -> bool:
 def require_auth() -> str:
     """
     Call at the top of every page.
-    Restores session from cookie → if still not logged in and Supabase is
-    configured, shows login wall. Otherwise returns user_id.
+    Uses Streamlit Cloud built-in viewer auth to identify the user.
+    Falls back to "ui_user_001" when running locally.
     """
     try:
         from ui.persistent_auth import setup_persistent_auth
         setup_persistent_auth()
-    except Exception:
-        pass
-    try:
-        from nutrition_app.db.supabase_client import is_supabase_configured
-        if is_supabase_configured() and not is_logged_in():
-            _render_login_page()
-            st.stop()
     except Exception:
         pass
     return get_user_id()

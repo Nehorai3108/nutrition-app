@@ -1,39 +1,41 @@
 """
-ui/persistent_auth.py — Query-param based persistent auth for BiteFit.
+ui/persistent_auth.py — Streamlit Cloud built-in auth for BiteFit.
 
-Stores user_id in the URL query string (?bf_uid=...) so the session
-survives WebSocket reconnects and button clicks.
+Uses st.experimental_user (Streamlit Cloud managed login) to identify users.
+Each user's email becomes their unique user_id.
+No Supabase auth needed — Streamlit handles login/session completely.
 """
 from __future__ import annotations
 import streamlit as st
-
-_PARAM = "bf_uid"
-_PARAM_EMAIL = "bf_em"
 
 
 def setup_persistent_auth() -> None:
     """
     Called at the top of every page.
-    If session state has no user_id, tries to restore it from URL params.
+    Sets user_id from Streamlit's built-in user identity.
+    On Streamlit Cloud (with viewer auth enabled): uses the logged-in email.
+    Locally / public app: falls back to "ui_user_001".
     """
     if st.session_state.get("user_id"):
-        return  # already in session
+        return  # already set this session
 
-    uid = st.query_params.get(_PARAM)
-    if uid:
-        email = st.query_params.get(_PARAM_EMAIL, "")
-        st.session_state["user_id"]      = uid
-        st.session_state["user_email"]   = email
-        st.session_state["bitefit_user"] = {"id": uid, "email": email}
+    try:
+        user = st.experimental_user
+        if user and getattr(user, "is_logged_in", False) and user.email:
+            uid   = user.email
+            email = user.email
+            st.session_state["user_id"]      = uid
+            st.session_state["user_email"]   = email
+            st.session_state["bitefit_user"] = {"id": uid, "email": email}
+    except Exception:
+        pass  # local dev or Streamlit version without experimental_user
 
 
 def save_auth_cookie(user_id: str, email: str = "") -> None:
-    """Called right after successful login — saves uid to URL params."""
-    st.query_params[_PARAM]       = user_id
-    st.query_params[_PARAM_EMAIL] = email
+    """No-op — Streamlit Cloud manages the session itself."""
+    pass
 
 
 def clear_auth_cookie() -> None:
-    """Called on logout — removes uid from URL params."""
-    st.query_params.pop(_PARAM,       None)
-    st.query_params.pop(_PARAM_EMAIL, None)
+    """No-op — Streamlit Cloud manages the session itself."""
+    pass
