@@ -16,11 +16,5 @@ def get_supabase() -> Client:
 
 
 def is_supabase_configured() -> bool:
-    """True when Supabase credentials are present in secrets."""
-    try:
-        return bool(
-            st.secrets.get("SUPABASE_URL") and
-            st.secrets.get("SUPABASE_ANON_KEY")
-        )
-    except Exception:
-        return False
+    """Auth is disabled — app runs in single-user local mode."""
+    return False
