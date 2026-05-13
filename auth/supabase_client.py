@@ -49,8 +49,8 @@ def _load_creds() -> tuple[Optional[str], Optional[str]]:
 
 
 def is_supabase_configured() -> bool:
-    """Auth is disabled — app runs in single-user local mode."""
-    return False
+    url, key = _load_creds()
+    return bool(url and key)
 
 
 @st.cache_resource

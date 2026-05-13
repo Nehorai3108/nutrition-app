@@ -53,13 +53,18 @@ st.set_page_config(
 # ── Design system ────────────────────────────────────────────────────────────
 inject_global_css()
 
-# ── Auth — Streamlit Cloud managed login ─────────────────────────────────────
+# ── Auth ─────────────────────────────────────────────────────────────────────
 from ui.persistent_auth import setup_persistent_auth
-from auth.login_ui import logout_button as _auth_logout_button
+from auth.login_ui import render_login_ui, logout_button as _auth_logout_button
+from auth.supabase_client import is_supabase_configured
 
-# Identify user via Streamlit's built-in viewer auth (Google/GitHub login).
-# Locally falls back to "ui_user_001".
+# Restore session from refresh token stored in URL (persists 60 days)
 setup_persistent_auth()
+
+# If Supabase is configured and no user is logged in → show login wall
+if is_supabase_configured() and "user_id" not in st.session_state:
+    render_login_ui()
+    st.stop()
 
 _USER_ID: str = st.session_state.get("user_id", "ui_user_001")
 

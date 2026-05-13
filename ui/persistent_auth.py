@@ -1,41 +1,52 @@
 """
-ui/persistent_auth.py — Streamlit Cloud built-in auth for BiteFit.
+ui/persistent_auth.py — Persistent auth via Supabase refresh token.
 
-Uses st.experimental_user (Streamlit Cloud managed login) to identify users.
-Each user's email becomes their unique user_id.
-No Supabase auth needed — Streamlit handles login/session completely.
+Stores the Supabase refresh_token in st.query_params so the session
+survives button clicks, WebSocket reconnects, and browser restarts.
+Refresh tokens last 60 days — users stay logged in automatically.
 """
 from __future__ import annotations
 import streamlit as st
+
+_PARAM_RT = "bf_rt"   # refresh token in URL
 
 
 def setup_persistent_auth() -> None:
     """
     Called at the top of every page.
-    Sets user_id from Streamlit's built-in user identity.
-    On Streamlit Cloud (with viewer auth enabled): uses the logged-in email.
-    Locally / public app: falls back to "ui_user_001".
+    If session state has no user_id, tries to restore via stored refresh token.
     """
     if st.session_state.get("user_id"):
-        return  # already set this session
+        return  # already logged in this session
+
+    refresh_token = st.query_params.get(_PARAM_RT)
+    if not refresh_token:
+        return
 
     try:
-        user = st.experimental_user
-        if user and getattr(user, "is_logged_in", False) and user.email:
-            uid   = user.email
-            email = user.email
+        from auth.supabase_client import get_supabase
+        resp = get_supabase().auth.refresh_session(refresh_token)
+        if resp and resp.user:
+            uid   = resp.user.id
+            email = resp.user.email or ""
             st.session_state["user_id"]      = uid
             st.session_state["user_email"]   = email
             st.session_state["bitefit_user"] = {"id": uid, "email": email}
+            # Rotate the refresh token
+            new_rt = getattr(resp.session, "refresh_token", None)
+            if new_rt:
+                st.query_params[_PARAM_RT] = new_rt
     except Exception:
-        pass  # local dev or Streamlit version without experimental_user
+        # Token expired or invalid — clear it so user sees login
+        st.query_params.pop(_PARAM_RT, None)
 
 
-def save_auth_cookie(user_id: str, email: str = "") -> None:
-    """No-op — Streamlit Cloud manages the session itself."""
-    pass
+def save_auth_cookie(user_id: str, email: str = "", refresh_token: str = "") -> None:
+    """Called right after successful login — saves refresh token to URL."""
+    if refresh_token:
+        st.query_params[_PARAM_RT] = refresh_token
 
 
 def clear_auth_cookie() -> None:
-    """No-op — Streamlit Cloud manages the session itself."""
-    pass
+    """Called on logout — removes refresh token from URL."""
+    st.query_params.pop(_PARAM_RT, None)

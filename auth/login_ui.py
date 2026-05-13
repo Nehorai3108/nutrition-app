@@ -26,10 +26,11 @@ def _set_session(user, session=None) -> None:
     st.session_state[_KEY_LEGACY_USER] = {"id": user.id, "email": user.email}
     if session is not None:
         st.session_state[_KEY_LEGACY_SESSION] = session
-    # Persist to browser cookie so session survives WebSocket reconnects
+    # Save refresh token to URL so session survives reconnects (60 days)
     try:
         from ui.persistent_auth import save_auth_cookie
-        save_auth_cookie(user.id, user.email)
+        rt = getattr(session, "refresh_token", "") if session else ""
+        save_auth_cookie(user.id, user.email, refresh_token=rt)
     except Exception:
         pass
 
