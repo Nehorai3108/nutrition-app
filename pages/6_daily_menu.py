@@ -31,7 +31,8 @@ _food_log_repo = FoodLogRepository()
 # Load user allergies from profile
 _profile_repo = ProfileRepository()
 _profile = _profile_repo.load(USER_ID)
-_user_allergens: list = _profile.get("meal_preferences", {}).get("allergies", [])
+_user_allergens: list  = _profile.get("meal_preferences", {}).get("allergies", [])
+_user_disliked: list   = _profile.get("meal_preferences", {}).get("disliked_foods", [])
 
 st.set_page_config(page_title="BiteFit · תפריט", page_icon="🍽️", layout="wide",
                    initial_sidebar_state="collapsed")
@@ -604,6 +605,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 target_calories=target_cal,
                 inventory_names=inventory_names if inventory_names else None,
                 allergens=_user_allergens if _user_allergens else None,
+                disliked_foods=_user_disliked if _user_disliked else None,
             )[:3]
         except Exception as _e:
             st.error(f"שגיאה: {_e}")

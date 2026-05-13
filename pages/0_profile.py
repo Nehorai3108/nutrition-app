@@ -332,27 +332,69 @@ with tab_prefs:
             new_allergies = new_allergies + [custom_allergy]
 
     with col2:
-        st.markdown("**מזונות מועדפים:**")
-        preferred_raw = "\n".join(prefs.get("preferred_foods", []))
-        new_preferred_raw = st.text_area("מזון אחד בכל שורה", value=preferred_raw,
-                                          height=120, key="preferred_foods_input")
-        new_preferred = [f.strip() for f in new_preferred_raw.splitlines() if f.strip()]
+        # ── מזונות מועדפים ────────────────────────────────────────────────
+        st.markdown("**❤️ מזונות מועדפים:**")
+        if "pref_foods" not in st.session_state:
+            st.session_state.pref_foods = list(prefs.get("preferred_foods", []))
 
-        st.markdown("**מזונות להימנע:**")
-        disliked_raw = "\n".join(prefs.get("disliked_foods", []))
-        new_disliked_raw = st.text_area("מזון אחד בכל שורה", value=disliked_raw,
-                                         height=120, key="disliked_foods_input")
-        new_disliked = [f.strip() for f in new_disliked_raw.splitlines() if f.strip()]
+        # Show existing as removable chips
+        pref_remove = None
+        if st.session_state.pref_foods:
+            cols_p = st.columns(min(len(st.session_state.pref_foods), 3))
+            for i, food in enumerate(st.session_state.pref_foods):
+                with cols_p[i % 3]:
+                    if st.button(f"✕ {food}", key=f"rm_pref_{i}", use_container_width=True):
+                        pref_remove = i
+        if pref_remove is not None:
+            st.session_state.pref_foods.pop(pref_remove)
+            st.rerun()
+
+        col_add_p, col_btn_p = st.columns([3, 1])
+        new_pref_item = col_add_p.text_input("הוסף מאכל אהוב", placeholder="לדוגמה: אבוקדו", key="add_pref_input", label_visibility="collapsed")
+        if col_btn_p.button("➕", key="add_pref_btn") and new_pref_item.strip():
+            if new_pref_item.strip() not in st.session_state.pref_foods:
+                st.session_state.pref_foods.append(new_pref_item.strip())
+            st.rerun()
+        new_preferred = st.session_state.pref_foods
+
+        st.markdown("---")
+
+        # ── מזונות להימנע ─────────────────────────────────────────────────
+        st.markdown("**🚫 מזונות להימנע:**")
+        if "disliked_foods" not in st.session_state:
+            st.session_state.disliked_foods = list(prefs.get("disliked_foods", []))
+
+        dis_remove = None
+        if st.session_state.disliked_foods:
+            cols_d = st.columns(min(len(st.session_state.disliked_foods), 3))
+            for i, food in enumerate(st.session_state.disliked_foods):
+                with cols_d[i % 3]:
+                    if st.button(f"✕ {food}", key=f"rm_dis_{i}", use_container_width=True):
+                        dis_remove = i
+        if dis_remove is not None:
+            st.session_state.disliked_foods.pop(dis_remove)
+            st.rerun()
+
+        col_add_d, col_btn_d = st.columns([3, 1])
+        new_dis_item = col_add_d.text_input("הוסף מאכל להימנע", placeholder="לדוגמה: אורז", key="add_dis_input", label_visibility="collapsed")
+        if col_btn_d.button("➕", key="add_dis_btn") and new_dis_item.strip():
+            if new_dis_item.strip() not in st.session_state.disliked_foods:
+                st.session_state.disliked_foods.append(new_dis_item.strip())
+            st.rerun()
+        new_disliked = st.session_state.disliked_foods
 
     if st.button("💾 שמור העדפות תזונה", type="primary", use_container_width=True):
         profile["meal_preferences"] = {
-            "kashrut":        new_kashrut,
-            "allergies":      new_allergies,
+            "kashrut":         new_kashrut,
+            "allergies":       new_allergies,
             "preferred_foods": new_preferred,
-            "disliked_foods": new_disliked,
-            "meals_per_day":  new_meals_per_day,
+            "disliked_foods":  new_disliked,
+            "meals_per_day":   new_meals_per_day,
         }
         repo.save(profile)
+        # Reset chip state so it reloads from saved profile
+        st.session_state.pop("pref_foods", None)
+        st.session_state.pop("disliked_foods", None)
         st.success("✅ העדפות נשמרו!")
         st.rerun()
 
