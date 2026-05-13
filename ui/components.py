@@ -77,6 +77,12 @@ def inject_global_css() -> None:
             direction: rtl !important;
             text-align: right !important;
         }}
+        /* Hide "Press Enter to submit form" hint in all text inputs */
+        [data-testid="InputInstructions"],
+        .stTextInput small,
+        .stTextArea small {{
+            display: none !important;
+        }}
         /* Radio option text */
         .stRadio [data-testid="stMarkdownContainer"] p {{
             direction: rtl !important;
