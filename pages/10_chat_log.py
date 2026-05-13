@@ -31,7 +31,7 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
                         "storage", "nutrition.db")
 
 @st.cache_resource
-def _get_catalog():
+def _get_catalog(_v=2):
     return FoodCatalog(db_path=_DB_PATH)
 
 @st.cache_resource
@@ -43,7 +43,7 @@ def _get_recipe_mgr():
     return RecipeManager()
 
 @st.cache_resource
-def _build_food_list() -> str:
+def _build_food_list(_v=2) -> str:
     """Build food + recipe catalog string for the AI system prompt.
     Kept short (names only, no gram data) to stay under Groq's 12k TPM limit.
     """
