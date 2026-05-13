@@ -26,7 +26,7 @@
   {
     "food_id": "food_012",
     "name_he": "טונה",
-    "name_en": "Tuna (canned)",
+    "name_en": "Tuna (canned in water)",
     "category": "protein",
     "nutrition_per_100g": {
       "calories_kcal": 116.0,
@@ -39,12 +39,12 @@
     },
     "default_serving_g": 100.0,
     "aliases_he": [
-      "טונה בשמן",
-      "טונה במים"
+      "טונה במים",
+      "טונה בציר"
     ],
     "aliases_en": [
-      "tuna",
-      "canned tuna"
+      "tuna in water",
+      "canned tuna in water"
     ]
   },
   {
@@ -4678,6 +4678,31 @@
     "aliases_en": [
       "krembo",
       "chocolate marshmallow"
+    ]
+  },
+  {
+    "food_id": "food_tuna_oil",
+    "name_he": "טונה בשמן",
+    "name_en": "Tuna (canned in oil)",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 200.0,
+      "protein_g": 25.0,
+      "carbs_g": 0.0,
+      "fat_g": 10.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 350.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "טונה בשמן זית",
+      "קופסת טונה בשמן",
+      "פחית טונה בשמן"
+    ],
+    "aliases_en": [
+      "tuna in oil",
+      "canned tuna in oil"
     ]
   }
 ]
