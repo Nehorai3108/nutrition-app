@@ -2,22 +2,34 @@
 # -*- coding: utf-8 -*-
 """
 daily_summary_repository.py — שמירה וטעינה של סיכומים יומיים
+
+Supports two backends:
+  • Supabase (cloud)  — when SUPABASE_URL / SUPABASE_ANON_KEY are in secrets
+  • Local JSON files  — fallback for local development
 """
 
 import os
 import json
-from datetime import date, timedelta
+import re
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
 from nutrition_app.models.daily_summary import DailySummary
 
+_UUID_RE = re.compile(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+)
+
 
 class DailySummaryRepository:
     """
-    Stores per-user daily summaries in:
-      storage_agents/daily_summaries/{user_id}.json
+    Stores per-user daily summaries.
 
-    Format: { "YYYY-MM-DD": { ...DailySummary fields... }, ... }
+    Local format: storage_agents/daily_summaries/{user_id}.json
+      { "YYYY-MM-DD": { ...DailySummary fields... }, ... }
+
+    Supabase format: table daily_summaries
+      (user_id TEXT, date TEXT, data JSONB)
     """
 
     def __init__(self, base_dir: Optional[str] = None):
@@ -28,6 +40,57 @@ class DailySummaryRepository:
             self.base_dir = base_dir
             self._use_per_user_dirs = False
             os.makedirs(self.base_dir, exist_ok=True)
+
+    # ── Backend selector ──────────────────────────────────────────────────────
+
+    def _use_supabase(self, user_id: str = "") -> bool:
+        if not _UUID_RE.match((user_id or "").lower()):
+            return False
+        try:
+            from nutrition_app.db.supabase_client import is_supabase_configured
+            return is_supabase_configured()
+        except Exception:
+            return False
+
+    def _sb(self):
+        from nutrition_app.db.supabase_client import get_supabase
+        return get_supabase()
+
+    # ── Supabase backend ──────────────────────────────────────────────────────
+
+    def _sb_save(self, summary: DailySummary) -> None:
+        self._sb().table("daily_summaries").upsert(
+            {"user_id": summary.user_id, "date": summary.date, "data": summary.to_dict()},
+            on_conflict="user_id,date"
+        ).execute()
+
+    def _sb_get(self, user_id: str, date_str: str) -> Optional[DailySummary]:
+        rows = (
+            self._sb().table("daily_summaries")
+            .select("data")
+            .eq("user_id", user_id)
+            .eq("date", date_str)
+            .limit(1)
+            .execute()
+        ).data
+        if rows:
+            return DailySummary.from_dict(rows[0]["data"])
+        return None
+
+    def _sb_get_period(self, user_id: str, start: date, end: date) -> List[DailySummary]:
+        rows = (
+            self._sb().table("daily_summaries")
+            .select("data")
+            .eq("user_id", user_id)
+            .gte("date", start.isoformat())
+            .lte("date", end.isoformat())
+            .execute()
+        ).data or []
+        results = [DailySummary.from_dict(r["data"]) for r in rows]
+        results.sort(key=lambda s: s.date, reverse=True)
+        return results
+
+    # ── Local JSON backend ────────────────────────────────────────────────────
 
     def _path(self, user_id: str) -> str:
         if self._use_per_user_dirs:
@@ -53,6 +116,9 @@ class DailySummaryRepository:
 
     def save(self, summary: DailySummary) -> None:
         """Save or overwrite the summary for the given date."""
+        if self._use_supabase(summary.user_id):
+            self._sb_save(summary)
+            return
         all_data = self._load_all(summary.user_id)
         all_data[summary.date] = summary.to_dict()
         self._save_all(summary.user_id, all_data)
@@ -60,11 +126,15 @@ class DailySummaryRepository:
     def get(self, user_id: str, date_obj) -> Optional[DailySummary]:
         """Load summary for a specific date. Returns None if not found."""
         date_str = date_obj.isoformat() if hasattr(date_obj, "isoformat") else str(date_obj)
+        if self._use_supabase(user_id):
+            return self._sb_get(user_id, date_str)
         data = self._load_all(user_id).get(date_str)
         return DailySummary.from_dict(data) if data else None
 
     def get_for_period(self, user_id: str, start: date, end: date) -> List[DailySummary]:
         """Return all summaries between start and end (inclusive), newest first."""
+        if self._use_supabase(user_id):
+            return self._sb_get_period(user_id, start, end)
         all_data = self._load_all(user_id)
         results = []
         current = start
