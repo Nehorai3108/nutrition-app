@@ -88,7 +88,7 @@ def _build_system_prompt(food_list: str) -> str:
 FOODS IN DATABASE (use exact names in JSON):
 {food_list}
 
-PORTION DEFAULTS: ביצה=55g, שניצל/קציצה=130g, חזה עוף=150g, ירך=120g, פרוסת לחם=30g, פיתה=60g, כוס אורז/פסטה=180g, גביע יוגורט=125g, כף שמן/טחינה=15g, תפוח=150g, בננה=120g, פחית=330g
+PORTION DEFAULTS: ביצה=55g, שניצל/קציצה=130g, חזה עוף=150g, ירך=120g, פרוסת לחם=30g, פיתה=60g, כוס אורז/פסטה=180g, גביע יוגורט=125g, כף שמן/טחינה=15g, תפוח=150g, בננה=120g, פחית שתייה=330g, טונה (קופסה/פחית)=100g, סרדינים (קופסה)=100g, קוביית שוקולד=10g, חטיף=30g, עגבנייה=100g, מלפפון=80g, גזר=80g, לימון=50g
 
 WHEN FOOD IS LOGGED — return ONLY this JSON block:
 ```json
