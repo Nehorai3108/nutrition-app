@@ -5903,5 +5903,1469 @@
       "doritos",
       "tortilla chips doritos"
     ]
+  },
+  {
+    "food_id": "f_il_101",
+    "name_he": "אפרופו",
+    "name_en": "Apropo Snack",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 520,
+      "protein": 7,
+      "carbs": 60,
+      "fat": 28,
+      "fiber": 2
+    },
+    "default_serving_g": 25,
+    "aliases_he": [
+      "אפרופו",
+      "אפרפו"
+    ],
+    "aliases_en": [
+      "apropo",
+      "apropo snack"
+    ]
+  },
+  {
+    "food_id": "f_il_102",
+    "name_he": "במבה",
+    "name_en": "Bamba",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 535,
+      "protein": 9,
+      "carbs": 55,
+      "fat": 31,
+      "fiber": 2
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "במבה"
+    ],
+    "aliases_en": [
+      "bamba",
+      "osem bamba",
+      "peanut snack"
+    ]
+  },
+  {
+    "food_id": "f_il_103",
+    "name_he": "קרקר",
+    "name_en": "Cracker",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 430,
+      "protein": 8,
+      "carbs": 67,
+      "fat": 14,
+      "fiber": 3
+    },
+    "default_serving_g": 20,
+    "aliases_he": [
+      "קרקר",
+      "קרקרים",
+      "קרקר מלוח"
+    ],
+    "aliases_en": [
+      "cracker",
+      "crackers",
+      "salted cracker"
+    ]
+  },
+  {
+    "food_id": "f_il_104",
+    "name_he": "ביסלי עוף",
+    "name_en": "Bissli Chicken",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 450,
+      "protein": 8,
+      "carbs": 65,
+      "fat": 17,
+      "fiber": 2
+    },
+    "default_serving_g": 25,
+    "aliases_he": [
+      "ביסלי עוף"
+    ],
+    "aliases_en": [
+      "bissli chicken",
+      "bissli off"
+    ]
+  },
+  {
+    "food_id": "f_il_105",
+    "name_he": "ביסלי פיצה",
+    "name_en": "Bissli Pizza",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 450,
+      "protein": 8,
+      "carbs": 65,
+      "fat": 17,
+      "fiber": 2
+    },
+    "default_serving_g": 25,
+    "aliases_he": [
+      "ביסלי פיצה"
+    ],
+    "aliases_en": [
+      "bissli pizza"
+    ]
+  },
+  {
+    "food_id": "f_il_106",
+    "name_he": "חוגי",
+    "name_en": "Hugi Snack (Rings)",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 480,
+      "protein": 7,
+      "carbs": 62,
+      "fat": 22,
+      "fiber": 2
+    },
+    "default_serving_g": 25,
+    "aliases_he": [
+      "חוגי",
+      "חוגי טבעות"
+    ],
+    "aliases_en": [
+      "hugi",
+      "corn rings"
+    ]
+  },
+  {
+    "food_id": "f_il_107",
+    "name_he": "קיפוד פרצל",
+    "name_en": "Kippod Pretzels",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 390,
+      "protein": 9,
+      "carbs": 72,
+      "fat": 7,
+      "fiber": 3
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "קיפוד",
+      "קיפוד פרצל",
+      "פרצל"
+    ],
+    "aliases_en": [
+      "kippod",
+      "pretzels",
+      "kippod pretzels"
+    ]
+  },
+  {
+    "food_id": "f_il_108",
+    "name_he": "ריקי גבינה",
+    "name_en": "Ricky Cheese Puffs",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories": 530,
+      "protein": 6,
+      "carbs": 58,
+      "fat": 30,
+      "fiber": 1
+    },
+    "default_serving_g": 25,
+    "aliases_he": [
+      "ריקי גבינה"
+    ],
+    "aliases_en": [
+      "ricky cheese",
+      "cheese puffs"
+    ]
+  },
+  {
+    "food_id": "f_il_110",
+    "name_he": "שוקולד עלית מריר",
+    "name_en": "Elite Dark Chocolate",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 550,
+      "protein": 5,
+      "carbs": 55,
+      "fat": 35,
+      "fiber": 6
+    },
+    "default_serving_g": 25,
+    "aliases_he": [
+      "שוקולד מריר",
+      "עלית מריר",
+      "שוקולד עלית מריר"
+    ],
+    "aliases_en": [
+      "dark chocolate",
+      "elite dark",
+      "bitter chocolate"
+    ]
+  },
+  {
+    "food_id": "f_il_111",
+    "name_he": "קרמבו",
+    "name_en": "Krembo",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 420,
+      "protein": 4,
+      "carbs": 68,
+      "fat": 14,
+      "fiber": 1
+    },
+    "default_serving_g": 62,
+    "aliases_he": [
+      "קרמבו",
+      "קרמבואים"
+    ],
+    "aliases_en": [
+      "krembo",
+      "chocolate marshmallow cookie"
+    ]
+  },
+  {
+    "food_id": "f_il_112",
+    "name_he": "קינדר בואנו",
+    "name_en": "Kinder Bueno",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 566,
+      "protein": 9,
+      "carbs": 53,
+      "fat": 35,
+      "fiber": 2
+    },
+    "default_serving_g": 43,
+    "aliases_he": [
+      "קינדר בואנו",
+      "קינדר"
+    ],
+    "aliases_en": [
+      "kinder bueno",
+      "kinder"
+    ]
+  },
+  {
+    "food_id": "f_il_113",
+    "name_he": "ספראי שוקולד",
+    "name_en": "Spray Chocolate Wafer",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 510,
+      "protein": 5,
+      "carbs": 63,
+      "fat": 27,
+      "fiber": 2
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "ספראי",
+      "ספרי שוקולד",
+      "ספראי שוקולד"
+    ],
+    "aliases_en": [
+      "spray chocolate",
+      "osem spray",
+      "wafer chocolate"
+    ]
+  },
+  {
+    "food_id": "f_il_116",
+    "name_he": "סוכריה פרה",
+    "name_en": "Para (Milk Candy)",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 430,
+      "protein": 3,
+      "carbs": 72,
+      "fat": 14,
+      "fiber": 0
+    },
+    "default_serving_g": 15,
+    "aliases_he": [
+      "סוכריה פרה",
+      "פרה",
+      "סוכריית פרה"
+    ],
+    "aliases_en": [
+      "para candy",
+      "milk candy",
+      "cow candy"
+    ]
+  },
+  {
+    "food_id": "f_il_117",
+    "name_he": "סנקס",
+    "name_en": "Snickers Bar",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 488,
+      "protein": 8,
+      "carbs": 60,
+      "fat": 24,
+      "fiber": 2
+    },
+    "default_serving_g": 50,
+    "aliases_he": [
+      "סנקס",
+      "סניקרס"
+    ],
+    "aliases_en": [
+      "snickers",
+      "snickers bar"
+    ]
+  },
+  {
+    "food_id": "f_il_118",
+    "name_he": "טוויקס",
+    "name_en": "Twix Bar",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 495,
+      "protein": 5,
+      "carbs": 65,
+      "fat": 24,
+      "fiber": 1
+    },
+    "default_serving_g": 50,
+    "aliases_he": [
+      "טוויקס"
+    ],
+    "aliases_en": [
+      "twix",
+      "twix bar"
+    ]
+  },
+  {
+    "food_id": "f_il_119",
+    "name_he": "סוכריות גומי",
+    "name_en": "Gummy Candy",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 320,
+      "protein": 6,
+      "carbs": 76,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 20,
+    "aliases_he": [
+      "בונבון",
+      "סוכריות גומי",
+      "גומי",
+      "דובי גומי"
+    ],
+    "aliases_en": [
+      "bonbon",
+      "gummy candy",
+      "gummy bears",
+      "gummies"
+    ]
+  },
+  {
+    "food_id": "f_il_115",
+    "name_he": "שוקולד עלית חלב",
+    "name_en": "Elite Milk Chocolate Bar",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 545,
+      "protein": 7,
+      "carbs": 58,
+      "fat": 30,
+      "fiber": 2
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "שוקולד עלית חלב",
+      "שוקו עלית",
+      "עלית חלב",
+      "שוקולד עלית"
+    ],
+    "aliases_en": [
+      "elite milk chocolate",
+      "elite chocolate"
+    ]
+  },
+  {
+    "food_id": "f_il_120",
+    "name_he": "פנטה",
+    "name_en": "Fanta",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 42,
+      "protein": 0,
+      "carbs": 11,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 330,
+    "aliases_he": [
+      "פנטה",
+      "פנטה תפוז"
+    ],
+    "aliases_en": [
+      "fanta",
+      "fanta orange"
+    ]
+  },
+  {
+    "food_id": "f_il_121",
+    "name_he": "ספרייט",
+    "name_en": "Sprite",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 42,
+      "protein": 0,
+      "carbs": 10,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 330,
+    "aliases_he": [
+      "ספרייט",
+      "ספריט"
+    ],
+    "aliases_en": [
+      "sprite"
+    ]
+  },
+  {
+    "food_id": "f_il_122",
+    "name_he": "טפוזינה",
+    "name_en": "Tapuzina",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 50,
+      "protein": 0.5,
+      "carbs": 12,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 330,
+    "aliases_he": [
+      "טפוזינה",
+      "תפוזינה"
+    ],
+    "aliases_en": [
+      "tapuzina",
+      "tapuzina juice"
+    ]
+  },
+  {
+    "food_id": "f_il_125",
+    "name_he": "רד בול",
+    "name_en": "Red Bull",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 46,
+      "protein": 0.4,
+      "carbs": 11,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 250,
+    "aliases_he": [
+      "רד בול",
+      "רד בל"
+    ],
+    "aliases_en": [
+      "red bull",
+      "energy drink"
+    ]
+  },
+  {
+    "food_id": "f_il_126",
+    "name_he": "גולדסטאר",
+    "name_en": "Gold Star Beer",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 43,
+      "protein": 0.5,
+      "carbs": 3.6,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 330,
+    "aliases_he": [
+      "גולדסטאר",
+      "גולד סטאר",
+      "בירה גולדסטאר"
+    ],
+    "aliases_en": [
+      "goldstar",
+      "gold star beer",
+      "goldstar beer"
+    ]
+  },
+  {
+    "food_id": "f_il_127",
+    "name_he": "מכבי בירה",
+    "name_en": "Maccabi Beer",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 43,
+      "protein": 0.5,
+      "carbs": 3.6,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 330,
+    "aliases_he": [
+      "מכבי",
+      "בירה מכבי"
+    ],
+    "aliases_en": [
+      "maccabi beer",
+      "maccabi"
+    ]
+  },
+  {
+    "food_id": "f_il_128",
+    "name_he": "קפה נס",
+    "name_en": "Instant Coffee",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 2,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0
+    },
+    "default_serving_g": 200,
+    "aliases_he": [
+      "קפה נס",
+      "נס קפה",
+      "נסקפה",
+      "קפה מיידי"
+    ],
+    "aliases_en": [
+      "instant coffee",
+      "nescafe",
+      "nes coffee"
+    ]
+  },
+  {
+    "food_id": "f_il_129",
+    "name_he": "אייס קפה",
+    "name_en": "Iced Coffee",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories": 80,
+      "protein": 3,
+      "carbs": 12,
+      "fat": 2,
+      "fiber": 0
+    },
+    "default_serving_g": 300,
+    "aliases_he": [
+      "אייס קפה",
+      "קפה קר",
+      "קפה קרח",
+      "קפה פרה"
+    ],
+    "aliases_en": [
+      "iced coffee",
+      "ice coffee",
+      "cold coffee"
+    ]
+  },
+  {
+    "food_id": "f_il_130",
+    "name_he": "גבינה לבנה רכה",
+    "name_en": "Soft White Cheese Spread",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories": 120,
+      "protein": 10,
+      "carbs": 3,
+      "fat": 7,
+      "fiber": 0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "גביניה",
+      "גבינה לבנה רכה",
+      "גבינה מרוחה",
+      "ממרח גבינה"
+    ],
+    "aliases_en": [
+      "gavina",
+      "soft white cheese",
+      "cream cheese spread",
+      "white cheese"
+    ]
+  },
+  {
+    "food_id": "f_il_131",
+    "name_he": "גבינה צפתית",
+    "name_en": "Tzfatit Cheese",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories": 280,
+      "protein": 20,
+      "carbs": 1,
+      "fat": 22,
+      "fiber": 0
+    },
+    "default_serving_g": 50,
+    "aliases_he": [
+      "צפתית",
+      "גבינה צפתית",
+      "גבינה בולגרית"
+    ],
+    "aliases_en": [
+      "tzfatit",
+      "tzfat cheese",
+      "bulgarian cheese",
+      "brined white cheese"
+    ]
+  },
+  {
+    "food_id": "f_il_133",
+    "name_he": "יוגורט פירות",
+    "name_en": "Fruit Yogurt",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories": 85,
+      "protein": 3,
+      "carbs": 15,
+      "fat": 1.5,
+      "fiber": 0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "יוגורט עם פירות",
+      "יוגורט פירות",
+      "יוגורט תות",
+      "יוגורט אוכמניות",
+      "יוגורט אפרסק"
+    ],
+    "aliases_en": [
+      "fruit yogurt",
+      "flavored yogurt",
+      "strawberry yogurt"
+    ]
+  },
+  {
+    "food_id": "f_il_134",
+    "name_he": "שמנת חמוצה",
+    "name_en": "Sour Cream",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories": 210,
+      "protein": 3,
+      "carbs": 4,
+      "fat": 20,
+      "fiber": 0
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "שמנת חמוצה",
+      "שמנת"
+    ],
+    "aliases_en": [
+      "sour cream",
+      "creme fraiche"
+    ]
+  },
+  {
+    "food_id": "f_il_136",
+    "name_he": "מעדן שוקולד",
+    "name_en": "Chocolate Pudding Cup",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories": 130,
+      "protein": 4,
+      "carbs": 18,
+      "fat": 5,
+      "fiber": 0
+    },
+    "default_serving_g": 125,
+    "aliases_he": [
+      "מעדן שוקולד",
+      "מעדן",
+      "פודינג שוקולד",
+      "מעדן יוגורט"
+    ],
+    "aliases_en": [
+      "chocolate pudding",
+      "dairy dessert",
+      "mousse cup"
+    ]
+  },
+  {
+    "food_id": "f_il_137",
+    "name_he": "אשל",
+    "name_en": "Eshel (Leben)",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories": 45,
+      "protein": 3.5,
+      "carbs": 5,
+      "fat": 1,
+      "fiber": 0
+    },
+    "default_serving_g": 200,
+    "aliases_he": [
+      "אשל",
+      "אשל תנובה",
+      "לבן"
+    ],
+    "aliases_en": [
+      "eshel",
+      "leben",
+      "israeli yogurt drink"
+    ]
+  },
+  {
+    "food_id": "f_il_140",
+    "name_he": "ג'חנון",
+    "name_en": "Jachnun",
+    "category": "carbohydrate",
+    "nutrition_per_100g": {
+      "calories": 320,
+      "protein": 7,
+      "carbs": 38,
+      "fat": 16,
+      "fiber": 2
+    },
+    "default_serving_g": 200,
+    "aliases_he": [
+      "ג'חנון",
+      "ג׳חנון",
+      "גחנון"
+    ],
+    "aliases_en": [
+      "jachnun",
+      "jachnum",
+      "yemeni pastry"
+    ]
+  },
+  {
+    "food_id": "f_il_141",
+    "name_he": "מלאווח",
+    "name_en": "Malawach",
+    "category": "carbohydrate",
+    "nutrition_per_100g": {
+      "calories": 330,
+      "protein": 8,
+      "carbs": 35,
+      "fat": 18,
+      "fiber": 2
+    },
+    "default_serving_g": 200,
+    "aliases_he": [
+      "מלאווח",
+      "מלווח"
+    ],
+    "aliases_en": [
+      "malawach",
+      "malawah",
+      "yemeni flatbread"
+    ]
+  },
+  {
+    "food_id": "f_il_142",
+    "name_he": "כנאפה",
+    "name_en": "Kanafeh",
+    "category": "sweet",
+    "nutrition_per_100g": {
+      "calories": 340,
+      "protein": 7,
+      "carbs": 44,
+      "fat": 16,
+      "fiber": 1
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "כנאפה",
+      "קנאפה"
+    ],
+    "aliases_en": [
+      "kanafeh",
+      "knafeh",
+      "kunafa"
+    ]
+  },
+  {
+    "food_id": "f_il_144",
+    "name_he": "קציצות בשר",
+    "name_en": "Meatballs",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 220,
+      "protein": 18,
+      "carbs": 8,
+      "fat": 13,
+      "fiber": 0.5
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "קציצות",
+      "קציצות בשר",
+      "קציצה"
+    ],
+    "aliases_en": [
+      "meatballs",
+      "kofte",
+      "meat patties"
+    ]
+  },
+  {
+    "food_id": "f_il_145",
+    "name_he": "שיפוד עוף",
+    "name_en": "Chicken Skewer",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 195,
+      "protein": 27,
+      "carbs": 2,
+      "fat": 9,
+      "fiber": 0
+    },
+    "default_serving_g": 200,
+    "aliases_he": [
+      "שיפוד עוף",
+      "שיפוד",
+      "שיפודים"
+    ],
+    "aliases_en": [
+      "chicken skewer",
+      "chicken shashlik",
+      "shishlik"
+    ]
+  },
+  {
+    "food_id": "f_il_147",
+    "name_he": "פלאפל",
+    "name_en": "Falafel",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 330,
+      "protein": 13,
+      "carbs": 32,
+      "fat": 17,
+      "fiber": 5
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "פלאפל",
+      "פלאפלים"
+    ],
+    "aliases_en": [
+      "falafel",
+      "falafel balls"
+    ]
+  },
+  {
+    "food_id": "f_il_148",
+    "name_he": "שווארמה עוף",
+    "name_en": "Chicken Shawarma",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 220,
+      "protein": 22,
+      "carbs": 5,
+      "fat": 12,
+      "fiber": 0.5
+    },
+    "default_serving_g": 250,
+    "aliases_he": [
+      "שווארמה עוף",
+      "שווארמה",
+      "שוורמה עוף",
+      "שוורמה"
+    ],
+    "aliases_en": [
+      "shawarma",
+      "chicken shawarma",
+      "shwarma"
+    ]
+  },
+  {
+    "food_id": "f_il_149",
+    "name_he": "שווארמה טלה",
+    "name_en": "Lamb Shawarma",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 260,
+      "protein": 20,
+      "carbs": 5,
+      "fat": 18,
+      "fiber": 0.5
+    },
+    "default_serving_g": 250,
+    "aliases_he": [
+      "שווארמה טלה",
+      "שווארמה כבש"
+    ],
+    "aliases_en": [
+      "lamb shawarma",
+      "meat shawarma"
+    ]
+  },
+  {
+    "food_id": "f_il_150",
+    "name_he": "עגבניות שרי",
+    "name_en": "Cherry Tomatoes",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories": 18,
+      "protein": 1,
+      "carbs": 3.5,
+      "fat": 0.2,
+      "fiber": 1
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "עגבניות שרי",
+      "עגבנית שרי",
+      "שרי"
+    ],
+    "aliases_en": [
+      "cherry tomatoes",
+      "cherry tomato",
+      "small tomatoes"
+    ]
+  },
+  {
+    "food_id": "f_il_151",
+    "name_he": "מלפפון ישראלי",
+    "name_en": "Israeli Cucumber",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories": 15,
+      "protein": 0.6,
+      "carbs": 3,
+      "fat": 0.1,
+      "fiber": 0.5
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "מלפפון ישראלי",
+      "מלפפון קצר",
+      "מלפפוניות"
+    ],
+    "aliases_en": [
+      "israeli cucumber",
+      "mini cucumber",
+      "persian cucumber"
+    ]
+  },
+  {
+    "food_id": "f_il_152",
+    "name_he": "בצל ירוק",
+    "name_en": "Green Onion",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories": 32,
+      "protein": 1.8,
+      "carbs": 7,
+      "fat": 0.2,
+      "fiber": 2.6
+    },
+    "default_serving_g": 20,
+    "aliases_he": [
+      "בצל ירוק",
+      "עירית"
+    ],
+    "aliases_en": [
+      "green onion",
+      "scallion",
+      "spring onion"
+    ]
+  },
+  {
+    "food_id": "f_il_153",
+    "name_he": "כוסברה",
+    "name_en": "Coriander",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories": 23,
+      "protein": 2,
+      "carbs": 3.7,
+      "fat": 0.5,
+      "fiber": 2.8
+    },
+    "default_serving_g": 10,
+    "aliases_he": [
+      "כוסברה"
+    ],
+    "aliases_en": [
+      "cilantro",
+      "coriander",
+      "chinese parsley"
+    ]
+  },
+  {
+    "food_id": "f_il_154",
+    "name_he": "פלפל ירוק",
+    "name_en": "Green Bell Pepper",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories": 20,
+      "protein": 0.9,
+      "carbs": 4.6,
+      "fat": 0.2,
+      "fiber": 1.7
+    },
+    "default_serving_g": 100,
+    "aliases_he": [
+      "פלפל ירוק",
+      "פלפל"
+    ],
+    "aliases_en": [
+      "green pepper",
+      "green bell pepper"
+    ]
+  },
+  {
+    "food_id": "f_il_160",
+    "name_he": "אמבה",
+    "name_en": "Amba (Mango Sauce)",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories": 60,
+      "protein": 0.5,
+      "carbs": 14,
+      "fat": 0.5,
+      "fiber": 1
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "אמבה",
+      "רוטב אמבה"
+    ],
+    "aliases_en": [
+      "amba",
+      "mango sauce",
+      "pickled mango sauce"
+    ]
+  },
+  {
+    "food_id": "f_il_161",
+    "name_he": "סחוג",
+    "name_en": "Schug",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories": 100,
+      "protein": 3,
+      "carbs": 10,
+      "fat": 5,
+      "fiber": 4
+    },
+    "default_serving_g": 15,
+    "aliases_he": [
+      "סחוג",
+      "סחוג ירוק",
+      "סחוג אדום",
+      "ציג"
+    ],
+    "aliases_en": [
+      "schug",
+      "skhug",
+      "zhug",
+      "spicy sauce"
+    ]
+  },
+  {
+    "food_id": "f_il_162",
+    "name_he": "חריסה",
+    "name_en": "Harissa",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories": 110,
+      "protein": 2,
+      "carbs": 12,
+      "fat": 6,
+      "fiber": 3
+    },
+    "default_serving_g": 20,
+    "aliases_he": [
+      "חריסה",
+      "רוטב חריסה"
+    ],
+    "aliases_en": [
+      "harissa",
+      "harissa sauce",
+      "chili paste"
+    ]
+  },
+  {
+    "food_id": "f_il_163",
+    "name_he": "זעתר",
+    "name_en": "Za'atar",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories": 300,
+      "protein": 10,
+      "carbs": 40,
+      "fat": 12,
+      "fiber": 8
+    },
+    "default_serving_g": 10,
+    "aliases_he": [
+      "זעתר",
+      "זעתר עם שמן זית"
+    ],
+    "aliases_en": [
+      "za'atar",
+      "zaatar",
+      "thyme spice mix"
+    ]
+  },
+  {
+    "food_id": "f_il_164",
+    "name_he": "נוטלה",
+    "name_en": "Nutella / Chocolate Spread",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories": 539,
+      "protein": 6,
+      "carbs": 57,
+      "fat": 31,
+      "fiber": 3
+    },
+    "default_serving_g": 20,
+    "aliases_he": [
+      "נוטלה",
+      "ממרח שוקולד",
+      "ממרח שוקו"
+    ],
+    "aliases_en": [
+      "nutella",
+      "chocolate spread",
+      "hazelnut chocolate spread"
+    ]
+  },
+  {
+    "food_id": "f_il_170",
+    "name_he": "תמר מג'הול",
+    "name_en": "Medjool Date",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories": 277,
+      "protein": 1.8,
+      "carbs": 75,
+      "fat": 0.2,
+      "fiber": 7
+    },
+    "default_serving_g": 24,
+    "aliases_he": [
+      "תמר מג'הול",
+      "תמר",
+      "תמרים"
+    ],
+    "aliases_en": [
+      "medjool date",
+      "date",
+      "dates",
+      "medjoul"
+    ]
+  },
+  {
+    "food_id": "f_il_171",
+    "name_he": "שסק",
+    "name_en": "Loquat",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories": 47,
+      "protein": 0.4,
+      "carbs": 12,
+      "fat": 0.2,
+      "fiber": 1.7
+    },
+    "default_serving_g": 60,
+    "aliases_he": [
+      "שסק",
+      "שסקים"
+    ],
+    "aliases_en": [
+      "loquat",
+      "japanese plum"
+    ]
+  },
+  {
+    "food_id": "f_il_172",
+    "name_he": "פסיפלורה",
+    "name_en": "Passion Fruit",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories": 97,
+      "protein": 2.2,
+      "carbs": 23,
+      "fat": 0.7,
+      "fiber": 10
+    },
+    "default_serving_g": 35,
+    "aliases_he": [
+      "פסיפלורה"
+    ],
+    "aliases_en": [
+      "passion fruit",
+      "passionfruit"
+    ]
+  },
+  {
+    "food_id": "f_il_173",
+    "name_he": "תפוז",
+    "name_en": "Orange",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories": 47,
+      "protein": 0.9,
+      "carbs": 12,
+      "fat": 0.1,
+      "fiber": 2.4
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "תפוז",
+      "תפוזים"
+    ],
+    "aliases_en": [
+      "orange",
+      "jaffa orange"
+    ]
+  },
+  {
+    "food_id": "f_il_174",
+    "name_he": "ליצ'י",
+    "name_en": "Lychee",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories": 66,
+      "protein": 0.8,
+      "carbs": 17,
+      "fat": 0.4,
+      "fiber": 1.3
+    },
+    "default_serving_g": 80,
+    "aliases_he": [
+      "ליצ'י",
+      "ליצ'ים"
+    ],
+    "aliases_en": [
+      "lychee",
+      "litchi"
+    ]
+  },
+  {
+    "food_id": "f_il_180",
+    "name_he": "לחם פיתה",
+    "name_en": "Pita Bread",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories": 270,
+      "protein": 9,
+      "carbs": 54,
+      "fat": 1.5,
+      "fiber": 2
+    },
+    "default_serving_g": 60,
+    "aliases_he": [
+      "פיתה",
+      "לחם פיתה",
+      "פיתות"
+    ],
+    "aliases_en": [
+      "pita",
+      "pita bread",
+      "pitta"
+    ]
+  },
+  {
+    "food_id": "f_il_181",
+    "name_he": "לחם שיפון",
+    "name_en": "Rye Bread",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories": 259,
+      "protein": 9,
+      "carbs": 48,
+      "fat": 3.3,
+      "fiber": 6
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "לחם שיפון",
+      "לחם שחור"
+    ],
+    "aliases_en": [
+      "rye bread",
+      "dark bread",
+      "black bread"
+    ]
+  },
+  {
+    "food_id": "f_il_182",
+    "name_he": "לחם לבן",
+    "name_en": "White Bread (Sliced)",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories": 265,
+      "protein": 8,
+      "carbs": 50,
+      "fat": 3,
+      "fiber": 2
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "לחם לבן",
+      "לחם",
+      "טוסט לבן",
+      "טוסט"
+    ],
+    "aliases_en": [
+      "white bread",
+      "bread",
+      "toast bread",
+      "white toast"
+    ]
+  },
+  {
+    "food_id": "f_il_183",
+    "name_he": "לחמניה",
+    "name_en": "Bread Roll",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories": 270,
+      "protein": 8,
+      "carbs": 52,
+      "fat": 3,
+      "fiber": 2
+    },
+    "default_serving_g": 60,
+    "aliases_he": [
+      "לחמניה",
+      "לחמניות"
+    ],
+    "aliases_en": [
+      "bread roll",
+      "bun",
+      "dinner roll"
+    ]
+  },
+  {
+    "food_id": "f_il_190",
+    "name_he": "נקניקיות עוף",
+    "name_en": "Chicken Sausage / Hot Dog",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 195,
+      "protein": 13,
+      "carbs": 7,
+      "fat": 14,
+      "fiber": 0
+    },
+    "default_serving_g": 50,
+    "aliases_he": [
+      "נקניקיות עוף",
+      "נקניקיות",
+      "נקניק עוף",
+      "נקניקייה"
+    ],
+    "aliases_en": [
+      "chicken sausage",
+      "hot dog",
+      "chicken hot dog",
+      "franks"
+    ]
+  },
+  {
+    "food_id": "f_il_191",
+    "name_he": "מרגז",
+    "name_en": "Merguez Sausage",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 280,
+      "protein": 14,
+      "carbs": 2,
+      "fat": 24,
+      "fiber": 0
+    },
+    "default_serving_g": 80,
+    "aliases_he": [
+      "מרגז",
+      "נקניק מרגז"
+    ],
+    "aliases_en": [
+      "merguez",
+      "merguez sausage",
+      "spicy sausage"
+    ]
+  },
+  {
+    "food_id": "f_il_192",
+    "name_he": "סלמון מעושן",
+    "name_en": "Smoked Salmon",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 117,
+      "protein": 18,
+      "carbs": 0,
+      "fat": 4.3,
+      "fiber": 0
+    },
+    "default_serving_g": 50,
+    "aliases_he": [
+      "סלמון מעושן",
+      "דג מעושן"
+    ],
+    "aliases_en": [
+      "smoked salmon",
+      "lox",
+      "cured salmon"
+    ]
+  },
+  {
+    "food_id": "f_il_194",
+    "name_he": "סטייק סינטה",
+    "name_en": "Sirloin Steak",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 207,
+      "protein": 26,
+      "carbs": 0,
+      "fat": 11,
+      "fiber": 0
+    },
+    "default_serving_g": 200,
+    "aliases_he": [
+      "סינטה",
+      "סטייק סינטה",
+      "סטייק"
+    ],
+    "aliases_en": [
+      "sirloin",
+      "sirloin steak",
+      "beef sirloin"
+    ]
+  },
+  {
+    "food_id": "f_il_195",
+    "name_he": "צלעות טלה",
+    "name_en": "Lamb Chops",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories": 258,
+      "protein": 25,
+      "carbs": 0,
+      "fat": 17,
+      "fiber": 0
+    },
+    "default_serving_g": 150,
+    "aliases_he": [
+      "צלעות טלה",
+      "צלעות כבש"
+    ],
+    "aliases_en": [
+      "lamb chops",
+      "lamb ribs",
+      "lamb cutlets"
+    ]
   }
 ]
