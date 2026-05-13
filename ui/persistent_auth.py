@@ -29,9 +29,12 @@ def setup_persistent_auth() -> None:
         if resp and resp.user:
             uid   = resp.user.id
             email = resp.user.email or ""
-            st.session_state["user_id"]      = uid
-            st.session_state["user_email"]   = email
-            st.session_state["bitefit_user"] = {"id": uid, "email": email}
+            st.session_state["user_id"]        = uid
+            st.session_state["user_email"]     = email
+            st.session_state["bitefit_user"]   = {"id": uid, "email": email}
+            # Store session so data client can authenticate with user's JWT
+            if resp.session:
+                st.session_state["bitefit_session"] = resp.session
             # Rotate the refresh token
             new_rt = getattr(resp.session, "refresh_token", None)
             if new_rt:
