@@ -5879,5 +5879,29 @@
     "aliases_en": [
       "ketchup"
     ]
+  },
+  {
+    "food_id": "f_il_100",
+    "name_he": "דוריטוס",
+    "name_en": "Doritos",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories_kcal": 500,
+      "protein_g": 7,
+      "carbs_g": 58,
+      "fat_g": 27,
+      "fiber_g": 4,
+      "sugar_g": 2,
+      "sodium_mg": 730
+    },
+    "default_serving_g": 30,
+    "aliases_he": [
+      "דוריטוס",
+      "צ'יפס תירס"
+    ],
+    "aliases_en": [
+      "doritos",
+      "tortilla chips doritos"
+    ]
   }
 ]
