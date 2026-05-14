@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0d0f14; font-family: sans-serif; overflow: hidden; }
+
+#container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+#video {
+  width: 100%;
+  border-radius: 14px;
+  display: block;
+  background: #000;
+}
+
+/* מסגרת סריקה */
+#overlay {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 65%; height: 45%;
+  border: 2px solid rgba(79, 142, 247, 0.8);
+  border-radius: 12px;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.4);
+}
+#overlay::before, #overlay::after,
+#overlay .tl, #overlay .br {
+  content: '';
+  position: absolute;
+  width: 22px; height: 22px;
+  border-color: #4f8ef7;
+  border-style: solid;
+}
+#overlay::before { top:-2px; left:-2px; border-width:3px 0 0 3px; border-radius:8px 0 0 0; }
+#overlay::after  { top:-2px; right:-2px; border-width:3px 3px 0 0; border-radius:0 8px 0 0; }
+#overlay .tl     { bottom:-2px; left:-2px; border-width:0 0 3px 3px; border-radius:0 0 0 8px; }
+#overlay .br     { bottom:-2px; right:-2px; border-width:0 3px 3px 0; border-radius:0 0 8px 0; }
+
+/* קו סריקה מונפש */
+#scanline {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 63%; height: 2px;
+  background: linear-gradient(90deg, transparent, #4f8ef7, transparent);
+  animation: scan 2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes scan {
+  0%   { margin-top: -22%; }
+  50%  { margin-top:  22%; }
+  100% { margin-top: -22%; }
+}
+
+#hint {
+  text-align: center;
+  color: #8892a4;
+  font-size: 0.78rem;
+  margin-top: 10px;
+  direction: rtl;
+}
+
+/* success */
+#success {
+  display: none;
+  background: #1a3a2a;
+  border: 1px solid #2f855a;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-top: 10px;
+  direction: rtl;
+}
+#success .bc-val { font-size: 1.1rem; font-weight: 700; color: #68d391; }
+#success .bc-lbl { font-size: 0.8rem; color: #8892a4; margin-top: 4px; }
+
+#err {
+  display: none;
+  color: #fc8181; font-size: 0.8rem;
+  text-align: center; margin-top: 8px; direction: rtl;
+}
+</style>
+</head>
+<body>
+<div id="container">
+  <video id="video" autoplay muted playsinline></video>
+  <div id="overlay"><div class="tl"></div><div class="br"></div></div>
+  <div id="scanline"></div>
+  <div id="hint">כוון את הברקוד לתוך המסגרת</div>
+  <div id="success">
+    <div class="bc-lbl">ברקוד זוהה ✅</div>
+    <div class="bc-val" id="bc-display"></div>
+  </div>
+  <div id="err"></div>
+</div>
+
+<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
+
+<script>
+let lastBarcode = null;
+let codeReader = null;
+
+function onRender(event) {
+  if (!event.detail || codeReader) return;
+  startScanner();
+}
+
+function startScanner() {
+  const hints = new Map();
+  const formats = [
+    ZXing.BarcodeFormat.EAN_13,
+    ZXing.BarcodeFormat.EAN_8,
+    ZXing.BarcodeFormat.CODE_128,
+    ZXing.BarcodeFormat.CODE_39,
+    ZXing.BarcodeFormat.UPC_A,
+    ZXing.BarcodeFormat.UPC_E,
+    ZXing.BarcodeFormat.QR_CODE,
+  ];
+  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
+  hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+
+  codeReader = new ZXing.BrowserMultiFormatReader(hints);
+
+  const constraints = {
+    video: {
+      facingMode: { ideal: 'environment' },  // מצלמה אחורית
+      width:  { ideal: 1280 },
+      height: { ideal: 720 },
+    }
+  };
+
+  codeReader.decodeFromConstraints(constraints, 'video', (result, err) => {
+    if (result) {
+      const bc = result.getText();
+      if (bc !== lastBarcode) {
+        lastBarcode = bc;
+        document.getElementById('bc-display').textContent = bc;
+        document.getElementById('success').style.display = 'block';
+        document.getElementById('hint').style.display = 'none';
+        document.getElementById('scanline').style.display = 'none';
+
+        // שלח ל-Streamlit
+        Streamlit.setComponentValue(bc);
+      }
+    }
+    if (err && !(err instanceof ZXing.NotFoundException)) {
+      // שגיאה אמיתית
+    }
+  }).catch(e => {
+    document.getElementById('err').textContent =
+      'לא ניתן לגשת למצלמה — ודא שנתת הרשאה.';
+    document.getElementById('err').style.display = 'block';
+  });
+
+  Streamlit.setFrameHeight(document.body.scrollHeight + 20);
+}
+
+window.addEventListener('message', function(e) {
+  if (e.data.type === 'streamlit:render') {
+    onRender({detail: e.data});
+  }
+});
+
+// גם אם render לא הגיע — הפעל בכל מקרה
+setTimeout(startScanner, 300);
+
+Streamlit.setFrameHeight(320);
+</script>
+</body>
+</html>
