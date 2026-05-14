@@ -11,113 +11,75 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
   position: relative;
   width: 100%;
   height: 290px;
-  background: #111;
-  border-radius: 14px;
+  background: #000;
+  border-radius: 12px;
   overflow: hidden;
 }
 
+/* video always visible — no overlay hiding it */
 #video {
-  width: 100%;
-  height: 100%;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 12px;
 }
 
-/* scan frame corners */
-#frame {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 68%; height: 50%;
-  pointer-events: none;
-}
+/* scan corners */
 .corner {
   position: absolute;
-  width: 22px; height: 22px;
-  border-color: #4f8ef7;
-  border-style: solid;
+  width: 24px; height: 24px;
+  border-color: #4f8ef7; border-style: solid;
+  z-index: 2; pointer-events:none;
 }
-.corner.tl { top:0; left:0;  border-width:3px 0 0 3px; border-radius:6px 0 0 0; }
-.corner.tr { top:0; right:0; border-width:3px 3px 0 0; border-radius:0 6px 0 0; }
-.corner.bl { bottom:0; left:0;  border-width:0 0 3px 3px; border-radius:0 0 0 6px; }
-.corner.br { bottom:0; right:0; border-width:0 3px 3px 0; border-radius:0 0 6px 0; }
+.tl { top:20%; left:10%;  border-width:3px 0 0 3px; border-radius:5px 0 0 0; }
+.tr { top:20%; right:10%; border-width:3px 3px 0 0; border-radius:0 5px 0 0; }
+.bl { top:70%; left:10%;  border-width:0 0 3px 3px; border-radius:0 0 0 5px; }
+.br { top:70%; right:10%; border-width:0 3px 3px 0; border-radius:0 0 5px 0; }
 
 /* scan line */
 #line {
   position: absolute;
-  left: 16%; width: 68%; height: 2px;
+  left: 10%; width: 80%; height: 2px;
   background: linear-gradient(90deg, transparent, #4f8ef7, transparent);
   animation: sweep 2s ease-in-out infinite;
+  z-index: 2; pointer-events:none;
 }
-@keyframes sweep {
-  0%   { top: 25%; }
-  50%  { top: 75%; }
-  100% { top: 25%; }
-}
+@keyframes sweep { 0%,100% { top:22%; } 50% { top:70%; } }
 
 #hint {
-  position: absolute;
-  bottom: 10px; left: 0; right: 0;
-  text-align: center;
-  color: rgba(255,255,255,0.65);
-  font-size: 12px;
-  direction: rtl;
+  position: absolute; bottom:10px; left:0; right:0;
+  text-align:center; color:rgba(255,255,255,0.7); font-size:12px;
+  direction:rtl; z-index:2; pointer-events:none;
 }
 
-/* loading overlay */
-#loading {
-  position: absolute; inset: 0;
-  background: #111;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 8px;
-  color: rgba(255,255,255,0.6); font-size:13px; direction:rtl;
-}
-.spinner {
-  width:28px; height:28px;
-  border:3px solid rgba(79,142,247,0.2);
-  border-top-color:#4f8ef7;
-  border-radius:50%;
-  animation:spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform:rotate(360deg); } }
-
-/* success overlay */
+/* shown after barcode found */
 #ok {
-  display: none;
-  position: absolute; inset: 0;
-  background: rgba(20,50,35,0.96);
-  border-radius: 14px;
-  flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 8px;
+  display:none; position:absolute; inset:0;
+  background:rgba(20,50,35,0.95);
+  flex-direction:column; align-items:center; justify-content:center;
+  gap:8px; z-index:3; border-radius:12px;
 }
 #ok.show { display:flex; }
-#ok-icon { font-size:2.8rem; }
-#ok-val  { font-size:1.2rem; font-weight:700; color:#68d391; direction:ltr; }
+#ok-icon { font-size:2.6rem; }
+#ok-val  { font-size:1.1rem; font-weight:700; color:#68d391; direction:ltr; }
 #ok-lbl  { font-size:0.78rem; color:#a0aec0; direction:rtl; }
 
-/* error */
-#err {
-  padding:10px 14px; text-align:center;
-  color:#fc8181; font-size:12px; direction:rtl;
-  display:none;
+/* status line under camera */
+#status {
+  padding:8px 12px; font-size:12px; direction:rtl;
+  color:#8892a4; text-align:center;
 }
 </style>
 </head>
 <body>
 
 <div id="wrap">
-  <div id="loading">
-    <div class="spinner"></div>
-    <span>מפעיל מצלמה…</span>
-  </div>
   <video id="video" autoplay muted playsinline></video>
-  <div id="frame">
-    <div class="corner tl"></div>
-    <div class="corner tr"></div>
-    <div class="corner bl"></div>
-    <div class="corner br"></div>
-  </div>
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
   <div id="line"></div>
   <div id="hint">כוון את הברקוד אל המסגרת</div>
   <div id="ok">
@@ -126,85 +88,111 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
     <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
   </div>
 </div>
-<div id="err"></div>
+<div id="status">מפעיל מצלמה…</div>
 
-<!-- Streamlit component lib — MUST load for setComponentValue to work -->
-<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
+<!-- Streamlit component lib -->
+<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"
+        onerror="onCdnError()"></script>
 
 <script>
-var _cameraStarted = false;
+var _started = false;
+var _streamlitReady = false;
 
-// ── Camera + ZXing ──────────────────────────────────────────────────────────
+function onCdnError() {
+  // CDN failed — load from jsDelivr as fallback
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/streamlit-component-lib/dist/index.js";
+  s.onload  = function() { initStreamlit(); };
+  s.onerror = function() { startCamera(); }; // start anyway even without Streamlit
+  document.head.appendChild(s);
+}
+
+function initStreamlit() {
+  if (_streamlitReady) return;
+  _streamlitReady = true;
+  try {
+    Streamlit.setFrameHeight(320);
+    Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function() {
+      startCamera();
+    });
+    Streamlit.setComponentReady();
+  } catch(e) {
+    startCamera(); // fallback
+  }
+}
+
+// Start camera regardless after 1s — handles cases where render event is slow
+setTimeout(function() {
+  if (!_started) startCamera();
+}, 1000);
+
 function startCamera() {
-  if (_cameraStarted) return;
-  _cameraStarted = true;
+  if (_started) return;
+  _started = true;
+  setStatus("מחפש מצלמה…");
 
-  Streamlit.setFrameHeight(310);
-
-  var constraints = {
+  navigator.mediaDevices.getUserMedia({
     video: {
       facingMode: { ideal: "environment" },
       width:  { ideal: 1280 },
       height: { ideal: 720 }
     }
-  };
-
-  navigator.mediaDevices.getUserMedia(constraints)
-    .then(function(stream) {
-      document.getElementById("loading").style.display = "none";
-      var video = document.getElementById("video");
-      video.srcObject = stream;
-      video.play();
-      loadZXing(video);
-    })
-    .catch(function(err) {
-      document.getElementById("loading").style.display = "none";
-      var el = document.getElementById("err");
-      el.style.display = "block";
-      el.textContent = (err.name === "NotAllowedError")
-        ? "❌ אין הרשאת מצלמה — אשר גישה בדפדפן ורענן"
-        : "❌ שגיאת מצלמה: " + err.message;
-      Streamlit.setFrameHeight(340);
-    });
+  })
+  .then(function(stream) {
+    var v = document.getElementById("video");
+    v.srcObject = stream;
+    // iOS requires explicit play() call
+    var playPromise = v.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(function() { setStatus("סורק…"); loadZXing(v); })
+        .catch(function(e) { setStatus("❌ לא ניתן להפעיל וידאו: " + e.message); });
+    } else {
+      setStatus("סורק…");
+      loadZXing(v);
+    }
+  })
+  .catch(function(err) {
+    if (err.name === "NotAllowedError") {
+      setStatus("❌ אין הרשאת מצלמה — אשר גישה בדפדפן ורענן");
+    } else {
+      setStatus("❌ שגיאת מצלמה: " + err.message);
+    }
+  });
 }
 
 function loadZXing(video) {
   var s = document.createElement("script");
   s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
   s.onload = function() { startScanning(video); };
-  s.onerror = function() {
-    document.getElementById("err").style.display = "block";
-    document.getElementById("err").textContent = "❌ שגיאת טעינת ספריית סריקה";
-  };
+  s.onerror = function() { setStatus("❌ שגיאת טעינת ZXing"); };
   document.head.appendChild(s);
 }
 
 function startScanning(video) {
+  setStatus("סורק…");
   var hints = new Map();
   hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-    ZXing.BarcodeFormat.EAN_13,
-    ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128,
-    ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E,
+    ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E,
   ]);
   hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
 
-  var reader   = new ZXing.BrowserMultiFormatReader(hints);
+  var reader = new ZXing.BrowserMultiFormatReader(hints);
   var lastScan = null;
 
   (function tick() {
     reader.decodeFromVideoElement(video)
-      .then(function(result) {
-        var bc = result.getText();
+      .then(function(r) {
+        var bc = r.getText();
         if (bc && bc !== lastScan) {
           lastScan = bc;
           showSuccess(bc);
-          Streamlit.setComponentValue(bc);   // → triggers Python rerun automatically
+          sendValue(bc);
         }
+        setTimeout(tick, 350);
       })
-      .catch(function() {})
-      .finally(function() { setTimeout(tick, 350); });
+      .catch(function() { setTimeout(tick, 350); });
   })();
 }
 
@@ -213,15 +201,34 @@ function showSuccess(bc) {
   document.getElementById("ok").classList.add("show");
   document.getElementById("line").style.display = "none";
   document.getElementById("hint").style.display = "none";
+  setStatus("✅ זוהה: " + bc);
 }
 
-// ── Init: wait for Streamlit render event ───────────────────────────────────
-function onRender(event) {
-  startCamera();
+function sendValue(bc) {
+  try { Streamlit.setComponentValue(bc); return; } catch(e) {}
+  // fallback — postMessage (works even without CDN in some Streamlit versions)
+  try {
+    window.parent.postMessage(
+      { isStreamlitMessage: true, type: "streamlit:setComponentValue", value: bc },
+      "*"
+    );
+  } catch(e) {}
 }
 
-Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender);
-Streamlit.setComponentReady();
+function setStatus(msg) {
+  var el = document.getElementById("status");
+  if (el) el.textContent = msg;
+}
+
+// Kick off Streamlit integration once the CDN script tag has run
+// (the onerror on the <script> tag handles CDN failure)
+window.addEventListener("load", function() {
+  if (typeof Streamlit !== "undefined") {
+    initStreamlit();
+  } else {
+    startCamera(); // CDN didn't load — start directly
+  }
+});
 </script>
 </body>
 </html>
