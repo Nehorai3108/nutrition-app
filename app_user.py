@@ -53,20 +53,17 @@ st.set_page_config(
 # ── Design system ────────────────────────────────────────────────────────────
 inject_global_css()
 
-# ── Auth ─────────────────────────────────────────────────────────────────────
-from ui.persistent_auth import setup_persistent_auth
-from auth.login_ui import render_login_ui, logout_button as _auth_logout_button
-from auth.supabase_client import is_supabase_configured
+# ── Auth gate ────────────────────────────────────────────────────────────────
+from auth.login_ui import require_auth, logout_button as _auth_logout_button
 
-# Restore session from refresh token stored in URL (persists 60 days)
-setup_persistent_auth()
+_USER_ID: str = require_auth()
 
-# If Supabase is configured and no user is logged in → show login wall
-if is_supabase_configured() and "user_id" not in st.session_state:
-    render_login_ui()
-    st.stop()
+from nutrition_app.repositories.profile_repository import ProfileRepository as _ProfileRepo
+_profile_repo = _ProfileRepo()
+_profile = _profile_repo.load(_USER_ID) or {}
 
-_USER_ID: str = st.session_state.get("user_id", "ui_user_001")
+if st.session_state.get("_needs_onboarding") or not _profile.get("name"):
+    st.switch_page("pages/0_profile.py")
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
@@ -122,14 +119,13 @@ if not _DEFAULT_FOOD_NAMES:
     _DEFAULT_FOOD_NAMES = [name for _, name in ALL_FOODS[:5]]
 
 # ── Sidebar — Slim Dashboard ──────────────────────────────────────────────────
-from nutrition_app.repositories.profile_repository import ProfileRepository as _ProfileRepo
+# _profile + _profile_repo are loaded near the top (right after require_auth)
+# so the onboarding redirect can route on empty-profile state.
 from nutrition_app.user_manager import load_inventory as _load_inv
 
-_profile_repo = _ProfileRepo()
-_profile = _profile_repo.load(_USER_ID)
-
-# Resolve profile values (used by pipeline below)
-name          = _profile.get("name", "ישראל ישראלי")
+# Resolve profile values (used by pipeline below). At this point _profile is
+# guaranteed to have a real name — empty-profile users were redirected above.
+name          = _profile.get("name") or ""
 gender_choice = Gender(_profile.get("gender", "male"))
 height        = float(_profile.get("height_cm", 178.0))
 weight        = float(_profile.get("weight_kg", 82.0))
@@ -188,13 +184,9 @@ with st.sidebar:
     # ── Profile card ──────────────────────────────────────────────────────
     st.markdown(f"### {name}")
     st.caption(f"⚖️ {weight}ק״ג &nbsp;·&nbsp; 🎯 {GOAL_LABEL_SHORT.get(goal_choice, '')}")
-    _user_email_display = st.session_state.get("user_email") or (
-        st.session_state.get("bitefit_user", {}) or {}
-    ).get("email", "")
-    _streamlit_email = getattr(st.experimental_user, "email", "") if hasattr(st, "experimental_user") else ""
-    _display_email = _streamlit_email or _user_email_display
-    if _display_email:
-        st.caption(f"👤 {_display_email}")
+    _user_email_display = st.session_state.get("user_email", "")
+    if _user_email_display:
+        st.caption(f"👤 {_user_email_display}")
     st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
 
     st.divider()

@@ -7,16 +7,19 @@ import sys, os, json, base64
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-from nutrition_app.user_manager import get_all_users, add_inventory_item
+from nutrition_app.user_manager import add_inventory_item
 
 from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, icon_button,
 )
+from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
 st.set_page_config(page_title="BiteFit · סריקה", page_icon="📷", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
+
+USER_ID = require_auth()
 
 # ── טעינת קטלוג ──────────────────────────────────────────────────────────────
 @st.cache_data
@@ -107,20 +110,11 @@ def parse_text_list(text: str) -> list[str]:
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    section_header("לקוח", "user")
-    users = get_all_users()
-
-    if users:
-        user_names = {u["user_id"]: u["name"] for u in users}
-        selected_id = st.selectbox(
-            "בחר לקוח",
-            options=[u["user_id"] for u in users],
-            format_func=lambda uid: user_names[uid],
-        )
-    else:
-        selected_id = None
-        st.warning("אין לקוחות. צור לקוח בדף המלאי.")
-
+    st.markdown(
+        f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>',
+        unsafe_allow_html=True,
+    )
+    logout_button(key="_scanner_logout_btn")
     st.divider()
     section_header("מפתח OCR", "lock")
 
@@ -164,12 +158,7 @@ page_header(
     subtitle="העלה תמונה של קבלה — המערכת תזהה מוצרים עבריים ותוסיף למלאי",
 )
 
-if not selected_id:
-    st.error("יש לבחור לקוח מהתפריט השמאלי.")
-    st.stop()
-
-user = next((u for u in users if u["user_id"] == selected_id), None)
-st.info(f"מוסיף מוצרים למלאי של: **{user['name']}**")
+st.info(f"מוסיף מוצרים למלאי שלך")
 st.divider()
 
 # ── טאבים ────────────────────────────────────────────────────────────────────
@@ -255,8 +244,8 @@ if detected_names:
         if icon_button("הוסף למלאי", "add",
                        key="add_matched_btn", type="primary"):
             for food, qty in selected_foods:
-                add_inventory_item(selected_id, food["food_id"], food["name_he"], float(qty))
-            st.success(f"✅ נוספו {len(selected_foods)} מוצרים למלאי של {user['name']}!")
+                add_inventory_item(USER_ID, food["food_id"], food["name_he"], float(qty))
+            st.success(f"✅ נוספו {len(selected_foods)} מוצרים למלאי!")
             del st.session_state["scan_results"]
             st.balloons()
 
@@ -274,7 +263,7 @@ if detected_names:
                 _add_unmatched = icon_button("הוסף בכ״ז", "add", key=f"ub_{name}")
             if _add_unmatched:
                 custom_id = f"custom_{name.replace(' ', '_')}"
-                add_inventory_item(selected_id, custom_id, name, float(custom_qty))
+                add_inventory_item(USER_ID, custom_id, name, float(custom_qty))
                 st.success(f"נוסף: {name}")
                 st.rerun()
 

@@ -38,6 +38,42 @@ class WaterRepository:
         self.base_dir = base_dir
         os.makedirs(self.base_dir, exist_ok=True)
 
+    # ── Backend selector ──────────────────────────────────────────────────────
+
+    def _use_supabase(self) -> bool:
+        try:
+            from nutrition_app.db.supabase_client import is_supabase_configured
+            return is_supabase_configured()
+        except Exception:
+            return False
+
+    def _sb(self):
+        from nutrition_app.db.supabase_client import get_supabase
+        return get_supabase()
+
+    # ── Supabase backend (blob) ───────────────────────────────────────────────
+
+    def _sb_load(self, user_id: str) -> Optional[dict]:
+        rows = (
+            self._sb().table("user_water_data")
+            .select("blob").eq("user_id", user_id).limit(1).execute()
+        ).data
+        if not rows:
+            return None
+        blob = rows[0].get("blob")
+        if isinstance(blob, str):
+            blob = json.loads(blob)
+        return blob
+
+    def _sb_save(self, user_id: str, data: dict) -> None:
+        self._sb().table("user_water_data").upsert({
+            "user_id":    user_id,
+            "blob":       data,
+            "updated_at": datetime.now().isoformat(),
+        }, on_conflict="user_id").execute()
+
+    # ── Local JSON backend ────────────────────────────────────────────────────
+
     def _get_filepath(self, user_id: str) -> str:
         """Get the file path for a user's water data."""
         return os.path.join(self.base_dir, f"{user_id}.json")
@@ -59,22 +95,16 @@ class WaterRepository:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
+    # ── Public API ────────────────────────────────────────────────────────────
+
     def get_water_data(self, user_id: str) -> UserWaterData:
-        """
-        Get complete water data for a user.
-
-        If no data exists, creates default with 2L daily goal.
-
-        Args:
-            user_id: User identifier
-
-        Returns:
-            UserWaterData object with all water intake history and goal
-        """
-        data = self._load_file(user_id)
+        """Get complete water data for a user; defaults to 2L goal."""
+        if self._use_supabase():
+            data = self._sb_load(user_id)
+        else:
+            data = self._load_file(user_id)
 
         if data is None:
-            # Create default water data
             return UserWaterData(
                 user_id=user_id,
                 daily_log={},
@@ -85,7 +115,10 @@ class WaterRepository:
 
     def save_water_data(self, water_data: UserWaterData) -> None:
         """Save complete water data for a user."""
-        self._save_file(water_data.user_id, water_data.to_dict())
+        if self._use_supabase():
+            self._sb_save(water_data.user_id, water_data.to_dict())
+        else:
+            self._save_file(water_data.user_id, water_data.to_dict())
 
     def save_water_goal(self, user_id: str, daily_goal_ml: float) -> WaterGoal:
         """

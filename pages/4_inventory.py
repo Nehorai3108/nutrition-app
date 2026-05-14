@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-דף מלאי אישי — ניהול מוצרים לכל לקוח
+דף מלאי אישי — ניהול מוצרים של המשתמש המחובר
 """
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -9,18 +9,20 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 import streamlit as st
 from nutrition_app.user_manager import (
-    get_all_users, create_user, delete_user,
     load_inventory, add_inventory_item, update_inventory_item, remove_inventory_item,
 )
 
 from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, icon_button,
 )
+from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
 st.set_page_config(page_title="BiteFit · מלאי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
+
+USER_ID = require_auth()
 
 # ── טעינת קטלוג מזון ─────────────────────────────────────────────────────────
 @st.cache_data
@@ -33,62 +35,22 @@ def load_catalog():
 CATALOG = load_catalog()
 CATALOG_BY_ID = {f["food_id"]: f for f in CATALOG}
 
-# ── Sidebar — בחירת משתמש ────────────────────────────────────────────────────
+# ── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    section_header("לקוחות", "user")
-
-    users = get_all_users()
-
-    if users:
-        user_names = {u["user_id"]: u["name"] for u in users}
-        selected_id = st.selectbox(
-            "בחר לקוח",
-            options=[u["user_id"] for u in users],
-            format_func=lambda uid: user_names[uid],
-            key="selected_user_id",
-        )
-    else:
-        selected_id = None
-        st.info("אין לקוחות עדיין. צור לקוח חדש.")
-
-    st.divider()
-    section_header("לקוח חדש", "add")
-    new_name = st.text_input("שם הלקוח", key="new_user_name")
-    if icon_button("צור לקוח", "add", key="create_user_btn"):
-        if new_name.strip():
-            u = create_user(new_name.strip())
-            st.success(f"נוצר: {u['name']}")
-            st.rerun()
-        else:
-            st.error("הכנס שם")
-
-    if selected_id:
-        st.divider()
-        if icon_button("מחק לקוח זה", "delete",
-                       key="delete_user_btn", type="secondary"):
-            delete_user(selected_id)
-            st.rerun()
-
+    st.markdown(
+        f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>',
+        unsafe_allow_html=True,
+    )
+    logout_button(key="_inv_logout_btn")
     st.divider()
     render_chatbot_sidebar()
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 nav_menu(active="מלאי")
-page_header("מלאי אישי", icon_name="inventory",
-            subtitle="ניהול מוצרים לכל לקוח")
+page_header("המלאי שלי", icon_name="inventory",
+            subtitle="ניהול המוצרים בבית — נשמר בענן")
 
-if not selected_id:
-    st.info("בחר לקוח מהתפריט השמאלי או צור לקוח חדש.")
-    st.stop()
-
-user = next((u for u in users if u["user_id"] == selected_id), None)
-if not user:
-    st.stop()
-
-st.markdown(f"### 👤 {user['name']}")
-st.divider()
-
-items = load_inventory(selected_id)
+items = load_inventory(USER_ID)
 
 # ── הוספת מוצר ──────────────────────────────────────────────────────────────
 with st.expander("➕ הוסף מוצר ידנית", expanded=False):
@@ -122,7 +84,7 @@ with st.expander("➕ הוסף מוצר ידנית", expanded=False):
             st.write("")
             if icon_button("הוסף", "add", key="inv_add_btn", type="primary"):
                 food = CATALOG_BY_ID[chosen_id]
-                add_inventory_item(selected_id, chosen_id, food["name_he"], float(qty))
+                add_inventory_item(USER_ID, chosen_id, food["name_he"], float(qty))
                 st.success(f"נוסף: {food['name_he']} — {qty}ג")
                 st.rerun()
     elif search_q:
@@ -140,7 +102,7 @@ with st.expander("➕ הוסף מוצר ידנית", expanded=False):
         if _add_custom:
             if custom_name.strip():
                 custom_id = f"custom_{custom_name.strip().replace(' ', '_')}"
-                add_inventory_item(selected_id, custom_id, custom_name.strip(), float(custom_qty))
+                add_inventory_item(USER_ID, custom_id, custom_name.strip(), float(custom_qty))
                 st.success(f"נוסף: {custom_name}")
                 st.rerun()
 
@@ -182,14 +144,14 @@ else:
         with c3:
             if icon_button("שמור", "save", key=f"save_{fid}",
                            help="עדכן כמות"):
-                update_inventory_item(selected_id, fid, float(new_qty))
+                update_inventory_item(USER_ID, fid, float(new_qty))
                 st.success("עודכן!")
                 st.rerun()
 
         with c4:
             if icon_button("מחק", "delete", key=f"del_{fid}",
                            type="secondary", help="הסר מהמלאי"):
-                remove_inventory_item(selected_id, fid)
+                remove_inventory_item(USER_ID, fid)
                 st.rerun()
 
 st.divider()

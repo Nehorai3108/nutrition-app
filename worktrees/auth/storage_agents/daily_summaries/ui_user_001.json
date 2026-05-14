@@ -1,0 +1,32 @@
+{
+  "2026-04-24": {
+    "user_id": "ui_user_001",
+    "date": "2026-04-24",
+    "calories_eaten": 2141.2,
+    "protein_eaten": 175.6,
+    "carbs_eaten": 184.9,
+    "fat_eaten": 77.1,
+    "calories_target": 2231.9,
+    "protein_target": 167.4,
+    "carbs_target": 223.2,
+    "fat_target": 74.4,
+    "calories_burned": 0,
+    "water_ml": 0,
+    "updated_at": "2026-04-24T11:01:10.089468"
+  },
+  "2026-04-26": {
+    "user_id": "ui_user_001",
+    "date": "2026-04-26",
+    "calories_eaten": 2288.2,
+    "protein_eaten": 181.2,
+    "carbs_eaten": 210.1,
+    "fat_eaten": 79.8,
+    "calories_target": 2710.2,
+    "protein_target": 216.8,
+    "carbs_target": 304.9,
+    "fat_target": 69.3,
+    "calories_burned": 478.3,
+    "water_ml": 0,
+    "updated_at": "2026-04-26T14:52:00.516879"
+  }
+}

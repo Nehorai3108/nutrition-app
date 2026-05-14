@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.env
+*.db
+*.sqlite3
+storage/runs/
+storage/data/
+storage/artifacts/
+storage_agents/recipe_images/.pexels_api_key
+storage_agents/recipe_images/candidates/
+.streamlit/secrets.toml

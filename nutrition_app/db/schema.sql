@@ -28,17 +28,22 @@ CREATE POLICY "own food log" ON food_log
 
 -- ── User profiles ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS profiles (
-    user_id         UUID    REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-    name            TEXT,
-    age             INT,
-    gender          TEXT,
-    weight_kg       FLOAT,
-    height_cm       FLOAT,
-    activity_level  TEXT,
-    goal            TEXT,
-    pace            TEXT,
-    custom_calories INT,
-    updated_at      TIMESTAMPTZ DEFAULT NOW()
+    user_id            UUID    REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    name               TEXT,
+    age                INT,                 -- legacy, unused (use date_of_birth)
+    gender             TEXT,
+    date_of_birth      DATE,
+    weight_kg          FLOAT,
+    height_cm          FLOAT,
+    activity_level     TEXT,
+    goal               TEXT,
+    pace               TEXT,
+    weekly_change_kg   FLOAT,
+    target_weight_kg   FLOAT,
+    weeks_to_goal      INT,
+    custom_calories    INT,                 -- legacy, unused
+    meal_preferences   JSONB,
+    updated_at         TIMESTAMPTZ DEFAULT NOW()
 );
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -93,3 +98,71 @@ ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own workouts" ON workouts;
 CREATE POLICY "own workouts" ON workouts
     FOR ALL USING (auth.uid() = user_id);
+
+-- ── Daily summaries ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS daily_summaries (
+    id              UUID    DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id         UUID    REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    date            DATE    NOT NULL,
+    summary_json    JSONB   NOT NULL,
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, date)
+);
+
+ALTER TABLE daily_summaries ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "own daily summary" ON daily_summaries;
+CREATE POLICY "own daily summary" ON daily_summaries
+    FOR ALL USING (auth.uid() = user_id);
+
+-- ── Inventory ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS inventory (
+    id              UUID    DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id         UUID    REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    food_id         TEXT    NOT NULL,
+    name_he         TEXT,
+    quantity_g      FLOAT   NOT NULL DEFAULT 0,
+    unit            TEXT    DEFAULT 'gram',
+    updated_at      TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, food_id)
+);
+
+ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "own inventory" ON inventory;
+CREATE POLICY "own inventory" ON inventory
+    FOR ALL USING (auth.uid() = user_id);
+
+-- ── User workout data (blob form — matches UserWorkoutData model) ────
+-- Stores both the weekly plan and the daily log as a single JSONB blob
+-- per user. Simpler than decomposing for the demo timeline.
+CREATE TABLE IF NOT EXISTS user_workout_data (
+    user_id     UUID    REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    blob        JSONB   NOT NULL,
+    updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE user_workout_data ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "own workout data" ON user_workout_data;
+CREATE POLICY "own workout data" ON user_workout_data
+    FOR ALL USING (auth.uid() = user_id);
+
+-- ── User water data (blob form — matches UserWaterData model) ────────
+CREATE TABLE IF NOT EXISTS user_water_data (
+    user_id     UUID    REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    blob        JSONB   NOT NULL,
+    updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE user_water_data ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "own water data" ON user_water_data;
+CREATE POLICY "own water data" ON user_water_data
+    FOR ALL USING (auth.uid() = user_id);
+
+-- ── Idempotent migrations for existing Supabase projects ─────
+-- Re-running schema.sql on a project where `profiles` already exists
+-- without the newer columns: add them in-place. Safe to run multiple times.
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS date_of_birth     DATE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS weekly_change_kg  FLOAT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS target_weight_kg  FLOAT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS weeks_to_goal     INT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS meal_preferences  JSONB;

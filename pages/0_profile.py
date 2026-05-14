@@ -10,8 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
 from ui.components import inject_global_css, page_header, section_header
-from ui.persistent_auth import setup_persistent_auth
-from ui.user_auth import require_auth, logout_button
+from auth.login_ui import require_auth, logout_button
 from nutrition_app.models.enums import Gender, ActivityLevel, Goal
 from nutrition_app.agents.agent_2_nutrition import NutritionEngine
 from nutrition_app.models.user import UserProfile
@@ -21,10 +20,9 @@ st.set_page_config(page_title="BiteFit · פרופיל", page_icon="👤", layou
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
-setup_persistent_auth()
 USER_ID = require_auth()
 repo    = ProfileRepository()
 profile = repo.load(USER_ID)
@@ -285,7 +283,9 @@ with tab_personal:
     # ── Save ─────────────────────────────────────────────────────────────────
     st.divider()
     if st.button("💾 שמור פרטים אישיים", type="primary", use_container_width=True):
+        _was_onboarding = bool(st.session_state.get("_needs_onboarding")) or not profile.get("name")
         profile.update({
+            "user_id":          USER_ID,
             "name":             new_name,
             "gender":           new_gender.value,
             "date_of_birth":    new_dob.isoformat(),
@@ -300,8 +300,14 @@ with tab_personal:
             "notes":            profile.get("notes") or None,
         })
         repo.save(profile)
-        st.success("✅ פרטים אישיים נשמרו!")
-        st.rerun()
+        if _was_onboarding and new_name:
+            # First-time setup complete — send the user to the dashboard.
+            st.session_state.pop("_needs_onboarding", None)
+            st.success("🎉 הפרופיל מוכן! מעבירים אותך לעמוד הראשי…")
+            st.switch_page("app_user.py")
+        else:
+            st.success("✅ פרטים אישיים נשמרו!")
+            st.rerun()
 
 # ── Tab 2: Meal preferences ───────────────────────────────────────────────────
 with tab_prefs:

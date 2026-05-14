@@ -1,8 +1,12 @@
 """
-Workout Repository — per-user JSON persistence of workouts.
-Pattern mirrors nutrition_app/user_manager.py inventory functions.
+Workout Repository — per-user workout persistence.
 
-Storage: storage_agents/workouts/{user_id}.json
+Backends:
+  • Supabase (cloud)  — when SUPABASE_URL / SUPABASE_ANON_KEY are configured.
+                        Stores UserWorkoutData as a JSONB blob in
+                        the `user_workout_data` table, keyed by user_id.
+  • Local JSON files  — fallback for local development.
+                        Path: storage_agents/workouts/{user_id}.json
 """
 
 import json
@@ -18,27 +22,85 @@ from nutrition_app.models.workout import (
 
 _WEEKDAY_NAMES = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
-from nutrition_app.storage_paths import user_workouts_file  # noqa: E402
+
+def _storage_dir() -> str:
+    folder = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "storage_agents",
+        "workouts",
+    )
+    os.makedirs(folder, exist_ok=True)
+    return folder
 
 
 def _path(user_id: str) -> str:
-    return str(user_workouts_file(user_id))
+    return os.path.join(_storage_dir(), f"{user_id}.json")
 
 
 class WorkoutRepository:
-    """CRUD for workout data. JSON file per user."""
+    """CRUD for workout data. Dual backend (Supabase or local JSON)."""
 
-    def get_workout_data(self, user_id: str) -> UserWorkoutData:
+    # ── Backend selector ──────────────────────────────────────────────────────
+
+    def _use_supabase(self) -> bool:
+        try:
+            from nutrition_app.db.supabase_client import is_supabase_configured
+            return is_supabase_configured()
+        except Exception:
+            return False
+
+    def _sb(self):
+        from nutrition_app.db.supabase_client import get_supabase
+        return get_supabase()
+
+    # ── Supabase backend ──────────────────────────────────────────────────────
+
+    def _sb_load(self, user_id: str) -> UserWorkoutData:
+        rows = (
+            self._sb().table("user_workout_data")
+            .select("blob").eq("user_id", user_id).limit(1).execute()
+        ).data
+        if not rows:
+            return UserWorkoutData(user_id=user_id)
+        blob = rows[0].get("blob") or {}
+        if isinstance(blob, str):
+            blob = json.loads(blob)
+        # Ensure user_id is set in the blob for from_dict
+        blob.setdefault("user_id", user_id)
+        return UserWorkoutData.from_dict(blob)
+
+    def _sb_save(self, data: UserWorkoutData) -> None:
+        self._sb().table("user_workout_data").upsert({
+            "user_id":    data.user_id,
+            "blob":       data.to_dict(),
+            "updated_at": datetime.now().isoformat(),
+        }, on_conflict="user_id").execute()
+
+    # ── Local JSON backend ────────────────────────────────────────────────────
+
+    def _local_load(self, user_id: str) -> UserWorkoutData:
         path = _path(user_id)
         if not os.path.exists(path):
             return UserWorkoutData(user_id=user_id)
         with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return UserWorkoutData.from_dict(data)
+            return UserWorkoutData.from_dict(json.load(f))
 
-    def _save(self, data: UserWorkoutData) -> None:
+    def _local_save(self, data: UserWorkoutData) -> None:
         with open(_path(data.user_id), "w", encoding="utf-8") as f:
             json.dump(data.to_dict(), f, ensure_ascii=False, indent=2)
+
+    # ── Public API ────────────────────────────────────────────────────────────
+
+    def get_workout_data(self, user_id: str) -> UserWorkoutData:
+        if self._use_supabase():
+            return self._sb_load(user_id)
+        return self._local_load(user_id)
+
+    def _save(self, data: UserWorkoutData) -> None:
+        if self._use_supabase():
+            self._sb_save(data)
+        else:
+            self._local_save(data)
 
     def save_weekly_plan(self, user_id: str, plan: WeeklyWorkoutPlan) -> None:
         current = self.get_workout_data(user_id)

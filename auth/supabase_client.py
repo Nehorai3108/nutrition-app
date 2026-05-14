@@ -26,11 +26,9 @@ import streamlit as st
 from supabase import create_client, Client
 
 
-# Session-state keys — kept compatible with ui/user_auth.py
+# Session-state keys
 _KEY_USER_ID = "user_id"
 _KEY_USER_EMAIL = "user_email"
-# Legacy key written by ui/user_auth.py — read for backwards compatibility
-_KEY_LEGACY_USER = "bitefit_user"
 
 
 def _load_creds() -> tuple[Optional[str], Optional[str]]:
@@ -66,20 +64,11 @@ def get_supabase() -> Client:
 
 
 def get_current_user() -> Optional[dict]:
-    """
-    Return the current user dict (with 'id' and 'email') from session_state,
-    or None when not authenticated.
-
-    Reads the new keys (user_id, user_email) first, then falls back to the
-    legacy 'bitefit_user' dict written by ui/user_auth.py.
-    """
+    """Return {'id', 'email'} from session_state, or None when not authenticated."""
     uid = st.session_state.get(_KEY_USER_ID)
     if uid:
         return {
             "id": uid,
             "email": st.session_state.get(_KEY_USER_EMAIL, ""),
         }
-    legacy = st.session_state.get(_KEY_LEGACY_USER)
-    if isinstance(legacy, dict) and legacy.get("id"):
-        return {"id": legacy["id"], "email": legacy.get("email", "")}
     return None

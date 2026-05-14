@@ -1,0 +1,19 @@
+[project]
+name = "bitefit"
+version = "1.0.0"
+description = "BiteFit — Smart nutrition & fitness tracking app"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit>=1.32",
+    "streamlit-extras>=0.4",
+    "streamlit-option-menu>=0.3.13",
+    "openai>=1.0",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["nutrition_app/tests"]
+pythonpath = ["."]

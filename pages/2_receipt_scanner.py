@@ -18,6 +18,7 @@ from nutrition_app.models.food_item import FoodItem
 from ui.components import (
     inject_global_css, page_header, nav_menu, icon_button,
 )
+from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
 # ── page config ───────────────────────────────────────────────────────────────
@@ -25,7 +26,15 @@ st.set_page_config(page_title="BiteFit · סריקה", page_icon="🧾", layout=
 
 inject_global_css()
 
+USER_ID = require_auth()
+
 with st.sidebar:
+    st.markdown(
+        f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>',
+        unsafe_allow_html=True,
+    )
+    logout_button(key="_receipt_scanner_logout_btn")
+    st.divider()
     render_chatbot_sidebar()
 
 # ── catalog (cached) ──────────────────────────────────────────────────────────

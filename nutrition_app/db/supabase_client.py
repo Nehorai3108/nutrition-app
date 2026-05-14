@@ -1,26 +1,15 @@
 """
-supabase_client.py — Singleton Supabase client for BiteFit.
-Cached with st.cache_resource so it's created once per Streamlit session.
+nutrition_app/db/supabase_client.py — Re-export shim.
+
+The canonical Supabase client lives in `auth/supabase_client.py`. This module
+exists only so existing imports like
+    `from nutrition_app.db.supabase_client import get_supabase`
+keep working.
 """
 from __future__ import annotations
 
-import streamlit as st
-from supabase import create_client, Client
-
-
-@st.cache_resource
-def get_supabase() -> Client:
-    url  = st.secrets["SUPABASE_URL"]
-    key  = st.secrets["SUPABASE_ANON_KEY"]
-    return create_client(url, key)
-
-
-def is_supabase_configured() -> bool:
-    """True when Supabase credentials are present in secrets."""
-    try:
-        return bool(
-            st.secrets.get("SUPABASE_URL") and
-            st.secrets.get("SUPABASE_ANON_KEY")
-        )
-    except Exception:
-        return False
+from auth.supabase_client import (  # noqa: F401
+    get_supabase,
+    is_supabase_configured,
+    get_current_user,
+)

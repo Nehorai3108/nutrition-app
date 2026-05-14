@@ -5,11 +5,19 @@ import os
 
 import streamlit as st
 
+from auth.login_ui import get_user_id
 from chatbot.grok_client import get_client, chat_completion, MODEL
 from chatbot.system_prompt import SYSTEM_PROMPT
 from chatbot.tools import TOOLS, execute_tool
 
 _MAX_TOOL_ROUNDS = 5
+
+
+def _chat_key() -> str:
+    """Per-user session-state key for chat history. Falls back to anon when
+    not authenticated (e.g. preview mode), so the bare key never collides."""
+    uid = get_user_id()
+    return f"chat_messages_{uid or 'anon'}"
 
 
 def render_chatbot_sidebar():
@@ -21,14 +29,16 @@ def render_chatbot_sidebar():
         st.info("להפעלת הצ'אט, הגדר משתנה סביבה XAI_API_KEY")
         return
 
-    # Initialize chat history
-    if "chat_messages" not in st.session_state:
-        st.session_state["chat_messages"] = []
+    chat_key = _chat_key()
+
+    # Initialize chat history (namespaced by user_id)
+    if chat_key not in st.session_state:
+        st.session_state[chat_key] = []
 
     # Display chat history in a scrollable container
     chat_container = st.container(height=350)
     with chat_container:
-        for msg in st.session_state["chat_messages"]:
+        for msg in st.session_state[chat_key]:
             if msg["role"] in ("user", "assistant"):
                 with st.chat_message(msg["role"]):
                     st.markdown(msg["content"])
@@ -38,11 +48,11 @@ def render_chatbot_sidebar():
 
     if user_input:
         # Add user message
-        st.session_state["chat_messages"].append({"role": "user", "content": user_input})
+        st.session_state[chat_key].append({"role": "user", "content": user_input})
 
         # Build messages for API
         api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-        for msg in st.session_state["chat_messages"]:
+        for msg in st.session_state[chat_key]:
             if msg["role"] in ("user", "assistant"):
                 api_messages.append({"role": msg["role"], "content": msg["content"]})
             elif msg["role"] == "tool":
@@ -90,7 +100,7 @@ def render_chatbot_sidebar():
                     "content": None,
                     "tool_calls": tc_list,
                 })
-                st.session_state["chat_messages"].append({
+                st.session_state[chat_key].append({
                     "role": "assistant_tool_calls",
                     "tool_calls": tc_list,
                 })
@@ -112,7 +122,7 @@ def render_chatbot_sidebar():
                         "content": result,
                     }
                     api_messages.append(tool_msg)
-                    st.session_state["chat_messages"].append(tool_msg)
+                    st.session_state[chat_key].append(tool_msg)
 
                 # Continue the loop — Grok needs to process tool results
                 continue
@@ -123,7 +133,7 @@ def render_chatbot_sidebar():
 
         # Save assistant response
         if assistant_text:
-            st.session_state["chat_messages"].append({"role": "assistant", "content": assistant_text})
+            st.session_state[chat_key].append({"role": "assistant", "content": assistant_text})
 
         # Rerun to display updated chat
         st.rerun()

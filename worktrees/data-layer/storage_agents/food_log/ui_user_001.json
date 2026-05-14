@@ -1,0 +1,180 @@
+{
+  "2026-04-24": [
+    {
+      "food_id": "food_184",
+      "food_name": "אורז בר",
+      "grams": 100.0,
+      "calories": 101.0,
+      "protein": 4.0,
+      "carbs": 21.3,
+      "fat": 0.3,
+      "meal_type": "morning_snack",
+      "timestamp": "2026-04-24T11:28:25.352809",
+      "entry_id": "7581a92d-d1a8-4b3d-8b6f-257dc0f9d541"
+    }
+  ],
+  "2026-04-27": [
+    {
+      "food_id": "food_055",
+      "food_name": "בוטנים",
+      "grams": 100.0,
+      "calories": 567.0,
+      "protein": 25.8,
+      "carbs": 16.1,
+      "fat": 49.2,
+      "meal_type": "breakfast",
+      "timestamp": "2026-04-27T06:40:27.142099",
+      "entry_id": "8c9ded78-3bf6-41ff-8bfd-0ab2540171f1"
+    },
+    {
+      "food_id": "recipe_recipe_101",
+      "food_name": "פנקייק חלבון",
+      "grams": 100.0,
+      "calories": 380.0,
+      "protein": 35.0,
+      "carbs": 32.0,
+      "fat": 12.0,
+      "meal_type": "breakfast",
+      "timestamp": "2026-04-27T06:48:35.417963",
+      "entry_id": "d1e0f4cf-8d44-4b09-bdeb-51f193abba26"
+    },
+    {
+      "food_id": "recipe_recipe_011",
+      "food_name": "עוף צלוי עם אורז",
+      "grams": 100.0,
+      "calories": 600.0,
+      "protein": 52.0,
+      "carbs": 60.0,
+      "fat": 15.0,
+      "meal_type": "lunch",
+      "timestamp": "2026-04-27T07:07:47.157278",
+      "entry_id": "942a7bb0-aed5-45a9-845c-33d754b4b3e7"
+    },
+    {
+      "food_id": "recipe_recipe_189",
+      "food_name": "קרפ מתוק",
+      "grams": 200.0,
+      "calories": 175.0,
+      "protein": 6.0,
+      "carbs": 26.0,
+      "fat": 5.0,
+      "meal_type": "afternoon_snack",
+      "timestamp": "2026-04-27T07:07:52.666001",
+      "entry_id": "e62a4593-06b2-4d2a-a1e1-b60ec746a896"
+    },
+    {
+      "food_id": "recipe_recipe_268",
+      "food_name": "ירקות ממולאים",
+      "grams": 100.0,
+      "calories": 520.0,
+      "protein": 34.0,
+      "carbs": 42.0,
+      "fat": 22.0,
+      "meal_type": "dinner",
+      "timestamp": "2026-04-27T07:07:56.648784",
+      "entry_id": "6c47893d-98bc-4ce0-8432-21ca16f3ab95"
+    }
+  ],
+  "2026-04-28": [
+    {
+      "food_id": "recipe_recipe_101",
+      "food_name": "פנקייק חלבון",
+      "grams": 100.0,
+      "calories": 380.0,
+      "protein": 35.0,
+      "carbs": 32.0,
+      "fat": 12.0,
+      "meal_type": "breakfast",
+      "timestamp": "2026-04-28T09:43:49.019667",
+      "entry_id": "fcf8275d-a6a9-421a-9316-24ab7884e9d7"
+    },
+    {
+      "food_id": "recipe_recipe_193",
+      "food_name": "סלט פירות עם יוגורט",
+      "grams": 100.0,
+      "calories": 200.0,
+      "protein": 6.0,
+      "carbs": 38.0,
+      "fat": 3.0,
+      "meal_type": "morning_snack",
+      "timestamp": "2026-04-28T20:04:01.918099",
+      "entry_id": "487631ce-b8af-467c-a61f-24e2ff94a958"
+    }
+  ],
+  "2026-05-03": [
+    {
+      "food_id": "food_156",
+      "food_name": "אבקת חרוב",
+      "grams": 100.0,
+      "calories": 222.0,
+      "protein": 4.6,
+      "carbs": 49.0,
+      "fat": 0.7,
+      "meal_type": "breakfast",
+      "timestamp": "2026-05-03T11:21:31.675491",
+      "entry_id": "77fcff12-f28c-463e-80df-b6b7b3d90bdc"
+    },
+    {
+      "food_id": "snack_free",
+      "food_name": "שוקולד",
+      "grams": 0.0,
+      "calories": 100.0,
+      "protein": 0.0,
+      "carbs": 0.0,
+      "fat": 0.0,
+      "meal_type": "snack",
+      "timestamp": "2026-05-03T11:21:40.609085",
+      "entry_id": "e65ef2a1-3aa5-4e6d-a8d4-8354faa51ee1"
+    },
+    {
+      "food_id": "food_035",
+      "food_name": "אבטיח",
+      "grams": 50.0,
+      "calories": 15.0,
+      "protein": 0.3,
+      "carbs": 3.8,
+      "fat": 0.1,
+      "meal_type": "snack",
+      "timestamp": "2026-05-03T11:35:20.070487",
+      "entry_id": "457dbb18-59a7-4b56-9324-df53658db451"
+    },
+    {
+      "food_id": "food_002",
+      "food_name": "אורז לבן",
+      "grams": 260.0,
+      "calories": 338.0,
+      "protein": 7.0,
+      "carbs": 72.8,
+      "fat": 0.8,
+      "meal_type": "breakfast",
+      "timestamp": "2026-05-03T17:13:56.957537",
+      "entry_id": "d06d9a56-aca2-4f29-b307-6c0740bf3304"
+    }
+  ],
+  "2026-05-05": [
+    {
+      "food_id": "food_012",
+      "food_name": "טונה",
+      "grams": 100.0,
+      "calories": 116.0,
+      "protein": 25.5,
+      "carbs": 0.0,
+      "fat": 1.0,
+      "meal_type": "lunch",
+      "timestamp": "2026-05-05T21:26:35.359438",
+      "entry_id": "2d78cf42-edf5-4eca-a883-1d3dec249b83"
+    },
+    {
+      "food_id": "food_010",
+      "food_name": "גבינת קוטג׳",
+      "grams": 100.0,
+      "calories": 98.0,
+      "protein": 11.0,
+      "carbs": 3.4,
+      "fat": 4.3,
+      "meal_type": "lunch",
+      "timestamp": "2026-05-05T21:26:35.361527",
+      "entry_id": "44c5c862-8301-41a0-8d4a-59acfe87afd1"
+    }
+  ]
+}

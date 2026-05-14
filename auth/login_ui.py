@@ -1,48 +1,91 @@
 """
-auth/login_ui.py — Streamlit login/signup component.
+auth/login_ui.py — Single source of truth for authentication.
 
-Renders Sign Up + Log In tabs. On successful auth, writes both the new keys
-(user_id / user_email) AND the legacy `bitefit_user` dict so existing pages
-that read the legacy key keep working.
+Every page (including app_user.py) must call `require_auth()` at the top.
+Returns the authenticated user_id. When no user is authenticated or Supabase
+is not configured, this function renders the appropriate screen and
+`st.stop()`s — it never returns a fallback id.
+
+Session-state keys:
+    user_id     — authenticated UUID
+    user_email  — authenticated email
+    _needs_onboarding — True for users who haven't completed profile setup
 """
 from __future__ import annotations
 
 import streamlit as st
 
-from auth.supabase_client import get_supabase
-
+from auth.supabase_client import get_supabase, is_supabase_configured, get_current_user
 
 _KEY_USER_ID = "user_id"
 _KEY_USER_EMAIL = "user_email"
-_KEY_LEGACY_USER = "bitefit_user"
-_KEY_LEGACY_SESSION = "bitefit_session"
+_KEY_NEEDS_ONBOARDING = "_needs_onboarding"
 
 
-def _set_session(user, session=None) -> None:
+# ── Public API ────────────────────────────────────────────────────────────────
+
+def require_auth() -> str:
+    """
+    Gate at the top of every page. Returns user_id when authenticated.
+
+    When Supabase is misconfigured: render error + st.stop().
+    When no user is logged in: render login UI + st.stop().
+    """
+    if not is_supabase_configured():
+        st.error("⚠️ השרת אינו מוגדר כראוי — נא לפנות לתמיכה.")
+        st.caption("Server misconfigured: Supabase credentials missing.")
+        st.stop()
+    user = get_current_user()
+    if user is None:
+        render_login_ui()
+        st.stop()
+    return user["id"]
+
+
+def get_user_id() -> str | None:
+    """Return authenticated user_id, or None if not logged in."""
+    user = get_current_user()
+    return user["id"] if user else None
+
+
+def get_user_email() -> str:
+    """Return authenticated user's email, or empty string."""
+    user = get_current_user()
+    return user.get("email", "") if user else ""
+
+
+# ── Internal: session bookkeeping ─────────────────────────────────────────────
+
+def _set_session(user) -> None:
+    """Write auth state to session_state after successful login/signup."""
     st.session_state[_KEY_USER_ID] = user.id
     st.session_state[_KEY_USER_EMAIL] = user.email
-    # Maintain legacy keys so the rest of the codebase (ui/user_auth.py
-    # consumers, pages/*) continues working without further changes.
-    st.session_state[_KEY_LEGACY_USER] = {"id": user.id, "email": user.email}
-    if session is not None:
-        st.session_state[_KEY_LEGACY_SESSION] = session
-    # Save refresh token to URL so session survives reconnects (60 days)
-    try:
-        from ui.persistent_auth import save_auth_cookie
-        rt = getattr(session, "refresh_token", "") if session else ""
-        save_auth_cookie(user.id, user.email, refresh_token=rt)
-    except Exception:
-        pass
 
+
+def _clear_session() -> None:
+    """Clear all auth + per-user session state. Called on logout."""
+    for k in (_KEY_USER_ID, _KEY_USER_EMAIL, _KEY_NEEDS_ONBOARDING):
+        st.session_state.pop(k, None)
+    # Clear all per-user namespaced keys (chat history, etc.)
+    for k in [k for k in st.session_state.keys() if k.startswith("chat_messages_")]:
+        st.session_state.pop(k, None)
+    # Clear in-flight scan / inventory caches that may bleed across users
+    for k in ("scanned_inventory", "_pending_recipe_filter"):
+        st.session_state.pop(k, None)
+
+
+# ── Auth actions ──────────────────────────────────────────────────────────────
 
 def _do_login(email: str, password: str) -> str | None:
-    """Return None on success, error message on failure."""
+    """Return None on success, error message string on failure."""
     try:
         resp = get_supabase().auth.sign_in_with_password(
             {"email": email, "password": password}
         )
         if resp.user:
-            _set_session(resp.user, resp.session)
+            _set_session(resp.user)
+            # Mark onboarding needed if profile is missing/blank
+            _check_onboarding_needed(resp.user.id)
             return None
         return "אימייל או סיסמה שגויים"
     except Exception as e:  # noqa: BLE001
@@ -55,11 +98,15 @@ def _do_login(email: str, password: str) -> str | None:
 
 
 def _do_signup(email: str, password: str) -> str | None:
-    """Return None on success, error message on failure."""
+    """Return None on success, error message string on failure."""
     try:
         resp = get_supabase().auth.sign_up({"email": email, "password": password})
         if resp.user:
-            _set_session(resp.user, resp.session)
+            _set_session(resp.user)
+            # Seed an empty profile row so RLS-protected reads later don't
+            # 404, then mark the user as needing onboarding.
+            _seed_empty_profile(resp.user.id)
+            st.session_state[_KEY_NEEDS_ONBOARDING] = True
             return None
         return "ההרשמה נכשלה — נסה שוב"
     except Exception as e:  # noqa: BLE001
@@ -71,8 +118,67 @@ def _do_signup(email: str, password: str) -> str | None:
         return f"שגיאת הרשמה: {msg}"
 
 
+def _seed_empty_profile(user_id: str) -> None:
+    """Create a blank profiles row so the new user has a record from the start."""
+    try:
+        from nutrition_app.repositories.profile_repository import ProfileRepository
+        repo = ProfileRepository()
+        # Only seed if no row exists yet (idempotent in case of replay).
+        existing = repo.load(user_id)
+        if existing and existing.get("name"):
+            return
+        repo.save({
+            "user_id": user_id,
+            "name": "",
+            "gender": "male",
+            "date_of_birth": "",
+            "height_cm": 0,
+            "weight_kg": 0,
+            "activity_level": "moderately_active",
+            "goal": "maintain",
+            "meal_preferences": {
+                "kashrut": "parve",
+                "allergies": [],
+                "preferred_foods": [],
+                "disliked_foods": [],
+                "meals_per_day": 5,
+            },
+        })
+    except Exception:
+        # Don't block signup if seed insert fails — onboarding will re-attempt.
+        pass
+
+
+def _check_onboarding_needed(user_id: str) -> None:
+    """Set _needs_onboarding flag if profile is blank/missing."""
+    try:
+        from nutrition_app.repositories.profile_repository import ProfileRepository
+        profile = ProfileRepository().load(user_id)
+        if not profile or not profile.get("name"):
+            st.session_state[_KEY_NEEDS_ONBOARDING] = True
+    except Exception:
+        pass
+
+
+def logout() -> None:
+    """Sign out of Supabase, clear all session state, rerun."""
+    try:
+        get_supabase().auth.sign_out()
+    except Exception:
+        pass
+    _clear_session()
+    st.rerun()
+
+
+def logout_button(label: str = "התנתק 👋", key: str = "_auth_logout_btn") -> None:
+    if st.button(label, key=key):
+        logout()
+
+
+# ── Login UI ──────────────────────────────────────────────────────────────────
+
 def render_login_ui() -> None:
-    """Render the full login/signup screen. Caller should st.stop() afterwards."""
+    """Render the login/signup screen. Caller should st.stop() afterwards."""
     st.markdown(
         """<style>
         #MainMenu, footer, header {visibility: hidden;}
@@ -144,29 +250,3 @@ def render_login_ui() -> None:
                 else:
                     st.success("נרשמת בהצלחה! 🎉")
                     st.rerun()
-
-
-def logout() -> None:
-    """Clear all auth-related session_state keys and rerun."""
-    try:
-        get_supabase().auth.sign_out()
-    except Exception:
-        pass
-    try:
-        from ui.persistent_auth import clear_auth_cookie
-        clear_auth_cookie()
-    except Exception:
-        pass
-    for k in (
-        _KEY_USER_ID,
-        _KEY_USER_EMAIL,
-        _KEY_LEGACY_USER,
-        _KEY_LEGACY_SESSION,
-    ):
-        st.session_state.pop(k, None)
-    st.rerun()
-
-
-def logout_button(label: str = "התנתק 👋", key: str = "_auth_logout_btn") -> None:
-    if st.button(label, key=key):
-        logout()

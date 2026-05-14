@@ -9,14 +9,14 @@ from datetime import datetime, date
 from typing import Optional
 
 _DEFAULTS = {
-    "user_id": "ui_user_001",
-    "name": "ישראל ישראלי",
+    "user_id": "",
+    "name": "",
     "gender": "male",
-    "date_of_birth": "1990-05-15",
-    "height_cm": 178.0,
-    "weight_kg": 82.0,
+    "date_of_birth": "",
+    "height_cm": 0.0,
+    "weight_kg": 0.0,
     "activity_level": "moderately_active",
-    "goal": "lose_weight",
+    "goal": "maintain",
     "meal_preferences": {
         "kashrut": "parve",          # parve / dairy / meat
         "allergies": [],             # list of strings
@@ -51,7 +51,7 @@ class ProfileRepository:
             r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
             (user_id or "").lower()
         ):
-            return False  # not a real UUID — use local storage
+            return False
         try:
             from nutrition_app.db.supabase_client import is_supabase_configured
             return is_supabase_configured()
@@ -72,32 +72,49 @@ class ProfileRepository:
         if not rows:
             return None
         row = rows[0]
-        # Rebuild nested meal_preferences from flat columns
-        prefs = json.loads(row.get("meal_preferences") or "{}")
+        prefs_raw = row.get("meal_preferences")
+        if isinstance(prefs_raw, str):
+            try:
+                prefs = json.loads(prefs_raw)
+            except (ValueError, TypeError):
+                prefs = {}
+        elif isinstance(prefs_raw, dict):
+            prefs = prefs_raw
+        else:
+            prefs = {}
         d = dict(_DEFAULTS)
         d.update({
-            "user_id":        user_id,
-            "name":           row.get("name") or d["name"],
-            "gender":         row.get("gender") or d["gender"],
-            "height_cm":      row.get("height_cm") or d["height_cm"],
-            "weight_kg":      row.get("weight_kg") or d["weight_kg"],
-            "activity_level": row.get("activity_level") or d["activity_level"],
-            "goal":           row.get("goal") or d["goal"],
+            "user_id":          user_id,
+            "name":             row.get("name") or "",
+            "gender":           row.get("gender") or d["gender"],
+            "date_of_birth":    row.get("date_of_birth") or "",
+            "height_cm":        row.get("height_cm") or d["height_cm"],
+            "weight_kg":        row.get("weight_kg") or d["weight_kg"],
+            "activity_level":   row.get("activity_level") or d["activity_level"],
+            "goal":             row.get("goal") or d["goal"],
+            "pace":             row.get("pace"),
+            "weekly_change_kg": row.get("weekly_change_kg"),
+            "target_weight_kg": row.get("target_weight_kg"),
+            "weeks_to_goal":    row.get("weeks_to_goal"),
             "meal_preferences": {**_DEFAULTS["meal_preferences"], **prefs},
         })
         return d
 
     def _sb_save(self, profile: dict) -> None:
-        prefs_json = json.dumps(profile.get("meal_preferences", {}), ensure_ascii=False)
         payload = {
             "user_id":          profile["user_id"],
             "name":             profile.get("name"),
             "gender":           profile.get("gender"),
+            "date_of_birth":    profile.get("date_of_birth") or None,
             "height_cm":        profile.get("height_cm"),
             "weight_kg":        profile.get("weight_kg"),
             "activity_level":   profile.get("activity_level"),
             "goal":             profile.get("goal"),
-            "meal_preferences": prefs_json,
+            "pace":             profile.get("pace"),
+            "weekly_change_kg": profile.get("weekly_change_kg"),
+            "target_weight_kg": profile.get("target_weight_kg"),
+            "weeks_to_goal":    profile.get("weeks_to_goal"),
+            "meal_preferences": profile.get("meal_preferences", {}),
             "updated_at":       datetime.now().isoformat(),
         }
         self._sb().table("profiles").upsert(payload, on_conflict="user_id").execute()
@@ -131,12 +148,20 @@ class ProfileRepository:
     # ── Public API ────────────────────────────────────────────────────────────
 
     def load(self, user_id: str) -> dict:
+<<<<<<< HEAD
         if self._use_supabase(user_id):
+=======
+        if self._use_supabase():
+>>>>>>> 24748f2 (feat: multi-user demo readiness — auth consolidation, data isolation, Supabase backends)
             return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
         return self._local_load(user_id)
 
     def save(self, profile: dict) -> None:
+<<<<<<< HEAD
         if self._use_supabase(profile.get("user_id", "")):
+=======
+        if self._use_supabase():
+>>>>>>> 24748f2 (feat: multi-user demo readiness — auth consolidation, data isolation, Supabase backends)
             self._sb_save(profile)
         else:
             self._local_save(profile)

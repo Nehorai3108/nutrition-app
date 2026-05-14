@@ -13,7 +13,7 @@ from nutrition_app.agents.agent_4_inventory import InventoryManager
 from nutrition_app.agents.agent_5_planner import MealPlanner
 from nutrition_app.models.enums import MealType
 from nutrition_app.models.meal import MealItem
-from ui.user_auth import get_user_id
+from auth.login_ui import get_user_id
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "nutrition.db")
 

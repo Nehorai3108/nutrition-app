@@ -1,0 +1,4 @@
+{
+  "nutrition_app/tests/unit/test_executor_tasks.py::TestFixMealTiming::test_fix_meal_timing_succeeds": true,
+  "nutrition_app/tests/unit/test_nutrition_engine.py::TestBMR::test_male_bmr": true
+}

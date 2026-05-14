@@ -1,0 +1,136 @@
+{
+  "user_id": "ui_user_001",
+  "daily_log": {
+    "2026-04-15": [
+      {
+        "water_id": "33e07b9b",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-15T04:17:03.432514",
+        "amount_ml": 500,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "11c109ab",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-15T04:17:05.480753",
+        "amount_ml": 750,
+        "source": "bottle",
+        "notes": null
+      }
+    ],
+    "2026-04-24": [
+      {
+        "water_id": "77e60f1f",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-24T11:06:33.194558",
+        "amount_ml": 750,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "a61cf073",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-24T11:11:45.851792",
+        "amount_ml": 500,
+        "source": "bottle",
+        "notes": null
+      }
+    ],
+    "2026-04-27": [
+      {
+        "water_id": "3f730a58",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-27T06:58:24.660926",
+        "amount_ml": 250,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "36760ae5",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-27T11:11:28.527134",
+        "amount_ml": 250,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "9c4fd63b",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-27T11:11:31.144181",
+        "amount_ml": 250,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "c494e2c7",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-27T11:11:31.402105",
+        "amount_ml": 500,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "f217f653",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-27T11:11:31.752399",
+        "amount_ml": 500,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "4c11bf90",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-27T12:30:59.731456",
+        "amount_ml": 1000,
+        "source": "bottle",
+        "notes": null
+      }
+    ],
+    "2026-04-28": [
+      {
+        "water_id": "657cb5d5",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-28T09:43:43.627489",
+        "amount_ml": 250,
+        "source": "bottle",
+        "notes": null
+      },
+      {
+        "water_id": "d564510a",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-04-28T20:04:25.000740",
+        "amount_ml": 250,
+        "source": "bottle",
+        "notes": null
+      }
+    ],
+    "2026-05-03": [
+      {
+        "water_id": "d50f99bc",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-05-03T16:51:10.034671",
+        "amount_ml": 500,
+        "source": "bottle",
+        "notes": null
+      }
+    ],
+    "2026-05-05": [
+      {
+        "water_id": "ca7f6bdc",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-05-05T21:26:50.687873",
+        "amount_ml": 250,
+        "source": "bottle",
+        "notes": null
+      }
+    ]
+  },
+  "goal": {
+    "user_id": "ui_user_001",
+    "daily_goal_ml": 3000.0,
+    "created_at": "2026-04-15T04:17:03.432501",
+    "updated_at": "2026-04-15T04:17:33.952408"
+  },
+  "updated_at": "2026-05-05T21:26:59.057949"
+}

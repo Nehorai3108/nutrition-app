@@ -17,7 +17,7 @@ from nutrition_app.repositories.workout_repository import WorkoutRepository
 from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, icon_button,
 )
-from ui.user_auth import require_auth, logout_button
+from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
 st.set_page_config(page_title="BiteFit · אימונים", page_icon="🏋️", layout="wide", initial_sidebar_state="collapsed")

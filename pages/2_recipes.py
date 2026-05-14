@@ -18,6 +18,7 @@ from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, recipe_card_html,
 )
 from ui.images import image_data_uri
+from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
 # ── Page config ──────────────────────────────────────────────────────────────
@@ -30,6 +31,16 @@ st.set_page_config(
 )
 
 inject_global_css()
+
+USER_ID = require_auth()
+
+with st.sidebar:
+    st.markdown(
+        f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>',
+        unsafe_allow_html=True,
+    )
+    logout_button(key="_recipes_logout_btn")
+
 nav_menu(active="מתכונים")
 page_header("מתכונים", icon_name="recipe",
             subtitle="חיפוש וצפייה במתכונים")

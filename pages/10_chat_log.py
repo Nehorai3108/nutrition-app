@@ -12,8 +12,7 @@ import streamlit as st
 from groq import Groq
 
 from ui.components import inject_global_css, bottom_nav
-from ui.persistent_auth import setup_persistent_auth
-from ui.user_auth import require_auth, logout_button
+from auth.login_ui import require_auth, logout_button
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
@@ -24,7 +23,7 @@ st.set_page_config(page_title="BiteFit · הזנה", page_icon="💬", layout="w
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -379,8 +378,13 @@ if "detected_meal"    not in st.session_state: st.session_state.detected_meal   
 def _get_user_name() -> str:
     try:
         import json as _json
+<<<<<<< HEAD
         from nutrition_app.storage_paths import legacy_users_file
         _path = str(legacy_users_file())
+=======
+        _path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                             "storage_agents", "users.json")
+>>>>>>> 24748f2 (feat: multi-user demo readiness — auth consolidation, data isolation, Supabase backends)
         _data = _json.load(open(_path, encoding="utf-8"))
         for _u in _data.values():
             if _u.get("name"):

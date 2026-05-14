@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nutrition App Research — Week 16, 2026</title>
+  <style>
+    :root {
+      --green: #2d9e6b;
+      --green-light: #e6f7f0;
+      --accent: #f59e0b;
+      --accent-light: #fffbeb;
+      --red: #e53e3e;
+      --blue: #3182ce;
+      --blue-light: #ebf8ff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--gray-700);
+      background: var(--gray-50);
+      padding: 2rem 1rem;
+      line-height: 1.6;
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--green) 0%, #1a7a50 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
+      margin-bottom: 2rem;
+    }
+    .header h1 { font-size: 1.7rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .header .meta { opacity: 0.85; font-size: 0.9rem; }
+    .header .meta span { margin-right: 1.5rem; }
+
+    /* Section */
+    section { margin-bottom: 2rem; }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      border-left: 4px solid var(--green);
+      padding-left: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Landscape summary card */
+    .summary-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--gray-200);
+      font-size: 0.97rem;
+    }
+
+    /* Competitor grid */
+    .competitor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .competitor-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid var(--gray-200);
+    }
+    .competitor-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .competitor-card h3 .badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--green-light);
+      color: var(--green);
+    }
+    .competitor-card ul { list-style: none; padding: 0; }
+    .competitor-card ul li {
+      font-size: 0.88rem;
+      color: var(--gray-600);
+      padding: 0.3rem 0;
+      padding-left: 1.1rem;
+      position: relative;
+    }
+    .competitor-card ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+    .complaint { color: var(--red) !important; }
+    .complaint::before { color: var(--red) !important; }
+
+    /* Trend cards */
+    .trend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .trend-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid var(--gray-200);
+    }
+    .trend-card .trend-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .trend-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.5rem; }
+    .trend-card p { font-size: 0.87rem; color: var(--gray-600); }
+
+    /* Recommendation cards */
+    .rec-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .rec-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .rec-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .rec-header h3 { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
+    .rec-body { padding: 1.25rem 1.5rem; }
+    .rec-body p { font-size: 0.9rem; color: var(--gray-700); margin-bottom: 0.75rem; }
+    .rec-meta {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .rec-tag {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .tag-effort-small { background: #dcfce7; color: #166534; }
+    .tag-effort-medium { background: #fef9c3; color: #854d0e; }
+    .tag-effort-large { background: #fee2e2; color: #991b1b; }
+    .tag-inspiration { background: var(--blue-light); color: var(--blue); }
+    .rec-detail-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--gray-600);
+      letter-spacing: 0.05em;
+      margin-top: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+    .rec-build-task {
+      background: var(--gray-100);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: var(--gray-700);
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--gray-200); margin: 2rem 0; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🥗 Nutrition App — Weekly Research Report</h1>
+    <div class="meta">
+      <span>📅 Week 16, 2026 &nbsp;·&nbsp; April 14–18, 2026</span>
+      <span>Generated automatically by the Product Research Agent</span>
+    </div>
+  </div>
+
+  <!-- 1. Landscape Summary -->
+  <section>
+    <div class="section-title">1 · Landscape Summary</div>
+    <div class="summary-card">
+      <p>This week the competitive nutrition-app space was defined by two converging forces: the mainstreaming of GLP-1 medication support and the race to remove all friction from meal logging through AI multimodal input. MyFitnessPal rolled out its GLP-1 companion experience to free users alongside a redesigned "Today" tab and new weekly-progress insights; Noom launched EHR integration for Medicare members, deepening its clinical differentiation; Lose It completed a ground-up UI overhaul and moved barcode scanning behind its premium paywall; Lifesum shipped multimodal tracking (photo, voice, scan, text) alongside smart time-of-day food suggestions; and Yazio continued marketing its rebranding to "YAZIO: AI Calorie Tracker" while facing user backlash over intrusive automated recommendations. The dominant external signal is that AI-powered logging is no longer a differentiator — it is the table-stakes baseline — while clinical integrations (GLP-1, EHR, medication reminders) are emerging as the new competitive moat for premium-tier apps.</p>
+    </div>
+  </section>
+
+  <!-- 2. Competitor Highlights -->
+  <section>
+    <div class="section-title">2 · Per-Competitor Highlights</div>
+    <div class="competitor-grid">
+
+      <div class="competitor-card">
+        <h3>MyFitnessPal <span class="badge">Active</span></h3>
+        <ul>
+          <li>New "Today" tab unifies diary, daily macros, habit tracking, water, steps — fewer taps for daily routine</li>
+          <li>New "Progress" tab: weekly macro pattern analysis, goal comparison, personalized support suggestions (all tiers)</li>
+          <li>GLP-1 companion: medication logging, dose + timing + injection-site tracking, side-effect log; reminders coming soon</li>
+          <li class="complaint">Barcode scanner locked behind premium — massive user complaint wave</li>
+          <li class="complaint">Customer service completely inaccessible; subscription billing disputes widespread</li>
+        </ul>
+      </div>
+
+      <div class="competitor-card">
+        <h3>Yazio <span class="badge">Active</span></h3>
+        <ul>
+          <li>Rebranded to "YAZIO: AI Calorie Tracker" — AI identifies ingredients and portions from food photos automatically</li>
+          <li>AI guesstimation mode for restaurant/travel meals gaining positive reviews for accuracy</li>
+          <li class="complaint">Automated post-log "helpful" recommendations cannot be permanently dismissed — top user complaint</li>
+        </ul>
+      </div>
+
+      <div class="competitor-card">
+        <h3>Lose It! <span class="badge">Active</span></h3>
+        <ul>
+          <li>"Say It" voice logging: speak a full meal description and every item is logged individually via NLP</li>
+          <li>Complete visual redesign — lighter palette, 30+ themes; modern UX praised in recent reviews</li>
+          <li>63M verified food items in global database — accuracy headline in marketing</li>
+          <li class="complaint">Barcode scanner moved to premium — free-user backlash mirrors MFP</li>
+        </ul>
+      </div>
+
+      <div class="competitor-card">
+        <h3>Noom <span class="badge">Clinical</span></h3>
+        <ul>
+          <li>Health Record Connect launched for Medicare members — clinical EHR integration personalises content, coaching, and GLP-1 companion</li>
+          <li>Earned DiMe Seal (Digital Medicine Society) for clinical evidence, privacy, and usability compliance — strong B2B/healthcare credibility signal</li>
+          <li>Diabetes prevention mini-courses and blood glucose tracking added for at-risk members</li>
+        </ul>
+      </div>
+
+      <div class="competitor-card">
+        <h3>Lifesum <span class="badge">Active</span></h3>
+        <ul>
+          <li>Multimodal tracking shipped to premium users: photo snap, voice description, text entry, or barcode scan — all in one flow</li>
+          <li>Smart suggestions show your most-logged foods for the current time-of-day above the input bar</li>
+          <li>Barcode comparison: scan two items side-by-side to compare nutritional values — unique UX pattern not yet seen in competitors</li>
+          <li>iOS Siri integration and Control Center barcode shortcut for ultra-fast logging</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 3. Trend Observations -->
+  <section>
+    <div class="section-title">3 · Trend Observations</div>
+    <div class="trend-grid">
+
+      <div class="trend-card">
+        <div class="trend-label">Design Pattern</div>
+        <h3>Adaptive / Anticipatory UI</h3>
+        <p>Bottom sheet overlays have replaced full-screen flows for filters and confirmations. More importantly, apps now surface context-aware suggestions — Lifesum's time-of-day recents being a prime example — rather than waiting for the user to search. Adaptive interfaces that reshape based on user session type (log vs. review vs. plan) are the dominant 2026 mobile UX direction.</p>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-label">AI Capability</div>
+        <h3>Multimodal Zero-Friction Logging</h3>
+        <p>Photo + voice + text + scan in a single entry point is now deployed by Lifesum, Lose It, Yazio, and MFP. AI logging is table-stakes. The next differentiator appears to be proactive pattern detection — apps that flag "you usually have more protein on Tuesdays" before the user asks.</p>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-label">Marketing Angle</div>
+        <h3>GLP-1 as a User Segment</h3>
+        <p>MFP, Noom, WeightWatchers, and Walmart's pharmacy division are all targeting GLP-1 users as a distinct segment with tailored UX, medication reminders, side-effect tracking, and muscle-preservation recipes. This is a high-intent, high-retention user group that currently has no dedicated support in most apps.</p>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-label">Product Hunt Signal</div>
+        <h3>Ambient Grocery Scoring</h3>
+        <p>FoodHealth Score (scores every product 1–100 while shopping at Target/Walmart/Amazon) and CalPulse (scans menus to estimate calories and suggest healthier swaps) represent a new interaction model: nutrition guidance embedded in the shopping/dining context rather than a post-hoc log.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 4. Recommendations -->
+  <section>
+    <div class="section-title">4 · Three Concrete Recommendations for תזונאי</div>
+
+    <!-- Rec 1 -->
+    <div class="rec-card">
+      <div class="rec-header">
+        <div class="rec-number">1</div>
+        <h3>Add Time-of-Day Smart Food Suggestions to the Logging Flow</h3>
+      </div>
+      <div class="rec-body">
+        <p><strong>What to build:</strong> When the user opens the food logging screen (Agent 3 / food search), automatically surface a ranked list of their most-frequently logged foods for the current time window (breakfast 6–10am, lunch 11am–2pm, dinner 5–9pm, snack otherwise). Pull this from the user's prior log history stored in Agent 7 artifacts. The list should appear above the search bar without requiring any tap.</p>
+        <p><strong>Why it matters for our users:</strong> Our app already performs deterministic meal plan generation, but the manual food-lookup UX is frictionful for users who eat the same breakfast daily. This closes the gap with Lifesum's praised smart-suggestions feature and Yazio's AI-recents, reducing the logging step from 4–6 taps to 1–2 for repeat foods — directly impacting daily retention.</p>
+        <div class="rec-detail-label">Inspired by</div>
+        <div class="rec-meta">
+          <span class="rec-tag tag-inspiration">Lifesum — time-of-day smart suggestions</span>
+          <span class="rec-tag tag-effort-small">Effort: Small</span>
+        </div>
+        <div class="rec-detail-label">Hand-to-Claude-Code task</div>
+        <div class="rec-build-task">In Agent 3 (Food catalog / search), add a `get_frequent_foods(user_id, time_window)` function that queries the user's completed plan artifacts (Agent 7 storage) for the 5 most-logged food items in the matching time bucket (breakfast/lunch/dinner/snack). Expose this as a pre-populated suggestions list at the top of the food search UI, rendered before the user types anything. Time bucket boundaries: breakfast 06:00–10:59, lunch 11:00–14:59, dinner 17:00–21:59, snack otherwise.</div>
+      </div>
+    </div>
+
+    <!-- Rec 2 -->
+    <div class="rec-card">
+      <div class="rec-header">
+        <div class="rec-number">2</div>
+        <h3>Build a Weekly Insights Summary Screen</h3>
+      </div>
+      <div class="rec-body">
+        <p><strong>What to build:</strong> A dedicated weekly summary view (not a full dashboard) that surfaces 3–5 automatically generated observations after each completed week. Examples: "Your protein hit target 5/7 days — best streak yet", "You consistently under-eat calories on Fridays — consider adding a larger snack", "Fibre was 40% below target every day". Observations are generated by Agent 6 (AI text/summaries) based on data from Agent 7 artifacts. No manual input required.</p>
+        <p><strong>Why it matters for our users:</strong> Our app generates plans and logs outcomes, but currently has no closing feedback loop that makes the data legible over time. MFP's new Progress tab is the most-praised feature in March/April 2026 reviews precisely because it converts raw daily logs into weekly meaning. For Israeli nutrition clients (our core segment) who are goal-oriented, pattern-level feedback drives re-engagement more effectively than daily calorie counts.</p>
+        <div class="rec-detail-label">Inspired by</div>
+        <div class="rec-meta">
+          <span class="rec-tag tag-inspiration">MyFitnessPal — Progress tab (Feb 2026)</span>
+          <span class="rec-tag tag-effort-medium">Effort: Medium</span>
+        </div>
+        <div class="rec-detail-label">Hand-to-Claude-Code task</div>
+        <div class="rec-build-task">Create a new `WEEKLY_INSIGHTS` workflow step (step 9.5, between PERSIST_RUN_ARTIFACTS and DIRECTOR_ANALYSIS). Agent 7 aggregates the past 7 days of completed plan logs into a structured weekly summary object (targets vs. actuals per macro, per day). Agent 6 receives this object and generates 3–5 natural-language observations using a prompt template. The output is stored in `storage_agents/plans/weekly_summary_YYYY-Www.json` and rendered in the app as a card-based summary screen. Trigger: automatically after any Sunday plan completion, or on-demand via user tap.</div>
+      </div>
+    </div>
+
+    <!-- Rec 3 -->
+    <div class="rec-card">
+      <div class="rec-header">
+        <div class="rec-number">3</div>
+        <h3>Introduce a GLP-1 / Medication-Aware Nutrition Mode</h3>
+      </div>
+      <div class="rec-body">
+        <p><strong>What to build:</strong> An optional "Medication Mode" toggle in the user profile (Agent 1 / Contracts schema). When enabled, Agent 2 (Nutrition / BMR calculations) adjusts its macro targets and meal plan logic to account for suppressed appetite: smaller portion sizes, higher protein-to-calorie density targets, explicit reminders to eat even without hunger, and muscle-preservation priority in macro splits. Agent 6 surfaces a brief daily prompt ("GLP-1 tip: prioritise protein at this meal to protect muscle mass"). No medication names or dosages need to be tracked — this is a behaviour-adaptation mode, not a clinical tracker.</p>
+        <p><strong>Why it matters for our users:</strong> GLP-1 medication use is accelerating among Israeli adults, and MFP, Noom, and WeightWatchers are all racing to capture this segment. Our existing nutritional calculation engine (Agent 2) already supports custom macro splits — this recommendation layers a new user-segment flag onto existing infrastructure rather than building from scratch. Capturing this segment early builds defensible retention before the space gets crowded locally.</p>
+        <div class="rec-detail-label">Inspired by</div>
+        <div class="rec-meta">
+          <span class="rec-tag tag-inspiration">MyFitnessPal — GLP-1 companion (Winter 2026)</span>
+          <span class="rec-tag tag-inspiration">Noom — GLP-1 personalisation</span>
+          <span class="rec-tag tag-effort-medium">Effort: Medium</span>
+        </div>
+        <div class="rec-detail-label">Hand-to-Claude-Code task</div>
+        <div class="rec-build-task">1. Agent 1 (Contracts): Add optional `medication_mode: boolean` and `medication_type: "glp1" | null` fields to the UserProfile schema.
+2. Agent 2 (Nutrition): When `medication_mode = true`, apply a GLP-1 adjustment multiplier: reduce TDEE-based calorie floor by 15%, increase protein target to minimum 1.6g/kg bodyweight, flag meal plan portions as "GLP-1 adjusted".
+3. Agent 5 (Planner): Prioritise high-protein-density foods from inventory when medication_mode is active; add a "minimum meal" flag to ensure at least 3 eating occasions even at low calorie totals.
+4. Agent 6 (AI): Insert a daily GLP-1 contextual tip into the plan presentation (1 sentence, from a curated tip library).
+No medication names, dosages, or clinical data should be stored or processed.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="footer">
+    Generated by the Nutrition App Weekly Product Research Agent &nbsp;·&nbsp; תזונאי &nbsp;·&nbsp; 2026-W16
+  </div>
+
+</div>
+</body>
+</html>

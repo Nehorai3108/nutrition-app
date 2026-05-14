@@ -16,3 +16,13 @@ storage_agents/recipe_images/candidates/
 .streamlit/secrets.toml
 worktrees/
 test_groq.py
+
+# Per-user data — never commit. Repos auto-create these on first write.
+storage_agents/profiles/
+storage_agents/workouts/
+storage_agents/water/
+storage_agents/daily_summaries/
+storage_agents/inventories/
+storage_agents/food_log/
+storage_agents/weekly_plans/
+storage_agents/users.json

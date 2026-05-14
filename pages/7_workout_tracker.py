@@ -10,8 +10,7 @@ from datetime import date, timedelta
 import streamlit as st
 
 from ui.components import inject_global_css, bottom_nav
-from ui.persistent_auth import setup_persistent_auth
-from ui.user_auth import require_auth, logout_button
+from auth.login_ui import require_auth, logout_button
 from nutrition_app.models.enums import WorkoutType, WorkoutIntensity
 from nutrition_app.models.workout import WorkoutEntry
 from nutrition_app.repositories.workout_repository import WorkoutRepository
@@ -23,10 +22,9 @@ st.set_page_config(page_title="אימונים", page_icon=None, layout="wide",
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
-setup_persistent_auth()
 USER_ID = require_auth()
 _repo = WorkoutRepository()
 

@@ -612,43 +612,84 @@ def inject_global_css() -> None:
 
 
 def bottom_nav(active: str = "home") -> None:
-    """Fixed bottom nav — SVG icons, HTML links with correct Streamlit URL slugs."""
-    SVG = {
-        "home":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
-        "food":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
-        "chat":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
-        "workout": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M6 4v6m0 4v6M18 4v6m0 4v6M2 9h4m12 0h4M2 15h4m12 0h4"/></svg>',
-        "history": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-        "profile": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-    }
+    """Fixed bottom nav — uses st.page_link so clicks stay in Streamlit's router.
+
+    Visual style is preserved via CSS that targets the horizontal column block
+    immediately after a sentinel marker we emit. Active state is communicated
+    by an `--active` CSS variable injected per render.
+    """
     items = [
-        ("home",    "/",                  "בית"),
-        ("food",    "/daily_menu",        "תזונה"),
-        ("chat",    "/chat_log",          "צאט"),
-        ("workout", "/workout_tracker",   "אימון"),
-        ("history", "/history",           "היסטוריה"),
-        ("profile", "/profile",           "פרופיל"),
+        ("home",    "app_user.py",                    "בית",        "🏠"),
+        ("food",    "pages/6_daily_menu.py",          "תזונה",      "🍽️"),
+        ("chat",    "pages/10_chat_log.py",           "צאט",        "💬"),
+        ("workout", "pages/7_workout_tracker.py",     "אימון",      "💪"),
+        ("history", "pages/9_history.py",             "היסטוריה",   "📊"),
+        ("profile", "pages/0_profile.py",             "פרופיל",     "👤"),
     ]
-    html = (
-        '<style>'
-        '.gn{position:fixed;bottom:0;left:0;right:0;z-index:9999;'
-        'background:#0d0f14;border-top:1px solid #1e2433;'
-        'display:flex;justify-content:space-around;align-items:center;'
-        'padding:6px 0 max(env(safe-area-inset-bottom),10px)}'
-        '.gn a{display:flex;flex-direction:column;align-items:center;gap:4px;'
-        'text-decoration:none;color:#3a4254;min-width:52px;padding:6px 4px;'
-        'font-size:0.6rem;font-weight:500;transition:color .15s}'
-        '.gn a svg{stroke:#3a4254;transition:stroke .15s}'
-        '.gn a:hover,.gn a:hover svg{color:#8892a4;stroke:#8892a4}'
-        '.gn a.on,.gn a.on svg{color:#4f8ef7 !important;stroke:#4f8ef7 !important}'
-        '</style>'
-        '<nav class="gn">'
+
+    # Map active key → column index so we can highlight the right cell.
+    active_idx = next((i for i, it in enumerate(items) if it[0] == active), 0)
+
+    # Sentinel + CSS. The :has() selector lets us reach the column block that
+    # immediately follows the sentinel marker we emit below.
+    st.markdown(
+        f"""
+<style>
+[data-testid="stElementContainer"]:has(> .bf-nav-marker) {{
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] {{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #0d0f14;
+    border-top: 1px solid #1e2433;
+    padding: 6px 0 max(env(safe-area-inset-bottom), 10px) !important;
+    margin: 0 !important;
+}}
+[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] [data-testid="stHorizontalBlock"] {{
+    gap: 0 !important;
+}}
+[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] a[data-testid="stPageLink-NavLink"] {{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    color: #3a4254;
+    padding: 6px 4px;
+    border-radius: 8px;
+    font-size: 0.62rem;
+    font-weight: 500;
+    line-height: 1.3;
+    transition: color .15s, background .15s;
+}}
+[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] a[data-testid="stPageLink-NavLink"]:hover {{
+    color: #8892a4;
+    background: rgba(255,255,255,0.04);
+}}
+/* Highlight the active nav cell */
+[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child({active_idx + 1}) a[data-testid="stPageLink-NavLink"] {{
+    color: #4f8ef7 !important;
+}}
+/* Body padding so content isn't hidden behind the fixed bar */
+[data-testid="stMain"] .block-container {{
+    padding-bottom: 80px !important;
+}}
+</style>
+<div class="bf-nav-marker"></div>
+""",
+        unsafe_allow_html=True,
     )
-    for key, href, label in items:
-        cls = "on" if key == active else ""
-        html += f'<a href="{href}" class="{cls}">{SVG[key]}<span>{label}</span></a>'
-    html += '</nav>'
-    st.markdown(html, unsafe_allow_html=True)
+
+    cols = st.columns(len(items))
+    for i, (key, page, label, icon) in enumerate(items):
+        with cols[i]:
+            st.page_link(page, label=f"{icon} {label}", use_container_width=True)
 
 
 def reset_css_flag() -> None:
