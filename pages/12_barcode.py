@@ -38,138 +38,146 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Scanner HTML — runs directly in page, not inside restricted iframe ────────
+# ── Scanner HTML — uses native file/camera input (works on iOS) ───────────────
 SCANNER_HTML = """
-<div id="scan-wrap" style="position:relative;width:100%;max-width:480px;margin:0 auto;border-radius:14px;overflow:hidden;background:#000;">
-  <video id="vid" autoplay muted playsinline
-    style="width:100%;height:300px;object-fit:cover;display:block;"></video>
-
-  <!-- מסגרת -->
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:68%;height:54%;border:2px solid rgba(79,142,247,0.9);border-radius:10px;pointer-events:none;">
-    <div style="position:absolute;top:-3px;left:-3px;width:20px;height:20px;
-      border:3px solid #4f8ef7;border-right:none;border-bottom:none;border-radius:5px 0 0 0;"></div>
-    <div style="position:absolute;top:-3px;right:-3px;width:20px;height:20px;
-      border:3px solid #4f8ef7;border-left:none;border-bottom:none;border-radius:0 5px 0 0;"></div>
-    <div style="position:absolute;bottom:-3px;left:-3px;width:20px;height:20px;
-      border:3px solid #4f8ef7;border-right:none;border-top:none;border-radius:0 0 0 5px;"></div>
-    <div style="position:absolute;bottom:-3px;right:-3px;width:20px;height:20px;
-      border:3px solid #4f8ef7;border-left:none;border-top:none;border-radius:0 0 5px 0;"></div>
-  </div>
-
-  <!-- קו סריקה -->
-  <div id="scan-line" style="position:absolute;left:16%;width:68%;height:2px;
-    background:linear-gradient(90deg,transparent,#4f8ef7,transparent);
-    animation:sweep 2s ease-in-out infinite;top:22%;"></div>
-
-  <!-- תוצאה -->
-  <div id="scan-ok" style="display:none;position:absolute;inset:0;background:rgba(26,58,42,0.95);
-    border-radius:14px;justify-content:center;align-items:center;flex-direction:column;gap:6px;">
-    <div style="font-size:2.2rem;">✅</div>
-    <div id="scan-val" style="font-size:1.15rem;font-weight:700;color:#68d391;direction:ltr;"></div>
-    <div style="font-size:0.8rem;color:#a0aec0;">ברקוד זוהה — מחפש מוצר…</div>
-  </div>
-
-  <!-- שגיאה -->
-  <div id="scan-err" style="display:none;position:absolute;inset:0;background:rgba(45,27,27,0.95);
-    border-radius:14px;justify-content:center;align-items:center;flex-direction:column;gap:8px;padding:20px;text-align:center;">
-    <div style="font-size:2rem;">📷</div>
-    <div id="scan-err-txt" style="color:#fc8181;font-size:0.9rem;direction:rtl;"></div>
-  </div>
-
-  <div id="scan-hint" style="position:absolute;bottom:10px;left:0;right:0;text-align:center;
-    color:rgba(255,255,255,0.7);font-size:12px;direction:rtl;">כוון את הברקוד למסגרת</div>
-</div>
-
-<!-- תיבת ברקוד לקריאה ע"י Streamlit -->
-<input id="bc-out" type="text" value=""
-  style="opacity:0;position:absolute;pointer-events:none;width:1px;height:1px;" />
-
 <style>
-@keyframes sweep { 0%{top:22%} 50%{top:76%} 100%{top:22%} }
+body { margin:0; background:#0d0f14; font-family:sans-serif; direction:rtl; }
+
+#btn-wrap {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:20px 16px; gap:14px;
+}
+
+label#cam-label {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:#4f8ef7; color:#fff; font-size:1.1rem; font-weight:700;
+  border-radius:14px; padding:18px 32px; cursor:pointer;
+  width:100%; max-width:360px; box-sizing:border-box;
+  box-shadow:0 4px 20px rgba(79,142,247,0.4);
+  transition: background 0.15s;
+}
+label#cam-label:active { background:#3a7ee0; }
+
+#cam-input { display:none; }
+
+#preview-wrap {
+  display:none; width:100%; max-width:360px;
+  border-radius:14px; overflow:hidden; position:relative;
+}
+#preview { width:100%; display:block; border-radius:14px; }
+
+#result {
+  display:none; background:#1a3a2a; border:1px solid #2f855a;
+  border-radius:12px; padding:16px; text-align:center;
+  max-width:360px; width:100%;
+}
+#result .lbl { color:#a0aec0; font-size:0.8rem; margin-bottom:4px; }
+#result .val { color:#68d391; font-size:1.2rem; font-weight:700; direction:ltr; }
+
+#scanning {
+  display:none; color:#8892a4; font-size:0.9rem;
+  text-align:center; padding:8px;
+}
+
+#err {
+  display:none; background:#2d1b1b; border:1px solid #744141;
+  border-radius:12px; padding:14px; text-align:center;
+  color:#fc8181; font-size:0.85rem; max-width:360px; width:100%;
+}
+
+#again-btn {
+  display:none; background:#2d3748; color:#e2e8f0;
+  border:none; border-radius:10px; padding:10px 24px;
+  font-size:0.9rem; cursor:pointer; margin-top:4px;
+}
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"
-  onload="startScanner()" onerror="showErr('נכשל לטעון ספריית סריקה')">
-</script>
+<div id="btn-wrap">
+  <label id="cam-label" for="cam-input">
+    📷 צלם ברקוד
+  </label>
+  <input id="cam-input" type="file" accept="image/*" capture="environment">
 
+  <div id="scanning">⏳ מפענח ברקוד…</div>
+
+  <div id="preview-wrap">
+    <img id="preview" src="" alt="">
+  </div>
+
+  <div id="result">
+    <div class="lbl">ברקוד זוהה ✅</div>
+    <div class="val" id="result-val"></div>
+  </div>
+
+  <div id="err" id="err-box">
+    <div id="err-txt">לא זוהה ברקוד — נסה שוב, ודא שהברקוד ממולא ומוארת</div>
+    <button id="again-btn" onclick="reset()">נסה שוב</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
 <script>
-var lastBarcode = null;
+var input = document.getElementById('cam-input');
 
-function showErr(msg) {
-  var el = document.getElementById('scan-err');
-  document.getElementById('scan-err-txt').textContent = msg;
-  el.style.display = 'flex';
-  document.getElementById('scan-hint').style.display = 'none';
+function reset() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('err').style.display = 'none';
+  document.getElementById('again-btn').style.display = 'none';
+  document.getElementById('preview-wrap').style.display = 'none';
+  document.getElementById('cam-label').style.display = 'flex';
+  input.value = '';
 }
 
-function onBarcode(bc) {
-  if (bc === lastBarcode) return;
-  lastBarcode = bc;
+function showBarcode(bc) {
+  document.getElementById('result-val').textContent = bc;
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('scanning').style.display = 'none';
+  document.getElementById('cam-label').style.display = 'none';
 
-  // הצג הצלחה
-  document.getElementById('scan-val').textContent = bc;
-  document.getElementById('scan-ok').style.display = 'flex';
-  document.getElementById('scan-line').style.display = 'none';
-  document.getElementById('scan-hint').style.display = 'none';
-
-  // שמור בinput נסתר ושלח event לדף
-  var inp = document.getElementById('bc-out');
-  inp.value = bc;
-
-  // שלח לparent frame
-  try { window.parent.postMessage({type:'barcode', value: bc}, '*'); } catch(e){}
-  // גם localStorage
-  try { localStorage.setItem('bitefit_barcode', bc); } catch(e){}
+  // שלח לparent
+  try { window.parent.postMessage({type:'bitefit_barcode', value: bc}, '*'); } catch(e){}
+  try { window.localStorage.setItem('bitefit_last_barcode', bc + '|' + Date.now()); } catch(e){}
 }
 
-function startScanner() {
-  var constraints = {
-    video: {
-      facingMode: { ideal: 'environment' },
-      width:  { ideal: 1280 },
-      height: { ideal: 720 }
-    }
+input.addEventListener('change', function() {
+  var file = input.files[0];
+  if (!file) return;
+
+  document.getElementById('scanning').style.display = 'block';
+  document.getElementById('cam-label').style.display = 'none';
+  document.getElementById('err').style.display = 'none';
+
+  var url = URL.createObjectURL(file);
+
+  // הצג תצוגה מקדימה
+  var prev = document.getElementById('preview');
+  prev.src = url;
+  document.getElementById('preview-wrap').style.display = 'block';
+
+  var img = new Image();
+  img.onload = function() {
+    var hints = new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+      ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+      ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
+      ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.QR_CODE,
+    ]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+
+    var reader = new ZXing.BrowserMultiFormatReader(hints);
+    reader.decodeFromImageElement(img)
+      .then(function(result) {
+        showBarcode(result.getText());
+      })
+      .catch(function() {
+        document.getElementById('scanning').style.display = 'none';
+        document.getElementById('err').style.display = 'block';
+        document.getElementById('again-btn').style.display = 'inline-block';
+      });
+    URL.revokeObjectURL(url);
   };
-
-  navigator.mediaDevices.getUserMedia(constraints)
-    .then(function(stream) {
-      var video = document.getElementById('vid');
-      video.srcObject = stream;
-      video.play();
-
-      var hints = new Map();
-      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-        ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
-        ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
-        ZXing.BarcodeFormat.UPC_E,
-      ]);
-      hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-
-      var reader = new ZXing.BrowserMultiFormatReader(hints);
-
-      function tick() {
-        if (!video.paused && video.readyState >= 2) {
-          try {
-            reader.decodeFromVideoElement(video)
-              .then(function(r){ if(r) onBarcode(r.getText()); })
-              .catch(function(){});
-          } catch(e) {}
-        }
-        setTimeout(tick, 300);
-      }
-      setTimeout(tick, 500);
-    })
-    .catch(function(err) {
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        showErr('נדרשת הרשאת מצלמה — אפשר גישה בהגדרות הדפדפן');
-      } else if (err.name === 'NotFoundError') {
-        showErr('לא נמצאה מצלמה במכשיר');
-      } else {
-        showErr('שגיאה: ' + err.message);
-      }
-    });
-}
+  img.src = url;
+});
 </script>
 """
 
@@ -321,15 +329,13 @@ tab_scan, tab_manual = st.tabs(["📷 סריקה", "⌨️ הזנה ידנית"]
 barcode_str: str | None = None
 
 with tab_scan:
-    # Render scanner with full camera permissions (not in restricted component iframe)
-    components.html(SCANNER_HTML, height=320, scrolling=False)
+    components.html(SCANNER_HTML, height=280, scrolling=False)
 
-    # Manual input for when user has scanned (JS can't directly trigger Streamlit rerun)
-    st.markdown('<p style="color:#8892a4;font-size:0.8rem;text-align:center;direction:rtl;">ברקוד זוהה? הדבק כאן:</p>',
+    st.markdown('<p style="color:#8892a4;font-size:0.8rem;text-align:center;direction:rtl;margin-top:8px;">אחרי הצילום — הברקוד יופיע למעלה. העתק אותו לכאן:</p>',
                 unsafe_allow_html=True)
     col_in, col_btn = st.columns([5,1])
-    scanned_input = col_in.text_input("barcode_from_scan", label_visibility="collapsed",
-                                       placeholder="הברקוד יופיע כאן אחרי סריקה",
+    scanned_input = col_in.text_input("bc_scan", label_visibility="collapsed",
+                                       placeholder="הדבק ברקוד כאן…",
                                        key="scan_result_input")
     if col_btn.button("✓", type="primary"):
         if scanned_input.strip():
