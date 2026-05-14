@@ -7,7 +7,6 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-import streamlit.components.v1 as components
 from datetime import date, datetime
 
 from ui.components import inject_global_css, bottom_nav
@@ -15,6 +14,7 @@ from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.barcode_repository import BarcodeRepository, BarcodeEntry
+from nutrition_app.components.barcode_comp import barcode_scanner
 
 st.set_page_config(page_title="BiteFit · ברקוד", page_icon="📲",
                    layout="wide", initial_sidebar_state="collapsed")
@@ -38,148 +38,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Scanner HTML — uses native file/camera input (works on iOS) ───────────────
-SCANNER_HTML = """
-<style>
-body { margin:0; background:#0d0f14; font-family:sans-serif; direction:rtl; }
-
-#btn-wrap {
-  display:flex; flex-direction:column; align-items:center;
-  justify-content:center; padding:20px 16px; gap:14px;
-}
-
-label#cam-label {
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  background:#4f8ef7; color:#fff; font-size:1.1rem; font-weight:700;
-  border-radius:14px; padding:18px 32px; cursor:pointer;
-  width:100%; max-width:360px; box-sizing:border-box;
-  box-shadow:0 4px 20px rgba(79,142,247,0.4);
-  transition: background 0.15s;
-}
-label#cam-label:active { background:#3a7ee0; }
-
-#cam-input { display:none; }
-
-#preview-wrap {
-  display:none; width:100%; max-width:360px;
-  border-radius:14px; overflow:hidden; position:relative;
-}
-#preview { width:100%; display:block; border-radius:14px; }
-
-#result {
-  display:none; background:#1a3a2a; border:1px solid #2f855a;
-  border-radius:12px; padding:16px; text-align:center;
-  max-width:360px; width:100%;
-}
-#result .lbl { color:#a0aec0; font-size:0.8rem; margin-bottom:4px; }
-#result .val { color:#68d391; font-size:1.2rem; font-weight:700; direction:ltr; }
-
-#scanning {
-  display:none; color:#8892a4; font-size:0.9rem;
-  text-align:center; padding:8px;
-}
-
-#err {
-  display:none; background:#2d1b1b; border:1px solid #744141;
-  border-radius:12px; padding:14px; text-align:center;
-  color:#fc8181; font-size:0.85rem; max-width:360px; width:100%;
-}
-
-#again-btn {
-  display:none; background:#2d3748; color:#e2e8f0;
-  border:none; border-radius:10px; padding:10px 24px;
-  font-size:0.9rem; cursor:pointer; margin-top:4px;
-}
-</style>
-
-<div id="btn-wrap">
-  <label id="cam-label" for="cam-input">
-    📷 צלם ברקוד
-  </label>
-  <input id="cam-input" type="file" accept="image/*" capture="environment">
-
-  <div id="scanning">⏳ מפענח ברקוד…</div>
-
-  <div id="preview-wrap">
-    <img id="preview" src="" alt="">
-  </div>
-
-  <div id="result">
-    <div class="lbl">ברקוד זוהה ✅</div>
-    <div class="val" id="result-val"></div>
-  </div>
-
-  <div id="err" id="err-box">
-    <div id="err-txt">לא זוהה ברקוד — נסה שוב, ודא שהברקוד ממולא ומוארת</div>
-    <button id="again-btn" onclick="reset()">נסה שוב</button>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
-<script>
-var input = document.getElementById('cam-input');
-
-function reset() {
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('err').style.display = 'none';
-  document.getElementById('again-btn').style.display = 'none';
-  document.getElementById('preview-wrap').style.display = 'none';
-  document.getElementById('cam-label').style.display = 'flex';
-  input.value = '';
-}
-
-function showBarcode(bc) {
-  document.getElementById('result-val').textContent = bc;
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('scanning').style.display = 'none';
-  document.getElementById('cam-label').style.display = 'none';
-
-  // שלח לparent
-  try { window.parent.postMessage({type:'bitefit_barcode', value: bc}, '*'); } catch(e){}
-  try { window.localStorage.setItem('bitefit_last_barcode', bc + '|' + Date.now()); } catch(e){}
-}
-
-input.addEventListener('change', function() {
-  var file = input.files[0];
-  if (!file) return;
-
-  document.getElementById('scanning').style.display = 'block';
-  document.getElementById('cam-label').style.display = 'none';
-  document.getElementById('err').style.display = 'none';
-
-  var url = URL.createObjectURL(file);
-
-  // הצג תצוגה מקדימה
-  var prev = document.getElementById('preview');
-  prev.src = url;
-  document.getElementById('preview-wrap').style.display = 'block';
-
-  var img = new Image();
-  img.onload = function() {
-    var hints = new Map();
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-      ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
-      ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
-      ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.QR_CODE,
-    ]);
-    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-
-    var reader = new ZXing.BrowserMultiFormatReader(hints);
-    reader.decodeFromImageElement(img)
-      .then(function(result) {
-        showBarcode(result.getText());
-      })
-      .catch(function() {
-        document.getElementById('scanning').style.display = 'none';
-        document.getElementById('err').style.display = 'block';
-        document.getElementById('again-btn').style.display = 'inline-block';
-      });
-    URL.revokeObjectURL(url);
-  };
-  img.src = url;
-});
-</script>
-"""
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 @st.cache_data(ttl=3600)
@@ -263,8 +121,7 @@ def show_product(product: dict, barcode: str):
     st.caption(f"🔥 {m['calories']} קק\"ל · 💪 {m['protein']}g · 🌾 {m['carbs']}g · 🥑 {m['fat']}g")
 
     if st.button("➕ הוסף לתיעוד", type="primary", use_container_width=True):
-        food_log_repo.add_entry(FoodLogEntry(
-            user_id=USER_ID, date=str(log_date),
+        food_log_repo.add_entry(USER_ID, log_date, FoodLogEntry(
             food_id=f"barcode_{barcode}", food_name=product["name_he"],
             grams=float(grams), calories=m["calories"],
             protein=m["protein"], carbs=m["carbs"], fat=m["fat"],
@@ -329,17 +186,26 @@ tab_scan, tab_manual = st.tabs(["📷 סריקה", "⌨️ הזנה ידנית"]
 barcode_str: str | None = None
 
 with tab_scan:
-    components.html(SCANNER_HTML, height=280, scrolling=False)
+    # Custom component — opens camera automatically, scans in real-time,
+    # calls Streamlit.setComponentValue(barcode) the moment a barcode is detected.
+    scanned = barcode_scanner(key="bc_scanner")
 
-    st.markdown('<p style="color:#8892a4;font-size:0.8rem;text-align:center;direction:rtl;margin-top:8px;">אחרי הצילום — הברקוד יופיע למעלה. העתק אותו לכאן:</p>',
-                unsafe_allow_html=True)
-    col_in, col_btn = st.columns([5,1])
-    scanned_input = col_in.text_input("bc_scan", label_visibility="collapsed",
-                                       placeholder="הדבק ברקוד כאן…",
-                                       key="scan_result_input")
-    if col_btn.button("✓", type="primary"):
-        if scanned_input.strip():
-            barcode_str = scanned_input.strip()
+    # Deduplicate: only trigger lookup once per new barcode
+    if scanned and scanned != st.session_state.get("_bc_last"):
+        st.session_state["_bc_last"] = scanned
+        barcode_str = scanned
+
+    # If we already have a cached result for the last scanned code, keep showing it
+    elif st.session_state.get("_bc_last") and not barcode_str:
+        cached_key = f"prod_{st.session_state['_bc_last']}"
+        if st.session_state.get(cached_key):
+            barcode_str = st.session_state["_bc_last"]
+
+    # "Scan again" button — resets so user can scan a different product
+    if st.session_state.get("_bc_last"):
+        if st.button("🔄 סרוק מוצר אחר", use_container_width=True):
+            st.session_state.pop("_bc_last", None)
+            st.rerun()
 
 with tab_manual:
     c1, c2 = st.columns([4,1])
@@ -355,16 +221,18 @@ if barcode_str:
     if cached:
         show_product(cached, barcode_str)
     else:
-        with st.spinner("מחפש..."):
+        with st.spinner("מחפש מוצר…"):
             comm = barcode_repo.get(barcode_str)
             if comm:
-                show_product({
+                product_data = {
                     "name_he":comm.name_he,"name_en":comm.name_en,
                     "brand":comm.brand,"image_url":comm.image_url,
                     "serving_g":comm.serving_g,"source":"community",
                     "per100":{"calories":comm.calories,"protein":comm.protein,
                               "carbs":comm.carbs,"fat":comm.fat,"fiber":comm.fiber},
-                }, barcode_str)
+                }
+                st.session_state[f"prod_{barcode_str}"] = product_data
+                show_product(product_data, barcode_str)
             else:
                 off = lookup_off(barcode_str)
                 if off:
@@ -381,6 +249,7 @@ if barcode_str:
                         serving_g=off["serving_g"],
                         source="off", added_by="system",
                     ))
+                    st.session_state[f"prod_{barcode_str}"] = off
                     show_product(off, barcode_str)
                 else:
                     show_add_form(barcode_str)
