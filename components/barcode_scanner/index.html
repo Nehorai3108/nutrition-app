@@ -4,177 +4,201 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0d0f14; font-family: sans-serif; overflow: hidden; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; background:#0d0f14; font-family:sans-serif; }
 
-#container {
+#wrap {
   position: relative;
   width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
+  height: 300px;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
 }
 
 #video {
   width: 100%;
-  border-radius: 14px;
+  height: 100%;
+  object-fit: cover;
   display: block;
-  background: #000;
 }
 
 /* מסגרת סריקה */
-#overlay {
+#frame {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 65%; height: 45%;
-  border: 2px solid rgba(79, 142, 247, 0.8);
-  border-radius: 12px;
+  width: 70%; height: 55%;
+  border: 2px solid rgba(79,142,247,0.9);
+  border-radius: 10px;
   pointer-events: none;
-  box-shadow: 0 0 0 9999px rgba(0,0,0,0.4);
 }
-#overlay::before, #overlay::after,
-#overlay .tl, #overlay .br {
-  content: '';
-  position: absolute;
-  width: 22px; height: 22px;
-  border-color: #4f8ef7;
-  border-style: solid;
-}
-#overlay::before { top:-2px; left:-2px; border-width:3px 0 0 3px; border-radius:8px 0 0 0; }
-#overlay::after  { top:-2px; right:-2px; border-width:3px 3px 0 0; border-radius:0 8px 0 0; }
-#overlay .tl     { bottom:-2px; left:-2px; border-width:0 0 3px 3px; border-radius:0 0 0 8px; }
-#overlay .br     { bottom:-2px; right:-2px; border-width:0 3px 3px 0; border-radius:0 0 8px 0; }
+/* פינות */
+#frame::before { content:''; position:absolute; top:-3px; left:-3px;
+  width:22px; height:22px; border:3px solid #4f8ef7;
+  border-right:none; border-bottom:none; border-radius:6px 0 0 0; }
+#frame::after  { content:''; position:absolute; top:-3px; right:-3px;
+  width:22px; height:22px; border:3px solid #4f8ef7;
+  border-left:none; border-bottom:none; border-radius:0 6px 0 0; }
+#bl { position:absolute; bottom:-3px; left:-3px;
+  width:22px; height:22px; border:3px solid #4f8ef7;
+  border-right:none; border-top:none; border-radius:0 0 0 6px; }
+#br { position:absolute; bottom:-3px; right:-3px;
+  width:22px; height:22px; border:3px solid #4f8ef7;
+  border-left:none; border-top:none; border-radius:0 0 6px 0; }
 
-/* קו סריקה מונפש */
-#scanline {
+/* קו סריקה */
+#line {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 63%; height: 2px;
+  left: 15%; width: 70%; height: 2px;
   background: linear-gradient(90deg, transparent, #4f8ef7, transparent);
-  animation: scan 2s ease-in-out infinite;
-  pointer-events: none;
+  animation: sweep 2s ease-in-out infinite;
+  top: 22%;
 }
-@keyframes scan {
-  0%   { margin-top: -22%; }
-  50%  { margin-top:  22%; }
-  100% { margin-top: -22%; }
+@keyframes sweep {
+  0%   { top: 22%; }
+  50%  { top: 78%; }
+  100% { top: 22%; }
 }
 
 #hint {
+  position: absolute;
+  bottom: 12px; left: 0; right: 0;
   text-align: center;
-  color: #8892a4;
-  font-size: 0.78rem;
-  margin-top: 10px;
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
   direction: rtl;
 }
 
-/* success */
-#success {
+#ok {
   display: none;
-  background: #1a3a2a;
-  border: 1px solid #2f855a;
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  margin-top: 10px;
-  direction: rtl;
+  position: absolute; inset: 0;
+  background: rgba(26,58,42,0.95);
+  border-radius: 14px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
 }
-#success .bc-val { font-size: 1.1rem; font-weight: 700; color: #68d391; }
-#success .bc-lbl { font-size: 0.8rem; color: #8892a4; margin-top: 4px; }
+#ok.show { display: flex; }
+#ok-icon { font-size: 2.5rem; }
+#ok-val  { font-size: 1.2rem; font-weight: 700; color: #68d391; direction:ltr; }
+#ok-lbl  { font-size: 0.8rem; color: #a0aec0; }
 
 #err {
+  padding: 12px;
+  text-align: center;
+  color: #fc8181;
+  font-size: 13px;
+  direction: rtl;
   display: none;
-  color: #fc8181; font-size: 0.8rem;
-  text-align: center; margin-top: 8px; direction: rtl;
 }
 </style>
 </head>
 <body>
-<div id="container">
-  <video id="video" autoplay muted playsinline></video>
-  <div id="overlay"><div class="tl"></div><div class="br"></div></div>
-  <div id="scanline"></div>
-  <div id="hint">כוון את הברקוד לתוך המסגרת</div>
-  <div id="success">
-    <div class="bc-lbl">ברקוד זוהה ✅</div>
-    <div class="bc-val" id="bc-display"></div>
-  </div>
-  <div id="err"></div>
-</div>
 
+<div id="wrap">
+  <video id="video" autoplay muted playsinline></video>
+  <div id="frame"><div id="bl"></div><div id="br"></div></div>
+  <div id="line"></div>
+  <div id="hint">כוון את הברקוד למסגרת</div>
+  <div id="ok">
+    <div id="ok-icon">✅</div>
+    <div id="ok-val"></div>
+    <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
+  </div>
+</div>
+<div id="err"></div>
+
+<!-- Streamlit component lib -->
 <script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
 
 <script>
-let lastBarcode = null;
-let codeReader = null;
+// Wait for Streamlit to be ready, then start camera
+function init() {
+  Streamlit.setFrameHeight(320);
 
-function onRender(event) {
-  if (!event.detail || codeReader) return;
-  startScanner();
-}
-
-function startScanner() {
-  const hints = new Map();
-  const formats = [
-    ZXing.BarcodeFormat.EAN_13,
-    ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128,
-    ZXing.BarcodeFormat.CODE_39,
-    ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E,
-    ZXing.BarcodeFormat.QR_CODE,
-  ];
-  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
-  hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-
-  codeReader = new ZXing.BrowserMultiFormatReader(hints);
-
-  const constraints = {
+  var constraints = {
     video: {
-      facingMode: { ideal: 'environment' },  // מצלמה אחורית
+      facingMode: { ideal: "environment" },
       width:  { ideal: 1280 },
-      height: { ideal: 720 },
+      height: { ideal: 720 }
     }
   };
 
-  codeReader.decodeFromConstraints(constraints, 'video', (result, err) => {
-    if (result) {
-      const bc = result.getText();
-      if (bc !== lastBarcode) {
-        lastBarcode = bc;
-        document.getElementById('bc-display').textContent = bc;
-        document.getElementById('success').style.display = 'block';
-        document.getElementById('hint').style.display = 'none';
-        document.getElementById('scanline').style.display = 'none';
-
-        // שלח ל-Streamlit
-        Streamlit.setComponentValue(bc);
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(function(stream) {
+      var video = document.getElementById("video");
+      video.srcObject = stream;
+      video.play();
+      startZXing(video);
+    })
+    .catch(function(err) {
+      var el = document.getElementById("err");
+      el.style.display = "block";
+      if (err.name === "NotAllowedError") {
+        el.textContent = "לא ניתן לגשת למצלמה — אנא אשר הרשאה בדפדפן";
+      } else {
+        el.textContent = "שגיאת מצלמה: " + err.message;
       }
-    }
-    if (err && !(err instanceof ZXing.NotFoundException)) {
-      // שגיאה אמיתית
-    }
-  }).catch(e => {
-    document.getElementById('err').textContent =
-      'לא ניתן לגשת למצלמה — ודא שנתת הרשאה.';
-    document.getElementById('err').style.display = 'block';
-  });
-
-  Streamlit.setFrameHeight(document.body.scrollHeight + 20);
+      Streamlit.setFrameHeight(360);
+    });
 }
 
-window.addEventListener('message', function(e) {
-  if (e.data.type === 'streamlit:render') {
-    onRender({detail: e.data});
+function startZXing(video) {
+  // Load ZXing dynamically
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+  s.onload = function() {
+    var hints = new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+      ZXing.BarcodeFormat.EAN_13,
+      ZXing.BarcodeFormat.EAN_8,
+      ZXing.BarcodeFormat.CODE_128,
+      ZXing.BarcodeFormat.UPC_A,
+      ZXing.BarcodeFormat.UPC_E,
+    ]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+
+    var reader = new ZXing.BrowserMultiFormatReader(hints);
+    var lastScan = null;
+
+    function scanFrame() {
+      try {
+        reader.decodeFromVideoElement(video)
+          .then(function(result) {
+            var bc = result.getText();
+            if (bc && bc !== lastScan) {
+              lastScan = bc;
+              showSuccess(bc);
+              Streamlit.setComponentValue(bc);
+            }
+          })
+          .catch(function() {});
+      } catch(e) {}
+      setTimeout(scanFrame, 250);
+    }
+    scanFrame();
+  };
+  document.head.appendChild(s);
+}
+
+function showSuccess(bc) {
+  document.getElementById("ok-val").textContent = bc;
+  document.getElementById("ok").classList.add("show");
+  document.getElementById("line").style.display = "none";
+  document.getElementById("hint").style.display = "none";
+}
+
+// Start when component renders
+window.addEventListener("message", function(e) {
+  if (e.data && e.data.type === "streamlit:render") {
+    init();
   }
 });
 
-// גם אם render לא הגיע — הפעל בכל מקרה
-setTimeout(startScanner, 300);
-
-Streamlit.setFrameHeight(320);
+// Fallback: start after short delay
+setTimeout(init, 400);
 </script>
 </body>
 </html>

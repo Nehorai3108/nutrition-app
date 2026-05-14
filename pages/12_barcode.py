@@ -193,7 +193,30 @@ tab_scan, tab_manual = st.tabs(["📷 סריקה", "⌨️ הזנה ידנית"]
 barcode_str: str | None = None
 
 with tab_scan:
-    scanned = barcode_scanner(key="scanner")
+    # Inject JS to grant camera permission to all component iframes
+    import streamlit.components.v1 as _cv1
+    _cv1.html("""
+    <script>
+    (function fix(){
+      try {
+        var frames = window.parent.document.querySelectorAll('iframe');
+        frames.forEach(function(f){
+          f.setAttribute('allow','camera; microphone; autoplay; clipboard-write');
+        });
+      } catch(e){}
+    })();
+    setTimeout(function(){
+      try {
+        var frames = window.parent.document.querySelectorAll('iframe');
+        frames.forEach(function(f){
+          f.setAttribute('allow','camera; microphone; autoplay; clipboard-write');
+        });
+      } catch(e){}
+    }, 1000);
+    </script>
+    """, height=0)
+
+    scanned = barcode_scanner(key="scanner", default=None)
     if scanned:
         barcode_str = str(scanned)
 
