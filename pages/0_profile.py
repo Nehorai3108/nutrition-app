@@ -100,11 +100,13 @@ with tab_personal:
     with col2:
         c_h, c_w = st.columns(2)
         with c_h:
+            _h = float(profile.get("height_cm") or 0)
             new_height = st.number_input("גובה (ס״מ)", 130.0, 220.0,
-                                         value=float(profile.get("height_cm", 178.0)), step=0.5)
+                                         value=max(130.0, min(220.0, _h if _h >= 130 else 178.0)), step=0.5)
         with c_w:
+            _w = float(profile.get("weight_kg") or 0)
             new_weight = st.number_input("משקל נוכחי (ק״ג)", 35.0, 200.0,
-                                         value=float(profile.get("weight_kg", 82.0)), step=0.1)
+                                         value=max(35.0, min(200.0, _w if _w >= 35 else 82.0)), step=0.1)
 
         activity_opts = list(ACTIVITY_LABELS.keys())
         cur_act_val = profile.get("activity_level", "moderately_active")
