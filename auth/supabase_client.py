@@ -130,6 +130,23 @@ def clear_session_cookies() -> None:
             pass
 
 
+def _jwt_is_expired(token: str) -> bool:
+    """Return True if the JWT access token is expired or unparseable."""
+    import time, base64, json as _json
+    try:
+        parts = token.split(".")
+        if len(parts) != 3:
+            return True
+        # Pad base64 to a multiple of 4 chars
+        payload = parts[1] + "=" * (-len(parts[1]) % 4)
+        data = _json.loads(base64.urlsafe_b64decode(payload))
+        exp = data.get("exp", 0)
+        # Refresh 60 seconds before actual expiry to avoid race conditions
+        return time.time() >= (exp - 60)
+    except Exception:
+        return True
+
+
 def _load_creds() -> tuple[Optional[str], Optional[str]]:
     """Read Supabase creds from env first, then Streamlit secrets."""
     url = os.environ.get("SUPABASE_URL")
@@ -174,18 +191,34 @@ def get_supabase() -> Client:
     # with "new row violates row-level security policy". Force it explicitly.
     access = st.session_state.get(_KEY_ACCESS_TOKEN)
     refresh = st.session_state.get(_KEY_REFRESH_TOKEN)
-    if access and refresh:
+
+    if refresh:
+        # Check if access token is expired (or missing); refresh if so.
+        needs_refresh = not access or _jwt_is_expired(access)
+        if needs_refresh:
+            try:
+                resp = client.auth.refresh_session(refresh)
+                if resp and resp.session:
+                    access = resp.session.access_token
+                    st.session_state[_KEY_ACCESS_TOKEN] = access
+                    st.session_state[_KEY_REFRESH_TOKEN] = resp.session.refresh_token
+                    st.session_state[_KEY_USER_ID] = resp.user.id
+                    st.session_state[_KEY_USER_EMAIL] = getattr(resp.user, "email", "") or ""
+            except Exception:
+                pass
+
+    if access:
         try:
             current = client.auth.get_session()
             if current is None or getattr(current, "access_token", None) != access:
-                client.auth.set_session(access, refresh)
+                client.auth.set_session(access, refresh or "")
         except Exception:
             pass
-        # Always force the PostgREST sub-client to use the user JWT.
         try:
             client.postgrest.auth(access)
         except Exception:
             pass
+
     return client
 
 

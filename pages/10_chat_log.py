@@ -378,13 +378,8 @@ if "detected_meal"    not in st.session_state: st.session_state.detected_meal   
 def _get_user_name() -> str:
     try:
         import json as _json
-<<<<<<< HEAD
         from nutrition_app.storage_paths import legacy_users_file
         _path = str(legacy_users_file())
-=======
-        _path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                             "storage_agents", "users.json")
->>>>>>> 24748f2 (feat: multi-user demo readiness — auth consolidation, data isolation, Supabase backends)
         _data = _json.load(open(_path, encoding="utf-8"))
         for _u in _data.values():
             if _u.get("name"):

@@ -164,20 +164,12 @@ class ProfileRepository:
     # ── Public API ────────────────────────────────────────────────────────────
 
     def load(self, user_id: str) -> dict:
-<<<<<<< HEAD
         if self._use_supabase(user_id):
-=======
-        if self._use_supabase():
->>>>>>> 24748f2 (feat: multi-user demo readiness — auth consolidation, data isolation, Supabase backends)
             return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
         return self._local_load(user_id)
 
     def save(self, profile: dict) -> None:
-<<<<<<< HEAD
         if self._use_supabase(profile.get("user_id", "")):
-=======
-        if self._use_supabase():
->>>>>>> 24748f2 (feat: multi-user demo readiness — auth consolidation, data isolation, Supabase backends)
             self._sb_save(profile)
         else:
             self._local_save(profile)
