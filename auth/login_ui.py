@@ -20,6 +20,8 @@ from auth.supabase_client import get_supabase, is_supabase_configured, get_curre
 _KEY_USER_ID = "user_id"
 _KEY_USER_EMAIL = "user_email"
 _KEY_NEEDS_ONBOARDING = "_needs_onboarding"
+_KEY_ACCESS_TOKEN = "_sb_access_token"
+_KEY_REFRESH_TOKEN = "_sb_refresh_token"
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
@@ -56,15 +58,25 @@ def get_user_email() -> str:
 
 # ── Internal: session bookkeeping ─────────────────────────────────────────────
 
-def _set_session(user) -> None:
-    """Write auth state to session_state after successful login/signup."""
+def _set_session(user, session=None) -> None:
+    """Write auth state to session_state after successful login/signup.
+    Persists the JWT so it can be re-attached to the Supabase client on
+    every rerun (otherwise RLS-protected writes get rejected)."""
     st.session_state[_KEY_USER_ID] = user.id
     st.session_state[_KEY_USER_EMAIL] = user.email
+    if session is not None:
+        access = getattr(session, "access_token", None)
+        refresh = getattr(session, "refresh_token", None)
+        if access:
+            st.session_state[_KEY_ACCESS_TOKEN] = access
+        if refresh:
+            st.session_state[_KEY_REFRESH_TOKEN] = refresh
 
 
 def _clear_session() -> None:
     """Clear all auth + per-user session state. Called on logout."""
-    for k in (_KEY_USER_ID, _KEY_USER_EMAIL, _KEY_NEEDS_ONBOARDING):
+    for k in (_KEY_USER_ID, _KEY_USER_EMAIL, _KEY_NEEDS_ONBOARDING,
+              _KEY_ACCESS_TOKEN, _KEY_REFRESH_TOKEN, "_sb_client"):
         st.session_state.pop(k, None)
     # Clear all per-user namespaced keys (chat history, etc.)
     for k in [k for k in st.session_state.keys() if k.startswith("chat_messages_")]:
@@ -83,7 +95,7 @@ def _do_login(email: str, password: str) -> str | None:
             {"email": email, "password": password}
         )
         if resp.user:
-            _set_session(resp.user)
+            _set_session(resp.user, resp.session)
             # Mark onboarding needed if profile is missing/blank
             _check_onboarding_needed(resp.user.id)
             return None
@@ -102,7 +114,7 @@ def _do_signup(email: str, password: str) -> str | None:
     try:
         resp = get_supabase().auth.sign_up({"email": email, "password": password})
         if resp.user:
-            _set_session(resp.user)
+            _set_session(resp.user, resp.session)
             # Seed an empty profile row so RLS-protected reads later don't
             # 404, then mark the user as needing onboarding.
             _seed_empty_profile(resp.user.id)

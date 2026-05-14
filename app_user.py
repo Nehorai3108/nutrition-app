@@ -127,10 +127,10 @@ from nutrition_app.user_manager import load_inventory as _load_inv
 # guaranteed to have a real name — empty-profile users were redirected above.
 name          = _profile.get("name") or ""
 gender_choice = Gender(_profile.get("gender", "male"))
-height        = float(_profile.get("height_cm", 178.0))
-weight        = float(_profile.get("weight_kg", 82.0))
+height        = float(_profile.get("height_cm") or 178.0)
+weight        = float(_profile.get("weight_kg") or 82.0)
 try:
-    dob = date.fromisoformat(_profile.get("date_of_birth", "1990-05-15"))
+    dob = date.fromisoformat(_profile.get("date_of_birth") or "1990-05-15")
 except ValueError:
     dob = date(1990, 5, 15)
 activity_choice = ActivityLevel(_profile.get("activity_level", "moderately_active"))

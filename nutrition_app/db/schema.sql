@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS food_log (
 ALTER TABLE food_log ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own food log" ON food_log;
 CREATE POLICY "own food log" ON food_log
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── User profiles ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS profiles (
@@ -49,7 +50,8 @@ CREATE TABLE IF NOT EXISTS profiles (
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own profile" ON profiles;
 CREATE POLICY "own profile" ON profiles
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── Water log ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS water_log (
@@ -67,7 +69,8 @@ CREATE TABLE IF NOT EXISTS water_log (
 ALTER TABLE water_log ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own water log" ON water_log;
 CREATE POLICY "own water log" ON water_log
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 CREATE TABLE IF NOT EXISTS water_goals (
     user_id         UUID    REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
@@ -78,7 +81,8 @@ CREATE TABLE IF NOT EXISTS water_goals (
 ALTER TABLE water_goals ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own water goal" ON water_goals;
 CREATE POLICY "own water goal" ON water_goals
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── Workouts ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS workouts (
@@ -97,7 +101,8 @@ CREATE TABLE IF NOT EXISTS workouts (
 ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own workouts" ON workouts;
 CREATE POLICY "own workouts" ON workouts
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── Daily summaries ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS daily_summaries (
@@ -113,7 +118,8 @@ CREATE TABLE IF NOT EXISTS daily_summaries (
 ALTER TABLE daily_summaries ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own daily summary" ON daily_summaries;
 CREATE POLICY "own daily summary" ON daily_summaries
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── Inventory ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS inventory (
@@ -130,7 +136,8 @@ CREATE TABLE IF NOT EXISTS inventory (
 ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own inventory" ON inventory;
 CREATE POLICY "own inventory" ON inventory
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── User workout data (blob form — matches UserWorkoutData model) ────
 -- Stores both the weekly plan and the daily log as a single JSONB blob
@@ -144,7 +151,8 @@ CREATE TABLE IF NOT EXISTS user_workout_data (
 ALTER TABLE user_workout_data ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own workout data" ON user_workout_data;
 CREATE POLICY "own workout data" ON user_workout_data
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── User water data (blob form — matches UserWaterData model) ────────
 CREATE TABLE IF NOT EXISTS user_water_data (
@@ -156,12 +164,14 @@ CREATE TABLE IF NOT EXISTS user_water_data (
 ALTER TABLE user_water_data ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "own water data" ON user_water_data;
 CREATE POLICY "own water data" ON user_water_data
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- ── Idempotent migrations for existing Supabase projects ─────
 -- Re-running schema.sql on a project where `profiles` already exists
 -- without the newer columns: add them in-place. Safe to run multiple times.
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS date_of_birth     DATE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS pace              TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS weekly_change_kg  FLOAT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS target_weight_kg  FLOAT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS weeks_to_goal     INT;

@@ -117,7 +117,23 @@ class ProfileRepository:
             "meal_preferences": profile.get("meal_preferences", {}),
             "updated_at":       datetime.now().isoformat(),
         }
-        self._sb().table("profiles").upsert(payload, on_conflict="user_id").execute()
+        # Schema drift: older Supabase projects may be missing newer columns.
+        # Strip any column PostgREST reports as unknown and retry, up to 8 times.
+        import re as _re
+        for _ in range(8):
+            try:
+                self._sb().table("profiles").upsert(payload, on_conflict="user_id").execute()
+                return
+            except Exception as e:
+                msg = str(e)
+                m = _re.search(r"Could not find the '([^']+)' column", msg)
+                if not m:
+                    raise
+                col = m.group(1)
+                if col not in payload or col == "user_id":
+                    raise
+                payload.pop(col, None)
+        raise RuntimeError("Failed to save profile after stripping unknown columns")
 
     # ── Local JSON backend ────────────────────────────────────────────────────
 

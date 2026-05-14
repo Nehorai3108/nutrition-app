@@ -98,11 +98,13 @@ with tab_personal:
     with col2:
         c_h, c_w = st.columns(2)
         with c_h:
+            _h = float(profile.get("height_cm") or 0) or 170.0
             new_height = st.number_input("גובה (ס״מ)", 130.0, 220.0,
-                                         value=float(profile.get("height_cm", 178.0)), step=0.5)
+                                         value=max(130.0, min(220.0, _h)), step=0.5)
         with c_w:
+            _w = float(profile.get("weight_kg") or 0) or 70.0
             new_weight = st.number_input("משקל נוכחי (ק״ג)", 35.0, 200.0,
-                                         value=float(profile.get("weight_kg", 82.0)), step=0.1)
+                                         value=max(35.0, min(200.0, _w)), step=0.1)
 
         activity_opts = list(ACTIVITY_LABELS.keys())
         cur_act_val = profile.get("activity_level", "moderately_active")
@@ -366,14 +368,26 @@ with tab_prefs:
 with tab_targets:
     section_header("יעדים תזונתיים שמורים", icon_name="chart")
 
+    if not profile.get("name") or not profile.get("height_cm") or not profile.get("weight_kg"):
+        st.info("מלא את **פרטים אישיים** ושמור — היעדים יוצגו אחרי השמירה הראשונה.")
+        _skip_targets = True
+    else:
+        _skip_targets = False
+
     try:
+        if _skip_targets:
+            raise RuntimeError("skip")
+        try:
+            _dob = date.fromisoformat(profile.get("date_of_birth") or "1990-05-15")
+        except ValueError:
+            _dob = date(1990, 5, 15)
         _user = UserProfile(
             user_id=USER_ID,
             name=profile.get("name", ""),
             gender=Gender(profile.get("gender", "male")),
-            date_of_birth=date.fromisoformat(profile.get("date_of_birth", "1990-05-15")),
-            height_cm=float(profile.get("height_cm", 178)),
-            weight_kg=float(profile.get("weight_kg", 82)),
+            date_of_birth=_dob,
+            height_cm=float(profile.get("height_cm") or 178),
+            weight_kg=float(profile.get("weight_kg") or 82),
             activity_level=ActivityLevel(profile.get("activity_level", "moderately_active")),
             goal=Goal(profile.get("goal", "lose_weight")),
         )
@@ -418,7 +432,8 @@ with tab_targets:
             st.caption(f"⚙️ {_targets.notes} | שיטה: {_targets.calculation_method}")
 
     except Exception as e:
-        st.warning(f"לא ניתן לחשב יעדים — וודא שהפרטים האישיים נשמרו. ({e})")
+        if not _skip_targets:
+            st.warning(f"לא ניתן לחשב יעדים — וודא שהפרטים האישיים נשמרו. ({e})")
 
     st.divider()
     st.info("💡 שנה משקל / פעילות / מטרה / קצב בלשונית **פרטים אישיים** — החישוב מתעדכן מיידית")
