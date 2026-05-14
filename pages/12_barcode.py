@@ -14,7 +14,6 @@ from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.barcode_repository import BarcodeRepository, BarcodeEntry
-from nutrition_app.components.barcode_comp import barcode_scanner
 
 st.set_page_config(page_title="BiteFit · ברקוד", page_icon="📲",
                    layout="wide", initial_sidebar_state="collapsed")
@@ -24,22 +23,37 @@ USER_ID       = require_auth()
 food_log_repo = FoodLogRepository()
 barcode_repo  = BarcodeRepository()
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-.product-card { background:#1e2535; border:1px solid #2d3748; border-radius:14px; padding:20px; margin:12px 0; }
-.product-name { font-size:1.25rem; font-weight:700; color:#fff; }
+.product-name { font-size:1.2rem; font-weight:700; color:#fff; }
 .product-brand{ font-size:0.85rem; color:#8892a4; margin-top:2px; }
-.badge        { border-radius:20px; padding:3px 10px; font-size:0.72rem; display:inline-block; margin-bottom:10px; }
+.badge        { border-radius:20px; padding:3px 10px; font-size:0.72rem;
+                display:inline-block; margin-bottom:8px; }
 .badge-comm   { background:#1a3a2a; color:#68d391; border:1px solid #2f855a; }
 .badge-off    { background:#1a2a3a; color:#63b3ed; border:1px solid #2b6cb0; }
 .not-found    { background:#2d1b1b; border:1px solid #744141; border-radius:14px;
                 padding:20px; text-align:center; direction:rtl; margin-top:12px; }
+/* hide default camera_input label */
+[data-testid="stCameraInput"] > label { display:none !important; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── barcode decode (server-side, pyzbar) ──────────────────────────────────────
+def decode_barcode(img_file) -> str | None:
+    try:
+        from PIL import Image
+        from pyzbar.pyzbar import decode as pyzbar_decode
+        img = Image.open(img_file).convert("RGB")
+        results = pyzbar_decode(img)
+        if results:
+            return results[0].data.decode("utf-8")
+    except Exception:
+        pass
+    return None
+
+
+# ── Open Food Facts lookup ────────────────────────────────────────────────────
 @st.cache_data(ttl=3600)
 def lookup_off(barcode: str) -> dict | None:
     import requests
@@ -58,17 +72,17 @@ def lookup_off(barcode: str) -> dict | None:
             if cal == 0:
                 continue
             return {
-                "name_he":   p.get("product_name_he") or p.get("product_name_en") or p.get("product_name",""),
-                "name_en":   p.get("product_name_en",""),
-                "brand":     p.get("brands",""),
-                "image_url": p.get("image_front_small_url",""),
+                "name_he":   p.get("product_name_he") or p.get("product_name_en") or p.get("product_name", ""),
+                "name_en":   p.get("product_name_en", ""),
+                "brand":     p.get("brands", ""),
+                "image_url": p.get("image_front_small_url", ""),
                 "serving_g": float(p.get("serving_quantity") or 100),
                 "per100": {
-                    "calories": round(cal,1),
-                    "protein":  round(float(n.get("proteins_100g",0)),1),
-                    "carbs":    round(float(n.get("carbohydrates_100g",0)),1),
-                    "fat":      round(float(n.get("fat_100g",0)),1),
-                    "fiber":    round(float(n.get("fiber_100g",0)),1),
+                    "calories": round(cal, 1),
+                    "protein":  round(float(n.get("proteins_100g", 0)), 1),
+                    "carbs":    round(float(n.get("carbohydrates_100g", 0)), 1),
+                    "fat":      round(float(n.get("fat_100g", 0)), 1),
+                    "fiber":    round(float(n.get("fiber_100g", 0)), 1),
                 },
                 "source": "off",
             }
@@ -81,6 +95,7 @@ def macros(per100: dict, grams: float) -> dict:
     return {k: round(v * grams / 100, 1) for k, v in per100.items()}
 
 
+# ── Product card ──────────────────────────────────────────────────────────────
 def show_product(product: dict, barcode: str):
     source    = product.get("source", "community")
     badge_cls = "badge-comm" if source == "community" else "badge-off"
@@ -89,9 +104,9 @@ def show_product(product: dict, barcode: str):
     col_img, col_info = st.columns([1, 4])
     with col_img:
         if product.get("image_url"):
-            st.image(product["image_url"], width=90)
+            st.image(product["image_url"], width=80)
         else:
-            st.markdown('<div style="font-size:2.5rem;text-align:center">🛒</div>',
+            st.markdown('<div style="font-size:2.2rem;text-align:center">🛒</div>',
                         unsafe_allow_html=True)
     with col_info:
         st.markdown(f"""
@@ -101,18 +116,18 @@ def show_product(product: dict, barcode: str):
         """, unsafe_allow_html=True)
 
     p = product["per100"]
-    c1,c2,c3,c4 = st.columns(4)
-    c1.metric("🔥 קלוריות", p['calories'])
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("🔥 קלוריות", p["calories"])
     c2.metric("💪 חלבון",   f"{p['protein']}g")
     c3.metric("🌾 פחמימות", f"{p['carbs']}g")
     c4.metric("🥑 שומן",    f"{p['fat']}g")
 
     st.markdown("---")
     cg, cm, cd = st.columns(3)
-    grams    = cg.number_input("גרם", 1, 2000, int(product.get("serving_g",100)), 5)
-    meal_map = {"breakfast":"🌅 בוקר","morning_snack":"☕ חטיף בוקר",
-                "lunch":"🍽️ צהריים","afternoon_snack":"🍎 חטיף אחה\"צ",
-                "dinner":"🌙 ערב","evening_snack":"🌜 לילה"}
+    grams    = cg.number_input("גרם", 1, 2000, int(product.get("serving_g", 100)), 5)
+    meal_map = {"breakfast": "🌅 בוקר", "morning_snack": "☕ חטיף בוקר",
+                "lunch": "🍽️ צהריים", "afternoon_snack": "🍎 חטיף אחה\"צ",
+                "dinner": "🌙 ערב", "evening_snack": "🌜 לילה"}
     meal     = cm.selectbox("ארוחה", list(meal_map.keys()),
                             format_func=lambda k: meal_map[k], index=3)
     log_date = cd.date_input("תאריך", value=date.today())
@@ -148,10 +163,10 @@ def show_add_form(barcode: str):
         serving = c1.number_input("מנה (גרם)", 1, 1000, 100)
         name_en = c2.text_input("שם באנגלית", placeholder="Bamba")
         st.markdown("**ל-100 גרם:**")
-        n1,n2,n3,n4 = st.columns(4)
+        n1, n2, n3, n4 = st.columns(4)
         cal   = n1.number_input("🔥 קלוריות", 0.0, 900.0, 0.0, 1.0)
         prot  = n2.number_input("💪 חלבון g",  0.0, 100.0, 0.0, 0.1)
-        carbs = n3.number_input("🌾 פחמימות g",0.0, 100.0, 0.0, 0.1)
+        carbs = n3.number_input("🌾 פחמימות g", 0.0, 100.0, 0.0, 0.1)
         fat_v = n4.number_input("🥑 שומן g",   0.0, 100.0, 0.0, 0.1)
         ok = st.form_submit_button("💾 שמור למאגר", type="primary", use_container_width=True)
 
@@ -168,10 +183,11 @@ def show_add_form(barcode: str):
             if saved:
                 st.success(f"✅ {name_he} נשמר!")
                 st.session_state[f"prod_{barcode}"] = {
-                    "name_he":name_he.strip(),"name_en":name_en.strip(),
-                    "brand":brand.strip(),"image_url":"","serving_g":float(serving),
-                    "per100":{"calories":cal,"protein":prot,"carbs":carbs,"fat":fat_v,"fiber":0},
-                    "source":"community",
+                    "name_he": name_he.strip(), "name_en": name_en.strip(),
+                    "brand": brand.strip(), "image_url": "", "serving_g": float(serving),
+                    "per100": {"calories": cal, "protein": prot, "carbs": carbs,
+                               "fat": fat_v, "fiber": 0},
+                    "source": "community",
                 }
                 st.rerun()
             else:
@@ -186,31 +202,35 @@ tab_scan, tab_manual = st.tabs(["📷 סריקה", "⌨️ הזנה ידנית"]
 barcode_str: str | None = None
 
 with tab_scan:
-    # Custom component — opens camera automatically, scans in real-time,
-    # calls Streamlit.setComponentValue(barcode) the moment a barcode is detected.
-    scanned = barcode_scanner(key="bc_scanner")
-
-    # Deduplicate: only trigger lookup once per new barcode
-    if scanned and scanned != st.session_state.get("_bc_last"):
-        st.session_state["_bc_last"] = scanned
-        barcode_str = scanned
-
-    # If we already have a cached result for the last scanned code, keep showing it
-    elif st.session_state.get("_bc_last") and not barcode_str:
-        cached_key = f"prod_{st.session_state['_bc_last']}"
-        if st.session_state.get(cached_key):
-            barcode_str = st.session_state["_bc_last"]
-
-    # "Scan again" button — resets so user can scan a different product
+    # If we already scanned and have a result cached, show "scan again" option
     if st.session_state.get("_bc_last"):
+        st.success(f"✅ ברקוד אחרון: `{st.session_state['_bc_last']}`")
         if st.button("🔄 סרוק מוצר אחר", use_container_width=True):
             st.session_state.pop("_bc_last", None)
+            st.session_state.pop(f"prod_{st.session_state.get('_bc_last','')}", None)
             st.rerun()
+        barcode_str = st.session_state["_bc_last"]
+    else:
+        st.markdown('<p style="color:#8892a4;font-size:0.85rem;text-align:center;direction:rtl;margin-bottom:4px;">כוון את הברקוד למצלמה ולחץ על כפתור הצילום</p>',
+                    unsafe_allow_html=True)
+
+        # Native Streamlit camera widget — works on iOS + Android, no iframe needed
+        photo = st.camera_input("סרוק ברקוד", label_visibility="collapsed")
+
+        if photo is not None:
+            with st.spinner("מפענח ברקוד…"):
+                bc = decode_barcode(photo)
+            if bc:
+                st.session_state["_bc_last"] = bc
+                barcode_str = bc
+                st.rerun()
+            else:
+                st.error("❌ לא זוהה ברקוד — נסה שוב, ודא שהברקוד ממולא ומוארת")
 
 with tab_manual:
-    c1, c2 = st.columns([4,1])
-    manual  = c1.text_input("מספר ברקוד", placeholder="7290000066423",
-                             label_visibility="collapsed")
+    c1, c2 = st.columns([4, 1])
+    manual = c1.text_input("מספר ברקוד", placeholder="7290000066423",
+                           label_visibility="collapsed")
     if c2.button("חפש", type="primary", use_container_width=True):
         if manual.strip():
             barcode_str = manual.strip()
@@ -225,11 +245,11 @@ if barcode_str:
             comm = barcode_repo.get(barcode_str)
             if comm:
                 product_data = {
-                    "name_he":comm.name_he,"name_en":comm.name_en,
-                    "brand":comm.brand,"image_url":comm.image_url,
-                    "serving_g":comm.serving_g,"source":"community",
-                    "per100":{"calories":comm.calories,"protein":comm.protein,
-                              "carbs":comm.carbs,"fat":comm.fat,"fiber":comm.fiber},
+                    "name_he": comm.name_he, "name_en": comm.name_en,
+                    "brand": comm.brand, "image_url": comm.image_url,
+                    "serving_g": comm.serving_g, "source": "community",
+                    "per100": {"calories": comm.calories, "protein": comm.protein,
+                               "carbs": comm.carbs, "fat": comm.fat, "fiber": comm.fiber},
                 }
                 st.session_state[f"prod_{barcode_str}"] = product_data
                 show_product(product_data, barcode_str)
