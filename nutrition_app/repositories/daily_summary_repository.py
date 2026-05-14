@@ -43,23 +43,49 @@ class DailySummaryRepository:
 
     # ── Supabase backend ──────────────────────────────────────────────────────
 
+    def _schema_mismatch(self, e: Exception) -> bool:
+        """Older Supabase projects may have a different daily_summaries shape
+        (no summary_json column). Detect that error so callers degrade
+        gracefully instead of crashing the dashboard."""
+        s = str(e)
+        return (
+            "summary_json" in s
+            or "Could not find the" in s
+            or "does not exist" in s and "column" in s.lower()
+        )
+
     def _sb_upsert(self, summary: DailySummary) -> None:
-        self._sb().table("daily_summaries").upsert({
-            "user_id":      summary.user_id,
-            "date":         summary.date,
-            "summary_json": summary.to_dict(),
-            "updated_at":   datetime.now().isoformat(),
-        }, on_conflict="user_id,date").execute()
+        try:
+            self._sb().table("daily_summaries").upsert({
+                "user_id":      summary.user_id,
+                "date":         summary.date,
+                "summary_json": summary.to_dict(),
+                "updated_at":   datetime.now().isoformat(),
+            }, on_conflict="user_id,date").execute()
+        except Exception as e:
+            if self._schema_mismatch(e):
+                # Fall back to local JSON when the cloud schema is incompatible.
+                all_data = self._load_all(summary.user_id)
+                all_data[summary.date] = summary.to_dict()
+                self._save_all(summary.user_id, all_data)
+                return
+            raise
 
     def _sb_get(self, user_id: str, date_str: str) -> Optional[DailySummary]:
-        rows = (
-            self._sb().table("daily_summaries")
-            .select("summary_json")
-            .eq("user_id", user_id)
-            .eq("date", date_str)
-            .limit(1)
-            .execute()
-        ).data
+        try:
+            rows = (
+                self._sb().table("daily_summaries")
+                .select("summary_json")
+                .eq("user_id", user_id)
+                .eq("date", date_str)
+                .limit(1)
+                .execute()
+            ).data
+        except Exception as e:
+            if self._schema_mismatch(e):
+                # Schema doesn't have summary_json yet — return None (no summary).
+                return None
+            raise
         if not rows:
             return None
         blob = rows[0].get("summary_json")
@@ -68,15 +94,20 @@ class DailySummaryRepository:
         return DailySummary.from_dict(blob) if blob else None
 
     def _sb_get_range(self, user_id: str, start_iso: str, end_iso: str) -> List[DailySummary]:
-        rows = (
-            self._sb().table("daily_summaries")
-            .select("summary_json")
-            .eq("user_id", user_id)
-            .gte("date", start_iso)
-            .lte("date", end_iso)
-            .order("date", desc=True)
-            .execute()
-        ).data or []
+        try:
+            rows = (
+                self._sb().table("daily_summaries")
+                .select("summary_json")
+                .eq("user_id", user_id)
+                .gte("date", start_iso)
+                .lte("date", end_iso)
+                .order("date", desc=True)
+                .execute()
+            ).data or []
+        except Exception as e:
+            if self._schema_mismatch(e):
+                return []
+            raise
         results = []
         for row in rows:
             blob = row.get("summary_json")

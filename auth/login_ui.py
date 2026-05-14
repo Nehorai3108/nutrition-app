@@ -10,6 +10,8 @@ Session-state keys:
     user_id     — authenticated UUID
     user_email  — authenticated email
     _needs_onboarding — True for users who haven't completed profile setup
+    _pending_email_confirmation — email of a user who signed up / tried to
+                                   log in but hasn't confirmed their address
 """
 from __future__ import annotations
 
@@ -22,9 +24,10 @@ _KEY_USER_EMAIL = "user_email"
 _KEY_NEEDS_ONBOARDING = "_needs_onboarding"
 _KEY_ACCESS_TOKEN = "_sb_access_token"
 _KEY_REFRESH_TOKEN = "_sb_refresh_token"
+_KEY_PENDING_CONFIRMATION = "_pending_email_confirmation"
 
 
-# ── Public API ────────────────────────────────────────────────────────────────
+# Public API
 
 def require_auth() -> str:
     """
@@ -34,8 +37,8 @@ def require_auth() -> str:
     When no user is logged in: render login UI + st.stop().
     """
     if not is_supabase_configured():
-        st.error("⚠️ השרת אינו מוגדר כראוי — נא לפנות לתמיכה.")
-        st.caption("Server misconfigured: Supabase credentials missing.")
+        st.error("Server misconfigured: Supabase credentials missing.")
+        st.caption("Please contact support.")
         st.stop()
     user = get_current_user()
     if user is None:
@@ -56,7 +59,7 @@ def get_user_email() -> str:
     return user.get("email", "") if user else ""
 
 
-# ── Internal: session bookkeeping ─────────────────────────────────────────────
+# Internal session bookkeeping
 
 def _set_session(user, session=None) -> None:
     """Write auth state to session_state after successful login/signup.
@@ -76,7 +79,8 @@ def _set_session(user, session=None) -> None:
 def _clear_session() -> None:
     """Clear all auth + per-user session state. Called on logout."""
     for k in (_KEY_USER_ID, _KEY_USER_EMAIL, _KEY_NEEDS_ONBOARDING,
-              _KEY_ACCESS_TOKEN, _KEY_REFRESH_TOKEN, "_sb_client"):
+              _KEY_ACCESS_TOKEN, _KEY_REFRESH_TOKEN, _KEY_PENDING_CONFIRMATION,
+              "_sb_client"):
         st.session_state.pop(k, None)
     # Clear all per-user namespaced keys (chat history, etc.)
     for k in [k for k in st.session_state.keys() if k.startswith("chat_messages_")]:
@@ -86,45 +90,65 @@ def _clear_session() -> None:
         st.session_state.pop(k, None)
 
 
-# ── Auth actions ──────────────────────────────────────────────────────────────
+# Auth actions
 
 def _do_login(email: str, password: str) -> str | None:
-    """Return None on success, error message string on failure."""
+    """Return None on success, error message string on failure.
+
+    If Supabase returns a user but no session (email confirmation enabled
+    and not yet confirmed), enter the pending-confirmation screen instead
+    of granting access.
+    """
     try:
         resp = get_supabase().auth.sign_in_with_password(
             {"email": email, "password": password}
         )
-        if resp.user:
-            _set_session(resp.user, resp.session)
-            # Mark onboarding needed if profile is missing/blank
-            _check_onboarding_needed(resp.user.id)
+        if resp.user is None:
+            return "אימייל או סיסמה שגויים"
+        if resp.session is None:
+            st.session_state[_KEY_PENDING_CONFIRMATION] = email
             return None
-        return "אימייל או סיסמה שגויים"
+        _set_session(resp.user, resp.session)
+        _check_onboarding_needed(resp.user.id)
+        return None
     except Exception as e:  # noqa: BLE001
         msg = str(e)
         if "Invalid login" in msg or "invalid_credentials" in msg:
             return "אימייל או סיסמה שגויים"
         if "Email not confirmed" in msg:
-            return "יש לאשר את האימייל שנשלח לתיבת הדואר שלך"
+            st.session_state[_KEY_PENDING_CONFIRMATION] = email
+            return None
         return f"שגיאת התחברות: {msg}"
 
 
 def _do_signup(email: str, password: str) -> str | None:
-    """Return None on success, error message string on failure."""
+    """Return None on success, error message string on failure.
+
+    Handles two Supabase response shapes:
+    1. resp.user and resp.session both present -> email confirmation OFF.
+       Treat as a real login: write session, seed profile, enter onboarding.
+    2. resp.user present but resp.session is None -> email confirmation ON.
+       User is created but cannot act yet. Do NOT write user_id to
+       session_state (otherwise require_auth() would let them in but every
+       RLS-protected query would silently return empty). Store the email
+       in a pending flag so render_login_ui() can show a "check your inbox"
+       screen.
+    """
     try:
         resp = get_supabase().auth.sign_up({"email": email, "password": password})
-        if resp.user:
-            _set_session(resp.user, resp.session)
-            # Seed an empty profile row so RLS-protected reads later don't
-            # 404, then mark the user as needing onboarding.
-            _seed_empty_profile(resp.user.id)
-            st.session_state[_KEY_NEEDS_ONBOARDING] = True
+        if resp.user is None:
+            return "ההרשמה נכשלה - נסה שוב"
+        if resp.session is None:
+            st.session_state[_KEY_PENDING_CONFIRMATION] = email
             return None
-        return "ההרשמה נכשלה — נסה שוב"
+        _set_session(resp.user, resp.session)
+        _seed_empty_profile(resp.user.id)
+        st.session_state[_KEY_NEEDS_ONBOARDING] = True
+        return None
     except Exception as e:  # noqa: BLE001
         msg = str(e)
         if "already registered" in msg or "already been registered" in msg:
-            return "האימייל הזה כבר רשום — התחבר במקום"
+            return "האימייל הזה כבר רשום - התחבר במקום"
         if "password" in msg.lower() or "Password should" in msg:
             return "הסיסמה חייבת להיות לפחות 6 תווים"
         return f"שגיאת הרשמה: {msg}"
@@ -135,7 +159,6 @@ def _seed_empty_profile(user_id: str) -> None:
     try:
         from nutrition_app.repositories.profile_repository import ProfileRepository
         repo = ProfileRepository()
-        # Only seed if no row exists yet (idempotent in case of replay).
         existing = repo.load(user_id)
         if existing and existing.get("name"):
             return
@@ -157,7 +180,6 @@ def _seed_empty_profile(user_id: str) -> None:
             },
         })
     except Exception:
-        # Don't block signup if seed insert fails — onboarding will re-attempt.
         pass
 
 
@@ -182,12 +204,45 @@ def logout() -> None:
     st.rerun()
 
 
-def logout_button(label: str = "התנתק 👋", key: str = "_auth_logout_btn") -> None:
+def logout_button(label: str = "התנתק \U0001f44b", key: str = "_auth_logout_btn") -> None:
     if st.button(label, key=key):
         logout()
 
 
-# ── Login UI ──────────────────────────────────────────────────────────────────
+def _render_pending_confirmation_screen(email: str) -> None:
+    """Shown after signup (or after attempting login with an unconfirmed account)
+    when Supabase has email confirmation enabled. The user must click the link
+    in their inbox before they can enter the app."""
+    st.markdown(
+        '<div style="text-align:center;padding:24px 0 4px">'
+        '<span style="font-size:3rem">\U0001f4ec</span><br>'
+        '<span style="font-size:1.4rem;font-weight:800;color:#f4f6fb">'
+        'נשלח אליך מייל לאישור'
+        '</span><br>'
+        f'<span style="font-size:0.92rem;color:#8892a4">{email}</span>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    st.info(
+        "בדוק את תיבת הדואר שלך (כולל ספאם) "
+        "ולחץ על הקישור לאישור הכתובת. "
+        "לאחר אישור, חזור לכאן והתחבר."
+    )
+    col_resend, col_back = st.columns(2)
+    with col_resend:
+        if st.button("\U0001f4e8 שלח שוב",
+                     use_container_width=True, key="auth_resend_confirmation"):
+            try:
+                get_supabase().auth.resend({"type": "signup", "email": email})
+                st.success("מייל אישור נשלח שוב.")
+            except Exception as e:
+                st.error(f"שגיאה בשליחה חוזרת: {e}")
+    with col_back:
+        if st.button("⬅ חזרה להתחברות",
+                     use_container_width=True, key="auth_back_to_login"):
+            st.session_state.pop(_KEY_PENDING_CONFIRMATION, None)
+            st.rerun()
+
 
 def render_login_ui() -> None:
     """Render the login/signup screen. Caller should st.stop() afterwards."""
@@ -198,10 +253,9 @@ def render_login_ui() -> None:
         </style>""",
         unsafe_allow_html=True,
     )
-
     st.markdown(
         '<div style="text-align:center;padding:12px 0 4px">'
-        '<span style="font-size:3rem">🥗</span><br>'
+        '<span style="font-size:3rem">\U0001f957</span><br>'
         '<span style="font-size:1.8rem;font-weight:800;color:#f4f6fb">BiteFit</span><br>'
         '<span style="font-size:0.82rem;color:#8892a4">מעקב תזונה חכם</span>'
         '</div>',
@@ -209,19 +263,25 @@ def render_login_ui() -> None:
     )
     st.divider()
 
-    tab_in, tab_up = st.tabs(["🔑  התחברות", "✨  הרשמה"])
+    # Pending email-confirmation flow takes over the screen entirely so the
+    # user can't accidentally enter the app with an unconfirmed account.
+    pending_email = st.session_state.get(_KEY_PENDING_CONFIRMATION)
+    if pending_email:
+        _render_pending_confirmation_screen(pending_email)
+        return
+
+    tab_in, tab_up = st.tabs(["\U0001f511  התחברות",
+                              "✨  הרשמה"])
 
     with tab_in:
         with st.form("auth_login_form", clear_on_submit=False):
-            email = st.text_input(
-                "אימייל", placeholder="you@example.com", key="auth_login_email"
-            )
-            password = st.text_input(
-                "סיסמה", type="password", placeholder="••••••", key="auth_login_pw"
-            )
-            ok = st.form_submit_button(
-                "התחבר ➤", use_container_width=True, type="primary"
-            )
+            email = st.text_input("אימייל",
+                                  placeholder="you@example.com", key="auth_login_email")
+            password = st.text_input("סיסמה", type="password",
+                                     placeholder="••••••",
+                                     key="auth_login_pw")
+            ok = st.form_submit_button("התחבר ➛",
+                                       use_container_width=True, type="primary")
         if ok:
             if not email or not password:
                 st.error("נא למלא את שני השדות")
@@ -235,18 +295,14 @@ def render_login_ui() -> None:
 
     with tab_up:
         with st.form("auth_signup_form", clear_on_submit=False):
-            s_email = st.text_input(
-                "אימייל", placeholder="you@example.com", key="auth_signup_email"
-            )
-            s_pass = st.text_input(
-                "סיסמה (מינ׳ 6 תווים)", type="password", key="auth_signup_pw"
-            )
-            s_confirm = st.text_input(
-                "אשר סיסמה", type="password", key="auth_signup_pw_confirm"
-            )
-            ok2 = st.form_submit_button(
-                "הירשם ➤", use_container_width=True, type="primary"
-            )
+            s_email = st.text_input("אימייל",
+                                    placeholder="you@example.com", key="auth_signup_email")
+            s_pass = st.text_input("סיסמה (מין' 6 תווים)",
+                                   type="password", key="auth_signup_pw")
+            s_confirm = st.text_input("אשר סיסמה",
+                                      type="password", key="auth_signup_pw_confirm")
+            ok2 = st.form_submit_button("הירשם ➛",
+                                        use_container_width=True, type="primary")
         if ok2:
             if not s_email or not s_pass:
                 st.error("נא למלא את כל השדות")
@@ -260,5 +316,8 @@ def render_login_ui() -> None:
                 if err:
                     st.error(err)
                 else:
-                    st.success("נרשמת בהצלחה! 🎉")
-                    st.rerun()
+                    if st.session_state.get(_KEY_PENDING_CONFIRMATION):
+                        st.rerun()
+                    else:
+                        st.success("נרשמת בהצלחה! \U0001f389")
+                        st.rerun()
