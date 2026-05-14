@@ -31,7 +31,7 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
                         "storage", "nutrition.db")
 
 @st.cache_resource
-def _get_catalog(_v=3):
+def _get_catalog(_v=4):
     return FoodCatalog(db_path=_DB_PATH)
 
 @st.cache_resource
@@ -43,9 +43,9 @@ def _get_recipe_mgr():
     return RecipeManager()
 
 @st.cache_resource
-def _build_food_list(_v=3) -> str:
+def _build_food_list(_v=4) -> str:
     """Build food + recipe catalog string for the AI system prompt.
-    Kept short (names only, no gram data) to stay under Groq's 12k TPM limit.
+    Capped at ~2500 chars to stay well under Groq's 6000 TPM limit.
     """
     cat = FoodCatalog(db_path=_DB_PATH)
     foods = cat.search_foods("", limit=500)
@@ -55,7 +55,7 @@ def _build_food_list(_v=3) -> str:
     # Add recipe names so AI recognises complex dishes
     try:
         mgr = RecipeManager()
-        recipes = mgr.search_recipes(RecipeFilter(max_results=60))
+        recipes = mgr.search_recipes(RecipeFilter(max_results=30))
         for r in recipes:
             name_he = r.get("name_he", "")
             if name_he:
@@ -63,7 +63,11 @@ def _build_food_list(_v=3) -> str:
     except Exception:
         pass
 
-    return ", ".join(lines)
+    # Cap total length to avoid TPM limit (each Hebrew char ~1.5 tokens)
+    result = ", ".join(lines)
+    if len(result) > 2500:
+        result = result[:2500]
+    return result
 
 catalog       = _get_catalog()
 recipe_mgr    = _get_recipe_mgr()

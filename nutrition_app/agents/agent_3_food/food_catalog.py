@@ -231,10 +231,13 @@ class FoodCatalog:
             with open(ext_path, "r", encoding="utf-8") as f:
                 foods_data = json.load(f)
             for fd in foods_data:
-                food = FoodItem.from_dict(fd)
-                if food.food_id not in self._foods:
-                    self._foods[food.food_id] = food
-        except (json.JSONDecodeError, OSError, KeyError):
+                try:
+                    food = FoodItem.from_dict(fd)
+                    if food.food_id not in self._foods:
+                        self._foods[food.food_id] = food
+                except Exception:
+                    pass  # Skip individual bad entries without crashing
+        except (json.JSONDecodeError, OSError, KeyError, Exception):
             pass
 
     def _normalize(self, text: str) -> str:
