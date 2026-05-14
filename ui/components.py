@@ -626,13 +626,14 @@ def bottom_nav(active: str = "home") -> None:
         "workout": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M6 4v6m0 4v6M18 4v6m0 4v6M2 9h4m12 0h4M2 15h4m12 0h4"/></svg>',
         "history": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
         "profile": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+        "barcode": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 5v2M3 19v-2M3 10v4M7 5v14M11 5v14M15 5v2M15 19v-2M15 10v4M19 5v14M21 5h-2M21 19h-2M21 10h-2"/></svg>',
     }
     items = [
         ("home",    "/",                  "בית"),
         ("food",    "/daily_menu",        "תזונה"),
         ("chat",    "/chat_log",          "צאט"),
+        ("barcode", "/barcode",           "ברקוד"),
         ("workout", "/workout_tracker",   "אימון"),
-        ("history", "/history",           "היסטוריה"),
         ("profile", "/profile",           "פרופיל"),
     ]
     html = (
