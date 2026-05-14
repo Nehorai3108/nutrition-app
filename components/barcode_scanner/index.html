@@ -5,230 +5,236 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hidden; }
+html, body { width:100%; background:#0d0f14; font-family:sans-serif; direction:rtl; }
 
-#wrap {
-  position: relative;
-  width: 100%;
-  height: 290px;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
+/* hidden file input */
+#cam-input { display:none; }
+
+/* big tap-to-scan button */
+#scan-btn {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; padding:22px 16px;
+  background:linear-gradient(135deg,#2563eb,#4f8ef7);
+  border:none; border-radius:16px; cursor:pointer;
+  color:#fff; font-size:1.15rem; font-weight:700;
+  box-shadow:0 6px 24px rgba(79,142,247,0.4);
+  transition:opacity .15s;
+  -webkit-tap-highlight-color: transparent;
 }
+#scan-btn:active { opacity:.8; }
 
-/* video always visible — no overlay hiding it */
-#video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 12px;
+/* preview of photo taken */
+#preview-wrap {
+  display:none; position:relative;
+  width:100%; border-radius:14px; overflow:hidden;
+  background:#000; max-height:220px;
 }
+#preview { width:100%; max-height:220px; object-fit:contain; display:block; }
 
-/* scan corners */
-.corner {
-  position: absolute;
-  width: 24px; height: 24px;
-  border-color: #4f8ef7; border-style: solid;
-  z-index: 2; pointer-events:none;
+/* scanning spinner over preview */
+#scanning-overlay {
+  display:none;
+  position:absolute; inset:0; background:rgba(0,0,0,0.55);
+  align-items:center; justify-content:center; flex-direction:column; gap:8px;
+  color:#fff; font-size:13px;
 }
-.tl { top:20%; left:10%;  border-width:3px 0 0 3px; border-radius:5px 0 0 0; }
-.tr { top:20%; right:10%; border-width:3px 3px 0 0; border-radius:0 5px 0 0; }
-.bl { top:70%; left:10%;  border-width:0 0 3px 3px; border-radius:0 0 0 5px; }
-.br { top:70%; right:10%; border-width:0 3px 3px 0; border-radius:0 0 5px 0; }
-
-/* scan line */
-#line {
-  position: absolute;
-  left: 10%; width: 80%; height: 2px;
-  background: linear-gradient(90deg, transparent, #4f8ef7, transparent);
-  animation: sweep 2s ease-in-out infinite;
-  z-index: 2; pointer-events:none;
+.spin {
+  width:32px; height:32px;
+  border:3px solid rgba(255,255,255,0.2);
+  border-top-color:#4f8ef7;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
 }
-@keyframes sweep { 0%,100% { top:22%; } 50% { top:70%; } }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-#hint {
-  position: absolute; bottom:10px; left:0; right:0;
-  text-align:center; color:rgba(255,255,255,0.7); font-size:12px;
-  direction:rtl; z-index:2; pointer-events:none;
-}
-
-/* shown after barcode found */
+/* success */
 #ok {
-  display:none; position:absolute; inset:0;
-  background:rgba(20,50,35,0.95);
-  flex-direction:column; align-items:center; justify-content:center;
-  gap:8px; z-index:3; border-radius:12px;
+  display:none;
+  background:#122a1a; border:1px solid #2f855a;
+  border-radius:14px; padding:18px 16px;
+  text-align:center;
 }
-#ok.show { display:flex; }
-#ok-icon { font-size:2.6rem; }
-#ok-val  { font-size:1.1rem; font-weight:700; color:#68d391; direction:ltr; }
-#ok-lbl  { font-size:0.78rem; color:#a0aec0; direction:rtl; }
+#ok-icon { font-size:2rem; }
+#ok-val  { font-size:1.1rem; font-weight:700; color:#68d391; margin:4px 0; direction:ltr; }
+#ok-lbl  { font-size:0.78rem; color:#a0aec0; }
 
-/* status line under camera */
-#status {
-  padding:8px 12px; font-size:12px; direction:rtl;
-  color:#8892a4; text-align:center;
+/* error */
+#err {
+  display:none;
+  background:#2d1b1b; border:1px solid #744141;
+  border-radius:14px; padding:14px; text-align:center;
+  color:#fc8181; font-size:13px;
 }
+
+/* retry button */
+#retry-btn {
+  display:none; width:100%; padding:14px;
+  background:#2d3748; border:none; border-radius:12px;
+  color:#e2e8f0; font-size:0.95rem; cursor:pointer;
+}
+#retry-btn:active { opacity:.8; }
 </style>
 </head>
 <body>
 
-<div id="wrap">
-  <video id="video" autoplay muted playsinline></video>
-  <div class="corner tl"></div>
-  <div class="corner tr"></div>
-  <div class="corner bl"></div>
-  <div class="corner br"></div>
-  <div id="line"></div>
-  <div id="hint">כוון את הברקוד אל המסגרת</div>
+<!-- hidden file input — capture="environment" opens rear camera on mobile -->
+<input id="cam-input" type="file" accept="image/*" capture="environment">
+
+<div style="display:flex; flex-direction:column; gap:12px; padding:8px;">
+  <button id="scan-btn">
+    <span style="font-size:1.5rem">📷</span>
+    צלם ברקוד
+  </button>
+
+  <div id="preview-wrap">
+    <img id="preview" src="" alt="">
+    <div id="scanning-overlay">
+      <div class="spin"></div>
+      <span>מפענח…</span>
+    </div>
+  </div>
+
   <div id="ok">
     <div id="ok-icon">✅</div>
     <div id="ok-val"></div>
     <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
   </div>
+
+  <div id="err"></div>
+
+  <button id="retry-btn">🔄 נסה שוב</button>
 </div>
-<div id="status">מפעיל מצלמה…</div>
 
 <!-- Streamlit component lib -->
-<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"
-        onerror="onCdnError()"></script>
+<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
 
 <script>
-var _started = false;
-var _streamlitReady = false;
-
-function onCdnError() {
-  // CDN failed — load from jsDelivr as fallback
-  var s = document.createElement("script");
-  s.src = "https://cdn.jsdelivr.net/npm/streamlit-component-lib/dist/index.js";
-  s.onload  = function() { initStreamlit(); };
-  s.onerror = function() { startCamera(); }; // start anyway even without Streamlit
-  document.head.appendChild(s);
-}
-
-function initStreamlit() {
-  if (_streamlitReady) return;
-  _streamlitReady = true;
-  try {
-    Streamlit.setFrameHeight(320);
-    Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function() {
-      startCamera();
-    });
-    Streamlit.setComponentReady();
-  } catch(e) {
-    startCamera(); // fallback
+// ── Streamlit init ──────────────────────────────────────────────────────────
+function tryInitStreamlit() {
+  if (typeof Streamlit !== "undefined") {
+    try {
+      Streamlit.setFrameHeight(120);
+      Streamlit.setComponentReady();
+    } catch(e) {}
   }
 }
 
-// Start camera regardless after 1s — handles cases where render event is slow
-setTimeout(function() {
-  if (!_started) startCamera();
-}, 1000);
+window.addEventListener("load", function() {
+  tryInitStreamlit();
+  // Give Streamlit time to render, then set proper height
+  setTimeout(function() {
+    try { Streamlit.setFrameHeight(120); } catch(e) {}
+  }, 300);
+});
 
-function startCamera() {
-  if (_started) return;
-  _started = true;
-  setStatus("מחפש מצלמה…");
+// ── UI elements ─────────────────────────────────────────────────────────────
+var input    = document.getElementById("cam-input");
+var scanBtn  = document.getElementById("scan-btn");
+var prevWrap = document.getElementById("preview-wrap");
+var prevImg  = document.getElementById("preview");
+var overlay  = document.getElementById("scanning-overlay");
+var okDiv    = document.getElementById("ok");
+var errDiv   = document.getElementById("err");
+var retryBtn = document.getElementById("retry-btn");
 
-  navigator.mediaDevices.getUserMedia({
-    video: {
-      facingMode: { ideal: "environment" },
-      width:  { ideal: 1280 },
-      height: { ideal: 720 }
-    }
-  })
-  .then(function(stream) {
-    var v = document.getElementById("video");
-    v.srcObject = stream;
-    // iOS requires explicit play() call
-    var playPromise = v.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(function() { setStatus("סורק…"); loadZXing(v); })
-        .catch(function(e) { setStatus("❌ לא ניתן להפעיל וידאו: " + e.message); });
-    } else {
-      setStatus("סורק…");
-      loadZXing(v);
-    }
-  })
-  .catch(function(err) {
-    if (err.name === "NotAllowedError") {
-      setStatus("❌ אין הרשאת מצלמה — אשר גישה בדפדפן ורענן");
-    } else {
-      setStatus("❌ שגיאת מצלמה: " + err.message);
-    }
-  });
+// Tap button → trigger file input (opens native camera)
+scanBtn.addEventListener("click", function() { input.click(); });
+
+// Retry → reset UI
+retryBtn.addEventListener("click", reset);
+
+function reset() {
+  input.value = "";
+  prevWrap.style.display = "none";
+  overlay.style.display  = "none";
+  okDiv.style.display    = "none";
+  errDiv.style.display   = "none";
+  retryBtn.style.display = "none";
+  scanBtn.style.display  = "flex";
+  try { Streamlit.setFrameHeight(120); } catch(e) {}
 }
 
-function loadZXing(video) {
-  var s = document.createElement("script");
-  s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
-  s.onload = function() { startScanning(video); };
-  s.onerror = function() { setStatus("❌ שגיאת טעינת ZXing"); };
-  document.head.appendChild(s);
-}
+// ── When user picks photo ───────────────────────────────────────────────────
+input.addEventListener("change", function() {
+  var file = input.files[0];
+  if (!file) return;
 
-function startScanning(video) {
-  setStatus("סורק…");
+  // Show preview + spinner
+  var objectUrl = URL.createObjectURL(file);
+  prevImg.src = objectUrl;
+  prevWrap.style.display  = "block";
+  overlay.style.display   = "flex";
+  scanBtn.style.display   = "none";
+  try { Streamlit.setFrameHeight(320); } catch(e) {}
+
+  // Load ZXing if not already loaded
+  if (typeof ZXing === "undefined") {
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+    s.onload  = function() { decodeImage(objectUrl); };
+    s.onerror = function() { showErr("שגיאת טעינת ספריית סריקה"); };
+    document.head.appendChild(s);
+  } else {
+    decodeImage(objectUrl);
+  }
+});
+
+function decodeImage(url) {
   var hints = new Map();
   hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
     ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E,
+    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
+    ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.QR_CODE,
   ]);
   hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
 
-  var reader = new ZXing.BrowserMultiFormatReader(hints);
-  var lastScan = null;
-
-  (function tick() {
-    reader.decodeFromVideoElement(video)
-      .then(function(r) {
-        var bc = r.getText();
-        if (bc && bc !== lastScan) {
-          lastScan = bc;
-          showSuccess(bc);
-          sendValue(bc);
-        }
-        setTimeout(tick, 350);
+  var img = new Image();
+  img.onload = function() {
+    var reader = new ZXing.BrowserMultiFormatReader(hints);
+    reader.decodeFromImageElement(img)
+      .then(function(result) {
+        overlay.style.display = "none";
+        URL.revokeObjectURL(url);
+        var bc = result.getText();
+        showSuccess(bc);
+        sendToStreamlit(bc);
       })
-      .catch(function() { setTimeout(tick, 350); });
-  })();
+      .catch(function() {
+        overlay.style.display = "none";
+        URL.revokeObjectURL(url);
+        showErr("לא זוהה ברקוד — נסה שוב, ודא שהברקוד נראה ברור");
+      });
+  };
+  img.onerror = function() { showErr("שגיאה בטעינת התמונה"); };
+  img.src = url;
 }
 
 function showSuccess(bc) {
   document.getElementById("ok-val").textContent = bc;
-  document.getElementById("ok").classList.add("show");
-  document.getElementById("line").style.display = "none";
-  document.getElementById("hint").style.display = "none";
-  setStatus("✅ זוהה: " + bc);
+  okDiv.style.display    = "block";
+  prevWrap.style.display = "none";
+  retryBtn.style.display = "block";
+  try { Streamlit.setFrameHeight(160); } catch(e) {}
 }
 
-function sendValue(bc) {
+function showErr(msg) {
+  errDiv.textContent     = "❌ " + msg;
+  errDiv.style.display   = "block";
+  retryBtn.style.display = "block";
+  prevWrap.style.display = "none";
+  try { Streamlit.setFrameHeight(180); } catch(e) {}
+}
+
+function sendToStreamlit(bc) {
+  // Primary: component lib
   try { Streamlit.setComponentValue(bc); return; } catch(e) {}
-  // fallback — postMessage (works even without CDN in some Streamlit versions)
+  // Fallback: raw postMessage
   try {
     window.parent.postMessage(
-      { isStreamlitMessage: true, type: "streamlit:setComponentValue", value: bc },
-      "*"
+      { isStreamlitMessage:true, type:"streamlit:setComponentValue", value:bc }, "*"
     );
   } catch(e) {}
 }
-
-function setStatus(msg) {
-  var el = document.getElementById("status");
-  if (el) el.textContent = msg;
-}
-
-// Kick off Streamlit integration once the CDN script tag has run
-// (the onerror on the <script> tag handles CDN failure)
-window.addEventListener("load", function() {
-  if (typeof Streamlit !== "undefined") {
-    initStreamlit();
-  } else {
-    startCamera(); // CDN didn't load — start directly
-  }
-});
 </script>
 </body>
 </html>
