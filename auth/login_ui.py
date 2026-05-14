@@ -17,7 +17,14 @@ from __future__ import annotations
 
 import streamlit as st
 
-from auth.supabase_client import get_supabase, is_supabase_configured, get_current_user
+from auth.supabase_client import (
+    get_supabase,
+    is_supabase_configured,
+    get_current_user,
+    install_cookie_session,
+    write_session_cookies,
+    clear_session_cookies,
+)
 
 _KEY_USER_ID = "user_id"
 _KEY_USER_EMAIL = "user_email"
@@ -35,11 +42,18 @@ def require_auth() -> str:
 
     When Supabase is misconfigured: render error + st.stop().
     When no user is logged in: render login UI + st.stop().
+
+    Cookie session is hydrated first so that raw <a href> navigation (which
+    drops Streamlit's in-memory session_state) doesn't force a re-login.
     """
     if not is_supabase_configured():
         st.error("Server misconfigured: Supabase credentials missing.")
         st.caption("Please contact support.")
         st.stop()
+    # Restore JWT from browser cookie before deciding "logged in or not".
+    # If cookies are loaded async, this is a no-op the first run; the cookie
+    # component then triggers a Streamlit rerun and session_state hydrates.
+    install_cookie_session()
     user = get_current_user()
     if user is None:
         render_login_ui()
@@ -62,22 +76,25 @@ def get_user_email() -> str:
 # Internal session bookkeeping
 
 def _set_session(user, session=None) -> None:
-    """Write auth state to session_state after successful login/signup.
-    Persists the JWT so it can be re-attached to the Supabase client on
-    every rerun (otherwise RLS-protected writes get rejected)."""
+    """Write auth state to session_state AND browser cookie after successful
+    login/signup. Cookie persistence lets hard reloads (raw <a href>) keep
+    the user logged in; session_state lets reruns avoid re-decrypting."""
     st.session_state[_KEY_USER_ID] = user.id
     st.session_state[_KEY_USER_EMAIL] = user.email
+    access = refresh = ""
     if session is not None:
-        access = getattr(session, "access_token", None)
-        refresh = getattr(session, "refresh_token", None)
+        access = getattr(session, "access_token", None) or ""
+        refresh = getattr(session, "refresh_token", None) or ""
         if access:
             st.session_state[_KEY_ACCESS_TOKEN] = access
         if refresh:
             st.session_state[_KEY_REFRESH_TOKEN] = refresh
+    write_session_cookies(user.id, user.email or "", access, refresh)
 
 
 def _clear_session() -> None:
-    """Clear all auth + per-user session state. Called on logout."""
+    """Clear all auth + per-user session state AND browser cookies."""
+    clear_session_cookies()
     for k in (_KEY_USER_ID, _KEY_USER_EMAIL, _KEY_NEEDS_ONBOARDING,
               _KEY_ACCESS_TOKEN, _KEY_REFRESH_TOKEN, _KEY_PENDING_CONFIRMATION,
               "_sb_client"):
