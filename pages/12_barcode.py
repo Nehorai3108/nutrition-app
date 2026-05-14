@@ -7,7 +7,6 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-import streamlit.components.v1 as components
 from datetime import date, datetime
 
 from ui.components import inject_global_css, bottom_nav
@@ -15,6 +14,7 @@ from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.barcode_repository import BarcodeRepository, BarcodeEntry
+from nutrition_app.components.barcode_comp import barcode_scanner
 
 st.set_page_config(page_title="BiteFit · ברקוד", page_icon="📲",
                    layout="wide", initial_sidebar_state="collapsed")
@@ -23,13 +23,6 @@ setup_persistent_auth()
 USER_ID       = require_auth()
 food_log_repo = FoodLogRepository()
 barcode_repo  = BarcodeRepository()
-
-# ── Component path ────────────────────────────────────────────────────────────
-_COMPONENT_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "components", "barcode_scanner"
-)
-_barcode_scanner = components.declare_component("barcode_scanner", path=_COMPONENT_DIR)
 
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -200,7 +193,7 @@ tab_scan, tab_manual = st.tabs(["📷 סריקה", "⌨️ הזנה ידנית"]
 barcode_str: str | None = None
 
 with tab_scan:
-    scanned = _barcode_scanner(key="scanner")
+    scanned = barcode_scanner(key="scanner")
     if scanned:
         barcode_str = str(scanned)
 
