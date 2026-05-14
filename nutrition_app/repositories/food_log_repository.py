@@ -41,22 +41,16 @@ class FoodLogRepository:
     def __init__(self, base_dir: Optional[str] = None):
         # Local JSON fallback
         if base_dir is None:
-            self._base_dir = None
-            self._use_per_user_dirs = True
-        else:
-            self._base_dir = base_dir
-            self._use_per_user_dirs = False
-            os.makedirs(self._base_dir, exist_ok=True)
+            base_dir = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                "storage_agents", "food_log",
+            )
+        self._base_dir = base_dir
+        os.makedirs(self._base_dir, exist_ok=True)
 
     # ── Backend selector ──────────────────────────────────────────────────────
 
-    def _use_supabase(self, user_id: str = "") -> bool:
-        import re
-        if not re.match(
-            r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
-            (user_id or "").lower()
-        ):
-            return False
+    def _use_supabase(self) -> bool:
         try:
             from nutrition_app.db.supabase_client import is_supabase_configured
             return is_supabase_configured()
@@ -101,9 +95,6 @@ class FoodLogRepository:
     # ── Local JSON backend ────────────────────────────────────────────────────
 
     def _path(self, user_id: str) -> str:
-        if self._use_per_user_dirs:
-            from nutrition_app.storage_paths import user_food_log_file
-            return str(user_food_log_file(user_id))
         return os.path.join(self._base_dir, f"{user_id}.json")
 
     def _load(self, user_id: str) -> dict:
@@ -123,13 +114,13 @@ class FoodLogRepository:
     # ── Public API ────────────────────────────────────────────────────────────
 
     def get_log(self, user_id: str, day: date_cls) -> List[FoodLogEntry]:
-        if self._use_supabase(user_id):
+        if self._use_supabase():
             return self._sb_get_log(user_id, day)
         data = self._load(user_id)
         return [FoodLogEntry(**e) for e in data.get(day.isoformat(), [])]
 
     def add_entry(self, user_id: str, day: date_cls, entry: FoodLogEntry):
-        if self._use_supabase(user_id):
+        if self._use_supabase():
             self._sb_add_entry(user_id, day, entry)
             return
         data = self._load(user_id)
@@ -137,7 +128,7 @@ class FoodLogRepository:
         self._save(user_id, data)
 
     def remove_entry(self, user_id: str, day: date_cls, entry_id: str):
-        if self._use_supabase(user_id):
+        if self._use_supabase():
             self._sb_remove_entry(user_id, day, entry_id)
             return
         data = self._load(user_id)
@@ -171,5 +162,5 @@ def _row_to_entry(row: dict) -> FoodLogEntry:
         fat       = float(row.get("fat", 0)),
         meal_type = row.get("meal_type", "lunch"),
         timestamp = row.get("timestamp", ""),
-        entry_id  = row.get("entry_id", ""),
+        entry_id  = row.get("entry_id", str(uuid.uuid4())),
     )
