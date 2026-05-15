@@ -47,6 +47,11 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
   position:absolute; bottom:8px; left:0; right:0;
   text-align:center; color:rgba(255,255,255,.7); font-size:11px; direction:rtl;
 }
+#dbg {
+  position:absolute; top:4px; left:0; right:0;
+  text-align:center; color:#ffd700; font-size:10px; background:rgba(0,0,0,.5);
+  padding:2px; direction:ltr;
+}
 #success {
   display:none; position:absolute; top:0; left:0; right:0; height:260px;
   background:rgba(20,50,35,.95);
@@ -75,6 +80,7 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
     <div class="corner bl"></div><div class="corner br"></div>
     <div id="scan-line"></div>
     <div id="scan-hint">כוון את הברקוד אל המסגרת</div>
+    <div id="dbg">init...</div>
   </div>
   <div id="success">
     <div id="ok-icon">✅</div>
@@ -171,46 +177,77 @@ function loadZXing(video) {
   document.head.appendChild(s);
 }
 
+function dbg(msg) {
+  var el = document.getElementById("dbg");
+  if (el) el.textContent = msg;
+}
+
 function startScan(video) {
-  // Use canvas + MultiFormatReader.decode directly — avoids ZXing's
-  // internal interval loop that conflicts with our own tick.
   var canvas = document.createElement("canvas");
   var ctx    = canvas.getContext("2d");
+  var frames = 0;
 
-  var hints = new Map();
-  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-    ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E,
-  ]);
-  hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+  dbg("ZXing loading...");
 
-  var reader = new ZXing.MultiFormatReader();
-  reader.setHints(hints);
+  // Init reader
+  var reader;
+  try {
+    var hints = new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+      ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+      ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
+      ZXing.BarcodeFormat.UPC_E,
+    ]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+    reader = new ZXing.MultiFormatReader();
+    reader.setHints(hints);
+    dbg("ready - scanning...");
+  } catch(initErr) {
+    dbg("init error: " + initErr.message);
+    return;
+  }
 
   (function tick() {
-    // Wait until video has actual frame data
+    frames++;
+
     if (video.readyState < 2 || video.videoWidth === 0) {
+      dbg("waiting video rs=" + video.readyState + " w=" + video.videoWidth);
       setTimeout(tick, 300); return;
     }
 
     canvas.width  = video.videoWidth;
     canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     try {
-      var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    } catch(drawErr) {
+      dbg("draw error: " + drawErr.message);
+      setTimeout(tick, 400); return;
+    }
+
+    var imgData;
+    try {
+      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    } catch(pixErr) {
+      dbg("getImageData error: " + pixErr.message);
+      setTimeout(tick, 400); return;
+    }
+
+    try {
       var lum = new ZXing.RGBLuminanceSource(imgData.data, canvas.width, canvas.height);
       var bmp = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(lum));
       var result = reader.decode(bmp);
       var bc = result.getText();
       if (bc && bc !== _lastScan) {
         _lastScan = bc;
+        dbg("found: " + bc);
         showSuccess(bc);
         Streamlit.setComponentValue(bc);
+        return;
       }
     } catch(e) {
-      // NotFoundException is normal (no barcode in frame) — just continue
+      // NotFoundException is normal — show frame counter so user knows it's alive
+      if (frames % 8 === 0) dbg("scanning #" + frames + " " + canvas.width + "x" + canvas.height);
     }
 
     setTimeout(tick, 350);
