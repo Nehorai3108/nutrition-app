@@ -138,7 +138,23 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
 
 Streamlit.setFrameHeight(140);
 Streamlit.setComponentReady();
+
+// On every Streamlit rerender (including after a successful scan triggers a rerun),
+// reset the component back to the start screen so the user can scan again.
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function() {
+  if (_scanner) {
+    try { _scanner.stop().catch(function(){}); } catch(e2) {}
+    _scanner = null;
+  }
+  _lastScan = null;
+  document.getElementById("start-screen").style.display  = "flex";
+  document.getElementById("reader").style.display         = "none";
+  document.getElementById("scan-overlay").style.display   = "none";
+  document.getElementById("success").classList.remove("show");
+  document.getElementById("err-msg").style.display        = "none";
+  document.getElementById("start-btn").disabled           = false;
+  document.getElementById("start-btn").style.opacity      = "1";
+  document.getElementById("loading-msg").style.display    = "none";
   Streamlit.setFrameHeight(140);
 });
 
