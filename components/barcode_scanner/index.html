@@ -167,32 +167,53 @@ function loadZXing(video) {
   var s = document.createElement("script");
   s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
   s.onload  = function() { startScan(video); };
-  s.onerror = function() { showErr("שגיאת טעינת ספריית סריקה"); };
+  s.onerror = function() { showErr("שגיאת טעינת ZXing"); };
   document.head.appendChild(s);
 }
 
 function startScan(video) {
+  // Use canvas + MultiFormatReader.decode directly — avoids ZXing's
+  // internal interval loop that conflicts with our own tick.
+  var canvas = document.createElement("canvas");
+  var ctx    = canvas.getContext("2d");
+
   var hints = new Map();
   hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
     ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E,
+    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
+    ZXing.BarcodeFormat.UPC_E,
   ]);
   hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-  var reader = new ZXing.BrowserMultiFormatReader(hints);
+
+  var reader = new ZXing.MultiFormatReader();
+  reader.setHints(hints);
 
   (function tick() {
-    if (video.readyState < 2) { setTimeout(tick, 300); return; }
-    reader.decodeFromVideoElement(video)
-      .then(function(r) {
-        var bc = r.getText();
-        if (bc && bc !== _lastScan) {
-          _lastScan = bc;
-          showSuccess(bc);
-          Streamlit.setComponentValue(bc);
-        }
-        setTimeout(tick, 400);
-      })
-      .catch(function() { setTimeout(tick, 400); });
+    // Wait until video has actual frame data
+    if (video.readyState < 2 || video.videoWidth === 0) {
+      setTimeout(tick, 300); return;
+    }
+
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    try {
+      var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var lum = new ZXing.RGBLuminanceSource(imgData.data, canvas.width, canvas.height);
+      var bmp = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(lum));
+      var result = reader.decode(bmp);
+      var bc = result.getText();
+      if (bc && bc !== _lastScan) {
+        _lastScan = bc;
+        showSuccess(bc);
+        Streamlit.setComponentValue(bc);
+      }
+    } catch(e) {
+      // NotFoundException is normal (no barcode in frame) — just continue
+    }
+
+    setTimeout(tick, 350);
   })();
 }
 
