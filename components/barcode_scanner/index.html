@@ -163,10 +163,15 @@ var _lastScan = null;
 var _scanner  = null;
 
 function loadAndScan() {
-  // Show loading state in the start screen
   document.getElementById("start-btn").disabled = true;
   document.getElementById("start-btn").style.opacity = "0.6";
   document.getElementById("loading-msg").style.display = "block";
+
+  // If the library was already loaded in a previous scan, go straight to startScanner
+  if (typeof Html5Qrcode !== "undefined") {
+    startScanner();
+    return;
+  }
 
   var s = document.createElement("script");
   s.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
@@ -181,6 +186,8 @@ function loadAndScan() {
 function startScanner() {
   // Switch UI
   document.getElementById("start-screen").style.display = "none";
+  // Clear any leftover DOM from a previous scan session
+  document.getElementById("reader").innerHTML = "";
   document.getElementById("reader").style.display = "block";
   document.getElementById("scan-overlay").style.display = "block";
   Streamlit.setFrameHeight(280);
