@@ -161,11 +161,18 @@ class ProfileRepository:
 
     def load(self, user_id: str) -> dict:
         if self._use_supabase():
-            return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
+            try:
+                return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
+            except Exception:
+                # RLS / network error — fall back to local JSON silently
+                pass
         return self._local_load(user_id)
 
     def save(self, profile: dict) -> None:
         if self._use_supabase():
-            self._sb_save(profile)
-        else:
-            self._local_save(profile)
+            try:
+                self._sb_save(profile)
+                return
+            except Exception:
+                pass  # fall through to local save
+        self._local_save(profile)

@@ -97,7 +97,10 @@ class WaterRepository:
 
     def get_water_data(self, user_id: str) -> UserWaterData:
         if self._use_supabase(user_id):
-            raw = self._sb_load(user_id)
+            try:
+                raw = self._sb_load(user_id)
+            except Exception:
+                raw = self._load_file(user_id)
         else:
             raw = self._load_file(user_id)
 
@@ -112,9 +115,12 @@ class WaterRepository:
     def save_water_data(self, water_data: UserWaterData) -> None:
         data_dict = water_data.to_dict()
         if self._use_supabase(water_data.user_id):
-            self._sb_save(water_data.user_id, data_dict)
-        else:
-            self._save_file(water_data.user_id, data_dict)
+            try:
+                self._sb_save(water_data.user_id, data_dict)
+                return
+            except Exception:
+                pass
+        self._save_file(water_data.user_id, data_dict)
 
     def save_water_goal(self, user_id: str, daily_goal_ml: float) -> WaterGoal:
         water_data = self.get_water_data(user_id)

@@ -115,22 +115,31 @@ class FoodLogRepository:
 
     def get_log(self, user_id: str, day: date_cls) -> List[FoodLogEntry]:
         if self._use_supabase():
-            return self._sb_get_log(user_id, day)
+            try:
+                return self._sb_get_log(user_id, day)
+            except Exception:
+                pass
         data = self._load(user_id)
         return [FoodLogEntry(**e) for e in data.get(day.isoformat(), [])]
 
     def add_entry(self, user_id: str, day: date_cls, entry: FoodLogEntry):
         if self._use_supabase():
-            self._sb_add_entry(user_id, day, entry)
-            return
+            try:
+                self._sb_add_entry(user_id, day, entry)
+                return
+            except Exception:
+                pass
         data = self._load(user_id)
         data.setdefault(day.isoformat(), []).append(asdict(entry))
         self._save(user_id, data)
 
     def remove_entry(self, user_id: str, day: date_cls, entry_id: str):
         if self._use_supabase():
-            self._sb_remove_entry(user_id, day, entry_id)
-            return
+            try:
+                self._sb_remove_entry(user_id, day, entry_id)
+                return
+            except Exception:
+                pass
         data = self._load(user_id)
         iso  = day.isoformat()
         data[iso] = [e for e in data.get(iso, []) if e.get("entry_id") != entry_id]

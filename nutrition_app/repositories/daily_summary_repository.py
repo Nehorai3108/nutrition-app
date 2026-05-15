@@ -117,8 +117,11 @@ class DailySummaryRepository:
     def save(self, summary: DailySummary) -> None:
         """Save or overwrite the summary for the given date."""
         if self._use_supabase(summary.user_id):
-            self._sb_save(summary)
-            return
+            try:
+                self._sb_save(summary)
+                return
+            except Exception:
+                pass
         all_data = self._load_all(summary.user_id)
         all_data[summary.date] = summary.to_dict()
         self._save_all(summary.user_id, all_data)
@@ -127,14 +130,20 @@ class DailySummaryRepository:
         """Load summary for a specific date. Returns None if not found."""
         date_str = date_obj.isoformat() if hasattr(date_obj, "isoformat") else str(date_obj)
         if self._use_supabase(user_id):
-            return self._sb_get(user_id, date_str)
+            try:
+                return self._sb_get(user_id, date_str)
+            except Exception:
+                pass
         data = self._load_all(user_id).get(date_str)
         return DailySummary.from_dict(data) if data else None
 
     def get_for_period(self, user_id: str, start: date, end: date) -> List[DailySummary]:
         """Return all summaries between start and end (inclusive), newest first."""
         if self._use_supabase(user_id):
-            return self._sb_get_period(user_id, start, end)
+            try:
+                return self._sb_get_period(user_id, start, end)
+            except Exception:
+                pass
         all_data = self._load_all(user_id)
         results = []
         current = start

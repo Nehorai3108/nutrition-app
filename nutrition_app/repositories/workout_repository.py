@@ -88,7 +88,10 @@ class WorkoutRepository:
 
     def get_workout_data(self, user_id: str) -> UserWorkoutData:
         if self._use_supabase(user_id):
-            raw = self._sb_load(user_id)
+            try:
+                raw = self._sb_load(user_id)
+            except Exception:
+                raw = self._local_load(user_id)
         else:
             raw = self._local_load(user_id)
         if raw is None:
@@ -97,9 +100,12 @@ class WorkoutRepository:
 
     def _save(self, data: UserWorkoutData) -> None:
         if self._use_supabase(data.user_id):
-            self._sb_save(data.user_id, data.to_dict())
-        else:
-            self._local_save(data)
+            try:
+                self._sb_save(data.user_id, data.to_dict())
+                return
+            except Exception:
+                pass
+        self._local_save(data)
 
     def save_weekly_plan(self, user_id: str, plan: WeeklyWorkoutPlan) -> None:
         current = self.get_workout_data(user_id)
