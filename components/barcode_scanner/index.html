@@ -22,15 +22,36 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
 }
 #start-btn:active { opacity:.8; }
 #start-hint { color:#8892a4; font-size:12px; direction:rtl; text-align:center; }
+#loading-msg { color:#8892a4; font-size:13px; direction:rtl; text-align:center; display:none; }
 
-#scanner-screen { display:none; position:relative; width:100%; }
-#video {
-  width:100%; height:260px;
-  object-fit:cover; display:block; background:#111;
+/* html5-qrcode overrides */
+#reader {
+  display:none;
+  width:100%; border-radius:0; overflow:hidden;
+  background:#000;
 }
-#overlay {
-  position:absolute; top:0; left:0; right:0; height:260px;
-  pointer-events:none;
+#reader video {
+  width:100% !important;
+  height:260px !important;
+  object-fit:cover !important;
+  display:block !important;
+}
+/* hide html5-qrcode chrome: header, file upload, select-camera text */
+#reader__header_message,
+#reader__dashboard,
+#reader__filescan_input,
+#reader__dashboard_section_csr,
+#reader__dashboard_section_fsr,
+#reader__status_span { display:none !important; }
+/* scan region box */
+#reader__scan_region { position:relative; }
+/* make the guided overlay transparent so our overlay works */
+#reader__scan_region > img { display:none !important; }
+
+/* our overlay on top of the video */
+#scan-overlay {
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  pointer-events:none; display:none;
 }
 .corner { position:absolute; width:24px; height:24px; border-color:#4f8ef7; border-style:solid; }
 .tl{top:14px;left:14px;border-width:3px 0 0 3px;border-radius:5px 0 0 0;}
@@ -47,8 +68,9 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
   position:absolute; bottom:8px; left:0; right:0;
   text-align:center; color:rgba(255,255,255,.8); font-size:12px; direction:rtl;
 }
+
 #success {
-  display:none; position:absolute; top:0; left:0; right:0; height:260px;
+  display:none; width:100%; height:260px;
   background:rgba(20,50,35,.95);
   flex-direction:column; align-items:center; justify-content:center; gap:8px;
 }
@@ -62,25 +84,28 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
 <body>
 
 <div id="start-screen">
-  <button id="start-btn" onclick="openScanner()">
+  <button id="start-btn" onclick="loadAndScan()">
     <span style="font-size:1.4rem">📷</span> פתח מצלמה לסריקה
   </button>
   <div id="start-hint">לחץ פעם אחת — הסריקה תהיה אוטומטית</div>
+  <div id="loading-msg">⏳ טוען סורק…</div>
 </div>
 
-<div id="scanner-screen">
-  <video id="video" autoplay muted playsinline></video>
-  <div id="overlay">
+<!-- html5-qrcode target div -->
+<div style="position:relative;">
+  <div id="reader"></div>
+  <div id="scan-overlay">
     <div class="corner tl"></div><div class="corner tr"></div>
     <div class="corner bl"></div><div class="corner br"></div>
     <div id="scan-line"></div>
     <div id="scan-hint">כוון את הברקוד אל המסגרת</div>
   </div>
-  <div id="success">
-    <div id="ok-icon">✅</div>
-    <div id="ok-val"></div>
-    <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
-  </div>
+</div>
+
+<div id="success">
+  <div id="ok-icon">✅</div>
+  <div id="ok-val"></div>
+  <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
 </div>
 <div id="err-msg"></div>
 
@@ -117,165 +142,109 @@ Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function() {
   Streamlit.setFrameHeight(140);
 });
 
-// ── State ─────────────────────────────────────────────────────────────────
-var _lastScan  = null;
-var _scanning  = false;
-var _stream    = null;
-var _codeReader = null;
+// ── Scanner ───────────────────────────────────────────────────────────────
+var _lastScan = null;
+var _scanner  = null;
 
-// ── Entry point ───────────────────────────────────────────────────────────
-function openScanner() {
-  document.getElementById("start-screen").style.display = "none";
-  document.getElementById("scanner-screen").style.display = "block";
-  Streamlit.setFrameHeight(280);
+function loadAndScan() {
+  // Show loading state in the start screen
+  document.getElementById("start-btn").disabled = true;
+  document.getElementById("start-btn").style.opacity = "0.6";
+  document.getElementById("loading-msg").style.display = "block";
 
-  if ("BarcodeDetector" in window) {
-    openCameraAndDetectNative();
-  } else {
-    loadZXingAndScan();
-  }
-}
-
-// ── Strategy A: Native BarcodeDetector API ────────────────────────────────
-// Works in Chrome Android (83+), Samsung Internet, Safari iOS 17.4+
-// Reads directly from the video element — no canvas, no security issues
-function openCameraAndDetectNative() {
-  navigator.mediaDevices.getUserMedia({
-    video: {
-      facingMode: { ideal: "environment" },
-      width:  { ideal: 1280 },
-      height: { ideal: 720 }
-    }
-  }).then(function(stream) {
-    _stream  = stream;
-    _scanning = true;
-    var video = document.getElementById("video");
-    video.srcObject = stream;
-    video.play();
-
-    // Wait for first frame before scanning
-    video.addEventListener("loadeddata", function() {
-      var detector;
-      try {
-        detector = new BarcodeDetector({
-          formats: ["ean_13", "ean_8", "code_128", "upc_a", "upc_e", "code_39", "qr_code"]
-        });
-      } catch(e) {
-        // BarcodeDetector constructor failed — fall back to ZXing
-        stopCamera();
-        loadZXingAndScan();
-        return;
-      }
-
-      function tick() {
-        if (!_scanning) return;
-        detector.detect(video).then(function(barcodes) {
-          if (barcodes.length > 0) {
-            var bc = barcodes[0].rawValue;
-            if (bc && bc !== _lastScan) {
-              _lastScan = bc;
-              _scanning  = false;
-              stopCamera();
-              showSuccess(bc);
-              Streamlit.setComponentValue(bc);
-            } else {
-              setTimeout(tick, 80);
-            }
-          } else {
-            setTimeout(tick, 80);
-          }
-        }).catch(function() {
-          setTimeout(tick, 200);
-        });
-      }
-
-      setTimeout(tick, 200); // short stabilization delay
-    }, { once: true });
-
-  }).catch(function(e) {
-    showErr(e.name === "NotAllowedError"
-      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות"
-      : "❌ " + e.message);
-    resetToStart();
-  });
-}
-
-// ── Strategy B: ZXing (fallback for older browsers) ───────────────────────
-function loadZXingAndScan() {
   var s = document.createElement("script");
-  s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.18.6/umd/index.min.js";
-  s.onload  = startZXing;
-  s.onerror = function() { showErr("שגיאת טעינת ZXing"); };
+  s.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
+  s.onload  = startScanner;
+  s.onerror = function() {
+    showErr("❌ שגיאת טעינת הסורק");
+    resetToStart();
+  };
   document.head.appendChild(s);
 }
 
-function startZXing() {
-  var hints = new Map();
-  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-    ZXing.BarcodeFormat.EAN_13,
-    ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128,
-    ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E,
-  ]);
-  hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+function startScanner() {
+  // Switch UI
+  document.getElementById("start-screen").style.display = "none";
+  document.getElementById("reader").style.display = "block";
+  document.getElementById("scan-overlay").style.display = "block";
+  Streamlit.setFrameHeight(280);
 
-  _codeReader = new ZXing.BrowserMultiFormatReader(hints, 300);
+  // EAN / barcode formats
+  var formats = [
+    Html5QrcodeSupportedFormats.EAN_13,
+    Html5QrcodeSupportedFormats.EAN_8,
+    Html5QrcodeSupportedFormats.CODE_128,
+    Html5QrcodeSupportedFormats.UPC_A,
+    Html5QrcodeSupportedFormats.UPC_E,
+    Html5QrcodeSupportedFormats.CODE_39,
+  ];
 
-  _codeReader.decodeFromConstraints(
+  try {
+    _scanner = new Html5Qrcode("reader", {
+      formatsToSupport: formats,
+      verbose: false
+    });
+  } catch(e) {
+    showErr("❌ " + (e.message || "שגיאת אתחול"));
+    resetToStart();
+    return;
+  }
+
+  _scanner.start(
+    { facingMode: { ideal: "environment" } },
     {
-      video: {
-        facingMode: { ideal: "environment" },
-        width:  { ideal: 1280 },
-        height: { ideal: 720 }
+      fps: 10,
+      // qrbox covers most of the frame so barcodes don't need to be perfectly centered
+      qrbox: function(w, h) {
+        return { width: Math.round(w * 0.85), height: Math.round(h * 0.55) };
+      },
+      aspectRatio: 16 / 9,
+      disableFlip: false
+    },
+    function onSuccess(text) {
+      if (text && text !== _lastScan) {
+        _lastScan = text;
+        _scanner.stop().catch(function(){});
+        showSuccess(text);
+        Streamlit.setComponentValue(text);
       }
     },
-    document.getElementById("video"),
-    function(result, err) {
-      if (result) {
-        var bc = result.getText();
-        if (bc && bc !== _lastScan) {
-          _lastScan = bc;
-          if (_codeReader) { _codeReader.reset(); _codeReader = null; }
-          showSuccess(bc);
-          Streamlit.setComponentValue(bc);
-        }
-      }
-      // NotFoundException fires on most frames — normal, ignore
+    function onScanError() {
+      // NotFoundException fires every frame without a barcode — normal, ignore
     }
-  ).catch(function(e) {
-    showErr(e.name === "NotAllowedError"
-      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות"
-      : "❌ " + e.message);
+  ).catch(function(err) {
+    var msg = (typeof err === "string") ? err : (err && err.message) ? err.message : "שגיאת מצלמה";
+    if (msg.indexOf("NotAllowed") !== -1 || msg.indexOf("Permission") !== -1) {
+      msg = "❌ אין הרשאת מצלמה — אשר גישה בהגדרות";
+    } else {
+      msg = "❌ " + msg;
+    }
+    showErr(msg);
     resetToStart();
   });
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────
-function stopCamera() {
-  if (_stream) {
-    _stream.getTracks().forEach(function(t) { t.stop(); });
-    _stream = null;
-  }
-}
-
 function resetToStart() {
-  stopCamera();
-  document.getElementById("scanner-screen").style.display = "none";
-  document.getElementById("start-screen").style.display  = "flex";
+  document.getElementById("reader").style.display = "none";
+  document.getElementById("scan-overlay").style.display = "none";
+  document.getElementById("start-screen").style.display = "flex";
+  document.getElementById("start-btn").disabled = false;
+  document.getElementById("start-btn").style.opacity = "1";
+  document.getElementById("loading-msg").style.display = "none";
   Streamlit.setFrameHeight(170);
 }
 
 function showSuccess(bc) {
+  document.getElementById("reader").style.display = "none";
+  document.getElementById("scan-overlay").style.display = "none";
   document.getElementById("ok-val").textContent = bc;
   document.getElementById("success").classList.add("show");
-  document.getElementById("scan-line").style.display = "none";
-  document.getElementById("scan-hint").style.display = "none";
 }
 
 function showErr(msg) {
-  var e = document.getElementById("err-msg");
-  e.textContent = msg; e.style.display = "block";
+  var el = document.getElementById("err-msg");
+  el.textContent = msg;
+  el.style.display = "block";
 }
 </script>
 </body>
