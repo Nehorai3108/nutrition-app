@@ -51,10 +51,9 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
 #ok-val  { font-size:1.1rem; font-weight:700; color:#68d391; direction:ltr; }
 #ok-lbl  { font-size:.75rem; color:#a0aec0; direction:rtl; }
 #err-msg {
-  padding:10px 14px; color:#fc8181; font-size:13px;
-  direction:rtl; text-align:center; display:none;
-  background:#2d1b1b; border-radius:8px; margin:8px;
-  white-space: pre-wrap;
+  padding:10px 14px; color:#fc8181; font-size:13px; direction:rtl;
+  text-align:center; display:none; background:#2d1b1b;
+  border-radius:8px; margin:8px; white-space:pre-wrap;
 }
 </style>
 </head>
@@ -101,110 +100,86 @@ Streamlit.setFrameHeight(140);
 Streamlit.setComponentReady();
 
 // ── State ─────────────────────────────────────────────────────────────────
-var _scannerActive = false;
-var _lastScan      = null;
-var _zxingReader   = null;
-var _bdTimer       = null;
-var _stream        = null;
+var _active  = false;   // true = camera is open right now
+var _last    = null;    // last accepted barcode (avoids duplicates)
+var _stream  = null;    // MediaStream
+var _timer   = null;    // setTimeout id for detection tick
+var _zxing   = null;    // ZXing BrowserMultiFormatReader
 
-// RENDER_EVENT: reset only when scanner is idle
+// ── RENDER_EVENT ──────────────────────────────────────────────────────────
+// Streamlit sends this on every rerun. Reset UI only when camera is idle.
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function() {
-  if (_scannerActive) { Streamlit.setFrameHeight(280); return; }
-  _lastScan = null;
-  document.getElementById("start-screen").style.display   = "flex";
-  document.getElementById("scanner-screen").style.display = "none";
+  if (_active) { Streamlit.setFrameHeight(280); return; }
+  _last = null;
+  _show("start-screen");
+  _hide("scanner-screen");
   document.getElementById("success").classList.remove("show");
-  document.getElementById("start-btn").disabled      = false;
-  document.getElementById("start-btn").style.opacity = "1";
+  document.getElementById("err-msg").style.display = "none";
+  var btn = document.getElementById("start-btn");
+  btn.disabled = false; btn.style.opacity = "1";
   Streamlit.setFrameHeight(140);
 });
 
-// ── Entry point ───────────────────────────────────────────────────────────
+// ── Open scanner ──────────────────────────────────────────────────────────
 function openScanner() {
-  if (_scannerActive) return;
-  document.getElementById("start-btn").disabled      = true;
-  document.getElementById("start-btn").style.opacity = "0.6";
-  document.getElementById("err-msg").style.display   = "none";
+  if (_active) return;
+  _setBtn(true);
+  _hide("err-msg");
 
-  // Load ZXing first (needed for both strategies)
-  if (typeof ZXing !== "undefined") {
-    chooseStrategy();
-  } else {
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
-    s.onload  = chooseStrategy;
-    s.onerror = function() { showErr("❌ שגיאת טעינה. בדוק חיבור אינטרנט."); resetBtn(); };
-    document.head.appendChild(s);
-  }
-}
-
-// ── Choose detection strategy ─────────────────────────────────────────────
-function chooseStrategy() {
+  // Two strategies depending on browser support:
+  // A) BarcodeDetector (native — iOS 17.4+, Chrome Android)
+  // B) ZXing decodeFromConstraints (all others)
   if ("BarcodeDetector" in window) {
-    // Check which formats the native detector supports
-    BarcodeDetector.getSupportedFormats().then(function(supported) {
-      var want = ["ean_13","ean_8","code_128","upc_a","upc_e"];
-      var have = want.filter(function(f){ return supported.indexOf(f) >= 0; });
-      if (have.length > 0) {
-        startWithNative(have);
-      } else {
-        startWithZXing(); // native exists but only supports QR — use ZXing
-      }
-    }).catch(function(){ startWithZXing(); });
+    _openCamera(function(stream) {
+      _stream = stream; _active = true;
+      _showScanner();
+      _runNative(stream);
+    });
   } else {
-    startWithZXing();
+    _loadZXing(function() {
+      _active = true;
+      _showScanner();
+      _runZXing();
+    });
   }
 }
 
-// ── Strategy A: BarcodeDetector + own getUserMedia ────────────────────────
-function startWithNative(formats) {
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode:{ideal:"environment"}, width:{ideal:1280}, height:{ideal:720} }
-  }).then(function(stream) {
-    _stream        = stream;
-    _scannerActive = true;
-    showScannerScreen();
+// ── Strategy A: native BarcodeDetector ───────────────────────────────────
+function _runNative(stream) {
+  var video = document.getElementById("video");
+  video.srcObject = stream;
+  video.play();
 
-    var video = document.getElementById("video");
-    video.srcObject = stream;
-    video.play();
+  var detector, cand = null, hits = 0;
+  try {
+    detector = new BarcodeDetector({
+      formats: ["ean_13","ean_8","code_128","upc_a","upc_e","code_39"]
+    });
+  } catch(e) {
+    // BarcodeDetector constructor failed → fall through to ZXing
+    _stopCamera();
+    _loadZXing(function() { _active = true; _runZXing(); });
+    return;
+  }
 
-    var detector = new BarcodeDetector({ formats: formats });
-    var _candidate = null, _candidateHits = 0;
-
-    function tick() {
-      if (!_scannerActive) return;
-      if (video.readyState < 2) { _bdTimer = setTimeout(tick, 100); return; }
-      detector.detect(video).then(function(codes) {
-        if (codes.length > 0) {
-          // Prefer longest barcode (EAN-13 > UPC-A > EAN-8)
-          codes.sort(function(a,b){ return b.rawValue.length - a.rawValue.length; });
-          var bc = codes[0].rawValue;
-          // Require 2 consecutive detections of the same code (avoids false positives)
-          if (bc === _candidate) {
-            _candidateHits++;
-            if (_candidateHits >= 2) { onDetected(bc); return; }
-          } else {
-            _candidate = bc; _candidateHits = 1;
-          }
-        }
-        _bdTimer = setTimeout(tick, 80);
-      }).catch(function(){ _bdTimer = setTimeout(tick, 200); });
-    }
-    _bdTimer = setTimeout(tick, 400);
-
-  }).catch(function(e) {
-    // Native camera failed → fall back to ZXing which opens its own camera
-    startWithZXing();
-  });
+  function tick() {
+    if (!_active) return;
+    if (video.readyState < 2) { _timer = setTimeout(tick, 100); return; }
+    detector.detect(video).then(function(codes) {
+      if (!codes.length) { _timer = setTimeout(tick, 80); return; }
+      // Prefer longer barcodes (EAN-13 beats EAN-8)
+      codes.sort(function(a,b){ return b.rawValue.length - a.rawValue.length; });
+      var bc = codes[0].rawValue;
+      if (bc === cand) { if (++hits >= 2) { _accept(bc); return; } }
+      else             { cand = bc; hits = 1; }
+      _timer = setTimeout(tick, 80);
+    }).catch(function(){ _timer = setTimeout(tick, 200); });
+  }
+  _timer = setTimeout(tick, 400);
 }
 
 // ── Strategy B: ZXing decodeFromConstraints ───────────────────────────────
-// ZXing manages the camera internally — proven to open rear camera
-function startWithZXing() {
-  _scannerActive = true;
-  showScannerScreen();
-
+function _runZXing() {
   var hints = new Map();
   hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
     ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
@@ -212,37 +187,32 @@ function startWithZXing() {
     ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.CODE_39,
   ]);
   hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+  _zxing = new ZXing.BrowserMultiFormatReader(hints, 300);
 
-  _zxingReader = new ZXing.BrowserMultiFormatReader(hints, 300);
-
-  _zxingReader.decodeFromConstraints(
+  _zxing.decodeFromConstraints(
     { video: { facingMode:{ideal:"environment"}, width:{ideal:1280}, height:{ideal:720} } },
     document.getElementById("video"),
-    function(result, err) {
-      if (!_scannerActive) return;
-      if (result) {
-        var bc = result.getText();
-        if (bc && bc !== _lastScan) { onDetected(bc); }
-      }
+    function(result) {
+      if (!_active || !result) return;
+      var bc = result.getText();
+      if (bc && bc !== _last) _accept(bc);
     }
   ).catch(function(e) {
-    _scannerActive = false;
-    var msg = (e && e.name === "NotAllowedError")
-      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות הדפדפן"
-      : "❌ " + (e && e.message ? e.message : String(e));
-    showErr(msg);
-    resetBtn();
-    document.getElementById("scanner-screen").style.display = "none";
-    document.getElementById("start-screen").style.display   = "flex";
+    _active = false;
+    _setBtn(false);
+    _show("start-screen"); _hide("scanner-screen");
     Streamlit.setFrameHeight(170);
+    _showErr((e && e.name === "NotAllowedError")
+      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות הדפדפן"
+      : "❌ " + (e && e.message ? e.message : String(e)));
   });
 }
 
-// ── Success ───────────────────────────────────────────────────────────────
-function onDetected(bc) {
-  if (!bc || bc === _lastScan) return;
-  _lastScan = bc;
-  stopScan();
+// ── Accept detected barcode ───────────────────────────────────────────────
+function _accept(bc) {
+  if (!bc || bc === _last) return;
+  _last = bc;
+  _stop();
   document.getElementById("ok-val").textContent = bc;
   document.getElementById("success").classList.add("show");
   document.getElementById("scan-line").style.display = "none";
@@ -250,28 +220,48 @@ function onDetected(bc) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────
-function showScannerScreen() {
-  document.getElementById("start-screen").style.display   = "none";
-  document.getElementById("scanner-screen").style.display = "block";
+function _openCamera(cb) {
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode:{ideal:"environment"}, width:{ideal:1280}, height:{ideal:720} }
+  }).then(cb).catch(function(e) {
+    _setBtn(false);
+    _showErr((e && e.name === "NotAllowedError")
+      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות הדפדפן"
+      : "❌ " + (e && e.message ? e.name : "שגיאת מצלמה"));
+  });
+}
+
+function _loadZXing(cb) {
+  if (typeof ZXing !== "undefined") { cb(); return; }
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+  s.onload  = cb;
+  s.onerror = function() { _setBtn(false); _showErr("❌ שגיאת טעינה — בדוק חיבור אינטרנט"); };
+  document.head.appendChild(s);
+}
+
+function _stop() {
+  _active = false;
+  if (_timer) { clearTimeout(_timer); _timer = null; }
+  if (_zxing)  { try { _zxing.reset(); } catch(e){} _zxing = null; }
+  _stopCamera();
+}
+function _stopCamera() {
+  if (_stream) { _stream.getTracks().forEach(function(t){ t.stop(); }); _stream = null; }
+  var v = document.getElementById("video"); if (v) v.srcObject = null;
+}
+function _showScanner() {
+  _hide("start-screen"); _show("scanner-screen");
   Streamlit.setFrameHeight(280);
 }
-
-function stopScan() {
-  _scannerActive = false;
-  if (_bdTimer) { clearTimeout(_bdTimer); _bdTimer = null; }
-  if (_zxingReader) { try { _zxingReader.reset(); } catch(e){} _zxingReader = null; }
-  if (_stream) { _stream.getTracks().forEach(function(t){ t.stop(); }); _stream = null; }
+function _show(id){ document.getElementById(id).style.display = (id==="start-screen")?"flex":"block"; }
+function _hide(id){ document.getElementById(id).style.display = "none"; }
+function _setBtn(disabled) {
+  var b = document.getElementById("start-btn");
+  b.disabled = disabled; b.style.opacity = disabled ? "0.6" : "1";
 }
-
-function resetBtn() {
-  document.getElementById("start-btn").disabled      = false;
-  document.getElementById("start-btn").style.opacity = "1";
-}
-
-function showErr(msg) {
-  var el = document.getElementById("err-msg");
-  el.textContent = msg;
-  el.style.display = "block";
+function _showErr(msg) {
+  var el = document.getElementById("err-msg"); el.textContent = msg; el.style.display = "block";
 }
 </script>
 </body>
