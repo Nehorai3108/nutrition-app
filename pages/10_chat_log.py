@@ -12,7 +12,8 @@ import streamlit as st
 from groq import Groq
 
 from ui.components import inject_global_css, bottom_nav
-from auth.login_ui import require_auth, logout_button
+from ui.persistent_auth import setup_persistent_auth
+from ui.user_auth import require_auth, logout_button
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
@@ -30,31 +31,39 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
                         "storage", "nutrition.db")
 
 @st.cache_resource
-def _get_catalog():
+def _get_catalog(_v=4):
     return FoodCatalog(db_path=_DB_PATH)
 
 @st.cache_resource
 def _get_groq():
-    return Groq(api_key=st.secrets["groq_api_key"])
+    import os
+    api_key = (
+        os.environ.get("GROQ_API_KEY")
+        or os.environ.get("groq_api_key")
+        or st.secrets.get("groq_api_key", "")
+    )
+    if not api_key:
+        return None
+    return Groq(api_key=api_key)
 
 @st.cache_resource
 def _get_recipe_mgr():
     return RecipeManager()
 
 @st.cache_resource
-def _build_food_list() -> str:
+def _build_food_list(_v=4) -> str:
     """Build food + recipe catalog string for the AI system prompt.
-    Kept short (names only, no gram data) to stay under Groq's 12k TPM limit.
+    Capped at ~2500 chars to stay well under Groq's 6000 TPM limit.
     """
     cat = FoodCatalog(db_path=_DB_PATH)
-    foods = cat.search_foods("", limit=250)
+    foods = cat.search_foods("", limit=500)
     # Names only — serving-size data lives in the system prompt guide
     lines = [f.name_he for f in foods if f.name_he]
 
     # Add recipe names so AI recognises complex dishes
     try:
         mgr = RecipeManager()
-        recipes = mgr.search_recipes(RecipeFilter(max_results=60))
+        recipes = mgr.search_recipes(RecipeFilter(max_results=30))
         for r in recipes:
             name_he = r.get("name_he", "")
             if name_he:
@@ -62,7 +71,11 @@ def _build_food_list() -> str:
     except Exception:
         pass
 
-    return ", ".join(lines)
+    # Cap total length to avoid TPM limit (each Hebrew char ~1.5 tokens)
+    result = ", ".join(lines)
+    if len(result) > 2500:
+        result = result[:2500]
+    return result
 
 catalog       = _get_catalog()
 recipe_mgr    = _get_recipe_mgr()
@@ -70,6 +83,11 @@ groq_client   = _get_groq()
 food_log_repo = FoodLogRepository()
 USER_ID       = require_auth()
 FOOD_LIST     = _build_food_list()
+
+if groq_client is None:
+    st.error("⚠️ מפתח Groq API חסר. הוסף `GROQ_API_KEY=...` לקובץ `.env` והפעל מחדש.")
+    st.info("קבל מפתח חינמי בכתובת: https://console.groq.com")
+    st.stop()
 
 MEAL_HEB = {
     "breakfast":       "🌅 ארוחת בוקר",
@@ -87,13 +105,13 @@ def _build_system_prompt(food_list: str) -> str:
 FOODS IN DATABASE (use exact names in JSON):
 {food_list}
 
-PORTION DEFAULTS: ביצה=55g, שניצל/קציצה=130g, חזה עוף=150g, ירך=120g, פרוסת לחם=30g, פיתה=60g, כוס אורז/פסטה=180g, גביע יוגורט=125g, כף שמן/טחינה=15g, תפוח=150g, בננה=120g, פחית=330g
+PORTION DEFAULTS: ביצה=55g, שניצל/קציצה=130g, חזה עוף=150g, ירך=120g, פרוסת לחם=30g, פיתה=60g, כוס אורז/פסטה=180g, גביע יוגורט=125g, כף שמן/טחינה=15g, תפוח=150g, בננה=120g, פחית שתייה/קולה=330g, טונה (השתמש ב-unit=קופסה → 100g), סרדינים (unit=קופסה → 100g), קוביית שוקולד=10g, חטיף=30g, עגבנייה=100g, מלפפון=80g, גזר=80g, לימון=50g
 
 WHEN FOOD IS LOGGED — return ONLY this JSON block:
 ```json
 {{
   "meal_type": "breakfast|morning_snack|lunch|afternoon_snack|dinner|evening_snack",
-  "foods": [{{"name": "שם מהמאגר", "quantity": 1, "unit": "יחידה|גרם|פרוסה|כוס|כף|כפית|גביע"}}],
+  "foods": [{{"name": "שם מהמאגר", "quantity": 1, "unit": "יחידה|גרם|פרוסה|כוס|כף|כפית|גביע|קופסה"}}],
   "reply": "תגובה קצרה בעברית"
 }}
 ```
@@ -205,6 +223,7 @@ UNIT_TO_GRAMS = {
     "קציצה": 80, "קציצות": 80,
     "עוגייה": 15, "עוגיות": 15,
     "פחית": 330, "פחיות": 330,
+    "קופסה": 100, "קופסת": 100,  # קופסת טונה/סרדינים = 100g
     "בקבוק": 500,
     "גביע": 125, "גביעים": 125,
     "לחמנייה": 50,

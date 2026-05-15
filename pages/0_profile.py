@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
 from ui.components import inject_global_css, page_header, section_header
-from auth.login_ui import require_auth, logout_button
+from ui.persistent_auth import setup_persistent_auth
+from ui.user_auth import require_auth, logout_button
 from nutrition_app.models.enums import Gender, ActivityLevel, Goal
 from nutrition_app.agents.agent_2_nutrition import NutritionEngine
 from nutrition_app.models.user import UserProfile
@@ -23,6 +24,7 @@ with st.sidebar:
     st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
+setup_persistent_auth()
 USER_ID = require_auth()
 repo    = ProfileRepository()
 profile = repo.load(USER_ID)
@@ -98,13 +100,13 @@ with tab_personal:
     with col2:
         c_h, c_w = st.columns(2)
         with c_h:
-            _h = float(profile.get("height_cm") or 0) or 170.0
+            _h = float(profile.get("height_cm") or 0)
             new_height = st.number_input("גובה (ס״מ)", 130.0, 220.0,
-                                         value=max(130.0, min(220.0, _h)), step=0.5)
+                                         value=max(130.0, min(220.0, _h if _h >= 130 else 178.0)), step=0.5)
         with c_w:
-            _w = float(profile.get("weight_kg") or 0) or 70.0
+            _w = float(profile.get("weight_kg") or 0)
             new_weight = st.number_input("משקל נוכחי (ק״ג)", 35.0, 200.0,
-                                         value=max(35.0, min(200.0, _w)), step=0.1)
+                                         value=max(35.0, min(200.0, _w if _w >= 35 else 82.0)), step=0.1)
 
         activity_opts = list(ACTIVITY_LABELS.keys())
         cur_act_val = profile.get("activity_level", "moderately_active")
@@ -285,9 +287,7 @@ with tab_personal:
     # ── Save ─────────────────────────────────────────────────────────────────
     st.divider()
     if st.button("💾 שמור פרטים אישיים", type="primary", use_container_width=True):
-        _was_onboarding = bool(st.session_state.get("_needs_onboarding")) or not profile.get("name")
         profile.update({
-            "user_id":          USER_ID,
             "name":             new_name,
             "gender":           new_gender.value,
             "date_of_birth":    new_dob.isoformat(),
@@ -302,14 +302,8 @@ with tab_personal:
             "notes":            profile.get("notes") or None,
         })
         repo.save(profile)
-        if _was_onboarding and new_name:
-            # First-time setup complete — send the user to the dashboard.
-            st.session_state.pop("_needs_onboarding", None)
-            st.success("🎉 הפרופיל מוכן! מעבירים אותך לעמוד הראשי…")
-            st.switch_page("app_user.py")
-        else:
-            st.success("✅ פרטים אישיים נשמרו!")
-            st.rerun()
+        st.success("✅ פרטים אישיים נשמרו!")
+        st.rerun()
 
 # ── Tab 2: Meal preferences ───────────────────────────────────────────────────
 with tab_prefs:
@@ -340,27 +334,69 @@ with tab_prefs:
             new_allergies = new_allergies + [custom_allergy]
 
     with col2:
-        st.markdown("**מזונות מועדפים:**")
-        preferred_raw = "\n".join(prefs.get("preferred_foods", []))
-        new_preferred_raw = st.text_area("מזון אחד בכל שורה", value=preferred_raw,
-                                          height=120, key="preferred_foods_input")
-        new_preferred = [f.strip() for f in new_preferred_raw.splitlines() if f.strip()]
+        # ── מזונות מועדפים ────────────────────────────────────────────────
+        st.markdown("**❤️ מזונות מועדפים:**")
+        if "pref_foods" not in st.session_state:
+            st.session_state.pref_foods = list(prefs.get("preferred_foods", []))
 
-        st.markdown("**מזונות להימנע:**")
-        disliked_raw = "\n".join(prefs.get("disliked_foods", []))
-        new_disliked_raw = st.text_area("מזון אחד בכל שורה", value=disliked_raw,
-                                         height=120, key="disliked_foods_input")
-        new_disliked = [f.strip() for f in new_disliked_raw.splitlines() if f.strip()]
+        # Show existing as removable chips
+        pref_remove = None
+        if st.session_state.pref_foods:
+            cols_p = st.columns(min(len(st.session_state.pref_foods), 3))
+            for i, food in enumerate(st.session_state.pref_foods):
+                with cols_p[i % 3]:
+                    if st.button(f"✕ {food}", key=f"rm_pref_{i}", use_container_width=True):
+                        pref_remove = i
+        if pref_remove is not None:
+            st.session_state.pref_foods.pop(pref_remove)
+            st.rerun()
+
+        col_add_p, col_btn_p = st.columns([3, 1])
+        new_pref_item = col_add_p.text_input("הוסף מאכל אהוב", placeholder="לדוגמה: אבוקדו", key="add_pref_input", label_visibility="collapsed")
+        if col_btn_p.button("➕", key="add_pref_btn") and new_pref_item.strip():
+            if new_pref_item.strip() not in st.session_state.pref_foods:
+                st.session_state.pref_foods.append(new_pref_item.strip())
+            st.rerun()
+        new_preferred = st.session_state.pref_foods
+
+        st.markdown("---")
+
+        # ── מזונות להימנע ─────────────────────────────────────────────────
+        st.markdown("**🚫 מזונות להימנע:**")
+        if "disliked_foods" not in st.session_state:
+            st.session_state.disliked_foods = list(prefs.get("disliked_foods", []))
+
+        dis_remove = None
+        if st.session_state.disliked_foods:
+            cols_d = st.columns(min(len(st.session_state.disliked_foods), 3))
+            for i, food in enumerate(st.session_state.disliked_foods):
+                with cols_d[i % 3]:
+                    if st.button(f"✕ {food}", key=f"rm_dis_{i}", use_container_width=True):
+                        dis_remove = i
+        if dis_remove is not None:
+            st.session_state.disliked_foods.pop(dis_remove)
+            st.rerun()
+
+        col_add_d, col_btn_d = st.columns([3, 1])
+        new_dis_item = col_add_d.text_input("הוסף מאכל להימנע", placeholder="לדוגמה: אורז", key="add_dis_input", label_visibility="collapsed")
+        if col_btn_d.button("➕", key="add_dis_btn") and new_dis_item.strip():
+            if new_dis_item.strip() not in st.session_state.disliked_foods:
+                st.session_state.disliked_foods.append(new_dis_item.strip())
+            st.rerun()
+        new_disliked = st.session_state.disliked_foods
 
     if st.button("💾 שמור העדפות תזונה", type="primary", use_container_width=True):
         profile["meal_preferences"] = {
-            "kashrut":        new_kashrut,
-            "allergies":      new_allergies,
+            "kashrut":         new_kashrut,
+            "allergies":       new_allergies,
             "preferred_foods": new_preferred,
-            "disliked_foods": new_disliked,
-            "meals_per_day":  new_meals_per_day,
+            "disliked_foods":  new_disliked,
+            "meals_per_day":   new_meals_per_day,
         }
         repo.save(profile)
+        # Reset chip state so it reloads from saved profile
+        st.session_state.pop("pref_foods", None)
+        st.session_state.pop("disliked_foods", None)
         st.success("✅ העדפות נשמרו!")
         st.rerun()
 
@@ -368,26 +404,14 @@ with tab_prefs:
 with tab_targets:
     section_header("יעדים תזונתיים שמורים", icon_name="chart")
 
-    if not profile.get("name") or not profile.get("height_cm") or not profile.get("weight_kg"):
-        st.info("מלא את **פרטים אישיים** ושמור — היעדים יוצגו אחרי השמירה הראשונה.")
-        _skip_targets = True
-    else:
-        _skip_targets = False
-
     try:
-        if _skip_targets:
-            raise RuntimeError("skip")
-        try:
-            _dob = date.fromisoformat(profile.get("date_of_birth") or "1990-05-15")
-        except ValueError:
-            _dob = date(1990, 5, 15)
         _user = UserProfile(
             user_id=USER_ID,
             name=profile.get("name", ""),
             gender=Gender(profile.get("gender", "male")),
-            date_of_birth=_dob,
-            height_cm=float(profile.get("height_cm") or 178),
-            weight_kg=float(profile.get("weight_kg") or 82),
+            date_of_birth=date.fromisoformat(profile.get("date_of_birth", "1990-05-15")),
+            height_cm=float(profile.get("height_cm", 178)),
+            weight_kg=float(profile.get("weight_kg", 82)),
             activity_level=ActivityLevel(profile.get("activity_level", "moderately_active")),
             goal=Goal(profile.get("goal", "lose_weight")),
         )
@@ -432,8 +456,7 @@ with tab_targets:
             st.caption(f"⚙️ {_targets.notes} | שיטה: {_targets.calculation_method}")
 
     except Exception as e:
-        if not _skip_targets:
-            st.warning(f"לא ניתן לחשב יעדים — וודא שהפרטים האישיים נשמרו. ({e})")
+        st.warning(f"לא ניתן לחשב יעדים — וודא שהפרטים האישיים נשמרו. ({e})")
 
     st.divider()
     st.info("💡 שנה משקל / פעילות / מטרה / קצב בלשונית **פרטים אישיים** — החישוב מתעדכן מיידית")

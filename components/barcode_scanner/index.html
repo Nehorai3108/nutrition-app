@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; background:#0d0f14; font-family:sans-serif; direction:rtl; }
+
+/* hidden file input */
+#cam-input { display:none; }
+
+/* big tap-to-scan button */
+#scan-btn {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; padding:22px 16px;
+  background:linear-gradient(135deg,#2563eb,#4f8ef7);
+  border:none; border-radius:16px; cursor:pointer;
+  color:#fff; font-size:1.15rem; font-weight:700;
+  box-shadow:0 6px 24px rgba(79,142,247,0.4);
+  transition:opacity .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+#scan-btn:active { opacity:.8; }
+
+/* preview of photo taken */
+#preview-wrap {
+  display:none; position:relative;
+  width:100%; border-radius:14px; overflow:hidden;
+  background:#000; max-height:220px;
+}
+#preview { width:100%; max-height:220px; object-fit:contain; display:block; }
+
+/* scanning spinner over preview */
+#scanning-overlay {
+  display:none;
+  position:absolute; inset:0; background:rgba(0,0,0,0.55);
+  align-items:center; justify-content:center; flex-direction:column; gap:8px;
+  color:#fff; font-size:13px;
+}
+.spin {
+  width:32px; height:32px;
+  border:3px solid rgba(255,255,255,0.2);
+  border-top-color:#4f8ef7;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* success */
+#ok {
+  display:none;
+  background:#122a1a; border:1px solid #2f855a;
+  border-radius:14px; padding:18px 16px;
+  text-align:center;
+}
+#ok-icon { font-size:2rem; }
+#ok-val  { font-size:1.1rem; font-weight:700; color:#68d391; margin:4px 0; direction:ltr; }
+#ok-lbl  { font-size:0.78rem; color:#a0aec0; }
+
+/* error */
+#err {
+  display:none;
+  background:#2d1b1b; border:1px solid #744141;
+  border-radius:14px; padding:14px; text-align:center;
+  color:#fc8181; font-size:13px;
+}
+
+/* retry button */
+#retry-btn {
+  display:none; width:100%; padding:14px;
+  background:#2d3748; border:none; border-radius:12px;
+  color:#e2e8f0; font-size:0.95rem; cursor:pointer;
+}
+#retry-btn:active { opacity:.8; }
+</style>
+</head>
+<body>
+
+<!-- hidden file input — capture="environment" opens rear camera on mobile -->
+<input id="cam-input" type="file" accept="image/*" capture="environment">
+
+<div style="display:flex; flex-direction:column; gap:12px; padding:8px;">
+  <button id="scan-btn">
+    <span style="font-size:1.5rem">📷</span>
+    צלם ברקוד
+  </button>
+
+  <div id="preview-wrap">
+    <img id="preview" src="" alt="">
+    <div id="scanning-overlay">
+      <div class="spin"></div>
+      <span>מפענח…</span>
+    </div>
+  </div>
+
+  <div id="ok">
+    <div id="ok-icon">✅</div>
+    <div id="ok-val"></div>
+    <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
+  </div>
+
+  <div id="err"></div>
+
+  <button id="retry-btn">🔄 נסה שוב</button>
+</div>
+
+<!-- Streamlit component lib -->
+<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
+
+<script>
+// ── Streamlit init ──────────────────────────────────────────────────────────
+function tryInitStreamlit() {
+  if (typeof Streamlit !== "undefined") {
+    try {
+      Streamlit.setFrameHeight(120);
+      Streamlit.setComponentReady();
+    } catch(e) {}
+  }
+}
+
+window.addEventListener("load", function() {
+  tryInitStreamlit();
+  // Give Streamlit time to render, then set proper height
+  setTimeout(function() {
+    try { Streamlit.setFrameHeight(120); } catch(e) {}
+  }, 300);
+});
+
+// ── UI elements ─────────────────────────────────────────────────────────────
+var input    = document.getElementById("cam-input");
+var scanBtn  = document.getElementById("scan-btn");
+var prevWrap = document.getElementById("preview-wrap");
+var prevImg  = document.getElementById("preview");
+var overlay  = document.getElementById("scanning-overlay");
+var okDiv    = document.getElementById("ok");
+var errDiv   = document.getElementById("err");
+var retryBtn = document.getElementById("retry-btn");
+
+// Tap button → trigger file input (opens native camera)
+scanBtn.addEventListener("click", function() { input.click(); });
+
+// Retry → reset UI
+retryBtn.addEventListener("click", reset);
+
+function reset() {
+  input.value = "";
+  prevWrap.style.display = "none";
+  overlay.style.display  = "none";
+  okDiv.style.display    = "none";
+  errDiv.style.display   = "none";
+  retryBtn.style.display = "none";
+  scanBtn.style.display  = "flex";
+  try { Streamlit.setFrameHeight(120); } catch(e) {}
+}
+
+// ── When user picks photo ───────────────────────────────────────────────────
+input.addEventListener("change", function() {
+  var file = input.files[0];
+  if (!file) return;
+
+  // Show preview + spinner
+  var objectUrl = URL.createObjectURL(file);
+  prevImg.src = objectUrl;
+  prevWrap.style.display  = "block";
+  overlay.style.display   = "flex";
+  scanBtn.style.display   = "none";
+  try { Streamlit.setFrameHeight(320); } catch(e) {}
+
+  // Load ZXing if not already loaded
+  if (typeof ZXing === "undefined") {
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+    s.onload  = function() { decodeImage(objectUrl); };
+    s.onerror = function() { showErr("שגיאת טעינת ספריית סריקה"); };
+    document.head.appendChild(s);
+  } else {
+    decodeImage(objectUrl);
+  }
+});
+
+function decodeImage(url) {
+  var hints = new Map();
+  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+    ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
+    ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.QR_CODE,
+  ]);
+  hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+
+  var img = new Image();
+  img.onload = function() {
+    var reader = new ZXing.BrowserMultiFormatReader(hints);
+    reader.decodeFromImageElement(img)
+      .then(function(result) {
+        overlay.style.display = "none";
+        URL.revokeObjectURL(url);
+        var bc = result.getText();
+        showSuccess(bc);
+        sendToStreamlit(bc);
+      })
+      .catch(function() {
+        overlay.style.display = "none";
+        URL.revokeObjectURL(url);
+        showErr("לא זוהה ברקוד — נסה שוב, ודא שהברקוד נראה ברור");
+      });
+  };
+  img.onerror = function() { showErr("שגיאה בטעינת התמונה"); };
+  img.src = url;
+}
+
+function showSuccess(bc) {
+  document.getElementById("ok-val").textContent = bc;
+  okDiv.style.display    = "block";
+  prevWrap.style.display = "none";
+  retryBtn.style.display = "block";
+  try { Streamlit.setFrameHeight(160); } catch(e) {}
+}
+
+function showErr(msg) {
+  errDiv.textContent     = "❌ " + msg;
+  errDiv.style.display   = "block";
+  retryBtn.style.display = "block";
+  prevWrap.style.display = "none";
+  try { Streamlit.setFrameHeight(180); } catch(e) {}
+}
+
+function sendToStreamlit(bc) {
+  // Primary: component lib
+  try { Streamlit.setComponentValue(bc); return; } catch(e) {}
+  // Fallback: raw postMessage
+  try {
+    window.parent.postMessage(
+      { isStreamlitMessage:true, type:"streamlit:setComponentValue", value:bc }, "*"
+    );
+  } catch(e) {}
+}
+</script>
+</body>
+</html>

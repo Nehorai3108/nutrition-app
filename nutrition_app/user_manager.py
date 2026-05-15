@@ -7,17 +7,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from nutrition_app.storage_paths import (
-    legacy_users_file,
-    system_users_file,
-    user_inventory_file,
-    user_workouts_file,
-    user_water_file,
-)
-
-# Use legacy path for now to avoid breaking existing data;
-# after migration this becomes system_users_file()
-USERS_FILE = str(legacy_users_file())
+USERS_FILE = os.path.join(os.path.dirname(__file__), "..", "storage_agents", "users.json")
 
 
 def _load() -> dict:
@@ -67,12 +57,44 @@ def delete_user(user_id: str):
 
 
 # ── Inventory per user ────────────────────────────────────────────────────────
+# Dual backend: Supabase `inventory` table when configured, else local JSON.
+
+def _use_supabase() -> bool:
+    try:
+        from nutrition_app.db.supabase_client import is_supabase_configured
+        return is_supabase_configured()
+    except Exception:
+        return False
+
+
+def _sb():
+    from nutrition_app.db.supabase_client import get_supabase
+    return get_supabase()
+
 
 def _inventory_path(user_id: str) -> str:
-    return str(user_inventory_file(user_id))
+    folder = os.path.join(os.path.dirname(__file__), "..", "storage_agents", "inventories")
+    os.makedirs(folder, exist_ok=True)
+    return os.path.join(folder, f"{user_id}.json")
 
 
 def load_inventory(user_id: str) -> list[dict]:
+    if _use_supabase():
+        rows = (
+            _sb().table("inventory")
+            .select("food_id, name_he, quantity_g, updated_at")
+            .eq("user_id", user_id)
+            .execute()
+        ).data or []
+        return [
+            {
+                "food_id":    r.get("food_id"),
+                "name_he":    r.get("name_he"),
+                "quantity_g": float(r.get("quantity_g") or 0),
+                "added_at":   r.get("updated_at"),
+            }
+            for r in rows
+        ]
     path = _inventory_path(user_id)
     if not os.path.exists(path):
         return []
@@ -81,11 +103,45 @@ def load_inventory(user_id: str) -> list[dict]:
 
 
 def save_inventory(user_id: str, items: list[dict]):
+    if _use_supabase():
+        # Full-replace strategy: delete then bulk insert. Simpler than diffing
+        # and the inventory list is small.
+        _sb().table("inventory").delete().eq("user_id", user_id).execute()
+        if items:
+            payload = [
+                {
+                    "user_id":    user_id,
+                    "food_id":    it["food_id"],
+                    "name_he":    it.get("name_he", ""),
+                    "quantity_g": float(it.get("quantity_g", 0)),
+                    "updated_at": datetime.now().isoformat(),
+                }
+                for it in items
+            ]
+            _sb().table("inventory").insert(payload).execute()
+        return
     with open(_inventory_path(user_id), "w", encoding="utf-8") as f:
         json.dump(items, f, ensure_ascii=False, indent=2)
 
 
 def add_inventory_item(user_id: str, food_id: str, name_he: str, quantity_g: float):
+    if _use_supabase():
+        # Upsert: if (user_id, food_id) exists, add to its quantity; else insert.
+        existing = (
+            _sb().table("inventory")
+            .select("quantity_g")
+            .eq("user_id", user_id).eq("food_id", food_id)
+            .limit(1).execute()
+        ).data
+        new_qty = float(existing[0]["quantity_g"]) + quantity_g if existing else quantity_g
+        _sb().table("inventory").upsert({
+            "user_id":    user_id,
+            "food_id":    food_id,
+            "name_he":    name_he,
+            "quantity_g": new_qty,
+            "updated_at": datetime.now().isoformat(),
+        }, on_conflict="user_id,food_id").execute()
+        return
     items = load_inventory(user_id)
     for item in items:
         if item["food_id"] == food_id:
@@ -102,6 +158,12 @@ def add_inventory_item(user_id: str, food_id: str, name_he: str, quantity_g: flo
 
 
 def update_inventory_item(user_id: str, food_id: str, quantity_g: float):
+    if _use_supabase():
+        _sb().table("inventory").update({
+            "quantity_g": quantity_g,
+            "updated_at": datetime.now().isoformat(),
+        }).eq("user_id", user_id).eq("food_id", food_id).execute()
+        return
     items = load_inventory(user_id)
     for item in items:
         if item["food_id"] == food_id:
@@ -111,6 +173,9 @@ def update_inventory_item(user_id: str, food_id: str, quantity_g: float):
 
 
 def remove_inventory_item(user_id: str, food_id: str):
+    if _use_supabase():
+        _sb().table("inventory").delete().eq("user_id", user_id).eq("food_id", food_id).execute()
+        return
     items = [i for i in load_inventory(user_id) if i["food_id"] != food_id]
     save_inventory(user_id, items)
 
@@ -118,7 +183,9 @@ def remove_inventory_item(user_id: str, food_id: str):
 # ── Workouts per user ─────────────────────────────────────────────────────────
 
 def _workouts_path(user_id: str) -> str:
-    return str(user_workouts_file(user_id))
+    folder = os.path.join(os.path.dirname(__file__), "..", "storage_agents", "workouts")
+    os.makedirs(folder, exist_ok=True)
+    return os.path.join(folder, f"{user_id}.json")
 
 
 def load_workouts(user_id: str) -> list[dict]:
@@ -151,7 +218,9 @@ def delete_workout(user_id: str, workout_id: str):
 # ── Water tracking per user ───────────────────────────────────────────────────
 
 def _water_path(user_id: str) -> str:
-    return str(user_water_file(user_id))
+    folder = os.path.join(os.path.dirname(__file__), "..", "storage_agents", "water")
+    os.makedirs(folder, exist_ok=True)
+    return os.path.join(folder, f"{user_id}.json")
 
 
 def initialize_water(user_id: str, daily_goal_ml: float = 2000.0) -> dict:

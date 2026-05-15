@@ -13,37 +13,40 @@ from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager, 
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
-from nutrition_app.user_manager import load_inventory
+from nutrition_app.user_manager import get_all_users, load_inventory
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
 from ui.components import inject_global_css, recipe_card_html, bottom_nav
-from auth.login_ui import require_auth, logout_button
+from ui.persistent_auth import setup_persistent_auth
+from ui.user_auth import require_auth, logout_button
 from ui.images import image_data_uri as _image_data_uri
 from nutrition_app.agents.agent_3_food import FoodCatalog
 from nutrition_app.utils.household_units import get_unit_info, grams_to_household, suggested_quantity
 
+setup_persistent_auth()
 USER_ID = require_auth()
 _food_log_repo = FoodLogRepository()
 
 # Load user allergies from profile
 _profile_repo = ProfileRepository()
 _profile = _profile_repo.load(USER_ID)
-_user_allergens: list = _profile.get("meal_preferences", {}).get("allergies", [])
+_user_allergens: list  = _profile.get("meal_preferences", {}).get("allergies", [])
+_user_disliked: list   = _profile.get("meal_preferences", {}).get("disliked_foods", [])
 
 st.set_page_config(page_title="BiteFit · תפריט", page_icon="🍽️", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                         "storage", "nutrition.db")
 
 @st.cache_resource
-def get_mgr(_version=2):
+def get_mgr(_version=3):
     return RecipeManager()
 
 @st.cache_resource
@@ -602,6 +605,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 target_calories=target_cal,
                 inventory_names=inventory_names if inventory_names else None,
                 allergens=_user_allergens if _user_allergens else None,
+                disliked_foods=_user_disliked if _user_disliked else None,
             )[:3]
         except Exception as _e:
             st.error(f"שגיאה: {_e}")
