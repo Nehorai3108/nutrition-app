@@ -11,7 +11,16 @@ _COMPONENT_DIR = os.path.join(
     "components", "barcode_scanner"
 )
 
-barcode_scanner = components.declare_component(
+_inner = components.declare_component(
     "barcode_scanner",
     path=_COMPONENT_DIR,
 )
+
+
+def barcode_scanner(key: str = "bc_scanner", height: int = 140) -> str | None:
+    """
+    Render the barcode scanner component.
+    Returns the detected barcode string, or None if nothing scanned yet.
+    height: initial iframe height in px (before JS sets it via setFrameHeight).
+    """
+    return _inner(key=key, height=height)

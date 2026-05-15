@@ -7,12 +7,10 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hidden; }
 
-/* ── Start screen ── */
 #start-screen {
   display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:16px; padding:24px 20px;
+  justify-content:center; gap:14px; padding:24px 16px; min-height:120px;
 }
-
 #start-btn {
   display:flex; align-items:center; justify-content:center; gap:10px;
   width:100%; max-width:320px; padding:20px;
@@ -25,71 +23,51 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
 #start-btn:active { opacity:.8; }
 #start-hint { color:#8892a4; font-size:12px; direction:rtl; text-align:center; }
 
-/* ── Scanner screen ── */
 #scanner-screen { display:none; position:relative; width:100%; }
-
 #video {
-  width:100%; height:270px;
-  object-fit:cover; display:block;
-  background:#000;
-  /* CRITICAL for iOS: must be inline, not absolute */
+  width:100%; height:260px;
+  object-fit:cover; display:block; background:#000;
 }
-
-/* corners overlay */
 #overlay {
-  position:absolute; top:0; left:0; right:0; height:270px;
+  position:absolute; top:0; left:0; right:0; height:260px;
   pointer-events:none;
 }
-.corner {
-  position:absolute; width:24px; height:24px;
-  border-color:#4f8ef7; border-style:solid;
-}
-.tl{top:16px;left:16px;border-width:3px 0 0 3px;border-radius:5px 0 0 0;}
-.tr{top:16px;right:16px;border-width:3px 3px 0 0;border-radius:0 5px 0 0;}
-.bl{bottom:16px;left:16px;border-width:0 0 3px 3px;border-radius:0 0 0 5px;}
-.br{bottom:16px;right:16px;border-width:0 3px 3px 0;border-radius:0 0 5px 0;}
-
+.corner { position:absolute; width:24px; height:24px; border-color:#4f8ef7; border-style:solid; }
+.tl{top:14px;left:14px;border-width:3px 0 0 3px;border-radius:5px 0 0 0;}
+.tr{top:14px;right:14px;border-width:3px 3px 0 0;border-radius:0 5px 0 0;}
+.bl{bottom:14px;left:14px;border-width:0 0 3px 3px;border-radius:0 0 0 5px;}
+.br{bottom:14px;right:14px;border-width:0 3px 3px 0;border-radius:0 0 5px 0;}
 #scan-line {
   position:absolute; left:12%; width:76%; height:2px;
   background:linear-gradient(90deg,transparent,#4f8ef7,transparent);
   animation:sweep 2s ease-in-out infinite;
 }
-@keyframes sweep{0%,100%{top:18%}50%{top:78%}}
-
+@keyframes sweep{0%,100%{top:16%}50%{top:80%}}
 #scan-hint {
-  position:absolute; bottom:10px; left:0; right:0;
-  text-align:center; color:rgba(255,255,255,.7); font-size:12px; direction:rtl;
+  position:absolute; bottom:8px; left:0; right:0;
+  text-align:center; color:rgba(255,255,255,.7); font-size:11px; direction:rtl;
 }
-
-/* success overlay */
 #success {
-  display:none; position:absolute; top:0; left:0; right:0; height:270px;
+  display:none; position:absolute; top:0; left:0; right:0; height:260px;
   background:rgba(20,50,35,.95);
   flex-direction:column; align-items:center; justify-content:center; gap:8px;
 }
 #success.show{display:flex;}
-#ok-icon{font-size:2.8rem;}
-#ok-val{font-size:1.15rem;font-weight:700;color:#68d391;direction:ltr;}
-#ok-lbl{font-size:.78rem;color:#a0aec0;direction:rtl;}
-
-#err-msg {
-  padding:10px 14px; color:#fc8181; font-size:12px;
-  direction:rtl; text-align:center; display:none;
-}
+#ok-icon{font-size:2.5rem;}
+#ok-val{font-size:1.1rem;font-weight:700;color:#68d391;direction:ltr;}
+#ok-lbl{font-size:.75rem;color:#a0aec0;direction:rtl;}
+#err-msg{padding:8px 14px;color:#fc8181;font-size:12px;direction:rtl;text-align:center;display:none;}
 </style>
 </head>
 <body>
 
-<!-- Step 1: tap once to open camera -->
 <div id="start-screen">
   <button id="start-btn" onclick="openCamera()">
-    <span style="font-size:1.5rem">📷</span>
-    פתח מצלמה לסריקה
+    <span style="font-size:1.4rem">📷</span> פתח מצלמה לסריקה
   </button>
   <div id="start-hint">לחץ פעם אחת — הסריקה תהיה אוטומטית</div>
 </div>
 
-<!-- Step 2: live scanner -->
 <div id="scanner-screen">
   <video id="video" autoplay muted playsinline></video>
   <div id="overlay">
@@ -106,57 +84,84 @@ html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hi
 </div>
 <div id="err-msg"></div>
 
-<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
 <script>
-var _lastScan = null;
-var _zxingReady = false;
+// ── Minimal inline Streamlit component bridge (no CDN needed) ─────────────
+// Implements the postMessage protocol that Streamlit uses for components.
+(function() {
+  var _listeners = {};
+  window.Streamlit = {
+    RENDER_EVENT: "streamlit:render",
+    events: {
+      addEventListener: function(ev, fn) {
+        _listeners[ev] = _listeners[ev] || [];
+        _listeners[ev].push(fn);
+      }
+    },
+    setComponentReady: function() {
+      window.parent.postMessage(
+        { isStreamlitMessage: true, type: "streamlit:componentReady", apiVersion: 1 }, "*"
+      );
+    },
+    setFrameHeight: function(h) {
+      window.parent.postMessage(
+        { isStreamlitMessage: true, type: "streamlit:setFrameHeight", height: h }, "*"
+      );
+    },
+    setComponentValue: function(v) {
+      window.parent.postMessage(
+        { isStreamlitMessage: true, type: "streamlit:setComponentValue",
+          value: v, dataType: "json" }, "*"
+      );
+    }
+  };
+  window.addEventListener("message", function(e) {
+    if (!e.data || !e.data.type) return;
+    var fns = _listeners[e.data.type] || [];
+    fns.forEach(function(f){ f(e); });
+  });
+})();
 
-// ── Streamlit init ────────────────────────────────────────────────────────
-window.addEventListener("load", function() {
-  try { Streamlit.setFrameHeight(130); Streamlit.setComponentReady(); } catch(e){}
+// ── Init: tell Streamlit we're ready and set initial height ───────────────
+Streamlit.setFrameHeight(130);
+Streamlit.setComponentReady();
+Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function() {
+  Streamlit.setFrameHeight(130);
 });
 
-// ── Open camera (called on button tap — satisfies iOS gesture requirement) ─
+// ── Camera logic ──────────────────────────────────────────────────────────
+var _lastScan = null;
+
 function openCamera() {
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("scanner-screen").style.display = "block";
-  try { Streamlit.setFrameHeight(290); } catch(e){}
+  Streamlit.setFrameHeight(285);
 
   var video = document.getElementById("video");
 
+  // Try exact rear camera first, then fall back to "ideal"
   navigator.mediaDevices.getUserMedia({
-    video: {
-      facingMode: { exact: "environment" },   // rear camera — hard requirement
-      width:  { ideal: 1280 },
-      height: { ideal: 720 }
-    }
-  })
-  .catch(function() {
-    // "exact" failed — try ideal (some desktops have no rear cam)
+    video: { facingMode: { exact: "environment" }, width:{ideal:1280}, height:{ideal:720} }
+  }).catch(function() {
     return navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: "environment" }, width:{ideal:1280}, height:{ideal:720} }
     });
-  })
-  .then(function(stream) {
+  }).then(function(stream) {
     video.srcObject = stream;
-    // iOS needs explicit play() inside a user-gesture chain
     var p = video.play();
     if (p && p.catch) p.catch(function(){});
     loadZXing(video);
-  })
-  .catch(function(err) {
+  }).catch(function(err) {
     document.getElementById("scanner-screen").style.display = "none";
     document.getElementById("start-screen").style.display = "flex";
     var e = document.getElementById("err-msg");
     e.style.display = "block";
     e.textContent = err.name === "NotAllowedError"
-      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות הדפדפן"
+      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות"
       : "❌ שגיאת מצלמה: " + err.message;
-    try { Streamlit.setFrameHeight(180); } catch(ex){}
+    Streamlit.setFrameHeight(170);
   });
 }
 
-// ── Load ZXing then start continuous scan ────────────────────────────────
 function loadZXing(video) {
   if (typeof ZXing !== "undefined") { startScan(video); return; }
   var s = document.createElement("script");
@@ -170,30 +175,24 @@ function startScan(video) {
   var hints = new Map();
   hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
     ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E,
+    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E,
   ]);
   hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-
   var reader = new ZXing.BrowserMultiFormatReader(hints);
 
   (function tick() {
-    // Only scan when video is actually playing frames
-    if (video.readyState >= 2) {
-      reader.decodeFromVideoElement(video)
-        .then(function(result) {
-          var bc = result.getText();
-          if (bc && bc !== _lastScan) {
-            _lastScan = bc;
-            showSuccess(bc);
-            try { Streamlit.setComponentValue(bc); } catch(e){}
-          }
-          setTimeout(tick, 400);
-        })
-        .catch(function() { setTimeout(tick, 400); });
-    } else {
-      setTimeout(tick, 300); // wait for video to be ready
-    }
+    if (video.readyState < 2) { setTimeout(tick, 300); return; }
+    reader.decodeFromVideoElement(video)
+      .then(function(r) {
+        var bc = r.getText();
+        if (bc && bc !== _lastScan) {
+          _lastScan = bc;
+          showSuccess(bc);
+          Streamlit.setComponentValue(bc);
+        }
+        setTimeout(tick, 400);
+      })
+      .catch(function() { setTimeout(tick, 400); });
   })();
 }
 
@@ -206,8 +205,7 @@ function showSuccess(bc) {
 
 function showErr(msg) {
   var e = document.getElementById("err-msg");
-  e.textContent = "❌ " + msg;
-  e.style.display = "block";
+  e.textContent = "❌ " + msg; e.style.display = "block";
 }
 </script>
 </body>
