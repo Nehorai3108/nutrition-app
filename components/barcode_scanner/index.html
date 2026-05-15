@@ -170,16 +170,25 @@ function startWithNative(formats) {
     video.play();
 
     var detector = new BarcodeDetector({ formats: formats });
+    var _candidate = null, _candidateHits = 0;
 
     function tick() {
       if (!_scannerActive) return;
       if (video.readyState < 2) { _bdTimer = setTimeout(tick, 100); return; }
       detector.detect(video).then(function(codes) {
         if (codes.length > 0) {
-          onDetected(codes[0].rawValue);
-        } else {
-          _bdTimer = setTimeout(tick, 80);
+          // Prefer longest barcode (EAN-13 > UPC-A > EAN-8)
+          codes.sort(function(a,b){ return b.rawValue.length - a.rawValue.length; });
+          var bc = codes[0].rawValue;
+          // Require 2 consecutive detections of the same code (avoids false positives)
+          if (bc === _candidate) {
+            _candidateHits++;
+            if (_candidateHits >= 2) { onDetected(bc); return; }
+          } else {
+            _candidate = bc; _candidateHits = 1;
+          }
         }
+        _bdTimer = setTimeout(tick, 80);
       }).catch(function(){ _bdTimer = setTimeout(tick, 200); });
     }
     _bdTimer = setTimeout(tick, 400);
