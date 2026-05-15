@@ -5,235 +5,209 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:100%; background:#0d0f14; font-family:sans-serif; direction:rtl; }
+html, body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hidden; }
 
-/* hidden file input */
-#cam-input { display:none; }
+/* ── Start screen ── */
+#start-screen {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:16px; padding:24px 20px;
+}
 
-/* big tap-to-scan button */
-#scan-btn {
+#start-btn {
   display:flex; align-items:center; justify-content:center; gap:10px;
-  width:100%; padding:22px 16px;
+  width:100%; max-width:320px; padding:20px;
   background:linear-gradient(135deg,#2563eb,#4f8ef7);
   border:none; border-radius:16px; cursor:pointer;
-  color:#fff; font-size:1.15rem; font-weight:700;
+  color:#fff; font-size:1.1rem; font-weight:700;
   box-shadow:0 6px 24px rgba(79,142,247,0.4);
-  transition:opacity .15s;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color:transparent;
 }
-#scan-btn:active { opacity:.8; }
+#start-btn:active { opacity:.8; }
+#start-hint { color:#8892a4; font-size:12px; direction:rtl; text-align:center; }
 
-/* preview of photo taken */
-#preview-wrap {
-  display:none; position:relative;
-  width:100%; border-radius:14px; overflow:hidden;
-  background:#000; max-height:220px;
-}
-#preview { width:100%; max-height:220px; object-fit:contain; display:block; }
+/* ── Scanner screen ── */
+#scanner-screen { display:none; position:relative; width:100%; }
 
-/* scanning spinner over preview */
-#scanning-overlay {
-  display:none;
-  position:absolute; inset:0; background:rgba(0,0,0,0.55);
-  align-items:center; justify-content:center; flex-direction:column; gap:8px;
-  color:#fff; font-size:13px;
-}
-.spin {
-  width:32px; height:32px;
-  border:3px solid rgba(255,255,255,0.2);
-  border-top-color:#4f8ef7;
-  border-radius:50%;
-  animation:spin .7s linear infinite;
-}
-@keyframes spin { to { transform:rotate(360deg); } }
-
-/* success */
-#ok {
-  display:none;
-  background:#122a1a; border:1px solid #2f855a;
-  border-radius:14px; padding:18px 16px;
-  text-align:center;
-}
-#ok-icon { font-size:2rem; }
-#ok-val  { font-size:1.1rem; font-weight:700; color:#68d391; margin:4px 0; direction:ltr; }
-#ok-lbl  { font-size:0.78rem; color:#a0aec0; }
-
-/* error */
-#err {
-  display:none;
-  background:#2d1b1b; border:1px solid #744141;
-  border-radius:14px; padding:14px; text-align:center;
-  color:#fc8181; font-size:13px;
+#video {
+  width:100%; height:270px;
+  object-fit:cover; display:block;
+  background:#000;
+  /* CRITICAL for iOS: must be inline, not absolute */
 }
 
-/* retry button */
-#retry-btn {
-  display:none; width:100%; padding:14px;
-  background:#2d3748; border:none; border-radius:12px;
-  color:#e2e8f0; font-size:0.95rem; cursor:pointer;
+/* corners overlay */
+#overlay {
+  position:absolute; top:0; left:0; right:0; height:270px;
+  pointer-events:none;
 }
-#retry-btn:active { opacity:.8; }
+.corner {
+  position:absolute; width:24px; height:24px;
+  border-color:#4f8ef7; border-style:solid;
+}
+.tl{top:16px;left:16px;border-width:3px 0 0 3px;border-radius:5px 0 0 0;}
+.tr{top:16px;right:16px;border-width:3px 3px 0 0;border-radius:0 5px 0 0;}
+.bl{bottom:16px;left:16px;border-width:0 0 3px 3px;border-radius:0 0 0 5px;}
+.br{bottom:16px;right:16px;border-width:0 3px 3px 0;border-radius:0 0 5px 0;}
+
+#scan-line {
+  position:absolute; left:12%; width:76%; height:2px;
+  background:linear-gradient(90deg,transparent,#4f8ef7,transparent);
+  animation:sweep 2s ease-in-out infinite;
+}
+@keyframes sweep{0%,100%{top:18%}50%{top:78%}}
+
+#scan-hint {
+  position:absolute; bottom:10px; left:0; right:0;
+  text-align:center; color:rgba(255,255,255,.7); font-size:12px; direction:rtl;
+}
+
+/* success overlay */
+#success {
+  display:none; position:absolute; top:0; left:0; right:0; height:270px;
+  background:rgba(20,50,35,.95);
+  flex-direction:column; align-items:center; justify-content:center; gap:8px;
+}
+#success.show{display:flex;}
+#ok-icon{font-size:2.8rem;}
+#ok-val{font-size:1.15rem;font-weight:700;color:#68d391;direction:ltr;}
+#ok-lbl{font-size:.78rem;color:#a0aec0;direction:rtl;}
+
+#err-msg {
+  padding:10px 14px; color:#fc8181; font-size:12px;
+  direction:rtl; text-align:center; display:none;
+}
 </style>
 </head>
 <body>
 
-<!-- hidden file input — capture="environment" opens rear camera on mobile -->
-<input id="cam-input" type="file" accept="image/*" capture="environment">
-
-<div style="display:flex; flex-direction:column; gap:12px; padding:8px;">
-  <button id="scan-btn">
+<!-- Step 1: tap once to open camera -->
+<div id="start-screen">
+  <button id="start-btn" onclick="openCamera()">
     <span style="font-size:1.5rem">📷</span>
-    צלם ברקוד
+    פתח מצלמה לסריקה
   </button>
+  <div id="start-hint">לחץ פעם אחת — הסריקה תהיה אוטומטית</div>
+</div>
 
-  <div id="preview-wrap">
-    <img id="preview" src="" alt="">
-    <div id="scanning-overlay">
-      <div class="spin"></div>
-      <span>מפענח…</span>
-    </div>
+<!-- Step 2: live scanner -->
+<div id="scanner-screen">
+  <video id="video" autoplay muted playsinline></video>
+  <div id="overlay">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div id="scan-line"></div>
+    <div id="scan-hint">כוון את הברקוד אל המסגרת</div>
   </div>
-
-  <div id="ok">
+  <div id="success">
     <div id="ok-icon">✅</div>
     <div id="ok-val"></div>
     <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
   </div>
-
-  <div id="err"></div>
-
-  <button id="retry-btn">🔄 נסה שוב</button>
 </div>
+<div id="err-msg"></div>
 
-<!-- Streamlit component lib -->
 <script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
-
 <script>
-// ── Streamlit init ──────────────────────────────────────────────────────────
-function tryInitStreamlit() {
-  if (typeof Streamlit !== "undefined") {
-    try {
-      Streamlit.setFrameHeight(120);
-      Streamlit.setComponentReady();
-    } catch(e) {}
-  }
-}
+var _lastScan = null;
+var _zxingReady = false;
 
+// ── Streamlit init ────────────────────────────────────────────────────────
 window.addEventListener("load", function() {
-  tryInitStreamlit();
-  // Give Streamlit time to render, then set proper height
-  setTimeout(function() {
-    try { Streamlit.setFrameHeight(120); } catch(e) {}
-  }, 300);
+  try { Streamlit.setFrameHeight(130); Streamlit.setComponentReady(); } catch(e){}
 });
 
-// ── UI elements ─────────────────────────────────────────────────────────────
-var input    = document.getElementById("cam-input");
-var scanBtn  = document.getElementById("scan-btn");
-var prevWrap = document.getElementById("preview-wrap");
-var prevImg  = document.getElementById("preview");
-var overlay  = document.getElementById("scanning-overlay");
-var okDiv    = document.getElementById("ok");
-var errDiv   = document.getElementById("err");
-var retryBtn = document.getElementById("retry-btn");
+// ── Open camera (called on button tap — satisfies iOS gesture requirement) ─
+function openCamera() {
+  document.getElementById("start-screen").style.display = "none";
+  document.getElementById("scanner-screen").style.display = "block";
+  try { Streamlit.setFrameHeight(290); } catch(e){}
 
-// Tap button → trigger file input (opens native camera)
-scanBtn.addEventListener("click", function() { input.click(); });
+  var video = document.getElementById("video");
 
-// Retry → reset UI
-retryBtn.addEventListener("click", reset);
-
-function reset() {
-  input.value = "";
-  prevWrap.style.display = "none";
-  overlay.style.display  = "none";
-  okDiv.style.display    = "none";
-  errDiv.style.display   = "none";
-  retryBtn.style.display = "none";
-  scanBtn.style.display  = "flex";
-  try { Streamlit.setFrameHeight(120); } catch(e) {}
+  navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: { exact: "environment" },   // rear camera — hard requirement
+      width:  { ideal: 1280 },
+      height: { ideal: 720 }
+    }
+  })
+  .catch(function() {
+    // "exact" failed — try ideal (some desktops have no rear cam)
+    return navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: "environment" }, width:{ideal:1280}, height:{ideal:720} }
+    });
+  })
+  .then(function(stream) {
+    video.srcObject = stream;
+    // iOS needs explicit play() inside a user-gesture chain
+    var p = video.play();
+    if (p && p.catch) p.catch(function(){});
+    loadZXing(video);
+  })
+  .catch(function(err) {
+    document.getElementById("scanner-screen").style.display = "none";
+    document.getElementById("start-screen").style.display = "flex";
+    var e = document.getElementById("err-msg");
+    e.style.display = "block";
+    e.textContent = err.name === "NotAllowedError"
+      ? "❌ אין הרשאת מצלמה — אשר גישה בהגדרות הדפדפן"
+      : "❌ שגיאת מצלמה: " + err.message;
+    try { Streamlit.setFrameHeight(180); } catch(ex){}
+  });
 }
 
-// ── When user picks photo ───────────────────────────────────────────────────
-input.addEventListener("change", function() {
-  var file = input.files[0];
-  if (!file) return;
+// ── Load ZXing then start continuous scan ────────────────────────────────
+function loadZXing(video) {
+  if (typeof ZXing !== "undefined") { startScan(video); return; }
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+  s.onload  = function() { startScan(video); };
+  s.onerror = function() { showErr("שגיאת טעינת ספריית סריקה"); };
+  document.head.appendChild(s);
+}
 
-  // Show preview + spinner
-  var objectUrl = URL.createObjectURL(file);
-  prevImg.src = objectUrl;
-  prevWrap.style.display  = "block";
-  overlay.style.display   = "flex";
-  scanBtn.style.display   = "none";
-  try { Streamlit.setFrameHeight(320); } catch(e) {}
-
-  // Load ZXing if not already loaded
-  if (typeof ZXing === "undefined") {
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
-    s.onload  = function() { decodeImage(objectUrl); };
-    s.onerror = function() { showErr("שגיאת טעינת ספריית סריקה"); };
-    document.head.appendChild(s);
-  } else {
-    decodeImage(objectUrl);
-  }
-});
-
-function decodeImage(url) {
+function startScan(video) {
   var hints = new Map();
   hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
     ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
     ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.QR_CODE,
+    ZXing.BarcodeFormat.UPC_E,
   ]);
   hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
 
-  var img = new Image();
-  img.onload = function() {
-    var reader = new ZXing.BrowserMultiFormatReader(hints);
-    reader.decodeFromImageElement(img)
-      .then(function(result) {
-        overlay.style.display = "none";
-        URL.revokeObjectURL(url);
-        var bc = result.getText();
-        showSuccess(bc);
-        sendToStreamlit(bc);
-      })
-      .catch(function() {
-        overlay.style.display = "none";
-        URL.revokeObjectURL(url);
-        showErr("לא זוהה ברקוד — נסה שוב, ודא שהברקוד נראה ברור");
-      });
-  };
-  img.onerror = function() { showErr("שגיאה בטעינת התמונה"); };
-  img.src = url;
+  var reader = new ZXing.BrowserMultiFormatReader(hints);
+
+  (function tick() {
+    // Only scan when video is actually playing frames
+    if (video.readyState >= 2) {
+      reader.decodeFromVideoElement(video)
+        .then(function(result) {
+          var bc = result.getText();
+          if (bc && bc !== _lastScan) {
+            _lastScan = bc;
+            showSuccess(bc);
+            try { Streamlit.setComponentValue(bc); } catch(e){}
+          }
+          setTimeout(tick, 400);
+        })
+        .catch(function() { setTimeout(tick, 400); });
+    } else {
+      setTimeout(tick, 300); // wait for video to be ready
+    }
+  })();
 }
 
 function showSuccess(bc) {
   document.getElementById("ok-val").textContent = bc;
-  okDiv.style.display    = "block";
-  prevWrap.style.display = "none";
-  retryBtn.style.display = "block";
-  try { Streamlit.setFrameHeight(160); } catch(e) {}
+  document.getElementById("success").classList.add("show");
+  document.getElementById("scan-line").style.display = "none";
+  document.getElementById("scan-hint").style.display = "none";
 }
 
 function showErr(msg) {
-  errDiv.textContent     = "❌ " + msg;
-  errDiv.style.display   = "block";
-  retryBtn.style.display = "block";
-  prevWrap.style.display = "none";
-  try { Streamlit.setFrameHeight(180); } catch(e) {}
-}
-
-function sendToStreamlit(bc) {
-  // Primary: component lib
-  try { Streamlit.setComponentValue(bc); return; } catch(e) {}
-  // Fallback: raw postMessage
-  try {
-    window.parent.postMessage(
-      { isStreamlitMessage:true, type:"streamlit:setComponentValue", value:bc }, "*"
-    );
-  } catch(e) {}
+  var e = document.getElementById("err-msg");
+  e.textContent = "❌ " + msg;
+  e.style.display = "block";
 }
 </script>
 </body>

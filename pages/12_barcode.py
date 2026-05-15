@@ -14,6 +14,7 @@ from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.barcode_repository import BarcodeRepository, BarcodeEntry
+from nutrition_app.components.barcode_comp import barcode_scanner
 
 st.set_page_config(page_title="BiteFit · ברקוד", page_icon="📲",
                    layout="wide", initial_sidebar_state="collapsed")
@@ -202,30 +203,20 @@ tab_scan, tab_manual = st.tabs(["📷 סריקה", "⌨️ הזנה ידנית"]
 barcode_str: str | None = None
 
 with tab_scan:
-    # If we already scanned and have a result cached, show "scan again" option
+    # Custom component: rear camera, continuous ZXing scan, auto-detects barcode
+    scanned = barcode_scanner(key="bc_scanner")
+
+    if scanned and scanned != st.session_state.get("_bc_last"):
+        st.session_state["_bc_last"] = scanned
+        barcode_str = scanned
+
+    elif st.session_state.get("_bc_last") and not barcode_str:
+        barcode_str = st.session_state["_bc_last"]
+
     if st.session_state.get("_bc_last"):
-        st.success(f"✅ ברקוד אחרון: `{st.session_state['_bc_last']}`")
         if st.button("🔄 סרוק מוצר אחר", use_container_width=True):
             st.session_state.pop("_bc_last", None)
-            st.session_state.pop(f"prod_{st.session_state.get('_bc_last','')}", None)
             st.rerun()
-        barcode_str = st.session_state["_bc_last"]
-    else:
-        st.markdown('<p style="color:#8892a4;font-size:0.85rem;text-align:center;direction:rtl;margin-bottom:4px;">כוון את הברקוד למצלמה ולחץ על כפתור הצילום</p>',
-                    unsafe_allow_html=True)
-
-        # Native Streamlit camera widget — works on iOS + Android, no iframe needed
-        photo = st.camera_input("סרוק ברקוד", label_visibility="collapsed")
-
-        if photo is not None:
-            with st.spinner("מפענח ברקוד…"):
-                bc = decode_barcode(photo)
-            if bc:
-                st.session_state["_bc_last"] = bc
-                barcode_str = bc
-                st.rerun()
-            else:
-                st.error("❌ לא זוהה ברקוד — נסה שוב, ודא שהברקוד ממולא ומוארת")
 
 with tab_manual:
     c1, c2 = st.columns([4, 1])
