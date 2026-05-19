@@ -939,10 +939,14 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
             f'{match_pct}% התאמה</span>'
         )
 
+    image_wrapper = (
+        f'<div style="position:relative">{image_block}</div>' if image_block else ""
+    )
+
     return (
         f'<a href="{href}" target="_self" style="text-decoration:none;color:inherit">'
         f'<div class="nut-card nut-card-clickable" style="padding:0;overflow:hidden">'
-        f'{"<div style=\'position:relative\'>" + image_block + "</div>" if image_block else ""}'
+        f'{image_wrapper}'
         f'<div class="nut-card-body" style="padding:16px 18px">'
         f'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px">'
         f'<div style="font-size:1rem;font-weight:700;color:{t.TEXT};line-height:1.3">{name_he}</div>'
@@ -950,7 +954,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
         f'</div>'
         f'<div style="font-size:0.8rem;color:{t.TEXT_MUTED};margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">'
         f'<span>⏱ {prep} דק׳</span>'
-        f'{"<span style=\'color:" + match_color + ";font-weight:600\'>" + str(match_pct) + "% התאמה</span>" if match_pct is not None else ""}'
+        f'{match_html}'
         f'</div>'
         f'{macro_grid_html(cal, protein, carbs, fat)}'
         f'</div></div></a>'
