@@ -618,7 +618,13 @@ def inject_global_css() -> None:
 
 
 def bottom_nav(active: str = "home") -> None:
-    """Fixed bottom nav — SVG icons, HTML links with correct Streamlit URL slugs."""
+    """Fixed bottom nav — SVG icons, client-side React-Router navigation.
+
+    Uses history.pushState + popstate to trigger Streamlit's internal
+    page router instead of a full browser reload.  This keeps the
+    WebSocket session alive and preserves session_state, so the user
+    is never sent back to the login screen on navigation.
+    """
     SVG = {
         "home":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
         "food":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
@@ -649,6 +655,22 @@ def bottom_nav(active: str = "home") -> None:
         '.gn a:hover,.gn a:hover svg{color:#8892a4;stroke:#8892a4}'
         '.gn a.on,.gn a.on svg{color:#4f8ef7 !important;stroke:#4f8ef7 !important}'
         '</style>'
+        # JavaScript: intercept clicks, use pushState+popstate so React Router
+        # navigates internally (preserves WebSocket session & session_state).
+        '<script>'
+        '(function(){'
+        'function stNav(href){'
+        '  window.history.pushState({},"",href);'
+        '  window.dispatchEvent(new PopStateEvent("popstate",{state:{}}));'
+        '}'
+        'document.addEventListener("click",function(e){'
+        '  var a=e.target.closest(".gn a");'
+        '  if(!a)return;'
+        '  e.preventDefault();'
+        '  stNav(a.getAttribute("href"));'
+        '});'
+        '})()'
+        '</script>'
         '<nav class="gn">'
     )
     for key, href, label in items:
