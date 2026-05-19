@@ -67,24 +67,50 @@ def _get_cookies():
     return mgr
 
 
+_COOKIES_CHECKED = "_sb_cookies_checked"
+
+
 def install_cookie_session() -> bool:
     """
     Hydrate session_state from cookies when needed.
 
-    Call this at the top of every page (inside require_auth). On the very
-    first script run extra_streamlit_components.CookieManager has no
-    cookies yet — get_all() returns {} and the component triggers a rerun
-    asynchronously when ready. We never call st.stop() here because the
-    user-visible login screen is fine to show in the worst case; cookies
-    will hydrate on the next rerun and require_auth() will see the user.
+    Returns True  — cookies are definitively loaded (or unavailable).
+    Returns False — first render of a fresh session; the CookieManager
+                    iframe hasn't sent data yet. Caller should show a
+                    loading screen and st.stop() so the component can
+                    fire its rerun.
+
+    On the very first script run of a new Streamlit session,
+    extra_streamlit_components.CookieManager has not yet received the
+    browser cookies.  get_all() returns {} at that point and the
+    component triggers a rerun asynchronously when ready.
+    We track this with _COOKIES_CHECKED in session_state so we only
+    wait ONE render — after that we either have cookies or we don't.
     """
     mgr = _get_cookies()
     if mgr is None:
         return True  # No cookie support — fall back to session-only auth.
+
+    already_checked = st.session_state.get(_COOKIES_CHECKED, False)
+
     try:
         all_cookies = mgr.get_all() or {}
     except Exception:
+        st.session_state[_COOKIES_CHECKED] = True
         return True
+
+    # On the very first render of a fresh session (no user yet, never
+    # checked before), the component might not have sent cookies yet.
+    # If there's nothing in all_cookies, wait one more render.
+    if not already_checked and not st.session_state.get(_KEY_USER_ID):
+        uid = all_cookies.get(_COOKIE_PREFIX + _COOKIE_USER_ID)
+        if not uid:
+            # Mark as checked so we don't wait again next render
+            st.session_state[_COOKIES_CHECKED] = True
+            return False  # Signal: still loading, show spinner
+
+    st.session_state[_COOKIES_CHECKED] = True
+
     if not st.session_state.get(_KEY_USER_ID):
         uid = all_cookies.get(_COOKIE_PREFIX + _COOKIE_USER_ID)
         access = all_cookies.get(_COOKIE_PREFIX + _COOKIE_ACCESS)
