@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
 from datetime import date, datetime
+from typing import Optional
 import streamlit as st
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager, get_recipe_inventory_match
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
@@ -17,7 +18,10 @@ from nutrition_app.user_manager import get_all_users, load_inventory
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
-from ui.components import inject_global_css, recipe_card_html, bottom_nav
+from ui.components import (
+    inject_global_css, recipe_card_html, bottom_nav,
+    now_eating_html, swap_option_html, macro_delta_html,
+)
 from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from ui.images import image_data_uri as _image_data_uri
@@ -132,6 +136,115 @@ st.markdown(
     f'</div>',
     unsafe_allow_html=True,
 )
+
+# ── "Now eating" hero (driven by user's picker prefs + current time of day) ──
+# Time windows: breakfast 5-11, lunch 11-16, dinner 17-22. Outside these,
+# the hero is suppressed and the user falls back to the tab grid below.
+_NOW_LABELS_HE = {
+    "breakfast": "ארוחת בוקר", "lunch": "ארוחת צהריים", "dinner": "ארוחת ערב",
+}
+
+def _current_meal_type(now: datetime) -> Optional[str]:
+    h = now.hour
+    if 5 <= h < 11:
+        return "breakfast"
+    if 11 <= h < 16:
+        return "lunch"
+    if 17 <= h < 22:
+        return "dinner"
+    return None
+
+try:
+    from nutrition_app.repositories.user_meal_preferences_repository import (
+        UserMealPreferencesRepository,
+    )
+    from nutrition_app.agents.agent_5_planner.weekly_planner import WeeklyPlanner
+    from nutrition_app.services.meal_adjustment_service import MealAdjustmentService
+    from nutrition_app.models.user_meal_preferences import WEEKDAYS
+    from nutrition_app.models.enums import MealType as _MealType
+
+    _adj_svc = MealAdjustmentService()
+    _prefs = _adj_svc.load_or_init(USER_ID)
+except Exception:
+    _prefs = None
+    _adj_svc = None
+
+_now_meal_type = _current_meal_type(datetime.now())
+
+if _prefs and _prefs.is_onboarded and _now_meal_type and _prefs.picks.get(_now_meal_type):
+    _today_wd = WEEKDAYS[date.today().weekday()]
+    _weekly = WeeklyPlanner().generate(USER_ID, _prefs)
+    _day_plan = _weekly.day_plan(_today_wd)
+    _meal_enum = {
+        "breakfast": _MealType.BREAKFAST,
+        "lunch":     _MealType.LUNCH,
+        "dinner":    _MealType.DINNER,
+    }[_now_meal_type]
+    _current_meal = next((m for m in _day_plan.meals if m.meal_type == _meal_enum), None) if _day_plan else None
+
+    if _current_meal and _current_meal.items:
+        _item = _current_meal.items[0]
+        st.markdown(
+            now_eating_html(
+                meal_label=_NOW_LABELS_HE[_now_meal_type],
+                variant_name=_item.food_name,
+                calories=_item.calories_kcal,
+                protein=_item.protein_g,
+                carbs=_item.carbs_g,
+                fat=_item.fat_g,
+                time_window_label=datetime.now().strftime("%H:%M"),
+            ),
+            unsafe_allow_html=True,
+        )
+
+        # Daily macro panel (today's totals vs. user's daily target)
+        _today_after = {
+            "calories": _day_plan.total_calories,
+            "protein":  _day_plan.total_protein,
+            "carbs":    _day_plan.total_carbs,
+            "fat":      _day_plan.total_fat,
+        }
+        _daily_targets = {
+            "calories": _weekly.target_calories_kcal,
+            "protein":  _weekly.target_protein_g,
+            "carbs":    _weekly.target_carbs_g,
+            "fat":      _weekly.target_fat_g,
+        }
+        if _daily_targets["calories"] > 0:
+            st.markdown(
+                macro_delta_html(
+                    {"calories":0,"protein":0,"carbs":0,"fat":0},
+                    _today_after,
+                    targets=_daily_targets,
+                    label_before="יעד יומי", label_after="היום",
+                ),
+                unsafe_allow_html=True,
+            )
+
+        # Swap drawer — show user's other picks for this meal-type.
+        _alternatives = [
+            v for v in (_prefs.variant_by_id(vid) for vid in _prefs.picks[_now_meal_type])
+            if v is not None and v.variant_id != _item.food_id
+        ]
+        if _alternatives:
+            with st.expander(f"🔄 החלף ל… ({len(_alternatives)} אפשרויות)", expanded=False):
+                for _alt in _alternatives:
+                    _alt_nut = _alt.total_nutrition or {}
+                    st.markdown(swap_option_html(
+                        _alt.name,
+                        _alt_nut.get("calories", 0),
+                        _alt_nut.get("protein", 0),
+                    ), unsafe_allow_html=True)
+                    _btn_cols = st.columns([1, 4])
+                    with _btn_cols[0]:
+                        if st.button("בחר", key=f"swap_{_alt.variant_id}",
+                                     use_container_width=True):
+                            _adj_svc.set_fixed_override(
+                                _prefs, _today_wd, _now_meal_type, _alt.variant_id,
+                            )
+                            _adj_svc.save(_prefs)
+                            st.rerun()
+        st.markdown("---")
 
 # ── Meal tab selector ─────────────────────────────────────────────────────────
 tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", "✏️ ידני", "🍫 נשנוש"]

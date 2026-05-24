@@ -65,6 +65,24 @@ _profile = _profile_repo.load(_USER_ID) or {}
 if st.session_state.get("_needs_onboarding") or not _profile.get("name"):
     st.switch_page("pages/0_profile.py")
 
+# Meal-preferences onboarding: once the profile is complete, route first-time
+# users through the meal-picker wizard before letting them reach the dashboard.
+from nutrition_app.repositories.user_meal_preferences_repository import (
+    UserMealPreferencesRepository as _PrefsRepo,
+)
+if not _PrefsRepo().has_completed_onboarding(_USER_ID):
+    st.switch_page("pages/13_meal_preferences.py")
+
+# ── Calm Mode first-session banner ────────────────────────────────────────────
+if not st.session_state.get("_calm_banner_shown"):
+    _b1, _b2 = st.columns([10, 1])
+    with _b1:
+        st.info("אצלנו אין סטריקים. אין פרסומות. **אתה בשליטה.**")
+    with _b2:
+        if st.button("✕", key="_dismiss_calm_banner"):
+            st.session_state["_calm_banner_shown"] = True
+            st.rerun()
+
 # ── Constants ────────────────────────────────────────────────────────────────
 
 MEAL_LABELS = {

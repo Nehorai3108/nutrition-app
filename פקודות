@@ -1,9 +1,9 @@
 cd "C:\Users\User\Desktop\אפליקציית תזונאי"
-streamlit run app_user.py
+streamlit run app_user.py --server.port 8510
 
 
 cd "C:\Users\User\Desktop\אפליקציית תזונאי"
-streamlit run app_admin.py --server.port 8503
+streamlit run app_admin.py --server.port 8511
 
 
 # ─── גרסת שיפורים (שיפורי סוכן באפליקציית תזונה) ───────────────────────────

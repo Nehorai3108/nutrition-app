@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nutrition App Research — 2026-W20 (May 11–17)</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #555;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --line: #e4e4e4;
+    --accent: #2d6a4f;
+    --green: #38a169;
+    --yellow: #d69e2e;
+    --red: #c53030;
+    --israeli: #0038b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    margin: 0;
+    padding: 32px 20px;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+  header {
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 6px 0;
+    color: var(--accent);
+  }
+  .meta { color: var(--muted); font-size: 14px; }
+  h2 {
+    font-size: 20px;
+    margin-top: 36px;
+    margin-bottom: 12px;
+    color: var(--ink);
+    border-left: 4px solid var(--accent);
+    padding-left: 10px;
+  }
+  h3 {
+    font-size: 16px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+  }
+  p { margin: 8px 0; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .competitor-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  ul { margin: 6px 0 6px 22px; padding: 0; }
+  li { margin-bottom: 4px; }
+  .summary {
+    background: #f0f7f4;
+    border-left: 4px solid var(--accent);
+    padding: 16px 18px;
+    border-radius: 4px;
+    font-size: 15px;
+  }
+  .rec {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 6px solid var(--yellow);
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .rec-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .rec-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 12px;
+    text-transform: uppercase;
+  }
+  .badge-yellow { background: #fef3c7; color: #92400e; }
+  .badge-green  { background: #d1fae5; color: #065f46; }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+  .badge-effort { background: #e0e7ff; color: #3730a3; }
+  .badge-il     { background: #dbeafe; color: var(--israeli); }
+  .rec-field {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .rec-field strong { color: var(--ink); }
+  .rec-field-label {
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+  .ignore {
+    background: #fafafa;
+    border: 1px dashed #ccc;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .delivery {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-top: 30px;
+    font-size: 14px;
+  }
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  code {
+    background: #f1f1f1;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+  }
+  .he { direction: rtl; text-align: right; font-family: "Segoe UI", "Arial Hebrew", sans-serif; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Nutrition App Research — Week 20, 2026</h1>
+  <div class="meta">Week of May 11–17, 2026 &nbsp;·&nbsp; Market Intelligence Agent &nbsp;·&nbsp; Project: תזונאי</div>
+</header>
+
+<h2>1. Landscape summary</h2>
+<div class="summary">
+  The week confirmed what the prior two months previewed: AI photo meal-scan has hardened into table stakes across all five global competitors. MyFitnessPal's Spring release (new "Today" tab, "Progress" tab, and GLP-1 medication tracking) is rolling broadly; Yazio rebranded the entire app to "YAZIO: AI Calorie Tracker" with photo recognition as the lead store-listing value prop (v12.83.1 this week); Lose It moved its barcode scanner BEHIND the paywall for new users — vacating the free-barcode space; Noom shifted upmarket with a Medicare EHR integration via b.well and CLEAR; Lifesum's chat-style "AI Tracking" (renamed from Multimodal Tracking) is rolling out but is being battered in App Store reviews for misidentified foods. <strong>The net read: the category is racing toward zero-friction logging, and our app is exposed because we still ship text-only meal entry while every competitor offers at least one fast-input modality.</strong>
+</div>
+
+<h2>2. Competitor highlights</h2>
+
+<div class="card">
+  <div class="competitor-name">MyFitnessPal</div>
+  <ul>
+    <li>Spring 2026 update (rolling this month): new "Today" tab with streak counter + cleaner macro layout; new "Progress" tab turns daily logs into weekly insights — a clear gamification push aimed at retention.</li>
+    <li>GLP-1 companion is live: users on Ozempic/Wegovy/Mounjaro can log medication, dose, timing, and injection site alongside food — cross-promoted with an Instacart $10-off coupon for Premium+ US users.</li>
+    <li>Photo Meal Scan (Winter release, Feb 2026) remains Premium-gated — MFP is monetizing AI logging, not commoditizing it.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Yazio</div>
+  <ul>
+    <li>Full product rebrand this month to <strong>"YAZIO: AI Calorie Tracker"</strong> — photo recognition is now the lead value prop in both Google Play and App Store listings (v12.83.1).</li>
+    <li>Continues to lean on built-in intermittent fasting tracker as the cross-sell hook — IF + calorie logging in one app is their durable wedge.</li>
+    <li>"Weekend Calories" feature (allocate more on Fri/Sat) is quietly one of the most-praised features in recent reviews — a behavioral-design win worth studying.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Lose It</div>
+  <ul>
+    <li><strong>Barcode Scanner ("Scan It") moved BEHIND Premium for new users in 2026</strong> — the most actionable competitor move of the week for us; the free barcode-scan space is being vacated.</li>
+    <li>"Snap It" AI photo meal logging shipped, with messaging built around "zero-type" logging and removing the "friction of tracking."</li>
+    <li>Now WCAG 2.1 AA compliant — accessibility is becoming a procurement and PR differentiator.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Noom</div>
+  <ul>
+    <li>Apr 9, 2026: launched "Noom Health Record Connect" with b.well — Medicare members can link EHRs via CLEAR identity verification, unlocking personalized GLP-1 / diabetes content.</li>
+    <li>Clear strategic pivot upmarket toward clinical / Medicare reimbursement — Noom is leaving the consumer-tracking fight, not winning it. Reduces direct competitive pressure on consumer apps like ours.</li>
+    <li>Consumer plan pricing remains high vs. category; cost is still the #1 friction cited in reviews.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Lifesum</div>
+  <ul>
+    <li>"AI Tracking" (rebrand of Multimodal Tracking) rolling out on iOS + Android — chat-style conversational UI mirrors ChatGPT layout for meal entry (snap / speak / type / scan).</li>
+    <li>Quality issues persist: reviews flag misidentified foods, doubled barcode scans, and forced logouts — execution gap we can exploit by shipping AI logging WITH a visible "edit before confirm" step.</li>
+    <li>AI Tracking is Premium-only and auto-enables on purchase — same monetization pattern as MyFitnessPal.</li>
+  </ul>
+</div>
+
+<h2>3. Trend observations</h2>
+
+<div class="card">
+  <h3>Trend 1 — AI photo meal-scan is now table stakes, not a differentiator</h3>
+  <p><em>Evidence:</em> MFP (Winter 2026), Yazio (full rebrand May 2026), Lose It "Snap It" (2026), Lifesum "AI Tracking" (rolling May 2026). Israeli local Kaloriya also advertises image recognition.</p>
+  <p><em>Relevance:</em> We are the only nutrition app in our reference set that does NOT offer photo logging. Continuing without it makes us look obsolete in app-store screenshots and demos. We don't need to lead — we need to not be the only one missing it.</p>
+</div>
+
+<div class="card">
+  <h3>Trend 2 — Conversational / chat-style meal entry is the new logging UX paradigm</h3>
+  <p><em>Evidence:</em> Lifesum redesigned AI Tracking with a layout "that mirrors modern AI chats." MFP added a streak-and-summary "Today" surface. Apple-standardized bottom-sheet pattern dominates 2026 mobile UI (Muzli, Eleken).</p>
+  <p><em>Relevance:</em> Israeli users live in WhatsApp — typing <span class="he">"אכלתי שני פיתות עם חומוס וטחינה"</span> into a chat is a natural input pattern. Hebrew sentence input is faster than picker-style English-first UIs. This trend lines up with local habit better than it does for English markets.</p>
+</div>
+
+<div class="card">
+  <h3>Trend 3 — Streaks + lightweight gamification crossing from fitness into nutrition</h3>
+  <p><em>Evidence:</em> MFP added a Streaks view in the Spring 2026 Today tab. Chronic-care apps are adopting progress bars, badges, daily streaks (Eleken UX 2026). Product Hunt May 2026 winners like HabitVs lean on habit/streak loops.</p>
+  <p><em>Relevance:</em> Logging fatigue is the #1 churn driver in this category — Lose It explicitly calls it "the friction of tracking." A streak counter is cheap to implement, doesn't require AI, and directly attacks retention.</p>
+</div>
+
+<h3>Ignore list (hype without substance, this cycle)</h3>
+<div class="ignore"><strong>Medicare / EHR integration (Noom + b.well)</strong> — US-Medicare-specific. Zero PMF for an Israeli consumer app and would require RED-tier PII/auth work for no upside.</div>
+<div class="ignore"><strong>GLP-1 medication tracking module</strong> — Real demand exists in Israel (Ozempic uptake is rising) but it's a separate product surface requiring medical-disclaimer / legal review. Park for Q4 2026, do not let it crowd out logging-friction work this cycle.</div>
+
+<h2>4. Three concrete recommendations for תזונאי</h2>
+
+<div class="rec">
+  <div class="rec-header">
+    <div class="rec-title">REC 1 — AI Photo Meal Scan, Mediterranean / Israeli-biased</div>
+    <div class="badges">
+      <span class="badge badge-yellow">YELLOW</span>
+      <span class="badge badge-effort">EFFORT: L</span>
+      <span class="badge badge-il">ISRAELI ANGLE</span>
+    </div>
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">What to build</div>
+    Add an "Add by photo" button in the meal planner that accepts a phone-camera or gallery image, sends it to a vision model (Anthropic Claude vision or equivalent), and returns a parsed list of ingredients with macro estimates. <strong>Critical:</strong> bias the system prompt toward Israeli / Mediterranean dishes (shakshuka, hummus, tahini, sabich, falafel, mejadra, malabi, schnitzel, salat katzutz, pita) so the model doesn't default to "mixed greens." Always show parsed results in an editable confirmation card BEFORE writing to the food log — Lifesum's review backlash shows users hate silent misidentification.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Inspired by</div>
+    Yazio's May 2026 rebrand around AI photo logging; MFP Winter 2026 Meal Scan; Lose It "Snap It"; Lifesum "AI Tracking" (and its negative reviews informing the "edit before confirm" UX).
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Effort</div>
+    Large. Vision LLM integration, prompt engineering for Israeli food bias, an editable confirmation card, per-user usage cap to control API cost. Roughly 2–3 sprints.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Why it matters for our user segment</div>
+    Israeli food culture is visual and communal: mezze platters, Shabbat dinners, shared salads. Text-entry a dozen items per meal is the worst-fit UX for this user. Photo logging closes a feature-parity gap that is now table stakes across the entire competitive set — without it, our app-store screenshots look two years stale next to Yazio's rebranded card.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Build hand-off</div>
+    Owner: Agent 6 (AI) + Agent 3 (Food). Feature flag: <code>FF_PHOTO_MEAL_SCAN</code>. No schema change (writes into existing meal_log via Agent 3). Metrics: % sessions using photo entry vs text; post-scan edit rate; LLM cost per logged meal.
+  </div>
+</div>
+
+<div class="rec">
+  <div class="rec-header">
+    <div class="rec-title">REC 2 — Israeli Supermarket Barcode DB (Osem / Strauss / Tnuva)</div>
+    <div class="badges">
+      <span class="badge badge-yellow">YELLOW</span>
+      <span class="badge badge-effort">EFFORT: M</span>
+      <span class="badge badge-il">ISRAELI ANGLE</span>
+    </div>
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">What to build</div>
+    Build a curated barcode database of Israeli FMCG products — start with Osem, Strauss, Tnuva, Tara, Tzabar, Sano, Telma, Shufersal house brand, Yochananof house brand. Each row: EAN-13 → product name (Hebrew + transliterated), serving size, macros, common modifiers ("half-fat," "low-sodium"). Wire it into a barcode-scan flow that hits the Israeli DB first, then falls back to OpenFoodFacts / USDA. <strong>Ship the scanner FREE</strong> — explicitly position against Lose It's recent paywall move. The repo already has <code>barcode_db_table.sql</code> so the schema groundwork is partially done.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Inspired by</div>
+    Lose It moved "Scan It" BEHIND Premium for new users in 2026 — vacating the free-barcode space. Kaloriya (Israeli local) claims 3M products but most are international; gap exists for clean Israeli-first data.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Effort</div>
+    Medium. Data acquisition + integration is the bulk of the work (scrape supermarket sites + manual curation, run as a separate scheduled task). Barcode scanner itself is a well-trodden library integration.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Why it matters for our user segment</div>
+    Weekly grocery shopping is the most repeatable food-logging context — 90% of an Israeli pantry comes from ~10 brands. Scan-once-then-tap is 10x faster than text search for packaged goods. Free + Israeli-first is a defensible wedge: global competitors won't build this, and the Israeli local (Kaloriya) charges for it. Unit economics: marginal cost per scanned product approaches zero after initial curation, but each scan saves ~30 seconds of user time.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Build hand-off</div>
+    Owner: Agent 3 (Food) + Agent 7 (Data). Feature flag: <code>FF_BARCODE_SCANNER_IL</code>. Minor schema change — extend existing <code>barcode_db_table.sql</code>, no breaking change. Metrics: barcode-scan adoption rate; % scans resolved by IL DB vs fallback; meal-log entries per user per week (before/after).
+  </div>
+</div>
+
+<div class="rec">
+  <div class="rec-header">
+    <div class="rec-title">REC 3 — Hebrew Chat-Style "Add Meal in One Sentence" + Streak Counter</div>
+    <div class="badges">
+      <span class="badge badge-yellow">YELLOW</span>
+      <span class="badge badge-effort">EFFORT: M</span>
+      <span class="badge badge-il">ISRAELI ANGLE</span>
+    </div>
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">What to build</div>
+    Add a <span class="he">"הוסף ארוחה במשפט"</span> (Add meal in one sentence) entry mode: a chat-style input where the user types free-form Hebrew like <span class="he">"אכלתי שתי פיתות, חומוס, סלט עגבניות ובירה"</span> and the parser breaks it into items, looks each up in the food catalog, and returns an editable confirmation card. Pin a visible streak counter (<span class="he">"🔥 12 ימים ברצף"</span>) at the top of the home tab. Chat history shows the user's last 5 logged meals as quick-repeat chips.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Inspired by</div>
+    Lifesum AI Tracking conversational layout (May 2026); MFP Today tab streak counter (Spring 2026); Apple bottom-sheet UI pattern (2026 mobile UI standard per Muzli/Eleken).
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Effort</div>
+    Medium. New screen / new entry mode, LLM parsing layer, streak counter schema is small (a user_streaks table or derived from existing meal_log timestamps). Roughly 1–2 sprints.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Why it matters for our user segment</div>
+    Hebrew users live in WhatsApp — typing a sentence is muscle memory; tapping through nested pickers is not. This is the rare case where a global UX trend (conversational logging) is BETTER suited to Hebrew than to English, because Hebrew lacks the long English noun-phrase tax for food items. Streak counter directly attacks the #1 churn driver (logging fatigue) for ~1 sprint of work. These two ship well together: chat entry makes daily logging cheap, streak makes it sticky.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Build hand-off</div>
+    Owner: Agent 6 (AI) + Agent 3 (Food) + Agent 1 (Contracts) for streak schema. Feature flags: <code>FF_CHAT_QUICK_LOG</code>, <code>FF_STREAKS</code>. Small schema add — <code>user_streaks (user_id, current_streak, longest_streak, last_log_date)</code> OR derive from meal_log. Metrics: % sessions using chat entry vs picker; parse success rate; D7/D30 retention delta for users with streak ≥ 7 vs &lt; 7.
+  </div>
+</div>
+
+<h2>5. Coherent product direction</h2>
+<p>All three recommendations cluster around two themes: <strong>reduce friction in meal logging</strong> (photo + barcode + chat-entry all attack the same friction) and <strong>Israeli-first defensibility</strong> (Mediterranean food bias in AI, Israeli barcode DB, Hebrew chat parsing). Recommend treating this as one quarterly bet — "make logging effortless and unmistakably Israeli" — rather than three independent features.</p>
+
+<h2>6. Delivery status</h2>
+<div class="delivery">
+  <p><strong>Files written:</strong></p>
+  <ul>
+    <li>✅ <code>Desktop/אפליקציית תזונאי/approval_version_nutt_app/market_brief.json</code> — structured JSON for the Feature Prototyper. Note: task spec asked for <code>Desktop/approval_version_nutt_app/</code> as a sibling folder; only the תזונאי project folder is mounted in this session, so JSON was placed inside it. If a sibling folder is preferred, mount it before the next biweekly run.</li>
+    <li>✅ <code>Desktop/אפליקציית תזונאי/nutrition_research/2026-W20.html</code> — this report.</li>
+  </ul>
+  <p><strong>Email status:</strong> ❌ <strong>Not sent.</strong> No Gmail / SMTP MCP connector is currently configured for this agent. To enable autonomous delivery to <code>dviryona8@gmail.com</code> (CC <code>nehoraios08@gmail.com</code>) on future runs, install a Gmail MCP via the plugin registry. For this cycle, please forward this HTML manually.</p>
+  <p><strong>Cadence note:</strong> Previous run was 2026-W16 (four weeks ago). The biweekly cadence has slipped one cycle. Consider scheduling the task for every other Tuesday at a fixed time.</p>
+</div>
+
+<h2>7. Sources cited</h2>
+<ul style="font-size: 13px;">
+  <li>MyFitnessPal Winter 2026 release — <a href="https://blog.myfitnesspal.com/winter-release-2026-nutrition-tracking-updates/">blog.myfitnesspal.com</a></li>
+  <li>MyFitnessPal Today / Progress tab — <a href="https://blog.myfitnesspal.com/myfitnesspal-today-screen-progress-tab-update/">blog.myfitnesspal.com</a></li>
+  <li>MyFitnessPal GlobeNewswire press — <a href="https://www.globenewswire.com/news-release/2026/02/24/3243668/0/en/MyFitnessPal-Debuts-Its-2026-Winter-Release.html">globenewswire.com</a></li>
+  <li>Yazio: AI Calorie Tracker (rebrand) — <a href="https://play.google.com/store/apps/details?id=com.yazio.android">play.google.com</a></li>
+  <li>Yazio AI feature help center — <a href="https://help.yazio.com/hc/en-us/articles/39137901903889-What-is-the-AI-Calorie-Tracking-Feature-and-how-does-it-work">help.yazio.com</a></li>
+  <li>Lose It! 2026 paywall + Snap It (NutriScan review) — <a href="https://nutriscan.app/blog/posts/lose-it-pricing-2026-free-vs-premium-2b4e921555">nutriscan.app</a></li>
+  <li>Noom + b.well Health Record Connect — <a href="https://www.globenewswire.com/news-release/2026/04/09/3270876/0/en/Noom-and-b-well-Partner-to-Launch-Integrated-Health-Record-Access-for-Medicare-Members.html">globenewswire.com</a></li>
+  <li>Lifesum AI Tracking help center — <a href="https://help.lifesum.com/en/article/ai-tracking-how-does-it-work-15sw7rk/">help.lifesum.com</a></li>
+  <li>Lifesum "what's new" — <a href="https://help.lifesum.com/en/article/what-is-new-these-are-the-latest-additions-to-our-app-1vy6mk1/">help.lifesum.com</a></li>
+  <li>Muzli 2026 mobile UI patterns — <a href="https://muz.li/blog/whats-changing-in-mobile-app-design-ui-patterns-that-matter-in-2026/">muz.li</a></li>
+  <li>Eleken healthcare UI 2026 — <a href="https://www.eleken.co/blog-posts/user-interface-design-for-healthcare-applications">eleken.co</a></li>
+  <li>Diversido wellness UX 2026 — <a href="https://www.diversido.io/blog/how-does-ux-ui-impact-your-wellness-app">diversido.io</a></li>
+  <li>Product Hunt — daily May 12, 2026 — <a href="https://www.producthunt.com/leaderboard/daily/2026/5/12">producthunt.com</a></li>
+  <li>Kaloriya (Israeli local) Google Play — <a href="https://play.google.com/store/apps/details?id=com.protein2">play.google.com</a></li>
+  <li>WellnessClub IL trends — <a href="https://wellnessclub.co.il/%D7%98%D7%A8%D7%A0%D7%93%D7%99%D7%9D-%D7%95%D7%93%D7%99%D7%90%D7%98%D7%95%D7%AA-2/">wellnessclub.co.il</a></li>
+</ul>
+
+<footer>
+  Generated automatically by the Market Intelligence Agent on Sunday, May 17, 2026. Next biweekly run scheduled per scheduled-tasks config.
+</footer>
+
+</div>
+</body>
+</html>

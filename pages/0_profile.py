@@ -460,3 +460,59 @@ with tab_targets:
 
     st.divider()
     st.info("💡 שנה משקל / פעילות / מטרה / קצב בלשונית **פרטים אישיים** — החישוב מתעדכן מיידית")
+
+
+# ── Meal-plan reconfiguration ───────────────────────────────────────────────
+# Lets a user who already finished onboarding edit their meal picks or start
+# the picker over from scratch.
+from nutrition_app.services.meal_adjustment_service import (
+    MealAdjustmentService as _MealAdjSvc,
+)
+
+st.divider()
+section_header("תפריט שבועי", icon_name="menu")
+
+_meal_svc = _MealAdjSvc()
+_existing_prefs = _meal_svc.load_or_init(USER_ID)
+_already_picked = sum(len(v) for v in (_existing_prefs.picks or {}).values())
+
+if _existing_prefs.is_onboarded:
+    st.caption(
+        f"השלמת את האשף עם {_already_picked} בחירות. ניתן לערוך אותן "
+        "או להתחיל מחדש לאחר שינוי יעדים / העדפות."
+    )
+else:
+    st.caption("עוד לא השלמת את אשף בחירת הארוחות. מומלץ להשלים כדי לקבל תפריט שבועי מותאם.")
+
+_b1, _b2 = st.columns(2)
+with _b1:
+    if st.button("✏️ ערוך את בחירות הארוחות", use_container_width=True, key="edit_meal_picks"):
+        st.switch_page("pages/13_meal_preferences.py")
+
+with _b2:
+    # Two-step confirmation — first click arms, second click executes.
+    if st.session_state.get("profile_reset_armed"):
+        if st.button("⚠️ אישור: אפס הכל", type="primary",
+                     use_container_width=True, key="confirm_reset"):
+            _meal_svc.reset_preferences(USER_ID)
+            st.session_state.pop("profile_reset_armed", None)
+            # Clear picker session state so the user gets a fresh wizard.
+            for _k in list(st.session_state.keys()):
+                if _k.startswith("mp_"):
+                    del st.session_state[_k]
+            st.switch_page("pages/13_meal_preferences.py")
+    else:
+        if st.button("🗑 אפס תפריט והתחל מחדש",
+                     use_container_width=True, key="arm_reset",
+                     disabled=not _existing_prefs.is_onboarded and _already_picked == 0):
+            st.session_state["profile_reset_armed"] = True
+            st.rerun()
+
+if st.session_state.get("profile_reset_armed"):
+    st.warning(
+        "פעולה זו תמחק את כל הבחירות וההתאמות שלך ותחזיר אותך לאשף ההגדרה. "
+        "הפרטים האישיים והיעדים נשמרים."
+    )
+    if st.button("ביטול", key="cancel_reset"):
+        st.session_state.pop("profile_reset_armed", None)
+        st.rerun()

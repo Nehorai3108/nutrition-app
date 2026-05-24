@@ -176,3 +176,8 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS weekly_change_kg  FLOAT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS target_weight_kg  FLOAT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS weeks_to_goal     INT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS meal_preferences  JSONB;
+
+-- Calm Mode toggles for user_meal_preferences
+ALTER TABLE user_meal_preferences ADD COLUMN IF NOT EXISTS show_streaks        boolean DEFAULT false;
+ALTER TABLE user_meal_preferences ADD COLUMN IF NOT EXISTS daily_notifications  boolean DEFAULT false;
+ALTER TABLE user_meal_preferences ADD COLUMN IF NOT EXISTS weekly_summary       boolean DEFAULT false;

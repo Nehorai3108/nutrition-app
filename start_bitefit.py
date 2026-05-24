@@ -9,7 +9,7 @@ import subprocess
 import sys
 import os
 
-PORT = 8501
+PORT = 8510
 
 # ── Detect all useful IPv4 addresses ─────────────────────────────────────────
 def get_ips():

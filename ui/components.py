@@ -619,13 +619,14 @@ def bottom_nav(active: str = "home") -> None:
     by an `--active` CSS variable injected per render.
     """
     items = [
-        ("home",    "app_user.py",                    "בית",        "🏠"),
-        ("food",    "pages/6_daily_menu.py",          "תזונה",      "🍽️"),
-        ("chat",    "pages/10_chat_log.py",           "צאט",        "💬"),
-        ("barcode", "pages/12_barcode.py",            "ברקוד",      "📲"),
-        ("workout", "pages/7_workout_tracker.py",     "אימון",      "💪"),
-        ("history", "pages/9_history.py",             "היסטוריה",   "📊"),
-        ("profile", "pages/0_profile.py",             "פרופיל",     "👤"),
+        ("home",     "app_user.py",                    "בית",        "🏠"),
+        ("food",     "pages/6_daily_menu.py",          "תזונה",      "🍽️"),
+        ("chat",     "pages/10_chat_log.py",           "צאט",        "💬"),
+        ("barcode",  "pages/12_barcode.py",            "ברקוד",      "📲"),
+        ("workout",  "pages/7_workout_tracker.py",     "אימון",      "💪"),
+        ("history",  "pages/9_history.py",             "היסטוריה",   "📊"),
+        ("profile",  "pages/0_profile.py",             "פרופיל",     "👤"),
+        ("settings", "pages/14_settings.py",           "הגדרות",     "⚙️"),
     ]
 
     # Map active key → column index so we can highlight the right cell.
@@ -1141,3 +1142,194 @@ def section(title: str, icon_name: str = "menu"):
     """``with section('כותרת', 'icon'):`` block — renders a header above content."""
     section_header(title, icon_name)
     yield
+
+
+# ── Meal-picker components (first-login flow) ────────────────────────────────
+
+def meal_picker_card_html(
+    recipe: dict,
+    selected: bool = False,
+    adjusted: bool = False,
+) -> str:
+    """Compact card used in pages/13_meal_preferences.py.
+
+    Shows the recipe name, prep time, kashrut, and per-portion macros.
+    The selection / adjust state is purely visual; the Streamlit page below
+    handles the actual button wiring.
+    """
+    name_he   = recipe.get("name_he", "") or recipe.get("name_en", "")
+    name_en   = recipe.get("name_en", "")
+    portions  = max(recipe.get("portions", 1), 1)
+    prep      = recipe.get("prep_time_minutes", 0)
+    kashrut   = (recipe.get("kashrut") or "parve").lower()
+    nut       = recipe.get("total_nutrition", {}) or {}
+    cal       = round(nut.get("calories", 0) / portions)
+    protein   = round(nut.get("protein", 0) / portions)
+    carbs     = round(nut.get("carbs", 0) / portions)
+    fat       = round(nut.get("fat", 0) / portions)
+
+    border = t.ACCENT if selected else t.BORDER
+    badge = ""
+    if selected:
+        badge = (
+            f'<span style="background:{t.ACCENT};color:#fff;font-size:0.7rem;'
+            f'padding:3px 8px;border-radius:6px;font-weight:700">נבחר</span>'
+        )
+    elif adjusted:
+        badge = (
+            f'<span style="background:{t.WARNING};color:#fff;font-size:0.7rem;'
+            f'padding:3px 8px;border-radius:6px;font-weight:700">הותאם</span>'
+        )
+
+    return f"""
+    <div style="background:{t.SURFACE_2};border:2px solid {border};
+                border-radius:12px;padding:14px;margin-bottom:8px;direction:rtl">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
+        <div style="flex:1">
+          <div style="font-weight:700;color:{t.TEXT};font-size:1rem">{name_he}</div>
+          <div style="font-size:0.72rem;color:{t.TEXT_MUTED};margin-top:2px">{name_en}</div>
+        </div>
+        {badge}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        {kashrut_badge_html(kashrut)}
+        <span style="background:{t.SURFACE_3};color:{t.TEXT_MUTED};font-size:0.7rem;
+                     padding:3px 8px;border-radius:6px">⏱ {prep} דקות</span>
+      </div>
+      <div style="margin-top:10px">
+        {macro_grid_html(cal, protein, carbs, fat)}
+      </div>
+    </div>
+    """
+
+
+def macro_delta_html(
+    before: dict,
+    after: dict,
+    targets: Optional[dict] = None,
+    label_before: str = "לפני",
+    label_after: str = "אחרי",
+) -> str:
+    """Before / after macro comparison with deltas, optionally vs. targets.
+
+    `before` and `after` are dicts with keys: calories, protein, carbs, fat
+    (any of them missing → treated as 0). `targets` is optional and adds a
+    third row with target value + colored delta-from-target.
+    """
+    def _v(d, k):
+        try:
+            return float((d or {}).get(k, 0) or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    rows = [
+        ("קלוריות", "calories", "קק״ל", t.ACCENT),
+        ("חלבון", "protein", "g", t.PROTEIN_COLOR),
+        ("פחמימות", "carbs", "g", t.CARBS_COLOR),
+        ("שומן", "fat", "g", t.FAT_COLOR),
+    ]
+
+    cells = []
+    for label, key, unit, color in rows:
+        b = _v(before, key)
+        a = _v(after, key)
+        d = a - b
+        arrow = "→"
+        if d > 0.5:
+            delta_str = f"<span style='color:{t.WARNING}'>▲ +{d:.0f}</span>"
+        elif d < -0.5:
+            delta_str = f"<span style='color:{t.ACCENT}'>▼ {d:.0f}</span>"
+        else:
+            delta_str = f"<span style='color:{t.TEXT_MUTED}'>•</span>"
+
+        target_row = ""
+        if targets is not None:
+            tgt = _v(targets, key)
+            if tgt > 0:
+                pct = (a / tgt) * 100
+                pct_col = t.ACCENT if 85 <= pct <= 110 else (t.WARNING if 70 <= pct < 130 else t.DANGER)
+                target_row = (
+                    f"<div style='font-size:0.68rem;color:{t.TEXT_MUTED};margin-top:2px'>"
+                    f"יעד: {tgt:.0f} <span style='color:{pct_col};font-weight:700'>"
+                    f"({pct:.0f}%)</span></div>"
+                )
+
+        cells.append(f"""
+          <div style='text-align:center;padding:8px;background:{t.SURFACE_2};
+                       border-radius:8px;border:1px solid {t.BORDER}'>
+            <div style='font-size:0.72rem;color:{t.TEXT_MUTED}'>{label}</div>
+            <div style='display:flex;align-items:center;justify-content:center;gap:6px;
+                         margin-top:4px;font-size:0.95rem;font-weight:700;color:{color}'>
+              <span style='color:{t.TEXT_MUTED};font-size:0.78rem'>{b:.0f}</span>
+              <span style='color:{t.TEXT_MUTED}'>{arrow}</span>
+              <span>{a:.0f}{unit}</span>
+            </div>
+            <div style='font-size:0.72rem;margin-top:2px'>{delta_str}</div>
+            {target_row}
+          </div>
+        """)
+
+    return f"""
+    <div style='direction:rtl'>
+      <div style='display:flex;justify-content:space-between;font-size:0.75rem;
+                   color:{t.TEXT_MUTED};margin-bottom:6px'>
+        <span>{label_before} ← → {label_after}</span>
+      </div>
+      <div style='display:grid;grid-template-columns:repeat(4,1fr);gap:8px'>
+        {''.join(cells)}
+      </div>
+    </div>
+    """
+
+
+def now_eating_html(
+    meal_label: str,
+    variant_name: str,
+    calories: float,
+    protein: float,
+    carbs: float,
+    fat: float,
+    time_window_label: str = "",
+) -> str:
+    """Hero block for pages/6_daily_menu.py — "Eat now: <meal>"."""
+    return f"""
+    <div style='background:linear-gradient(135deg,{t.ACCENT}22,{t.SURFACE_2});
+                border:2px solid {t.ACCENT};border-radius:16px;padding:18px;
+                direction:rtl;margin-bottom:14px'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div>
+          <div style='font-size:0.75rem;color:{t.ACCENT};font-weight:800;
+                       letter-spacing:0.5px;text-transform:uppercase'>אכול עכשיו</div>
+          <div style='font-size:1.4rem;font-weight:800;color:{t.TEXT};margin-top:4px'>
+            {meal_label}
+          </div>
+          <div style='font-size:1rem;color:{t.TEXT_MUTED};margin-top:2px'>
+            {variant_name}
+          </div>
+        </div>
+        <div style='text-align:left'>
+          <div style='font-size:1.6rem;font-weight:800;color:{t.ACCENT}'>{round(calories)}</div>
+          <div style='font-size:0.7rem;color:{t.TEXT_MUTED}'>קק״ל</div>
+          {f"<div style='font-size:0.7rem;color:{t.TEXT_MUTED};margin-top:6px'>{time_window_label}</div>" if time_window_label else ""}
+        </div>
+      </div>
+      <div style='margin-top:12px'>
+        {macro_grid_html(round(calories), round(protein), round(carbs), round(fat))}
+      </div>
+    </div>
+    """
+
+
+def swap_option_html(variant_name: str, calories: float, protein: float) -> str:
+    """One row inside the swap drawer — name + headline macros."""
+    return f"""
+    <div style='background:{t.SURFACE_2};border:1px solid {t.BORDER};
+                border-radius:10px;padding:10px 12px;direction:rtl;
+                display:flex;justify-content:space-between;align-items:center'>
+      <div style='font-weight:600;color:{t.TEXT};font-size:0.95rem'>{variant_name}</div>
+      <div style='display:flex;gap:10px;font-size:0.78rem'>
+        <span style='color:{t.ACCENT};font-weight:700'>{round(calories)} קק״ל</span>
+        <span style='color:{t.PROTEIN_COLOR};font-weight:700'>{round(protein)}g חלבון</span>
+      </div>
+    </div>
+    """

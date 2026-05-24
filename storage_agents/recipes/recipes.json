@@ -1411,7 +1411,8 @@
     "tags": [
       "dairy",
       "quick",
-      "protein"
+      "protein",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -1490,7 +1491,8 @@
     "tags": [
       "dairy",
       "protein",
-      "quick"
+      "quick",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -3336,7 +3338,8 @@
     "tags": [
       "dairy",
       "baking",
-      "snack"
+      "snack",
+      "treat"
     ],
     "kashrut": "dairy"
   },
@@ -3489,7 +3492,8 @@
     "tags": [
       "vegan",
       "snack",
-      "no-bake"
+      "no-bake",
+      "treat"
     ],
     "kashrut": "parve"
   },
@@ -3690,7 +3694,8 @@
     "tags": [
       "dairy",
       "quick",
-      "shake"
+      "shake",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -4312,7 +4317,8 @@
     "tags": [
       "parve",
       "baking",
-      "dessert"
+      "dessert",
+      "treat"
     ],
     "kashrut": "parve"
   },
@@ -4415,7 +4421,8 @@
     "tags": [
       "high-protein",
       "fitness",
-      "quick"
+      "quick",
+      "post_workout"
     ],
     "kashrut": "parve"
   },
@@ -4678,7 +4685,8 @@
     "tags": [
       "dairy",
       "dessert",
-      "chocolate"
+      "chocolate",
+      "treat"
     ],
     "kashrut": "dairy"
   },
@@ -4981,7 +4989,8 @@
       "vegetarian",
       "snack",
       "no-bake",
-      "energy"
+      "energy",
+      "treat"
     ],
     "kashrut": "dairy"
   },
@@ -5182,7 +5191,8 @@
     "tags": [
       "parve",
       "high-protein",
-      "low-carb"
+      "low-carb",
+      "post_workout"
     ],
     "kashrut": "parve"
   },
@@ -5566,7 +5576,8 @@
     "tags": [
       "dairy",
       "high-protein",
-      "smoothie"
+      "smoothie",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -9257,7 +9268,8 @@
     "tags": [
       "dairy",
       "high-protein",
-      "shake"
+      "shake",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -9348,7 +9360,8 @@
     "tags": [
       "vegan",
       "frozen",
-      "dessert"
+      "dessert",
+      "treat"
     ],
     "kashrut": "parve"
   },
@@ -9402,7 +9415,8 @@
     "tags": [
       "vegetarian",
       "baking",
-      "chocolate"
+      "chocolate",
+      "treat"
     ],
     "kashrut": "parve"
   },
@@ -9450,7 +9464,8 @@
     "tags": [
       "dairy",
       "baking",
-      "cookies"
+      "cookies",
+      "treat"
     ],
     "kashrut": "dairy"
   },
@@ -9492,7 +9507,8 @@
     "tags": [
       "vegan",
       "no-bake",
-      "dates"
+      "dates",
+      "treat"
     ],
     "kashrut": "parve"
   },
@@ -9583,7 +9599,8 @@
     "tags": [
       "dairy",
       "sweet",
-      "crepe"
+      "crepe",
+      "treat"
     ],
     "kashrut": "dairy"
   },
@@ -9631,7 +9648,8 @@
     "tags": [
       "dairy",
       "dessert",
-      "chocolate"
+      "chocolate",
+      "treat"
     ],
     "kashrut": "dairy"
   },
@@ -9673,7 +9691,8 @@
     "tags": [
       "vegan",
       "middle-eastern",
-      "tahini"
+      "tahini",
+      "treat"
     ],
     "kashrut": "parve"
   },
@@ -9891,7 +9910,8 @@
     "tags": [
       "dairy",
       "high-protein",
-      "shake"
+      "shake",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -9939,7 +9959,8 @@
     "tags": [
       "dairy",
       "light",
-      "quick"
+      "quick",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -9981,7 +10002,8 @@
     "tags": [
       "dairy",
       "yogurt",
-      "nuts"
+      "nuts",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -10545,7 +10567,8 @@
     "tags": [
       "dairy",
       "high-protein",
-      "toast"
+      "toast",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -10600,7 +10623,8 @@
     "tags": [
       "vegetarian",
       "quick",
-      "high-protein"
+      "high-protein",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -10820,7 +10844,8 @@
     "tags": [
       "dairy",
       "quick",
-      "shake"
+      "shake",
+      "post_workout"
     ],
     "kashrut": "dairy"
   },
@@ -11610,7 +11635,8 @@
       "dairy",
       "quick",
       "sweet",
-      "healthy"
+      "healthy",
+      "treat"
     ]
   },
   {
@@ -11637,7 +11663,8 @@
       "dairy",
       "sweet",
       "winter",
-      "traditional"
+      "traditional",
+      "treat"
     ]
   },
   {
@@ -11876,7 +11903,8 @@
       "dairy",
       "quick",
       "seasonal",
-      "sweet"
+      "sweet",
+      "treat"
     ]
   },
   {
@@ -12832,7 +12860,8 @@
     "tags": [
       "parve",
       "vegan",
-      "quick"
+      "quick",
+      "post_workout"
     ],
     "kashrut": "parve"
   },

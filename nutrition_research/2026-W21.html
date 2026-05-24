@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nutrition App Research — 2026-W21 (May 18–24)</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #555;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --line: #e4e4e4;
+    --accent: #2d6a4f;
+    --green: #38a169;
+    --yellow: #d69e2e;
+    --red: #c53030;
+    --israeli: #0038b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    margin: 0;
+    padding: 32px 20px;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+  header {
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 6px 0;
+    color: var(--accent);
+  }
+  .meta { color: var(--muted); font-size: 14px; }
+  h2 {
+    font-size: 20px;
+    margin-top: 36px;
+    margin-bottom: 12px;
+    color: var(--ink);
+    border-left: 4px solid var(--accent);
+    padding-left: 10px;
+  }
+  h3 {
+    font-size: 16px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+  }
+  p { margin: 8px 0; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .competitor-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  ul { margin: 6px 0 6px 22px; padding: 0; }
+  li { margin-bottom: 4px; }
+  .summary {
+    background: #f0f7f4;
+    border-left: 4px solid var(--accent);
+    padding: 16px 18px;
+    border-radius: 4px;
+    font-size: 15px;
+  }
+  .rec {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 6px solid var(--yellow);
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .rec.tier-green { border-left-color: var(--green); }
+  .rec.tier-red   { border-left-color: var(--red); }
+  .rec-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .rec-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 12px;
+    text-transform: uppercase;
+  }
+  .badge-yellow { background: #fef3c7; color: #92400e; }
+  .badge-green  { background: #d1fae5; color: #065f46; }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+  .badge-effort { background: #e0e7ff; color: #3730a3; }
+  .badge-il     { background: #dbeafe; color: var(--israeli); }
+  .rec-field {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .rec-field strong { color: var(--ink); }
+  .rec-field-label {
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+  .ignore {
+    background: #fafafa;
+    border: 1px dashed #ccc;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .delivery {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-top: 30px;
+    font-size: 14px;
+  }
+  .theme-box {
+    background: #f0f7f4;
+    border: 1px solid #c6e2d3;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  code {
+    background: #f1f1f1;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+  }
+  .he { direction: rtl; text-align: right; font-family: "Segoe UI", "Arial Hebrew", sans-serif; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Nutrition App Research — Week 21, 2026</h1>
+  <div class="meta">Week of May 18–24, 2026 &nbsp;·&nbsp; Market Intelligence Agent &nbsp;·&nbsp; Project: תזונאי</div>
+</header>
+
+<h2>1. Landscape summary</h2>
+<div class="summary">
+  Week 21 was defined by two stories. <strong>(1) MyFitnessPal's redesign backlash is hardening into a trust crisis</strong> — three weeks after the new Today tab shipped, the company has confirmed there will be no rollback and users are exploiting a region-switch workaround to keep the old UI; combined with March's Cal AI acquisition ($30M ARR, 15M downloads) and the launch of MyFitnessPal Ads (a wellness retail-media network), the strategic direction is clearly AI-monetization-first, user-trust-later. <strong>(2) Noom's microdose GLP-1 program dropped its BMI eligibility floor from 25 to 21 this week</strong>, bundled a 17-biomarker home-test kit at $149/mo, and acquired a compounding pharmacy — Noom is no longer in our reference set as a consumer tracker; it is a vertically integrated longevity-medicine company. Yazio and Lose It shipped maintenance-only releases. Lifesum continues to roll its chat-style AI Tracking but App Store reviews flag misidentification (cashews → shrimp) and auto-renewal billing disputes. <strong>The cross-app review pattern is unmistakable: intrusive monetization, paywalled-once-free features, and dopamine-loop gamification are bleeding trust across every competitor. A calm, Hebrew-first, ad-free product is more defensible than it was two weeks ago.</strong>
+</div>
+
+<h2>2. Competitor highlights</h2>
+
+<div class="card">
+  <div class="competitor-name">MyFitnessPal</div>
+  <ul>
+    <li>Redesign backlash hardens: company confirmed (PiunikaWeb, May 5) the new Today tab is "the path forward" with no rollback — users switching account region to Turkey as a workaround. Trust damage visible in App Store reviews.</li>
+    <li>Cal AI acquisition (TechCrunch, Mar 2, 2026): bought the viral teen-built photo-calorie app (15M downloads, $30M ARR), integrating it into MFP's 20M-item food database. AI-logging is now MFP's flagship.</li>
+    <li>MyFitnessPal Ads launched Mar 17, 2026 (GlobeNewswire) — wellness retail-media network monetizing the user base. Reviews already cite increased ad density as a churn driver.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Yazio</div>
+  <ul>
+    <li>Maintenance week: v12.83.1 → 12.85.1 shipped May 15-21 (APKMirror) with generic "further improvements" notes — no headline features.</li>
+    <li>Still leaning on the "AI Calorie Tracker" rebrand and the IF + photo + barcode bundle as the durable wedge.</li>
+    <li>Influx Inc. partnership for multilingual support (LeadIQ) signals international scaling — <strong>Hebrew is NOT yet on their roadmap</strong>.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Lose It</div>
+  <ul>
+    <li>Mid-May 2026 release was bug fixes only (Uptodown) — feature velocity has stalled.</li>
+    <li>The 2026 paywall move (barcode "Scan It" + macro tracking now Premium-only for new users, NutriScan) is generating sustained review backlash — the free-Hebrew-scanner opportunity from W20 remains wide open.</li>
+    <li>Voice meal logging ("Say It") and single-photo full-meal AI logging remain the marketed AI features (FitBudd).</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Noom</div>
+  <ul>
+    <li><strong>BIGGEST move of the week:</strong> microdose GLP-1 program dropped BMI eligibility from 25 to 21 (eMarketer, MobiHealthNews) — "the vast majority of US adults" is now TAM. $149/mo includes at-home 17-biomarker test kits.</li>
+    <li>Also launched a $129 compounded GLP-1 SKU with industry-first "taper-off guarantee" (Noom press) and acquired a compounding pharmacy (MobiHealthNews) for supply-chain vertical integration.</li>
+    <li>Repositioning from "weight-loss app" to "proactive whole-health / longevity medicine" (Fitt Insider). <strong>Noom has left the consumer-tracker field</strong> — reduces competitive pressure on us in that lane.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <div class="competitor-name">Lifesum</div>
+  <ul>
+    <li>AI Tracking (chat-style multimodal) rolling out May 2026; Premium-gated; users can toggle back to Classic Tracking under Customize Diary (Lifesum Helpdesk).</li>
+    <li>Accuracy collapse in App Store reviews: cashews ID'd as shrimp, mug-in-photo logged as coffee, barcode scans doubling/tripling calories (NutriScan, Trustpilot). Validates W20's "edit before confirm" guidance for our own photo-scan build.</li>
+    <li>Billing-trust collapse: Trustpilot flooded with auto-renewal complaints and PayPal charges continuing after in-app cancellation. <strong>Universal complaint pattern across MFP / Noom / Lifesum — predatory monetization is the category-wide failure mode of 2026.</strong></li>
+  </ul>
+</div>
+
+<h2>3. Trend observations</h2>
+
+<div class="card">
+  <h3>Trend 1 — Protein-first targeting is replacing calorie-deficit as the primary daily metric</h3>
+  <p><em>Evidence:</em> Welling 2026 protein-tracking roundup; Fuel macro-tracking 2026 — both explicitly tie protein-first framing to the GLP-1 era ("eat less → must hit protein to preserve lean mass"). Noom's microdose program leads with biomarker + protein targeting; MFP and Lifesum macro cards surface protein at the top in 2026 redesigns.</p>
+  <p><em>Relevance:</em> HIGH for Israeli home cooks. The Israeli diet is carb-heavy (pita, rice, bourekas, malabi); a "did you hit your protein today?" daily check is more actionable and less moralistic than calorie counting. Better fit for the תזונאי target user (macro-curious, not bodybuilder).</p>
+</div>
+
+<div class="card">
+  <h3>Trend 2 — Anti-gamification / "calm UI" counter-trend</h3>
+  <p><em>Evidence:</em> Envato UX/UI 2026 trends and UXPilot mobile design 2026 both explicitly call out gamification fatigue and recommend calm micro-interactions + AI-as-copilot over AI-as-autopilot. MyFitnessPal redesign backlash (PiunikaWeb, May 5) is the live consumer evidence: streak + restructured macros are NOT universally loved.</p>
+  <p><em>Relevance:</em> HIGH — and a direct counterpoint to W20's "pin a streak counter" recommendation. Streaks shame the Shomer-Shabbat user who doesn't log Saturday. Streaks should remain a feature but <strong>OFF BY DEFAULT, opt-in only</strong>, with a calm-mode pledge as positioning.</p>
+</div>
+
+<div class="card">
+  <h3>Trend 3 — GLP-1 companion features remain substantive, not hype</h3>
+  <p><em>Evidence:</em> Noom's BMI-21 microdose launch this week (eMarketer, MobiHealthNews) + pharmacy acquisition; Shotsy 3.0 (March 2026) added oral GLP-1 tracking; MFP's GLP-1 module (W20). Israeli context: Ozempic / Wegovy uptake via Kupot Holim is real and rising.</p>
+  <p><em>Relevance:</em> MEDIUM. Most תזונאי users are macro-curious cooks, not patients. Worth a <strong>lightweight</strong> opt-in flag that auto-raises the protein floor — NOT a full medication-tracking surface, which is RED-tier (PHI) and out of scope.</p>
+</div>
+
+<h3>Ignore list (hype without substance, this cycle)</h3>
+<div class="ignore"><strong>Wearables-unified dashboards (Vora Health, 500+ wearable integrations)</strong> — wrong audience. Israeli home cooks don't wear Whoop straps. 6+ months of integration work, no PMF for our segment. Ignore.</div>
+<div class="ignore"><strong>MyFitnessPal-style retail-media ad network</strong> — monetization that breaks user trust (per W21 review patterns) is exactly what our anti-position sells against. Even at scale, do not pursue.</div>
+<div class="ignore"><strong>Social/community food feeds</strong> — still no PMF in nutrition. Users don't want their cousin seeing they ate three malabis. Same call as Q1.</div>
+
+<h2>4. Three concrete recommendations for תזונאי</h2>
+
+<div class="rec">
+  <div class="rec-header">
+    <div class="rec-title">REC 1 — Protein-First Daily Widget (חלבון להיום)</div>
+    <div class="badges">
+      <span class="badge badge-yellow">YELLOW</span>
+      <span class="badge badge-effort">EFFORT: M</span>
+      <span class="badge badge-il">ISRAELI ANGLE</span>
+    </div>
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">What to build</div>
+    Add a <strong>protein-of-the-day widget</strong> to the home tab, surfaced <strong>above</strong> the calorie ring. Show: protein g consumed vs personalized floor (1.6 g/kg lean body mass, derived from existing Agent 2 BMR/TDEE inputs); color-coded ring (red &lt; 70%, yellow 70-90%, green ≥ 90%); and a <span class="he">"מה לאכול להשלים?"</span> suggestion that pulls from Agent 4 inventory and Agent 5 planner. Keep the existing calorie dashboard accessible via tab toggle — do not delete it; promote protein to the primary daily metric.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Inspired by</div>
+    Welling 2026 protein-tracking roundup; Fuel macro-tracking 2026; Noom's biomarker-led GLP-1 program (premium signal); MFP / Lifesum 2026 macro cards surfacing protein first.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Effort</div>
+    Medium. New widget on home tab; uses existing Agent 2 macro targets; small user-profile field (LBM estimate or derived from BMR inputs). Feature-flagged so existing users keep calorie-primary default. ~1 sprint.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Why it matters for our user segment</div>
+    Israeli diet is carb-heavy (pita, rice, bourekas, hummus); calorie counting is moralistic and exhausting for home cooks. Protein-floor framing is <strong>positive</strong> ("add one more egg") vs <strong>negative</strong> ("you went over"). Lower cognitive load, fits the target user (macro-curious cooks, not bodybuilders), and sets up REC 3 (GLP-1 protein-floor flag). For Neo's unit-economics frame: protein-per-shekel becomes a real metric for grocery decisions.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Build hand-off</div>
+    Owner: Agent 2 (Nutrition) + Agent 5 (Planner) + Agent 1 (Contracts). Feature flag: <code>FF_PROTEIN_FIRST_WIDGET</code>. Schema: minor — add <code>user_profile.lean_body_mass_kg</code> (nullable, derived) and <code>user_preferences.primary_metric</code> ('calories'|'protein', default 'calories' for existing users, 'protein' for new). Non-breaking. Metrics: % users toggling to 'protein'; protein-floor hit-rate D7/D30; "close the gap" CTR; retention delta protein-primary vs calorie-primary cohort.
+  </div>
+</div>
+
+<div class="rec tier-green">
+  <div class="rec-header">
+    <div class="rec-title">REC 2 — Calm Mode by Default (אצלנו אין סטריקים)</div>
+    <div class="badges">
+      <span class="badge badge-green">GREEN</span>
+      <span class="badge badge-effort">EFFORT: S</span>
+      <span class="badge badge-il">ISRAELI ANGLE</span>
+    </div>
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">What to build</div>
+    Convert all gamification (streaks, badges, daily nudges, weekly summary push) to <strong>OPT-IN</strong>. Default state for new and existing users is "Calm Mode": no streak counter on home, no fire-emoji shaming, no auto-enabled push notifications. Add a one-screen Settings → <span class="he">מצב שקט</span> (Calm Mode) toggle group with three controls: (a) <span class="he">הצג סטריקים</span> — off by default; (b) <span class="he">התראות יומיות</span> — off by default; (c) <span class="he">סיכום שבועי</span> — off by default. Add a small first-launch banner: <span class="he"><strong>"אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה."</strong></span>
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Inspired by</div>
+    Envato UX/UI 2026 + UXPilot mobile 2026 calm-UI trend; MyFitnessPal redesign backlash (PiunikaWeb May 5, 2026); cross-app billing / auto-renewal trust collapse in Trustpilot reviews of MFP, Noom, Lifesum (NutriScan May 2026).
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Effort</div>
+    Small. UI/copy/defaults change. Streak/notification machinery from prior recommendations is preserved — only defaults flip from on → off, plus three toggle controls and one banner string. ~half a sprint.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Why it matters for our user segment</div>
+    <strong>Partial walk-back of W20-REC-3's "pin a visible streak counter"</strong> based on this week's evidence: gamification is reversing in 2026 design discourse, MFP's streak-heavy redesign is being rejected, and observant Israeli users would be actively shamed by a streak that resets on Shabbat. Streaks remain for power users who want them; they are no longer the default. Positioning the absence of streaks/ads/predatory monetization as a deliberate stance is cheap to build and a free wedge against MFP's ad-network move and Lifesum's auto-renewal complaints. Neo's unit-economics view: zero LTV cost (no churn from shamed users), measurable trust differentiation in App Store reviews.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Build hand-off</div>
+    Owner: Agent 6 (AI) for copy + frontend for toggles. Feature flag: <code>FF_CALM_MODE_DEFAULT</code>. Schema: none — uses existing user_preferences (three boolean keys, all default false). Metrics: % users who turn streaks back on (validates streak demand); D30 retention delta vs prior cohort; App Store Hebrew review sentiment tracked monthly.
+  </div>
+</div>
+
+<div class="rec">
+  <div class="rec-header">
+    <div class="rec-title">REC 3 — GLP-1 Aware Protein Floor (single opt-in flag, no medication data)</div>
+    <div class="badges">
+      <span class="badge badge-yellow">YELLOW</span>
+      <span class="badge badge-effort">EFFORT: S</span>
+      <span class="badge badge-il">ISRAELI ANGLE</span>
+    </div>
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">What to build</div>
+    Add a single user-profile flag in onboarding and settings: <span class="he">"האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג'ארו)?"</span> If YES: (a) automatically raise the protein floor to 1.6 g/kg LBM and surface it in REC-1's widget; (b) lower the calorie-floor warning by ~200 kcal (appetite is suppressed; aggressive deficits risk lean-mass loss); (c) show a one-time educational card. <strong>DO NOT</strong> store the medication name, dose, timing, or injection data. <strong>DO NOT</strong> add a medication-log surface. Visible disclaimer: <span class="he">"איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך."</span> Single boolean field only.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Inspired by</div>
+    Noom's BMI-21 microdose launch this week (eMarketer, MobiHealthNews, May 2026); MFP's GLP-1 module (W20); Shotsy 3.0 oral GLP-1 (March 2026). Israeli relevance: Ozempic / Wegovy uptake via Kupot Holim is growing in 2025-2026.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Effort</div>
+    Small. New onboarding step + one user-profile boolean + minor logic change in Agent 2 macro calculation. Behind feature flag. ~half a sprint.
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Why it matters for our user segment</div>
+    Real demand exists in Israel but the market is racing to build heavy clinical-tracker products we cannot match without RED-tier work. A single yes/no flag captures ~80% of the user value (correctly raised protein floor + adjusted calorie warnings) for ~5% of the engineering cost. Positions תזונאי as "GLP-1 aware, not GLP-1 medicalized" — the right posture for a non-clinical nutrition app. Coherent with REC 1 (protein-first) and REC 2 (calm, no medical shame).
+  </div>
+  <div class="rec-field">
+    <div class="rec-field-label">Build hand-off &amp; guardrail</div>
+    Owner: Agent 2 (Nutrition) + Agent 1 (Contracts). Feature flag: <code>FF_GLP1_AWARE_TARGETS</code>. Schema: minor — <code>user_profile.glp1_medication_in_use</code> (boolean, default null). <strong>NO storage of drug name, dose, schedule, or injection data.</strong> Guardrail: if product later wants to add medication-name or dosing fields, re-classify as RED and route through medical / legal review before build.
+  </div>
+</div>
+
+<h2>5. Quarter-to-date themes</h2>
+<div class="theme-box">
+  <strong>1. Reduce friction in meal logging</strong> — W16 + W20 (photo + barcode + chat-entry).<br>
+  <strong>2. Israeli-first defensibility</strong> — Mediterranean food bias, Israeli barcode DB, Hebrew chat parsing.<br>
+  <strong>3. Macro intelligence over macro counting</strong> — <em>NEW this cycle (W21)</em>: protein-first widget + GLP-1-aware targets. Builds on W20 logging foundation; moves value up the stack from "logged faster" to "shown the right number."<br>
+  <strong>4. Trust-as-positioning vs predatory competitor monetization</strong> — <em>NEW this cycle (W21)</em>: calm-mode default. Emergent from this week's universal competitor-review collapse (MFP redesign, Lifesum billing, Noom auto-renewal).
+</div>
+
+<div class="delivery">
+  <strong>Delivery status:</strong><br>
+  • JSON brief: written to <code>Desktop/אפליקציית תזונאי/approval_version_nutt_app/market_brief.json</code> (only the תזונאי project folder is mounted; same path as W20).<br>
+  • HTML report: this file — <code>Desktop/אפליקציית תזונאי/nutrition_research/2026-W21.html</code>.<br>
+  • Email to dviryona8@gmail.com (CC: nehoraios08@gmail.com): <strong>NOT SENT</strong> — no Gmail / email MCP connector is configured for this agent (verified via mcp-registry search this run, same blocker as W20). Brief is saved to disk; please forward manually or install a Gmail connector before next cycle.<br>
+  • Cadence note: W20 ran 7 days ago and W21 ran today — if Tue/Fri biweekly is the intended cadence, the trigger may be misconfigured (currently behaving as weekly).
+</div>
+
+<footer>
+  Generated 2026-05-24 by the Market Intelligence Agent for תזונאי. Sources cited in the JSON sibling file. Previous report: 2026-W20.html. Recommendations are written to be hand-off-ready for Director (Agent 8) → execution.
+</footer>
+
+</div>
+</body>
+</html>

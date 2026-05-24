@@ -1,0 +1,253 @@
+{
+  "user_id": "8754fcd4-a779-4ed2-b2e8-dfb22d32fe49",
+  "picks": {
+    "breakfast": [
+      "var_0deff690b9ce",
+      "var_0ccc4861ce29",
+      "var_cf015b4e4c42"
+    ],
+    "lunch": [
+      "var_bf0d5afea3e3",
+      "var_3fc5822c43d3"
+    ],
+    "dinner": [
+      "var_2b18093ccf84",
+      "var_c42c08c87957",
+      "var_7afcc86faf5c"
+    ],
+    "post_workout": [
+      "var_05a205a58725",
+      "var_a8756d146471"
+    ],
+    "treat": [
+      "var_1dced148295b",
+      "var_80a0e7a37ced",
+      "var_a34743f416cd"
+    ]
+  },
+  "fixed_day_overrides": {},
+  "variants": [
+    {
+      "variant_id": "var_0deff690b9ce",
+      "base_recipe_id": "recipe_211",
+      "name": "חביתת גבינות עם ירקות",
+      "meal_type": "breakfast",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 330.0,
+        "protein": 24.0,
+        "carbs": 5.0,
+        "fat": 24.0
+      },
+      "created_at": "2026-05-24T12:52:25.784646+00:00"
+    },
+    {
+      "variant_id": "var_0ccc4861ce29",
+      "base_recipe_id": "recipe_108",
+      "name": "חלה ממולאת",
+      "meal_type": "breakfast",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 460.0,
+        "protein": 12.0,
+        "carbs": 65.0,
+        "fat": 17.0
+      },
+      "created_at": "2026-05-24T12:52:42.243147+00:00"
+    },
+    {
+      "variant_id": "var_cf015b4e4c42",
+      "base_recipe_id": "recipe_108",
+      "name": "חלה ממולאת",
+      "meal_type": "breakfast",
+      "ingredient_overrides": {
+        "egg": 0.0
+      },
+      "total_nutrition": {
+        "calories": 364.2,
+        "protein": 9.5,
+        "carbs": 51.5,
+        "fat": 13.5
+      },
+      "created_at": "2026-05-24T12:53:00.027097+00:00"
+    },
+    {
+      "variant_id": "var_bf0d5afea3e3",
+      "base_recipe_id": "recipe_118",
+      "name": "פאד תאי עם עוף",
+      "meal_type": "lunch",
+      "ingredient_overrides": {
+        "chicken breast": 300.0
+      },
+      "total_nutrition": {
+        "calories": 427.7,
+        "protein": 29.0,
+        "carbs": 48.3,
+        "fat": 12.4
+      },
+      "created_at": "2026-05-24T12:53:44.648350+00:00"
+    },
+    {
+      "variant_id": "var_3fc5822c43d3",
+      "base_recipe_id": "recipe_009",
+      "name": "שניצל עם סלט",
+      "meal_type": "lunch",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 550.0,
+        "protein": 50.0,
+        "carbs": 25.0,
+        "fat": 28.0
+      },
+      "created_at": "2026-05-24T12:53:59.312840+00:00"
+    },
+    {
+      "variant_id": "var_2b18093ccf84",
+      "base_recipe_id": "recipe_217",
+      "name": "שניצל עוף",
+      "meal_type": "dinner",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 310.0,
+        "protein": 32.5,
+        "carbs": 14.0,
+        "fat": 12.5
+      },
+      "created_at": "2026-05-24T12:54:20.407667+00:00"
+    },
+    {
+      "variant_id": "var_c42c08c87957",
+      "base_recipe_id": "recipe_055",
+      "name": "שניצל חזה הודו",
+      "meal_type": "dinner",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 290.0,
+        "protein": 25.0,
+        "carbs": 11.0,
+        "fat": 16.0
+      },
+      "created_at": "2026-05-24T12:54:23.422214+00:00"
+    },
+    {
+      "variant_id": "var_7afcc86faf5c",
+      "base_recipe_id": "recipe_171",
+      "name": "קציצות דגים",
+      "meal_type": "dinner",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 220.0,
+        "protein": 17.0,
+        "carbs": 15.0,
+        "fat": 10.0
+      },
+      "created_at": "2026-05-24T12:54:26.313302+00:00"
+    },
+    {
+      "variant_id": "var_05a205a58725",
+      "base_recipe_id": "recipe_030",
+      "name": "יוגורט עם אגוזים",
+      "meal_type": "post_workout",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 230.0,
+        "protein": 19.0,
+        "carbs": 15.0,
+        "fat": 11.0
+      },
+      "created_at": "2026-05-24T12:54:35.842030+00:00"
+    },
+    {
+      "variant_id": "var_a8756d146471",
+      "base_recipe_id": "recipe_088",
+      "name": "פנקייק חלבון",
+      "meal_type": "post_workout",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 215.0,
+        "protein": 19.0,
+        "carbs": 21.0,
+        "fat": 6.0
+      },
+      "created_at": "2026-05-24T12:54:41.714969+00:00"
+    },
+    {
+      "variant_id": "var_1dced148295b",
+      "base_recipe_id": "recipe_190",
+      "name": "מוס שוקולד",
+      "meal_type": "treat",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 145.0,
+        "protein": 2.5,
+        "carbs": 9.0,
+        "fat": 11.2
+      },
+      "created_at": "2026-05-24T12:54:53.414657+00:00"
+    },
+    {
+      "variant_id": "var_80a0e7a37ced",
+      "base_recipe_id": "recipe_185",
+      "name": "מאפינס שוקולד",
+      "meal_type": "treat",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 120.0,
+        "protein": 2.3,
+        "carbs": 15.0,
+        "fat": 5.7
+      },
+      "created_at": "2026-05-24T12:54:58.391027+00:00"
+    },
+    {
+      "variant_id": "var_a34743f416cd",
+      "base_recipe_id": "recipe_189",
+      "name": "קרפ מתוק",
+      "meal_type": "treat",
+      "ingredient_overrides": {},
+      "total_nutrition": {
+        "calories": 175.0,
+        "protein": 6.0,
+        "carbs": 26.0,
+        "fat": 5.0
+      },
+      "created_at": "2026-05-24T12:55:02.537580+00:00"
+    }
+  ],
+  "liked_ingredients": [
+    "food_q010",
+    "food_044",
+    "food_q004",
+    "food_017",
+    "food_075",
+    "food_132",
+    "food_005",
+    "food_q005",
+    "food_045",
+    "food_096",
+    "f_il_025",
+    "food_020",
+    "food_018",
+    "food_007",
+    "food_013",
+    "food_q002",
+    "food_178",
+    "food_056",
+    "food_q007",
+    "f_il_072",
+    "food_001",
+    "food_014",
+    "food_088",
+    "food_093",
+    "food_053",
+    "food_043",
+    "food_q009",
+    "food_011"
+  ],
+  "skipped_meal_types": [],
+  "onboarded_at": "2026-05-24T12:55:40.810442+00:00",
+  "updated_at": "2026-05-24T12:55:41.062982+00:00",
+  "show_streaks": false,
+  "daily_notifications": false,
+  "weekly_summary": false
+}
