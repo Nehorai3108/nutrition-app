@@ -1,0 +1,57 @@
+{
+  "date": "2026-05-25",
+  "metrics": {
+    "tasks_added": 0,
+    "tasks_completed": 0,
+    "tasks_reviewed": 0,
+    "approval_rate": null,
+    "pending_at_eod": 7
+  },
+  "stale_approvals": [
+    {
+      "task_id": "8ffd46bb-bc55-43bb-900e-80750e931179",
+      "type": "improve_variety",
+      "priority": "medium",
+      "age_hours": 760
+    },
+    {
+      "task_id": "ff5a5c94-1bb0-43c1-9904-0f7aa958d402",
+      "type": "fix_meal_timing",
+      "priority": "high",
+      "age_hours": 760
+    },
+    {
+      "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+      "type": "fix_meal_timing",
+      "priority": "high",
+      "age_hours": 760
+    },
+    {
+      "task_id": "00f77913-6693-414e-a639-1b3d8743850e",
+      "type": "fix_meal_timing",
+      "priority": "high",
+      "age_hours": 760
+    },
+    {
+      "task_id": "e36abee6-4ed1-4b7b-86bc-1e464fc04b11",
+      "type": "fix_meal_timing",
+      "priority": "high",
+      "age_hours": 760
+    },
+    {
+      "task_id": "25e0cfd9-808d-4bf4-8036-2319672fd54f",
+      "type": "fix_meal_timing",
+      "priority": "high",
+      "age_hours": 760
+    },
+    {
+      "task_id": "d4b43db4-bd12-4c2d-ab9c-0d1133b8e4a0",
+      "type": "fix_meal_timing",
+      "priority": "high",
+      "age_hours": 760
+    }
+  ],
+  "morning_report_path": null,
+  "evening_report_path": "storage_agents/audit/evening_report_2026-05-25.md",
+  "notes": "No Director, Critic, or executor activity today. All 7 pending tasks are stale (~760 hours, created 2026-04-24). Pipeline has been fully idle since ~2026-04-24. No morning report was generated. Approval rate is null (no reviews today); overall historical rate is 2.7% (28/1050). No rubber-stamp risk today — opposite concern: zero activity."
+}

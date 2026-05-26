@@ -1215,13 +1215,4 @@ with tab_inventory:
             food = food_lookup.get(change.food_id)
             food_name = food.name_he if food else change.food_id
 
-            c_name, c_before, c_arrow, c_after, c_delta = st.columns([3, 1, 0.5, 1, 1])
-            c_name.write(f"**{food_name}**")
-            c_before.write(f"{change.quantity_before:.0f}ג")
-            c_arrow.write("→")
-            c_after.write(f"{change.quantity_after:.0f}ג")
-            remaining_pct = (change.quantity_after / change.quantity_before * 100) if change.quantity_before > 0 else 0
-            c_delta.write(f"({change.quantity_delta:+.0f}ג)")
-
-        st.divider()
-        st.success(f"✓  {len(changeset.changes)} פריטים עודכנו במלאי")
+            c_name, c_before, c_arrow, c_after, c_delta 

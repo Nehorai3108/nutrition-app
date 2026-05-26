@@ -113,42 +113,4 @@
     {
       "slug": "glp1-protein-floor-flag",
       "what": "Add a single user-profile flag in onboarding and settings: 'האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג'ארו)?' (Are you using a GLP-1 medication?). If YES: (a) automatically raise the protein floor to 1.6 g/kg lean body mass and surface it in REC-1's widget; (b) lower the calorie floor warning threshold by 200 kcal (because appetite is suppressed and aggressive deficits risk lean-mass loss); (c) show a one-time educational card 'שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1'. DO NOT store the medication name, dose, timing, or injection data. DO NOT add a medication-log surface. Add a visible disclaimer: 'איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.' Single boolean field only.",
-      "inspired_by": "Noom's BMI-21 microdose launch this week (eMarketer, MobiHealthNews, May 2026); MFP's GLP-1 module (W20); Shotsy 3.0 oral GLP-1 (March 2026). Israeli relevance: Ozempic / Wegovy uptake via Kupot Holim is growing in 2025-2026.",
-      "effort": "S",
-      "tier": "YELLOW",
-      "tier_reason": "New onboarding step + one user-profile boolean + minor logic change in Agent 2 macro calculation. Behind feature flag. CRITICAL: stays YELLOW only because we store a single yes/no flag, NOT medication data — storing drug names, doses, or injection timestamps escalates to RED (PHI handling, requires medical disclaimer + legal review + likely separate consent flow).",
-      "why_it_matters": "Real demand exists in Israel (Ozempic uptake via Kupot Holim) but the entire market is racing to build heavy clinical-tracker products that we cannot match without RED-tier work. A single yes/no flag captures 80% of the user value (correctly raised protein floor + adjusted calorie warnings) for 5% of the engineering cost. Positions תזונאי as 'GLP-1 aware, not GLP-1 medicalized' — the right posture for a non-clinical nutrition app. Coherent with REC-1 (protein-first) and REC-2 (calm UI, no medical shame).",
-      "user_segment": "Israeli adults on Ozempic / Wegovy / Mounjaro who want a nutrition app that understands their changed appetite and protein needs without becoming a medication tracker.",
-      "build_hand_off": {
-        "owner_agent": "Agent 2 (Nutrition) + Agent 1 (Contracts)",
-        "feature_flag": "FF_GLP1_AWARE_TARGETS",
-        "schema_change": "minor — user_profile.glp1_medication_in_use (boolean, default null/unknown). NO storage of drug name, dose, schedule, or injection data.",
-        "metrics": "opt-in rate at onboarding; protein-floor hit-rate for GLP-1 cohort vs non-GLP-1 cohort; D30 retention delta",
-        "guardrail": "If product later wants to add medication-name or dosing fields, re-classify task as RED and route through medical / legal review before build."
-      }
-    }
-  ],
-  "themes_quarter_to_date": [
-    "Reduce friction in meal logging (W16, W20 photo + barcode + chat-entry)",
-    "Israeli-first defensibility (Mediterranean food bias, Israeli barcode DB, Hebrew chat parsing)",
-    "Macro intelligence over macro counting (W21 — protein-first widget, GLP-1-aware targets) — new theme this cycle, builds on W20 logging foundation",
-    "Trust-as-positioning vs predatory competitor monetization (W21 — calm-mode default) — new theme emerging from competitor review collapse"
-  ],
-  "delivery_status": {
-    "json_written": true,
-    "json_path_actual": "Desktop/אפליקציית תזונאי/approval_version_nutt_app/market_brief.json",
-    "json_path_requested": "Desktop/approval_version_nutt_app/market_brief.json",
-    "json_path_note": "Only the תזונאי project folder is mounted in this session; wrote JSON inside it under approval_version_nutt_app/ to stay consistent with W20. If a sibling folder is preferred, mount it for next run.",
-    "html_written": true,
-    "html_path": "Desktop/אפליקציית תזונאי/nutrition_research/2026-W21.html",
-    "email_sent": false,
-    "email_failure_reason": "No email/Gmail MCP connector is currently configured for this agent (verified via mcp-registry search this run). Connect a Gmail / SMTP MCP to enable autonomous send to dviryona8@gmail.com (CC: nehoraios08@gmail.com). Brief is saved to disk; please forward manually or install a Gmail connector before the next biweekly run. Same blocker as W20 — flagging again for action.",
-    "previous_run": "2026-W20 (1 week ago) — biweekly cadence has tightened to weekly; if the schedule is intended to be Tue/Fri biweekly, the trigger cadence may be misconfigured."
-  },
-  "notes_for_next_run": [
-    "Watch whether MyFitnessPal walks back any of the redesign in response to backlash (a U-turn would signal weakness across the AI-monetization-first thesis).",
-    "Track Noom's GLP-1 BMI-21 program early-metrics — if it succeeds, expect Yazio / Lifesum to follow with copycat clinical pivots within 1-2 quarters.",
-    "Israeli local app scan was thin this week; deeper search next run (Healthy Club, MyBite/Altman, Calodar) for Hebrew-UX patterns to learn from.",
-    "If REC-2 (Calm Mode default) ships, capture App Store review sentiment delta in Hebrew as a public-comparison data point against MFP."
-  ]
-}
+      "inspired_by": "Noom's BMI-21 microdose launch this week (eMarketer, MobiHealthNews, May 2026); MFP's GLP-1 module (W20); Shotsy 3.0 oral GLP-1 (March 2026). Israeli relevance
