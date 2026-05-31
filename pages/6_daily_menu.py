@@ -96,10 +96,94 @@ def _calc_tdee(profile: dict) -> int:
 
 
 # ── AI menu generation ────────────────────────────────────────────────────────
-_MENU_SYSTEM = """You are an expert Israeli nutritionist. Generate a full daily meal plan as JSON.
-Use only common Israeli foods with HOUSEHOLD quantities (never grams).
+_MENU_SYSTEM = """You are an expert Israeli nutritionist. Generate a realistic daily meal plan for an Israeli adult.
+Return ONLY valid JSON — no text before or after.
 
-Return ONLY valid JSON — no text before or after:
+════════════════════════════════════════
+MEAL STRUCTURE RULES (CRITICAL):
+════════════════════════════════════════
+Every MAIN meal (breakfast, lunch, dinner) MUST contain:
+  1. PROTEIN source (chicken / egg / fish / beef / cheese / cottage / tuna)
+  2. CARB source (bread / rice / pasta / potato / pita) — MAX ONE carb per meal
+  3. VEGETABLES (tomato / cucumber / pepper / salad leaves) — at least 1-2 items
+
+Snacks (morning_snack, afternoon_snack, evening_snack) are small:
+  - 1-2 items only: fruit + yogurt, or cottage + fruit, or handful of nuts
+
+FORBIDDEN COMBINATIONS:
+  ✗ Two carbs in the same meal (e.g., rice AND couscous — pick ONE)
+  ✗ Only carbs with no protein in a main meal
+  ✗ Salad or vegetables measured in "כוס" — use individual pieces (יחידה/כף)
+
+════════════════════════════════════════
+CORRECT MEASUREMENT UNITS PER FOOD TYPE:
+════════════════════════════════════════
+PROTEINS:
+  חזה עוף → 1 יחידה (150g, 165 kcal)
+  שניצל עוף → 1 יחידה (130g, 220 kcal)
+  קציצות עוף → 3 יחידה (75g each, 180 kcal total)
+  ירך עוף → 1 יחידה (120g, 190 kcal)
+  ביצה → יחידה (1 ביצה = 55 kcal)
+  טונה בשמן → 1 קופסה (100g, 200 kcal)
+  דג סלמון → 1 יחידה (150g, 250 kcal)
+  גבינה לבנה 5% → כף (1 כף = 15g = 10 kcal)
+  גבינה צהובה → כף (1 כף = 20g = 60 kcal)
+  גבינת קוטג' → גביע (1 גביע = 200g = 140 kcal)
+
+CARBS:
+  פרוסת לחם מלא / לחם לבן → פרוסה (1 פרוסה = 30g = 70 kcal)
+  פיתה → יחידה (1 = 60g = 160 kcal)
+  אורז לבן / אורז מלא → כפות (4 כפות מבושל = 150g = 200 kcal)
+  פסטה → כפות (4 כפות מבושלת = 150g = 210 kcal)
+  תפוח אדמה → יחידה (1 בינוני = 150g = 120 kcal)
+  בטטה → יחידה (1 = 150g = 130 kcal)
+  קוסקוס → כפות (4 כפות = 150g = 200 kcal)
+
+VEGETABLES (use יחידה or כף — NEVER כוס):
+  עגבנייה → יחידה (1 = 100g = 18 kcal)
+  מלפפון → יחידה (1 = 80g = 12 kcal)
+  פלפל אדום/ירוק/צהוב → יחידה (1 = 120g = 30 kcal)
+  גזר → יחידה (1 = 80g = 33 kcal)
+  חסה/עלי תרד → לא נמדד — use "מנה קטנה" or skip calories
+  זיתים → כף (1 כף = 5 זיתים = 45 kcal)
+  אבוקדו → יחידה (חצי = 80g = 130 kcal) — write quantity=0.5
+
+FATS / SPREADS:
+  שמן זית → כפית (1 כפית = 5ml = 45 kcal)
+  חמאה → כפית (1 כפית = 5g = 35 kcal)
+  טחינה גולמית → כף (1 כף = 15g = 90 kcal)
+  חומוס ממרח → כף (1 כף = 30g = 50 kcal)
+
+DAIRY / SNACKS:
+  יוגורט 1.5%-3% → גביע (1 = 150g = 90 kcal)
+  חלב 1% → כוס (1 = 200ml = 70 kcal)
+  בננה → יחידה (1 = 120g = 105 kcal)
+  תפוח עץ → יחידה (1 = 150g = 80 kcal)
+  אגוזי מלך → כף (1 כף = 15g = 100 kcal)
+
+════════════════════════════════════════
+EXAMPLE BALANCED MEALS:
+════════════════════════════════════════
+BREAKFAST (~350 kcal):
+  2 ביצה (יחידה, 110 kcal) + 2 פרוסת לחם מלא (פרוסה, 140 kcal)
+  + 1 עגבנייה (יחידה, 18 kcal) + 1 מלפפון (יחידה, 12 kcal)
+  + 1 גבינה לבנה (כף, 10 kcal) = 290 kcal
+
+LUNCH (~550 kcal):
+  1 חזה עוף (יחידה, 165 kcal) + 4 אורז לבן (כפות, 200 kcal)
+  + 1 עגבנייה (יחידה, 18 kcal) + 1 מלפפון (יחידה, 12 kcal)
+  + 1 כפית שמן זית (כפית, 45 kcal) = 440 kcal
+
+DINNER (~400 kcal):
+  1 שניצל עוף (יחידה, 220 kcal) + 1 תפוח אדמה (יחידה, 120 kcal)
+  + 1 עגבנייה (יחידה, 18 kcal) + 1 פלפל ירוק (יחידה, 30 kcal) = 388 kcal
+
+SNACK (~150 kcal):
+  1 יוגורט (גביע, 90 kcal) + 1 בננה (יחידה, 105 kcal) = 195 kcal
+
+════════════════════════════════════════
+JSON FORMAT:
+════════════════════════════════════════
 {
   "meals": [
     {
@@ -109,17 +193,18 @@ Return ONLY valid JSON — no text before or after:
       "emoji": "🌅",
       "foods": [
         {"name": "ביצה", "quantity": 2, "unit": "יחידה", "calories": 110},
-        {"name": "לחם מלא", "quantity": 2, "unit": "פרוסה", "calories": 60},
-        {"name": "גבינה לבנה 5%", "quantity": 1, "unit": "כף", "calories": 25}
+        {"name": "לחם מלא", "quantity": 2, "unit": "פרוסה", "calories": 140},
+        {"name": "עגבנייה", "quantity": 1, "unit": "יחידה", "calories": 18},
+        {"name": "מלפפון", "quantity": 1, "unit": "יחידה", "calories": 12}
       ],
-      "total_calories": 350
+      "total_calories": 280
     }
   ]
 }
 
-Allowed units: יחידה, פרוסה, כוס, כף, כפית, גביע, קופסה, אריזה
-Meal times: breakfast=07:30, morning_snack=10:30, lunch=13:00, afternoon_snack=16:00, dinner=19:30, evening_snack=21:30
-Calories must be realistic for the quantity. total_calories = sum of all foods in the meal."""
+meal_type values: breakfast, morning_snack, lunch, afternoon_snack, dinner, evening_snack
+total_calories MUST equal the exact sum of all food calories in the meal.
+VERIFY before returning: each main meal has protein + one carb + vegetables."""
 
 
 def _groq_menu_call(prompt: str, groq_client, max_tokens: int = 2000) -> list:
@@ -152,8 +237,15 @@ def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
     goal_he  = {"lose": "הורדת משקל", "gain": "עלייה במסה",
                 "maintain": "שמירה"}.get(profile.get("goal", "maintain"), "שמירה")
     lines = [
-        f"צור תפריט יומי ל-{meals_n} ארוחות: יעד {target_cal} קק״ל, "
-        f"מטרה: {goal_he}, כשרות: {kashrut}.",
+        f"צור תפריט יומי ל-{meals_n} ארוחות. יעד: {target_cal} קק״ל. מטרה: {goal_he}. כשרות: {kashrut}.",
+        "",
+        "חובה בכל ארוחה ראשית (בוקר/צהריים/ערב):",
+        "  1. חלבון אחד: עוף / ביצה / דג / גבינה / טונה",
+        "  2. פחמימה אחת בלבד: לחם / אורז / פסטה / תפוח אדמה / פיתה",
+        "  3. ירקות: עגבנייה / מלפפון / פלפל / גזר — בנפרד, לא בכוסות",
+        "",
+        "אסור: שתי פחמימות באותה ארוחה. אסור: ארוחה ראשית ללא חלבון.",
+        "כמויות: עוף=1 יחידה, ביצה=יחידה, לחם=פרוסה, אורז=כפות (4=150g), ירקות=יחידה.",
     ]
     if allergs:
         lines.append(f"אלרגיות — הימנע לחלוטין: {', '.join(allergs)}")
@@ -161,7 +253,7 @@ def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
         lines.append(f"מזונות לא רצויים: {', '.join(disliked)}")
     if extra:
         lines.append(extra)
-    lines.append(f"ודא שסה\"כ קלוריות = {target_cal} ± 50 קק\"ל.")
+    lines.append(f"\nסה״כ קלוריות חייב להיות {target_cal} ± 50 קק״ל. חלק את הקלוריות: ארוחה ראשית ~35-40%, חטיפים ~10-15%.")
     return "\n".join(lines)
 
 
