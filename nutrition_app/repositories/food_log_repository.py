@@ -155,7 +155,7 @@ class FoodLogRepository:
                     self._sb().table("food_log")
                     .delete()
                     .eq("user_id", user_id)
-                    .eq("log_date", day.isoformat())
+                    .eq("date", day.isoformat())   # column is "date", not "log_date"
                     .execute()
                 )
                 return
