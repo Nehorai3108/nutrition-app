@@ -63,6 +63,151 @@ def load_catalog():
 recipe_mgr = get_mgr()
 CATALOG = load_catalog()
 
+# ── Groq client (shared with chat page) ──────────────────────────────────────
+@st.cache_resource
+def _get_groq_planner():
+    from groq import Groq
+    return Groq(api_key=st.secrets["groq_api_key"])
+
+
+# ── Daily calorie target (Mifflin-St Jeor + activity + goal) ─────────────────
+def _calc_tdee(profile: dict) -> int:
+    w   = float(profile.get("weight_kg")  or 70)
+    h   = float(profile.get("height_cm")  or 170)
+    g   = profile.get("gender", "male")
+    dob = profile.get("date_of_birth") or ""
+    age = 30
+    if dob:
+        try:
+            from datetime import date as _d
+            bd  = _d.fromisoformat(str(dob)[:10])
+            age = (date.today() - bd).days // 365
+        except Exception:
+            pass
+    bmr = 10 * w + 6.25 * h - 5 * age + (5 if g == "male" else -161)
+    act = {"sedentary": 1.2, "lightly_active": 1.375,
+           "moderately_active": 1.55, "very_active": 1.725,
+           "extra_active": 1.9}.get(profile.get("activity_level", "moderately_active"), 1.55)
+    tdee = bmr * act
+    goal = profile.get("goal", "maintain")
+    if goal == "lose":   tdee -= 500
+    elif goal == "gain": tdee += 300
+    return max(1200, int(tdee))
+
+
+# ── AI menu generation ────────────────────────────────────────────────────────
+_MENU_SYSTEM = """You are an expert Israeli nutritionist. Generate a full daily meal plan as JSON.
+Use only common Israeli foods with HOUSEHOLD quantities (never grams).
+
+Return ONLY valid JSON — no text before or after:
+{
+  "meals": [
+    {
+      "time": "07:30",
+      "meal_type": "breakfast",
+      "meal_name": "ארוחת בוקר",
+      "emoji": "🌅",
+      "foods": [
+        {"name": "ביצה", "quantity": 2, "unit": "יחידה", "calories": 110},
+        {"name": "לחם מלא", "quantity": 2, "unit": "פרוסה", "calories": 60},
+        {"name": "גבינה לבנה 5%", "quantity": 1, "unit": "כף", "calories": 25}
+      ],
+      "total_calories": 350
+    }
+  ]
+}
+
+Allowed units: יחידה, פרוסה, כוס, כף, כפית, גביע, קופסה, אריזה
+Meal times: breakfast=07:30, morning_snack=10:30, lunch=13:00, afternoon_snack=16:00, dinner=19:30, evening_snack=21:30
+Calories must be realistic for the quantity. total_calories = sum of all foods in the meal."""
+
+
+def _groq_menu_call(prompt: str, groq_client, max_tokens: int = 2000) -> list:
+    import re as _re
+    resp = groq_client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": _MENU_SYSTEM},
+            {"role": "user",   "content": prompt},
+        ],
+        temperature=0.7,
+        max_tokens=max_tokens,
+    )
+    raw = resp.choices[0].message.content.strip()
+    m = _re.search(r'\{[\s\S]*\}', raw)
+    if m:
+        try:
+            return json.loads(m.group()).get("meals", [])
+        except Exception:
+            pass
+    return []
+
+
+def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
+    prefs    = profile.get("meal_preferences", {})
+    kashrut  = prefs.get("kashrut", "parve")
+    allergs  = prefs.get("allergies", [])
+    disliked = prefs.get("disliked_foods", [])
+    meals_n  = prefs.get("meals_per_day", 5)
+    goal_he  = {"lose": "הורדת משקל", "gain": "עלייה במסה",
+                "maintain": "שמירה"}.get(profile.get("goal", "maintain"), "שמירה")
+    lines = [
+        f"צור תפריט יומי ל-{meals_n} ארוחות: יעד {target_cal} קק״ל, "
+        f"מטרה: {goal_he}, כשרות: {kashrut}.",
+    ]
+    if allergs:
+        lines.append(f"אלרגיות — הימנע לחלוטין: {', '.join(allergs)}")
+    if disliked:
+        lines.append(f"מזונות לא רצויים: {', '.join(disliked)}")
+    if extra:
+        lines.append(extra)
+    lines.append(f"ודא שסה\"כ קלוריות = {target_cal} ± 50 קק\"ל.")
+    return "\n".join(lines)
+
+
+# ── Render one AI meal card ───────────────────────────────────────────────────
+def _render_ai_meal(meal: dict, idx: int, target_cal: int) -> None:
+    m_color = {
+        "breakfast": "#f59e0b", "morning_snack": "#a78bfa",
+        "lunch": "#4f8ef7",    "afternoon_snack": "#34d399",
+        "dinner": "#f87171",   "evening_snack": "#818cf8",
+    }.get(meal.get("meal_type", ""), "#4f8ef7")
+
+    foods     = meal.get("foods", [])
+    total_cal = meal.get("total_calories", sum(f.get("calories", 0) for f in foods))
+    emoji     = meal.get("emoji", "🍽️")
+    time_str  = meal.get("time", "")
+    mname     = meal.get("meal_name", "")
+
+    food_rows = "".join(
+        f'<div dir="rtl" style="display:flex;justify-content:space-between;'
+        f'padding:5px 0;border-bottom:1px solid #1e2433">'
+        f'<span style="color:#c4cdd8;font-size:0.82rem">'
+        f'{f["quantity"]} {f["unit"]} {f["name"]}</span>'
+        f'<span style="color:#8892a4;font-size:0.75rem">{f.get("calories",0)} קק״ל</span>'
+        f'</div>'
+        for f in foods
+    )
+
+    st.markdown(
+        f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+        f'border-radius:18px;padding:18px;margin-bottom:10px">'
+        f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+        f'<div dir="rtl" style="display:flex;align-items:center;gap:8px">'
+        f'<span style="font-size:1.5rem">{emoji}</span>'
+        f'<div><div style="font-size:0.9rem;font-weight:800;color:#f4f6fb">{mname}</div>'
+        f'<div style="font-size:0.68rem;color:#8892a4">{time_str}</div></div>'
+        f'</div>'
+        f'<div style="background:{m_color}22;border:1px solid {m_color}55;border-radius:99px;'
+        f'padding:4px 12px;font-size:0.82rem;font-weight:700;color:{m_color}">'
+        f'{total_cal} קק״ל</div>'
+        f'</div>'
+        f'{food_rows}'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+
 def build_inventory_names(user_id: str) -> set:
     items = load_inventory(user_id)
     if not items:
@@ -132,6 +277,237 @@ st.markdown(
     f'</div>',
     unsafe_allow_html=True,
 )
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AI DAILY MENU PLANNER
+# ═══════════════════════════════════════════════════════════════════════════════
+_groq_planner = _get_groq_planner()
+_target_cal   = _calc_tdee(_profile)
+_profile_ok   = bool(_profile.get("weight_kg") and _profile.get("height_cm"))
+
+st.markdown(
+    '<div dir="rtl" style="font-size:1rem;font-weight:800;color:#f4f6fb;'
+    'margin-bottom:4px">✨ תפריט יומי מותאם אישית</div>'
+    f'<div dir="rtl" style="font-size:0.75rem;color:#8892a4;margin-bottom:14px">'
+    f'{"יעד: " + str(_target_cal) + " קק״ל ליום" if _profile_ok else "מלא פרופיל כדי לקבל יעד מדויק"}'
+    f'</div>',
+    unsafe_allow_html=True,
+)
+
+if not _profile_ok:
+    st.info("מלא את הגובה והמשקל בפרופיל כדי לקבל תפריט מותאם אישית.")
+
+# ── State keys ────────────────────────────────────────────────────────────────
+_AI_MENU_KEY   = f"ai_menu_{USER_ID}"
+_AI_TARGET_KEY = f"ai_menu_target_{USER_ID}"
+
+# ── Generate button ───────────────────────────────────────────────────────────
+_c1, _c2 = st.columns([3, 1])
+with _c1:
+    _gen_btn = st.button(
+        "🤖 הכן לי תפריט להיום" if _AI_MENU_KEY not in st.session_state
+        else "🔄 צור תפריט חדש",
+        key="ai_gen_btn",
+        use_container_width=True,
+        type="primary" if _AI_MENU_KEY not in st.session_state else "secondary",
+    )
+with _c2:
+    _clear_btn = st.button("✕ נקה", key="ai_clear_btn",
+                           use_container_width=True,
+                           disabled=_AI_MENU_KEY not in st.session_state)
+
+if _clear_btn:
+    for _k in list(st.session_state.keys()):
+        if _k.startswith(f"ai_menu_{USER_ID}") or _k.startswith(f"swap_opts_{USER_ID}"):
+            st.session_state.pop(_k, None)
+    st.rerun()
+
+if _gen_btn:
+    # Clear previous menu + swap state
+    for _k in list(st.session_state.keys()):
+        if _k.startswith(f"ai_menu_{USER_ID}") or _k.startswith(f"swap_opts_{USER_ID}"):
+            st.session_state.pop(_k, None)
+    with st.spinner("מכין תפריט מותאם אישית... ⏳"):
+        try:
+            _prompt  = _build_menu_prompt(_profile, _target_cal)
+            _meals   = _groq_menu_call(_prompt, _groq_planner)
+            if _meals:
+                st.session_state[_AI_MENU_KEY]   = _meals
+                st.session_state[_AI_TARGET_KEY] = _target_cal
+        except Exception as _e:
+            st.error(f"שגיאה ביצירת התפריט: {_e}")
+    st.rerun()
+
+# ── Render generated menu ─────────────────────────────────────────────────────
+if _AI_MENU_KEY in st.session_state:
+    _ai_meals   = st.session_state[_AI_MENU_KEY]
+    _ai_target  = st.session_state.get(_AI_TARGET_KEY, _target_cal)
+    _ai_total   = sum(m.get("total_calories",
+                       sum(f.get("calories", 0) for f in m.get("foods", [])))
+                      for m in _ai_meals)
+
+    # Running total bar
+    _pct = min(_ai_total / max(_ai_target, 1) * 100, 100)
+    _diff = _ai_total - _ai_target
+    _bar_color = "#4ade80" if abs(_diff) <= 50 else ("#f59e0b" if abs(_diff) <= 150 else "#f87171")
+    st.markdown(
+        f'<div dir="rtl" style="margin-bottom:16px">'
+        f'<div dir="rtl" style="display:flex;justify-content:space-between;'
+        f'font-size:0.72rem;color:#8892a4;margin-bottom:4px">'
+        f'<span>סה״כ תפריט: <strong style="color:{_bar_color}">{_ai_total} קק״ל</strong></span>'
+        f'<span>יעד: {_ai_target} קק״ל '
+        f'({("+" if _diff >= 0 else "")}{_diff})</span></div>'
+        f'<div style="height:4px;background:#252d3d;border-radius:99px">'
+        f'<div style="height:100%;width:{_pct:.0f}%;background:{_bar_color};border-radius:99px"></div>'
+        f'</div></div>',
+        unsafe_allow_html=True,
+    )
+
+    for _i, _meal in enumerate(_ai_meals):
+        _render_ai_meal(_meal, _i, _ai_target)
+        _swap_key = f"swap_opts_{USER_ID}_{_i}"
+
+        # Swap / log buttons
+        _sb1, _sb2 = st.columns(2)
+        with _sb1:
+            if st.button("🔄 החלף ארוחה", key=f"swap_btn_{_i}",
+                         use_container_width=True):
+                _meal_type = _meal.get("meal_type", "meal")
+                _meal_cal  = _meal.get("total_calories", 400)
+                _swap_prompt = (
+                    f"צור 3 ארוחות חלופיות שונות לחלוטין לסוג '{_meal_type}' "
+                    f"עם ~{_meal_cal} קק\"ל. "
+                    f"כשרות: {_profile.get('meal_preferences',{}).get('kashrut','parve')}. "
+                    f"כל ארוחה שונה מהקודמת. החזר JSON עם meals: [3 ארוחות]."
+                )
+                with st.spinner("מחפש חלופות..."):
+                    try:
+                        _alts = _groq_menu_call(_swap_prompt, _groq_planner, max_tokens=1500)
+                        st.session_state[_swap_key] = _alts[:3]
+                    except Exception as _e:
+                        st.error(f"שגיאה: {_e}")
+                st.rerun()
+
+        with _sb2:
+            _log_key = f"ai_logged_{USER_ID}_{_i}"
+            if st.session_state.get(_log_key):
+                st.markdown(
+                    '<div dir="rtl" style="background:#0d2b1a;border:1px solid #1a4d2e;'
+                    'border-radius:10px;padding:6px;font-size:0.75rem;color:#4ade80;'
+                    'text-align:center">✅ נרשם</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                if st.button("➕ רשום ארוחה", key=f"log_meal_{_i}",
+                             use_container_width=True):
+                    _mtype = _meal.get("meal_type", "snack")
+                    for _food in _meal.get("foods", []):
+                        _fname = _food.get("name", "")
+                        _fcal  = float(_food.get("calories", 0))
+                        # Try to match in catalog for accurate macros
+                        _hits  = get_catalog().search_foods(_fname, limit=1)
+                        if _hits and _fcal > 0:
+                            _f0   = _hits[0]
+                            _n100 = _f0.nutrition_per_100g
+                            _g    = (_fcal / max(_n100.calories_kcal, 1)) * 100
+                            _r    = _g / 100
+                            _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                                food_id=_f0.food_id, food_name=_fname,
+                                grams=round(_g, 1), calories=_fcal,
+                                protein=round(_n100.protein_g * _r, 1),
+                                carbs=round(_n100.carbs_g * _r, 1),
+                                fat=round(_n100.fat_g * _r, 1),
+                                meal_type=_mtype,
+                                timestamp=datetime.now().isoformat(),
+                            ))
+                        else:
+                            _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                                food_id="ai_food", food_name=_fname,
+                                grams=0.0, calories=_fcal,
+                                protein=0.0, carbs=0.0, fat=0.0,
+                                meal_type=_mtype,
+                                timestamp=datetime.now().isoformat(),
+                            ))
+                    st.session_state[_log_key] = True
+                    st.rerun()
+
+        # Show swap alternatives if requested
+        if _swap_key in st.session_state:
+            _alts = st.session_state[_swap_key]
+            if _alts:
+                st.markdown(
+                    '<div dir="rtl" style="font-size:0.75rem;color:#8892a4;'
+                    'margin:6px 0 4px">בחר חלופה:</div>',
+                    unsafe_allow_html=True,
+                )
+                for _j, _alt in enumerate(_alts):
+                    _alt_cal  = _alt.get("total_calories",
+                                   sum(f.get("calories", 0) for f in _alt.get("foods", [])))
+                    _alt_name = _alt.get("meal_name", "חלופה")
+                    _alt_foods_str = " · ".join(
+                        f'{f["quantity"]} {f["unit"]} {f["name"]}'
+                        for f in _alt.get("foods", [])[:3]
+                    )
+                    if st.button(
+                        f"✓ {_alt_name} — {_alt_cal} קק״ל\n{_alt_foods_str}",
+                        key=f"pick_alt_{_i}_{_j}",
+                        use_container_width=True,
+                    ):
+                        _ai_meals[_i] = _alt
+                        st.session_state[_AI_MENU_KEY] = _ai_meals
+                        st.session_state.pop(_swap_key, None)
+                        st.rerun()
+
+        st.markdown('<div style="height:4px"></div>', unsafe_allow_html=True)
+
+    # Log entire day button
+    st.markdown('<div style="height:6px"></div>', unsafe_allow_html=True)
+    _all_logged = all(st.session_state.get(f"ai_logged_{USER_ID}_{i}")
+                      for i in range(len(_ai_meals)))
+    if not _all_logged:
+        if st.button("➕ רשום את כל התפריט להיום",
+                     key="ai_log_all", use_container_width=True, type="primary"):
+            for _i2, _meal2 in enumerate(_ai_meals):
+                if not st.session_state.get(f"ai_logged_{USER_ID}_{_i2}"):
+                    _mtype2 = _meal2.get("meal_type", "snack")
+                    for _food2 in _meal2.get("foods", []):
+                        _fname2 = _food2.get("name", "")
+                        _fcal2  = float(_food2.get("calories", 0))
+                        _hits2  = get_catalog().search_foods(_fname2, limit=1)
+                        if _hits2 and _fcal2 > 0:
+                            _f2   = _hits2[0]
+                            _n2   = _f2.nutrition_per_100g
+                            _g2   = (_fcal2 / max(_n2.calories_kcal, 1)) * 100
+                            _r2   = _g2 / 100
+                            _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                                food_id=_f2.food_id, food_name=_fname2,
+                                grams=round(_g2, 1), calories=_fcal2,
+                                protein=round(_n2.protein_g * _r2, 1),
+                                carbs=round(_n2.carbs_g * _r2, 1),
+                                fat=round(_n2.fat_g * _r2, 1),
+                                meal_type=_mtype2,
+                                timestamp=datetime.now().isoformat(),
+                            ))
+                        else:
+                            _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                                food_id="ai_food", food_name=_fname2,
+                                grams=0.0, calories=_fcal2,
+                                protein=0.0, carbs=0.0, fat=0.0,
+                                meal_type=_mtype2,
+                                timestamp=datetime.now().isoformat(),
+                            ))
+                    st.session_state[f"ai_logged_{USER_ID}_{_i2}"] = True
+            st.rerun()
+    else:
+        st.markdown(
+            '<div dir="rtl" style="background:#0d2b1a;border:1px solid #1a4d2e;'
+            'border-radius:14px;padding:12px;font-size:0.85rem;color:#4ade80;'
+            'text-align:center;margin-bottom:8px">'
+            '✅ כל התפריט נרשם להיום!</div>',
+            unsafe_allow_html=True,
+        )
+
+st.divider()
 
 # ── Meal tab selector ─────────────────────────────────────────────────────────
 tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", "✏️ ידני", "🍫 נשנוש"]
