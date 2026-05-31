@@ -618,66 +618,118 @@ def inject_global_css() -> None:
 
 
 def bottom_nav(active: str = "home") -> None:
-    """Fixed bottom nav — SVG icons, client-side React-Router navigation.
-
-    Uses history.pushState + popstate to trigger Streamlit's internal
-    page router instead of a full browser reload.  This keeps the
-    WebSocket session alive and preserves session_state, so the user
-    is never sent back to the login screen on navigation.
+    """Fixed bottom nav using st.page_link — preserves WebSocket session and
+    session_state so the user is never sent back to the login screen on
+    navigation.  The active page is highlighted automatically via
+    aria-current="page" set by Streamlit on the current page's link.
     """
-    SVG = {
-        "home":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
-        "food":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
-        "chat":    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
-        "workout": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M6 4v6m0 4v6M18 4v6m0 4v6M2 9h4m12 0h4M2 15h4m12 0h4"/></svg>',
-        "history": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-        "profile": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-        "barcode": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 5v2M3 19v-2M3 10v4M7 5v14M11 5v14M15 5v2M15 19v-2M15 10v4M19 5v14M21 5h-2M21 19h-2M21 10h-2"/></svg>',
-    }
+    # ── Page map: key → (file_path, emoji, label) ────────────────────────────
     items = [
-        ("home",    "/",                  "בית"),
-        ("food",    "/daily_menu",        "תזונה"),
-        ("chat",    "/chat_log",          "צאט"),
-        ("barcode", "/barcode",           "ברקוד"),
-        ("workout", "/workout_tracker",   "אימון"),
-        ("profile", "/profile",           "פרופיל"),
+        ("home",    "app_user.py",                "🏠", "בית"),
+        ("food",    "pages/6_daily_menu.py",      "🍽️", "תזונה"),
+        ("chat",    "pages/10_chat_log.py",       "💬", "צאט"),
+        ("barcode", "pages/12_barcode.py",        "📷", "ברקוד"),
+        ("workout", "pages/7_workout_tracker.py", "💪", "אימון"),
+        ("profile", "pages/0_profile.py",         "👤", "פרופיל"),
     ]
-    html = (
-        '<style>'
-        '.gn{position:fixed;bottom:0;left:0;right:0;z-index:9999;'
-        'background:#0d0f14;border-top:1px solid #1e2433;'
-        'display:flex;justify-content:space-around;align-items:center;'
-        'padding:6px 0 max(env(safe-area-inset-bottom),10px)}'
-        '.gn a{display:flex;flex-direction:column;align-items:center;gap:4px;'
-        'text-decoration:none;color:#3a4254;min-width:52px;padding:6px 4px;'
-        'font-size:0.6rem;font-weight:500;transition:color .15s}'
-        '.gn a svg{stroke:#3a4254;transition:stroke .15s}'
-        '.gn a:hover,.gn a:hover svg{color:#8892a4;stroke:#8892a4}'
-        '.gn a.on,.gn a.on svg{color:#4f8ef7 !important;stroke:#4f8ef7 !important}'
-        '</style>'
-        # JavaScript: intercept clicks, use pushState+popstate so React Router
-        # navigates internally (preserves WebSocket session & session_state).
-        '<script>'
-        '(function(){'
-        'function stNav(href){'
-        '  window.history.pushState({},"",href);'
-        '  window.dispatchEvent(new PopStateEvent("popstate",{state:{}}));'
-        '}'
-        'document.addEventListener("click",function(e){'
-        '  var a=e.target.closest(".gn a");'
-        '  if(!a)return;'
-        '  e.preventDefault();'
-        '  stNav(a.getAttribute("href"));'
-        '});'
-        '})()'
-        '</script>'
-        '<nav class="gn">'
+
+    # ── CSS ───────────────────────────────────────────────────────────────────
+    st.markdown(
+        """
+        <style>
+        /* Add bottom padding so page content isn't hidden behind the nav */
+        .block-container { padding-bottom: 88px !important; }
+
+        /* Fix the columns block that contains our page-links to the bottom */
+        [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"]) {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 9999 !important;
+            background: #0d0f14 !important;
+            border-top: 1px solid #1e2433 !important;
+            margin: 0 !important;
+            padding: 4px 0 max(env(safe-area-inset-bottom), 8px) !important;
+            gap: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Each column inside the nav */
+        [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"])
+        > [data-testid="stColumn"] {
+            flex: 1 !important;
+            padding: 0 !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* The page-link container */
+        [data-testid="stPageLink"] {
+            width: 100% !important;
+            text-align: center !important;
+        }
+
+        /* The anchor element */
+        [data-testid="stPageLink-NavLink"] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 3px !important;
+            color: #3a4254 !important;
+            text-decoration: none !important;
+            padding: 5px 4px !important;
+            font-size: 0.6rem !important;
+            font-weight: 500 !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            min-height: 48px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            transition: color .15s !important;
+        }
+
+        /* Hover */
+        [data-testid="stPageLink-NavLink"]:hover {
+            color: #8892a4 !important;
+            background: transparent !important;
+        }
+
+        /* Active page (Streamlit sets aria-current="page") */
+        [data-testid="stPageLink-NavLink"][aria-current="page"] {
+            color: #4f8ef7 !important;
+            font-weight: 600 !important;
+        }
+
+        /* Emoji icon inside the link */
+        [data-testid="stPageLink-NavLink"] p,
+        [data-testid="stPageLink-NavLink"] span {
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        [data-testid="stPageLink-NavLink"] > span:first-child {
+            font-size: 1.35rem !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
-    for key, href, label in items:
-        cls = "on" if key == active else ""
-        html += f'<a href="{href}" class="{cls}">{SVG[key]}<span>{label}</span></a>'
-    html += '</nav>'
-    st.markdown(html, unsafe_allow_html=True)
+
+    # ── Render nav items as columns of page-links ─────────────────────────────
+    cols = st.columns(len(items))
+    for col, (key, page, icon, label) in zip(cols, items):
+        with col:
+            st.page_link(page, label=label, icon=icon)
 
 
 def reset_css_flag() -> None:

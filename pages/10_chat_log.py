@@ -92,7 +92,28 @@ def _build_system_prompt(food_list: str) -> str:
 FOODS IN DATABASE (use exact names in JSON):
 {food_list}
 
-PORTION DEFAULTS: ביצה=55g, שניצל/קציצה=130g, חזה עוף=150g, ירך=120g, פרוסת לחם=30g, פיתה=60g, כוס אורז/פסטה=180g, גביע יוגורט=125g, כף שמן/טחינה=15g, תפוח=150g, בננה=120g, פחית שתייה/קולה=330g, טונה (השתמש ב-unit=קופסה → 100g), סרדינים (unit=קופסה → 100g), קוביית שוקולד=10g, חטיף=30g, עגבנייה=100g, מלפפון=80g, גזר=80g, לימון=50g
+PORTION DEFAULTS (use these when user doesn't specify a quantity):
+• ביצה = 1 יחידה (55g) — "ביצה אחת", "שתי ביצים" → quantity=2
+• שניצל עוף = 1 יחידה (130g) — "שניצל", "שניצל עוף"
+• קציצות עוף = 3 יחידות (75g each) — "קציצות", "קציצות עוף", "קציצת עוף"
+• חזה עוף = 1 יחידה (150g) — "חזה עוף", "חזה"
+• ירך עוף = 1 יחידה (120g)
+• פרוסת לחם = 1 פרוסה (30g)
+• פיתה = 1 יחידה (60g)
+• אורז/פסטה = 4 כפות (180g) — "4 כפות אורז", "כוס פסטה"
+• יוגורט = 1 גביע (125g)
+• שמן/טחינה/חמאה = 1 כף (15g)
+• גבינה צהובה/בולגרית = 1 כף (20g) — "כף גבינה"
+• תפוח/אגס/שזיף = 1 יחידה (150g)
+• בננה = 1 יחידה (120g)
+• עגבנייה = 1 יחידה (100g)
+• מלפפון = 1 יחידה (80g)
+• גזר = 1 יחידה (80g)
+• אבוקדו = חצי יחידה (80g)
+• פחית שתייה/קולה = 1 פחית (330g)
+• טונה/סרדינים = 1 קופסה (100g)
+• קוביית שוקולד = 1 קוביה (10g)
+• חטיף/ביסלי/במבה = 1 אריזה (30g)
 
 WHEN FOOD IS LOGGED — return ONLY this JSON block:
 ```json
@@ -106,12 +127,15 @@ WHEN FOOD IS LOGGED — return ONLY this JSON block:
 IF NO FOOD — reply in plain Hebrew only (no JSON).
 
 RULES:
-- חביתה/שקשוקה/ביצת עין → name:"ביצה"
+- חביתה/שקשוקה/ביצת עין/מקושקשת → name:"ביצה"
 - כריך/טוסט → name:"לחם לבן"
-- שניצל → name:"שניצל עוף", חזה → name:"חזה עוף"
+- שניצל/שניצל עוף → name:"שניצל עוף"  (unit=יחידה, quantity=1)
+- קציצה/קציצות/קציצות עוף/קציצת עוף → name:"קציצות עוף"  (unit=יחידה, quantity=3 unless specified)
+- חזה עוף/חזה → name:"חזה עוף"
 - Complex dish in list as [מתכון] → use that exact name
 - Unknown dish → split into individual ingredients from the DB list
-- Corrections: return full updated JSON with ALL items"""
+- Corrections: return full updated JSON with ALL items
+- NEVER confuse קציצות with שניצל — they are different foods"""
 
 
 # ── Food aliases: common Israeli names → searchable DB terms ──────────────────

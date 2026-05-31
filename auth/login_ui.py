@@ -71,9 +71,9 @@ def require_auth() -> str:
         render_login_ui()
         st.stop()
 
-    # Successful auth — clear the one-time loading flag so the next
-    # fresh navigation also gets the one-render grace period.
-    st.session_state.pop("_sb_cookies_checked", None)
+    # Successful auth — reset the cookie-wait counter so the next
+    # fresh navigation (F5 / direct URL) gets a clean grace period.
+    st.session_state.pop("_sb_cookie_wait", None)
     return user["id"]
 
 
