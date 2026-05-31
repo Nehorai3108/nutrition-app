@@ -623,14 +623,14 @@ def bottom_nav(active: str = "home") -> None:
     navigation.  The active page is highlighted automatically via
     aria-current="page" set by Streamlit on the current page's link.
     """
-    # ── Page map: key → (file_path, emoji, label) ────────────────────────────
+    # ── Page map: key → (file_path, material_icon, label) ───────────────────
     items = [
-        ("home",    "app_user.py",                "🏠", "בית"),
-        ("food",    "pages/6_daily_menu.py",      "🍽️", "תזונה"),
-        ("chat",    "pages/10_chat_log.py",       "💬", "צאט"),
-        ("barcode", "pages/12_barcode.py",        "📷", "ברקוד"),
-        ("workout", "pages/7_workout_tracker.py", "💪", "אימון"),
-        ("profile", "pages/0_profile.py",         "👤", "פרופיל"),
+        ("home",    "app_user.py",                ":material/home:",             "בית"),
+        ("food",    "pages/6_daily_menu.py",      ":material/restaurant:",       "תזונה"),
+        ("chat",    "pages/10_chat_log.py",       ":material/forum:",            "צאט"),
+        ("barcode", "pages/12_barcode.py",        ":material/qr_code_scanner:",  "ברקוד"),
+        ("workout", "pages/7_workout_tracker.py", ":material/fitness_center:",   "אימון"),
+        ("profile", "pages/0_profile.py",         ":material/person:",           "פרופיל"),
     ]
 
     # ── CSS ───────────────────────────────────────────────────────────────────
