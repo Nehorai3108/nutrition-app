@@ -147,6 +147,25 @@ class FoodLogRepository:
             data.pop(iso, None)
         self._save(user_id, data)
 
+    def clear_day(self, user_id: str, day: date_cls) -> None:
+        """Delete every food-log entry for a specific day."""
+        if self._use_supabase():
+            try:
+                (
+                    self._sb().table("food_log")
+                    .delete()
+                    .eq("user_id", user_id)
+                    .eq("log_date", day.isoformat())
+                    .execute()
+                )
+                return
+            except Exception:
+                pass
+        # Local JSON fallback
+        data = self._load(user_id)
+        data.pop(day.isoformat(), None)
+        self._save(user_id, data)
+
     def get_totals(self, user_id: str, day: date_cls) -> dict:
         entries = self.get_log(user_id, day)
         return {

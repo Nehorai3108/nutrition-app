@@ -811,10 +811,28 @@ if not run_btn and "last_plan" not in st.session_state:
                         st.rerun()
 
     # ── Food log edit/delete ──────────────────────────────────────────────────
-    st.markdown(
+    _hdr_c1, _hdr_c2 = st.columns([3, 1])
+    _hdr_c1.markdown(
         '<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb;margin:20px 0 8px">ארוחות היום</div>',
         unsafe_allow_html=True,
     )
+    with _hdr_c2:
+        st.markdown('<div style="margin-top:14px"></div>', unsafe_allow_html=True)
+        if st.button("מחק הכל", key="clear_food_log_btn", use_container_width=True):
+            st.session_state["_confirm_clear_log"] = True
+
+    # Confirm dialog
+    if st.session_state.get("_confirm_clear_log"):
+        st.warning("למחוק את כל נתוני המזון של היום?")
+        _cc1, _cc2 = st.columns(2)
+        if _cc1.button("כן, מחק הכל", key="confirm_clear_yes", use_container_width=True, type="primary"):
+            _food_log_repo.clear_day(_DASH_USER, today)
+            st.session_state.pop("_confirm_clear_log", None)
+            st.rerun()
+        if _cc2.button("ביטול", key="confirm_clear_no", use_container_width=True):
+            st.session_state.pop("_confirm_clear_log", None)
+            st.rerun()
+
     _today_food = _food_log_repo.get_log(_DASH_USER, today)
     if _today_food:
         for _fe in reversed(_today_food):
