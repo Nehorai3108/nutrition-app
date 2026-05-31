@@ -190,7 +190,6 @@ JSON FORMAT:
       "time": "07:30",
       "meal_type": "breakfast",
       "meal_name": "ארוחת בוקר",
-      "emoji": "🌅",
       "foods": [
         {"name": "ביצה", "quantity": 2, "unit": "יחידה", "calories": 110},
         {"name": "לחם מלא", "quantity": 2, "unit": "פרוסה", "calories": 140},
@@ -267,30 +266,28 @@ def _render_ai_meal(meal: dict, idx: int, target_cal: int) -> None:
 
     foods     = meal.get("foods", [])
     total_cal = meal.get("total_calories", sum(f.get("calories", 0) for f in foods))
-    emoji     = meal.get("emoji", "🍽️")
     time_str  = meal.get("time", "")
     mname     = meal.get("meal_name", "")
 
     food_rows = "".join(
         f'<div dir="rtl" style="display:flex;justify-content:space-between;'
-        f'padding:5px 0;border-bottom:1px solid #1e2433">'
-        f'<span style="color:#c4cdd8;font-size:0.82rem">'
+        f'padding:6px 0;border-bottom:1px solid #1a2030">'
+        f'<span style="color:#c4cdd8;font-size:0.84rem">'
         f'{f["quantity"]} {f["unit"]} {f["name"]}</span>'
-        f'<span style="color:#8892a4;font-size:0.75rem">{f.get("calories",0)} קק״ל</span>'
+        f'<span style="color:#545e70;font-size:0.76rem;font-weight:500">{f.get("calories",0)} קק״ל</span>'
         f'</div>'
         for f in foods
     )
 
     st.markdown(
         f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
-        f'border-radius:18px;padding:18px;margin-bottom:10px">'
+        f'border-radius:14px;padding:16px;margin-bottom:8px">'
         f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
-        f'<div dir="rtl" style="display:flex;align-items:center;gap:8px">'
-        f'<span style="font-size:1.5rem">{emoji}</span>'
-        f'<div><div style="font-size:0.9rem;font-weight:800;color:#f4f6fb">{mname}</div>'
-        f'<div style="font-size:0.68rem;color:#8892a4">{time_str}</div></div>'
+        f'<div dir="rtl">'
+        f'<div style="font-size:0.92rem;font-weight:700;color:#f4f6fb">{mname}</div>'
+        f'<div style="font-size:0.68rem;color:#545e70;margin-top:2px">{time_str}</div>'
         f'</div>'
-        f'<div style="background:{m_color}22;border:1px solid {m_color}55;border-radius:99px;'
+        f'<div style="background:{m_color}22;border:1px solid {m_color}55;border-radius:8px;'
         f'padding:4px 12px;font-size:0.82rem;font-weight:700;color:{m_color}">'
         f'{total_cal} קק״ל</div>'
         f'</div>'
@@ -484,14 +481,14 @@ if _AI_MENU_KEY in st.session_state:
             _log_key = f"ai_logged_{USER_ID}_{_i}"
             if st.session_state.get(_log_key):
                 st.markdown(
-                    '<div dir="rtl" style="background:#0d2b1a;border:1px solid #1a4d2e;'
-                    'border-radius:10px;padding:6px;font-size:0.75rem;color:#4ade80;'
-                    'text-align:center">✅ נרשם</div>',
+                    f'<div dir="rtl" style="background:#0d2b1a;border:1px solid #1a4d2e;'
+                    f'border-radius:8px;padding:7px;font-size:0.8rem;font-weight:600;'
+                    f'color:#4ade80;text-align:center">אכלתי</div>',
                     unsafe_allow_html=True,
                 )
             else:
-                if st.button("➕ רשום ארוחה", key=f"log_meal_{_i}",
-                             use_container_width=True):
+                if st.button("אכלתי", key=f"log_meal_{_i}",
+                             use_container_width=True, type="primary"):
                     _mtype = _meal.get("meal_type", "snack")
                     for _food in _meal.get("foods", []):
                         _fname = _food.get("name", "")
@@ -557,7 +554,7 @@ if _AI_MENU_KEY in st.session_state:
     _all_logged = all(st.session_state.get(f"ai_logged_{USER_ID}_{i}")
                       for i in range(len(_ai_meals)))
     if not _all_logged:
-        if st.button("➕ רשום את כל התפריט להיום",
+        if st.button("סימון הכל כנאכל",
                      key="ai_log_all", use_container_width=True, type="primary"):
             for _i2, _meal2 in enumerate(_ai_meals):
                 if not st.session_state.get(f"ai_logged_{USER_ID}_{_i2}"):

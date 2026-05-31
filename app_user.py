@@ -18,6 +18,7 @@ from ui.components import (
     icon_button, recipe_card_html, welcome_card_html, macro_grid_html,
     kashrut_badge_html, meal_badge_html, bottom_nav,
 )
+from ui.user_auth import require_auth
 from ui.images import image_data_uri as _recipe_image_data_uri
 
 from nutrition_app.models.user import UserProfile
@@ -53,8 +54,8 @@ st.set_page_config(
 # ── Design system ────────────────────────────────────────────────────────────
 inject_global_css()
 
-# ── Auth — ללא התחברות ───────────────────────────────────────────────────────
-_USER_ID: str = "ui_user_001"
+# ── Auth ─────────────────────────────────────────────────────────────────────
+_USER_ID: str = require_auth()
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
