@@ -162,24 +162,33 @@ DAIRY / SNACKS:
   אגוזי מלך → כף (1 כף = 15g = 100 kcal)
 
 ════════════════════════════════════════
-EXAMPLE BALANCED MEALS:
+CALORIE SCALING GUIDE — adjust quantities to hit the target:
 ════════════════════════════════════════
-BREAKFAST (~350 kcal):
-  2 ביצה (יחידה, 110 kcal) + 2 פרוסת לחם מלא (פרוסה, 140 kcal)
+To reach a HIGH calorie target (e.g. 2800+ kcal/day), you MUST use larger portions:
+
+BREAKFAST example scaled to ~700 kcal:
+  3 ביצה (יחידה, 165 kcal) + 3 פרוסת לחם מלא (פרוסה, 210 kcal)
   + 1 עגבנייה (יחידה, 18 kcal) + 1 מלפפון (יחידה, 12 kcal)
-  + 1 גבינה לבנה (כף, 10 kcal) = 290 kcal
+  + 2 גבינה צהובה (כף, 120 kcal) + 1 כף טחינה (כף, 90 kcal) = 615 kcal
+  → ADD more items or increase quantities to reach your assigned target.
 
-LUNCH (~550 kcal):
-  1 חזה עוף (יחידה, 165 kcal) + 4 אורז לבן (כפות, 200 kcal)
+LUNCH example scaled to ~900 kcal:
+  2 חזה עוף (יחידה, 330 kcal) + 6 אורז לבן (כפות, 300 kcal)
   + 1 עגבנייה (יחידה, 18 kcal) + 1 מלפפון (יחידה, 12 kcal)
-  + 1 כפית שמן זית (כפית, 45 kcal) = 440 kcal
+  + 2 כפית שמן זית (כפית, 90 kcal) + 1 כף טחינה (כף, 90 kcal) = 840 kcal
 
-DINNER (~400 kcal):
-  1 שניצל עוף (יחידה, 220 kcal) + 1 תפוח אדמה (יחידה, 120 kcal)
-  + 1 עגבנייה (יחידה, 18 kcal) + 1 פלפל ירוק (יחידה, 30 kcal) = 388 kcal
+DINNER example scaled to ~700 kcal:
+  2 שניצל עוף (יחידה, 440 kcal) + 1 תפוח אדמה (יחידה, 120 kcal)
+  + 1 עגבנייה (יחידה, 18 kcal) + 1 פלפל ירוק (יחידה, 30 kcal)
+  + 1 כף טחינה (כף, 90 kcal) = 698 kcal
 
-SNACK (~150 kcal):
-  1 יוגורט (גביע, 90 kcal) + 1 בננה (יחידה, 105 kcal) = 195 kcal
+SNACK example scaled to ~300 kcal:
+  1 יוגורט (גביע, 90 kcal) + 1 בננה (יחידה, 105 kcal)
+  + 1 כף אגוזי מלך (כף, 100 kcal) = 295 kcal
+
+IMPORTANT: The examples above are just STRUCTURE guides.
+You MUST scale portions up or down to match the EXACT calorie target given in the user prompt.
+DO NOT copy these examples blindly — calculate calories for each food and verify the total.
 
 ════════════════════════════════════════
 JSON FORMAT:
@@ -206,7 +215,7 @@ total_calories MUST equal the exact sum of all food calories in the meal.
 VERIFY before returning: each main meal has protein + one carb + vegetables."""
 
 
-def _groq_menu_call(prompt: str, groq_client, max_tokens: int = 2000) -> list:
+def _groq_menu_call(prompt: str, groq_client, max_tokens: int = 3000) -> list:
     import re as _re
     resp = groq_client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -214,7 +223,7 @@ def _groq_menu_call(prompt: str, groq_client, max_tokens: int = 2000) -> list:
             {"role": "system", "content": _MENU_SYSTEM},
             {"role": "user",   "content": prompt},
         ],
-        temperature=0.7,
+        temperature=0.3,
         max_tokens=max_tokens,
     )
     raw = resp.choices[0].message.content.strip()
@@ -232,19 +241,66 @@ def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
     kashrut  = prefs.get("kashrut", "parve")
     allergs  = prefs.get("allergies", [])
     disliked = prefs.get("disliked_foods", [])
-    meals_n  = prefs.get("meals_per_day", 5)
+    meals_n  = int(prefs.get("meals_per_day", 5))
     goal_he  = {"lose": "הורדת משקל", "gain": "עלייה במסה",
                 "maintain": "שמירה"}.get(profile.get("goal", "maintain"), "שמירה")
+
+    # ── Calculate per-meal calorie targets ──────────────────────────────────
+    # Main meals get 30-35% each, snacks get 10-12% each
+    has_morning_snack   = meals_n >= 4
+    has_afternoon_snack = meals_n >= 5
+    has_evening_snack   = meals_n >= 6
+
+    snack_count = sum([has_morning_snack, has_afternoon_snack, has_evening_snack])
+    snack_pct   = 0.11 * snack_count          # 11% per snack
+    main_total  = 1.0 - snack_pct
+    main_count  = 3
+    main_pct    = main_total / main_count      # equal split for breakfast/lunch/dinner
+
+    cal_breakfast = round(target_cal * main_pct)
+    cal_lunch     = round(target_cal * main_pct)
+    cal_dinner    = round(target_cal * main_pct)
+    cal_snack     = round(target_cal * 0.11)
+
+    # Verify total (adjust dinner to absorb rounding diff)
+    total_check = cal_breakfast + cal_lunch + cal_dinner
+    total_check += cal_snack * snack_count
+    diff = target_cal - total_check
+    cal_dinner += diff   # absorb rounding
+
     lines = [
-        f"צור תפריט יומי ל-{meals_n} ארוחות. יעד: {target_cal} קק״ל. מטרה: {goal_he}. כשרות: {kashrut}.",
+        f"צור תפריט יומי ל-{meals_n} ארוחות. יעד קלורי יומי: {target_cal} קק״ל.",
+        f"מטרה: {goal_he}. כשרות: {kashrut}.",
+        "",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "יעדי קלוריות לכל ארוחה — חובה לעמוד בהם:",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        f"  ארוחת בוקר:   {cal_breakfast} קק״ל",
+    ]
+    if has_morning_snack:
+        lines.append(f"  חטיף בוקר:    {cal_snack} קק״ל")
+    lines.append(f"  ארוחת צהריים: {cal_lunch} קק״ל")
+    if has_afternoon_snack:
+        lines.append(f"  חטיף אחה״צ:   {cal_snack} קק״ל")
+    lines.append(f"  ארוחת ערב:    {cal_dinner} קק״ל")
+    if has_evening_snack:
+        lines.append(f"  חטיף ערב:     {cal_snack} קק״ל")
+    lines += [
+        f"  סה״כ:         {target_cal} קק״ל",
         "",
         "חובה בכל ארוחה ראשית (בוקר/צהריים/ערב):",
-        "  1. חלבון אחד: עוף / ביצה / דג / גבינה / טונה",
+        "  1. חלבון: עוף / ביצה / דג / גבינה / טונה",
         "  2. פחמימה אחת בלבד: לחם / אורז / פסטה / תפוח אדמה / פיתה",
-        "  3. ירקות: עגבנייה / מלפפון / פלפל / גזר — בנפרד, לא בכוסות",
+        "  3. ירקות: עגבנייה / מלפפון / פלפל / גזר — ביחידות, לא כוסות",
+        "",
+        "כדי להגיע לקלוריות הנדרשות — הגדל כמויות:",
+        "  עוף: 1 יחידה=165 קל' → 2 יחידות=330 קל'",
+        "  אורז: 4 כפות=200 קל' → 6 כפות=300 קל'",
+        "  לחם: 1 פרוסה=70 קל' → 3 פרוסות=210 קל'",
+        "  ביצה: 1=55 קל' → 3 ביצים=165 קל'",
+        "  הוסף שמן זית, טחינה, גבינה, אגוזים לשומן ולקלוריות",
         "",
         "אסור: שתי פחמימות באותה ארוחה. אסור: ארוחה ראשית ללא חלבון.",
-        "כמויות: עוף=1 יחידה, ביצה=יחידה, לחם=פרוסה, אורז=כפות (4=150g), ירקות=יחידה.",
     ]
     if allergs:
         lines.append(f"אלרגיות — הימנע לחלוטין: {', '.join(allergs)}")
@@ -252,8 +308,85 @@ def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
         lines.append(f"מזונות לא רצויים: {', '.join(disliked)}")
     if extra:
         lines.append(extra)
-    lines.append(f"\nסה״כ קלוריות חייב להיות {target_cal} ± 50 קק״ל. חלק את הקלוריות: ארוחה ראשית ~35-40%, חטיפים ~10-15%.")
+    lines += [
+        "",
+        f"⚠ חשוב: סכום כל הקלוריות בתפריט חייב להיות {target_cal} ± 30 קק״ל.",
+        "לפני החזרת ה-JSON — חשב את הסכום ווודא שהוא נכון.",
+    ]
     return "\n".join(lines)
+
+
+# ── Natural Hebrew food description ──────────────────────────────────────────
+def _natural_food_text(f: dict) -> str:
+    """Convert {quantity, unit, name} → natural Hebrew string.
+
+    Examples:
+      1 יחידה עגבנייה  → עגבנייה
+      2 יחידה ביצה     → 2 ביצים
+      0.5 יחידה עוף    → חצי עוף
+      4 כפות אורז      → 4 כפות אורז
+      1 כף שמן זית     → כף שמן זית
+      1 פרוסה לחם מלא  → פרוסת לחם מלא
+      2 פרוסות לחם     → 2 פרוסות לחם
+      1 גביע יוגורט    → גביע יוגורט
+      1 קופסה טונה     → קופסת טונה
+    """
+    qty  = f.get("quantity", 1)
+    unit = (f.get("unit") or "יחידה").strip()
+    name = (f.get("name") or "").strip()
+
+    try:
+        qty = float(qty)
+    except (TypeError, ValueError):
+        qty = 1.0
+
+    if unit == "יחידה":
+        if qty == 0.5:
+            return f"חצי {name}"
+        if qty == 1:
+            return name
+        qty_int = int(qty) if qty == int(qty) else qty
+        return f"{qty_int} {name}"
+
+    if unit in ("כף", "כפות"):
+        if qty == 1:
+            return f"כף {name}"
+        qty_int = int(qty) if qty == int(qty) else qty
+        return f"{qty_int} כפות {name}"
+
+    if unit == "כפית":
+        if qty == 1:
+            return f"כפית {name}"
+        qty_int = int(qty) if qty == int(qty) else qty
+        return f"{qty_int} כפיות {name}"
+
+    if unit in ("פרוסה", "פרוסות"):
+        if qty == 1:
+            return f"פרוסת {name}"
+        qty_int = int(qty) if qty == int(qty) else qty
+        return f"{qty_int} פרוסות {name}"
+
+    if unit in ("גביע", "גביעים"):
+        if qty == 1:
+            return f"גביע {name}"
+        qty_int = int(qty) if qty == int(qty) else qty
+        return f"{qty_int} גביעים {name}"
+
+    if unit in ("קופסה", "קופסאות"):
+        if qty == 1:
+            return f"קופסת {name}"
+        qty_int = int(qty) if qty == int(qty) else qty
+        return f"{qty_int} קופסאות {name}"
+
+    if unit in ("חבילה", "חבילות"):
+        if qty == 1:
+            return f"חבילת {name}"
+        qty_int = int(qty) if qty == int(qty) else qty
+        return f"{qty_int} חבילות {name}"
+
+    # fallback: keep unit but drop trailing ".0"
+    qty_int = int(qty) if qty == int(qty) else qty
+    return f"{qty_int} {unit} {name}"
 
 
 # ── Render one AI meal card ───────────────────────────────────────────────────
@@ -273,7 +406,7 @@ def _render_ai_meal(meal: dict, idx: int, target_cal: int) -> None:
         f'<div dir="rtl" style="display:flex;justify-content:space-between;'
         f'padding:6px 0;border-bottom:1px solid #1a2030">'
         f'<span style="color:#c4cdd8;font-size:0.84rem">'
-        f'{f["quantity"]} {f["unit"]} {f["name"]}</span>'
+        f'{_natural_food_text(f)}</span>'
         f'<span style="color:#545e70;font-size:0.76rem;font-weight:500">{f.get("calories",0)} קק״ל</span>'
         f'</div>'
         for f in foods
@@ -534,7 +667,7 @@ if _AI_MENU_KEY in st.session_state:
                                    sum(f.get("calories", 0) for f in _alt.get("foods", [])))
                     _alt_name = _alt.get("meal_name", "חלופה")
                     _alt_foods_str = " · ".join(
-                        f'{f["quantity"]} {f["unit"]} {f["name"]}'
+                        _natural_food_text(f)
                         for f in _alt.get("foods", [])[:3]
                     )
                     if st.button(
