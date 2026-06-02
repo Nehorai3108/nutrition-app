@@ -722,7 +722,68 @@ if not run_btn and "last_plan" not in st.session_state:
         "תה":                   "tea",
         "מיץ תפוזים":           "orange-juice",
         "מים":                  "water",
+        # ── נוספות ──
+        "אורז בר":              "wild-rice",
+        "בוטנים":               "peanuts",
+        "חמאת שקדים":           "almond-butter",
+        "אבקת חרוב":            "carob-powder",
+        "אבקת חלבון":           "whey-powder",
+        "גבינת ריקוטה":         "ricotta",
+        "גבינת פטה":            "feta",
+        "קרם גבינה":            "cream-cheese",
+        "שמן קוקוס":            "coconut-oil",
+        "קוקוס":                "coconut",
+        "חמניות":               "sunflower-seeds",
+        "פיסטוקים":             "pistachio-nuts",
+        "פיסטוק":               "pistachio-nuts",
+        "אגוזים":               "mixed-nuts",
+        "אגוז":                 "walnuts",
+        "פקאן":                 "pecans",
+        "קמח שיבולת שועל":      "rolled-oats",
+        "חיטה":                 "whole-wheat",
+        "כוסמת":                "buckwheat",
+        "שעורה":                "barley",
+        "גרעיני דלעת":          "pumpkin-seeds",
+        "פנקייק":               "pancakes",
+        "וופל":                 "waffles",
+        "שייק":                 "milkshake",
+        "מיץ":                  "orange-juice",
+        "סלט":                  "salad",
+        "מרק":                  "vegetable-broth",
+        "פיצה":                 "pizza",
+        "בורגר":                "burger",
+        "שניצל":                "schnitzel",
+        "חמבה":                 "mango-chutney",
+        "הוּמוּס":              "hummus",
+        "חומוס ממרח":           "hummus",
+        "פלאפל":                "chickpea-flour",
+        "שקשוקה":               "egg",
+        "לביבות":               "potato-pancakes",
+        "קציצה":                "meatballs",
+        "כופתאות":              "dumpling",
     }
+
+    # High-priority keywords (proteins / main dishes) that win over longer carb/veggie keys
+    _FOOD_IMG_PRIORITY = {
+        "חזה עוף", "עוף", "סלמון", "טונה", "בשר בקר", "המבורגר", "סטייק",
+        "שרימפס", "דג", "הודו", "טורקי", "קציצות", "שניצל", "ביצה", "ביצים",
+    }
+
+    def _get_food_slug(food_name: str) -> str:
+        """Return Spoonacular CDN slug — exact match, then partial (protein-priority)."""
+        # 1. Exact match
+        slug = _FOOD_IMG.get(food_name, "")
+        if slug:
+            return slug
+        # 2. Partial match: priority keys first (proteins), then longest regular key
+        for key in _FOOD_IMG_PRIORITY:
+            if key in food_name:
+                return _FOOD_IMG[key]
+        best_key, best_len = "", 0
+        for key in _FOOD_IMG:
+            if key in food_name and len(key) > best_len:
+                best_key, best_len = key, len(key)
+        return _FOOD_IMG.get(best_key, "")
 
     cal_pct     = cal_eaten / max(cal_t, 1)
     _food_log_v = _food_log
@@ -865,7 +926,7 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.fat)}g שומן'
             )
             # ── Food image (Spoonacular CDN) with emoji fallback ─────────────
-            _fe_slug = _FOOD_IMG.get(_fe.food_name, "")
+            _fe_slug = _get_food_slug(_fe.food_name)
             if _fe_slug:
                 _icon_html = (
                     f'<div style="width:50px;height:50px;border-radius:14px;'
