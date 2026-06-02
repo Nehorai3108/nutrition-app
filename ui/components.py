@@ -112,14 +112,32 @@ def inject_global_css() -> None:
         [data-testid="stDecoration"] {{ display: none !important; }}
         [data-testid="collapsedControl"] {{ display: none !important; }}
         section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
-        /* Kill ALL top spacing Streamlit injects */
-        .stApp > div:first-child {{ padding-top: 0 !important; margin-top: 0 !important; }}
-        [data-testid="stAppViewContainer"] {{ padding-top: 0 !important; }}
-        [data-testid="stAppViewContainer"] > section {{ padding-top: 0 !important; }}
+
+        /* ─── Nuclear top-padding removal ────────────────────────────── */
+        .stApp {{
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }}
+        [data-testid="stAppViewContainer"] {{
+            padding-top: 0 !important;
+            margin-top:  0 !important;
+        }}
+        [data-testid="stAppViewContainer"] > section,
+        [data-testid="stMain"] {{
+            padding-top: 0 !important;
+            margin-top:  0 !important;
+        }}
+        .main {{
+            padding-top: 0 !important;
+            margin-top:  0 !important;
+        }}
+        .stApp > div {{ padding-top: 0 !important; margin-top: 0 !important; }}
+        /* Streamlit sometimes adds this class for the top spacer */
+        [data-testid="stVerticalBlock"] > div:empty {{ display: none !important; }}
 
         .main .block-container {{
             direction: rtl;
-            padding-top: 1rem;
+            padding-top: 0.5rem !important;
             padding-bottom: 90px;
             max-width: 480px;
             margin: 0 auto;
