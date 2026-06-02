@@ -3,15 +3,28 @@ barcode_comp.py — Streamlit custom components for barcode scanning.
 Must be declared from a real Python module (not a Streamlit page script)
 to avoid RuntimeError: module is None.
 """
-import os
+import os, shutil, tempfile
 import streamlit.components.v1 as components
 
 _BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# ── Component 1: live camera scanner (ZXing in iframe) ───────────────────────
+# ── Cache-bust: copy component to a version-stamped temp dir so the
+#    browser always loads the latest HTML when the file changes.
+def _versioned_component_path(src_dir: str) -> str:
+    html_path = os.path.join(src_dir, "index.html")
+    try:
+        ver = int(os.path.getmtime(html_path))
+    except OSError:
+        ver = 0
+    dst = os.path.join(tempfile.gettempdir(), f"bc_scanner_v{ver}")
+    if not os.path.isdir(dst):
+        shutil.copytree(src_dir, dst)
+    return dst
+
+_scanner_src = os.path.join(_BASE, "components", "barcode_scanner")
 _scanner_inner = components.declare_component(
     "barcode_scanner",
-    path=os.path.join(_BASE, "components", "barcode_scanner"),
+    path=_versioned_component_path(_scanner_src),
 )
 
 def barcode_scanner(key: str = "bc_scanner", height: int = 140) -> str | None:
