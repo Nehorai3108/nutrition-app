@@ -8,23 +8,18 @@ import streamlit.components.v1 as components
 
 _BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# ── Cache-bust: copy component to a version-stamped temp dir so the
-#    browser always loads the latest HTML when the file changes.
-def _versioned_component_path(src_dir: str) -> str:
-    html_path = os.path.join(src_dir, "index.html")
-    try:
-        ver = int(os.path.getmtime(html_path))
-    except OSError:
-        ver = 0
-    dst = os.path.join(tempfile.gettempdir(), f"bc_scanner_v{ver}")
-    if not os.path.isdir(dst):
-        shutil.copytree(src_dir, dst)
-    return dst
+# ── Cache-bust: include HTML file mtime in the component NAME so the
+#    browser iframe URL changes whenever index.html is updated.
+_scanner_src  = os.path.join(_BASE, "components", "barcode_scanner")
+_html_path    = os.path.join(_scanner_src, "index.html")
+try:
+    _html_ver = int(os.path.getmtime(_html_path))
+except OSError:
+    _html_ver = 0
 
-_scanner_src = os.path.join(_BASE, "components", "barcode_scanner")
 _scanner_inner = components.declare_component(
-    "barcode_scanner",
-    path=_versioned_component_path(_scanner_src),
+    f"barcode_scanner_v{_html_ver}",   # name changes → new iframe URL → no cache
+    path=_scanner_src,
 )
 
 def barcode_scanner(key: str = "bc_scanner", height: int = 140) -> str | None:
