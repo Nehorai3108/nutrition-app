@@ -104,19 +104,22 @@ def inject_global_css() -> None:
             direction: rtl !important;
             text-align: right !important;
         }}
-        /* ─── Hide Streamlit chrome ───────────────────────────────────── */
-        header[data-testid="stHeader"] {{ display: none !important; }}
+        /* ─── Hide Streamlit chrome completely ───────────────────────── */
+        header[data-testid="stHeader"] {{ display: none !important; height: 0 !important; }}
         footer {{ display: none !important; }}
         #MainMenu {{ display: none !important; }}
         [data-testid="stToolbar"] {{ display: none !important; }}
         [data-testid="stDecoration"] {{ display: none !important; }}
-        /* Hide collapsed sidebar toggle arrow (black strip on left) */
         [data-testid="collapsedControl"] {{ display: none !important; }}
         section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
+        /* Kill ALL top spacing Streamlit injects */
+        .stApp > div:first-child {{ padding-top: 0 !important; margin-top: 0 !important; }}
+        [data-testid="stAppViewContainer"] {{ padding-top: 0 !important; }}
+        [data-testid="stAppViewContainer"] > section {{ padding-top: 0 !important; }}
 
         .main .block-container {{
             direction: rtl;
-            padding-top: 0.75rem;
+            padding-top: 1rem;
             padding-bottom: 90px;
             max-width: 480px;
             margin: 0 auto;

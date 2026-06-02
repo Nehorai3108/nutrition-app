@@ -601,52 +601,27 @@ if not run_btn and "last_plan" not in st.session_state:
                   "lunch":"🍽","afternoon_snack":"🍎",
                   "dinner":"🌙","evening_snack":"🌜"}
 
-    # ── Today / Yesterday tab ─────────────────────────────────────────────────
-    if "home_tab" not in st.session_state:
-        st.session_state["home_tab"] = "today"
-    _is_today = st.session_state["home_tab"] == "today"
-    _view_date = today if _is_today else (today - timedelta(days=1))
+    cal_pct     = cal_eaten / max(cal_t, 1)
+    _food_log_v = _food_log
+    _is_today   = True   # always show today
 
-    # Reload data for the selected date if yesterday
-    if not _is_today:
-        _log_totals_v  = _food_log_repo.get_totals(_DASH_USER, _view_date)
-        _food_log_v    = _food_log_repo.get_log(_DASH_USER, _view_date)
-        cal_eaten  = _log_totals_v["calories"]
-        prot_eaten = _log_totals_v["protein"]
-        carbs_eaten= _log_totals_v["carbs"]
-        fat_eaten  = _log_totals_v["fat"]
-    else:
-        _food_log_v = _food_log
+    # ── Top bar (Cal AI style) ────────────────────────────────────────────────
+    _HEB_MONTHS2   = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני",
+                      "יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
+    _HEB_DAYS2     = {0:"שני",1:"שלישי",2:"רביעי",3:"חמישי",4:"שישי",5:"שבת",6:"ראשון"}
+    _date_disp     = f"יום {_HEB_DAYS2[today.weekday()]}, {today.day} ב{_HEB_MONTHS2[today.month-1]}"
 
-    cal_pct = cal_eaten / max(cal_t, 1)
-
-    # ── Top bar ───────────────────────────────────────────────────────────────
     st.markdown(
-        '<div style="display:flex;justify-content:space-between;align-items:center;'
-        'padding:6px 2px 14px">'
-        '<div style="font-size:1.3rem;font-weight:900;color:#f4f6fb;letter-spacing:-.02em">'
-        '🍏 BiteFit</div>'
-        '<div style="display:flex;gap:10px;align-items:center">'
-        f'<div style="background:#1e2433;border-radius:50%;width:34px;height:34px;'
-        f'display:flex;align-items:center;justify-content:center;font-size:1rem">📷</div>'
+        f'<div style="display:flex;justify-content:space-between;align-items:center;'
+        f'padding:4px 2px 16px">'
+        f'<div style="font-size:1.4rem;font-weight:900;color:#ffffff;'
+        f'font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Display\",\"Inter\",sans-serif;'
+        f'letter-spacing:-.03em">BiteFit</div>'
+        f'<div style="display:flex;gap:10px;align-items:center">'
+        f'<div style="font-size:.72rem;color:#8892a4">{_date_disp}</div>'
         f'</div></div>',
         unsafe_allow_html=True,
     )
-
-    # ── Today / Yesterday tabs ────────────────────────────────────────────────
-    _t1, _t2 = st.columns(2)
-    with _t1:
-        if st.button("היום", use_container_width=True,
-                     type="primary" if _is_today else "secondary", key="tab_today"):
-            st.session_state["home_tab"] = "today"
-            st.rerun()
-    with _t2:
-        if st.button("אתמול", use_container_width=True,
-                     type="primary" if not _is_today else "secondary", key="tab_yest"):
-            st.session_state["home_tab"] = "yesterday"
-            st.rerun()
-
-    st.markdown('<div style="height:4px"></div>', unsafe_allow_html=True)
 
     # ── Main calorie card (big number + single ring) ──────────────────────────
     _cal_diff  = cal_t - int(cal_eaten)
@@ -738,14 +713,14 @@ if not run_btn and "last_plan" not in st.session_state:
     _log_hdr_c1, _log_hdr_c2 = st.columns([3, 1])
     _log_hdr_c1.markdown(
         '<div style="font-size:.95rem;font-weight:800;color:#f4f6fb;margin-bottom:10px">'
-        'Recently uploaded</div>',
+        'אחרון שנרשם</div>',
         unsafe_allow_html=True,
     )
     with _log_hdr_c2:
-        if _is_today and st.button("🗑", key="clear_food_log_btn2", use_container_width=True):
+        if st.button("🗑", key="clear_food_log_btn2", use_container_width=True):
             st.session_state["_confirm_clear_log"] = True
 
-    if _is_today and st.session_state.get("_confirm_clear_log"):
+    if st.session_state.get("_confirm_clear_log"):
         st.warning("למחוק את כל נתוני המזון של היום?")
         _cc1x, _cc2x = st.columns(2)
         if _cc1x.button("כן", key="confirm_clear_yes2", use_container_width=True, type="primary"):
@@ -786,55 +761,54 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'</div>',
                 unsafe_allow_html=True,
             )
-            if _is_today:
-                with st.expander("ערוך / מחק"):
-                    _fe_is_recipe_v = _fe.food_id.startswith("recipe_")
-                    _fe_food_obj_v  = _catalog.get_food_by_id(_fe.food_id) if not _fe_is_recipe_v else None
-                    with st.form(f"home_edit_food_v_{_fe.entry_id}", clear_on_submit=True):
-                        _fe_grams_v = st.number_input(
-                            "גרם" if not _fe_is_recipe_v else "מנות × 100ג",
-                            min_value=1, max_value=3000,
-                            value=max(1, int(_fe.grams)), step=10 if not _fe_is_recipe_v else 100,
-                        )
-                        _fe_meal_v = st.selectbox(
-                            "ארוחה", options=list(MEAL_HEB.keys()),
-                            format_func=lambda k: MEAL_HEB[k],
-                            index=list(MEAL_HEB.keys()).index(_fe.meal_type)
-                                  if _fe.meal_type in MEAL_HEB else 0,
-                            key=f"meal_sel_v_{_fe.entry_id}",
-                        )
-                        _ffv1, _ffv2 = st.columns(2)
-                        if _ffv1.form_submit_button("שמור", use_container_width=True, type="primary"):
-                            _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
-                            if _fe_food_obj_v:
-                                _ratio_v = _fe_grams_v / 100.0
-                                _nn_v = _fe_food_obj_v.nutrition_per_100g
-                                _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
-                                    food_id=_fe_food_obj_v.food_id,
-                                    food_name=_fe_food_obj_v.name_he,
-                                    grams=float(_fe_grams_v),
-                                    calories=round(_nn_v.calories_kcal * _ratio_v, 1),
-                                    protein=round(_nn_v.protein_g * _ratio_v, 1),
-                                    carbs=round(_nn_v.carbs_g * _ratio_v, 1),
-                                    fat=round(_nn_v.fat_g * _ratio_v, 1),
-                                    meal_type=_fe_meal_v,
-                                    timestamp=_fe.timestamp,
-                                ))
-                            else:
-                                _scale_v = _fe_grams_v / max(_fe.grams, 1)
-                                _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
-                                    food_id=_fe.food_id, food_name=_fe.food_name,
-                                    grams=float(_fe_grams_v),
-                                    calories=round(_fe.calories * _scale_v, 1),
-                                    protein=round(_fe.protein * _scale_v, 1),
-                                    carbs=round(_fe.carbs * _scale_v, 1),
-                                    fat=round(_fe.fat * _scale_v, 1),
-                                    meal_type=_fe_meal_v, timestamp=_fe.timestamp,
-                                ))
-                            st.rerun()
-                        if _ffv2.form_submit_button("מחק", use_container_width=True):
-                            _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
-                            st.rerun()
+            with st.expander("ערוך / מחק"):
+                _fe_is_recipe_v = _fe.food_id.startswith("recipe_")
+                _fe_food_obj_v  = _catalog.get_food_by_id(_fe.food_id) if not _fe_is_recipe_v else None
+                with st.form(f"home_edit_food_v_{_fe.entry_id}", clear_on_submit=True):
+                    _fe_grams_v = st.number_input(
+                        "גרם" if not _fe_is_recipe_v else "מנות × 100ג",
+                        min_value=1, max_value=3000,
+                        value=max(1, int(_fe.grams)), step=10 if not _fe_is_recipe_v else 100,
+                    )
+                    _fe_meal_v = st.selectbox(
+                        "ארוחה", options=list(MEAL_HEB.keys()),
+                        format_func=lambda k: MEAL_HEB[k],
+                        index=list(MEAL_HEB.keys()).index(_fe.meal_type)
+                              if _fe.meal_type in MEAL_HEB else 0,
+                        key=f"meal_sel_v_{_fe.entry_id}",
+                    )
+                    _ffv1, _ffv2 = st.columns(2)
+                    if _ffv1.form_submit_button("שמור", use_container_width=True, type="primary"):
+                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
+                        if _fe_food_obj_v:
+                            _ratio_v = _fe_grams_v / 100.0
+                            _nn_v = _fe_food_obj_v.nutrition_per_100g
+                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
+                                food_id=_fe_food_obj_v.food_id,
+                                food_name=_fe_food_obj_v.name_he,
+                                grams=float(_fe_grams_v),
+                                calories=round(_nn_v.calories_kcal * _ratio_v, 1),
+                                protein=round(_nn_v.protein_g * _ratio_v, 1),
+                                carbs=round(_nn_v.carbs_g * _ratio_v, 1),
+                                fat=round(_nn_v.fat_g * _ratio_v, 1),
+                                meal_type=_fe_meal_v,
+                                timestamp=_fe.timestamp,
+                            ))
+                        else:
+                            _scale_v = _fe_grams_v / max(_fe.grams, 1)
+                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
+                                food_id=_fe.food_id, food_name=_fe.food_name,
+                                grams=float(_fe_grams_v),
+                                calories=round(_fe.calories * _scale_v, 1),
+                                protein=round(_fe.protein * _scale_v, 1),
+                                carbs=round(_fe.carbs * _scale_v, 1),
+                                fat=round(_fe.fat * _scale_v, 1),
+                                meal_type=_fe_meal_v, timestamp=_fe.timestamp,
+                            ))
+                        st.rerun()
+                    if _ffv2.form_submit_button("מחק", use_container_width=True):
+                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
+                        st.rerun()
     else:
         st.markdown(
             '<div style="background:#161b26;border-radius:18px;padding:24px;'
