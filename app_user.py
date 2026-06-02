@@ -547,18 +547,9 @@ with st.sidebar:
 
 # ── Main Area ─────────────────────────────────────────────────────────────────
 
-st.markdown(
-    f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 12px">'
-    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb;letter-spacing:-0.01em">BiteFit</div>'
-    f'<div dir="rtl" style="font-size:0.75rem;color:#545e70">{date.today().strftime("%d/%m/%Y")}</div>'
-    f'</div>',
-    unsafe_allow_html=True,
-)
-
 if not run_btn and "last_plan" not in st.session_state:
-    # ── Cal AI style home dashboard ───────────────────────────────────────────
+    # ── Activity Rings dashboard (Apple Watch style) ───────────────────────────
     import math as _math
-    from ui import theme as _t
 
     _DASH_USER = _USER_ID
     today = date.today()
@@ -599,171 +590,247 @@ if not run_btn and "last_plan" not in st.session_state:
     carbs_t = int(_targets.carbs_g)
     fat_t   = int(_targets.fat_g)
 
-    _cal_diff     = cal_t - int(cal_eaten)
-    cal_over      = _cal_diff < 0
-    cal_remaining = abs(_cal_diff)
     cal_pct       = cal_eaten / max(cal_t, 1)
-    cal_color     = "#00d4aa" if cal_pct < 0.85 else ("#f59e0b" if cal_pct < 1.0 else "#f87171")
 
-    # ── Week strip ────────────────────────────────────────────────────────────
-    HEB_WD = {0:"ב׳",1:"ג׳",2:"ד׳",3:"ה׳",4:"ו׳",5:"ש׳",6:"א׳"}
-    week_start = today - timedelta(days=today.weekday())
-    week_strip = ""
-    for i in range(7):
-        d = week_start + timedelta(days=i)
-        is_t = d == today
-        bg    = "#f59e0b" if is_t else "#1e2433"
-        fg    = "#0d0f14" if is_t else "#545e70"
-        fw    = "800" if is_t else "500"
-        week_strip += (
-            f'<div dir="rtl" style="display:flex;flex-direction:column;align-items:center;gap:4px">'
-            f'<div dir="rtl" style="font-size:0.58rem;color:#545e70;font-weight:500">{HEB_WD[d.weekday()]}</div>'
-            f'<div dir="rtl" style="width:30px;height:30px;border-radius:50%;background:{bg};'
-            f'display:flex;align-items:center;justify-content:center;'
-            f'font-size:0.75rem;font-weight:{fw};color:{fg}">{d.day}</div>'
-            f'</div>'
-        )
-
-    # ── Main calorie ring (big) ───────────────────────────────────────────────
-    r1,cx1,cy1,sz1,sw1 = 68,80,80,160,12
-    c1 = 2*_math.pi*r1
-    _ring_pct = min(cal_pct, 1.0)          # visual fill capped at full circle
-    f1 = c1*_ring_pct; g1 = c1-f1
-
-    # ── Macro mini-ring helper ────────────────────────────────────────────────
-    def _mrng(val, total, color, label):
-        pct  = min(val/max(total,1),1.0)
-        r,cx,cy,sz,sw = 24,30,30,60,5
-        circ = 2*_math.pi*r; filled=circ*pct; gap=circ-filled
-        rem  = max(int(total)-int(val),0)
-        return (
-            f'<div dir="rtl" style="flex:1;background:#161b26;border:1px solid #252d3d;border-radius:16px;'
-            f'padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:6px">'
-            f'<div dir="rtl" style="position:relative;width:{sz}px;height:{sz}px">'
-            f'<svg width="{sz}" height="{sz}" viewBox="0 0 {sz} {sz}">'
-            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#252d3d" stroke-width="{sw}"/>'
-            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="{sw}" '
-            f'stroke-dasharray="{filled:.1f} {gap:.1f}" stroke-dashoffset="{circ*0.25:.1f}" stroke-linecap="round"/>'
-            f'</svg>'
-            f'<div dir="rtl" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">'
-            f'<div dir="rtl" style="font-size:0.6rem;font-weight:800;color:{color}">{int(pct*100)}%</div>'
-            f'</div></div>'
-            f'<div dir="rtl" style="text-align:center">'
-            f'<div dir="rtl" style="font-size:0.8rem;font-weight:800;color:#f4f6fb">{rem}g</div>'
-            f'<div dir="rtl" style="font-size:0.58rem;color:#545e70;margin-top:1px">נותר</div>'
-            f'<div dir="rtl" style="font-size:0.62rem;color:#8892a4;margin-top:2px;font-weight:600">{label}</div>'
-            f'</div></div>'
-        )
-
-    # ── Feed items ────────────────────────────────────────────────────────────
+    # ── Meal / color maps (also used by food log below) ───────────────────────
     MEAL_HEB = {"breakfast":"ארוחת בוקר","morning_snack":"חטיף בוקר",
                 "lunch":"ארוחת צהריים","afternoon_snack":"חטיף אחה״צ",
                 "dinner":"ארוחת ערב","evening_snack":"חטיף ערב"}
     MEAL_COLOR = {"breakfast":"#f59e0b","morning_snack":"#a78bfa",
                   "lunch":"#4f8ef7","afternoon_snack":"#34d399",
                   "dinner":"#f87171","evening_snack":"#818cf8"}
-    feed_items_html = ""
-    if _food_log:
-        for entry in reversed(_food_log[-4:]):
-            t_str   = entry.timestamp[11:16] if len(entry.timestamp)>15 else ""
-            meal_h  = MEAL_HEB.get(entry.meal_type, entry.meal_type)
-            m_color = MEAL_COLOR.get(entry.meal_type, "#545e70")
-            feed_items_html += (
-                f'<div dir="rtl" style="display:flex;align-items:center;gap:12px;'
-                f'background:#161b26;border:1px solid #252d3d;border-radius:16px;'
-                f'padding:12px 14px;margin-bottom:8px">'
-                f'<div dir="rtl" style="width:4px;height:40px;border-radius:99px;background:{m_color};flex-shrink:0"></div>'
-                f'<div dir="rtl" style="flex:1;min-width:0">'
-                f'<div dir="rtl" style="font-size:0.88rem;font-weight:600;color:#f4f6fb;'
-                f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{entry.food_name}</div>'
-                f'<div dir="rtl" style="font-size:0.72rem;color:#8892a4;margin-top:3px">'
-                f'<span style="color:{cal_color};font-weight:600">{int(entry.calories)} קק״ל</span>'
-                f' &nbsp;·&nbsp; {meal_h}</div>'
-                f'</div>'
-                f'<div dir="rtl" style="font-size:0.68rem;color:#545e70;flex-shrink:0">{t_str}</div>'
-                f'</div>'
-            )
-    else:
-        feed_items_html = (
-            f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:16px;'
-            f'padding:20px;text-align:center;color:#545e70;font-size:0.82rem">'
-            f'לא נרשמו ארוחות היום</div>'
-        )
 
-    # ── Render full dashboard ─────────────────────────────────────────────────
-    dashboard_html = (
-        # Week strip
-        f'<div dir="rtl" style="display:flex;justify-content:space-between;margin:0 2px 16px">'
-        f'{week_strip}</div>'
+    # ── Hebrew date string ────────────────────────────────────────────────────
+    _HEB_MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני",
+                   "יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
+    _HEB_DAYS_LNG = {0:"שני",1:"שלישי",2:"רביעי",3:"חמישי",4:"שישי",5:"שבת",6:"ראשון"}
+    _date_str = f"יום {_HEB_DAYS_LNG[today.weekday()]}, {today.day} ב{_HEB_MONTHS[today.month-1]}"
 
-        # Main calorie card
-        f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:24px;'
-        f'padding:20px 20px 18px;margin-bottom:10px;'
-        f'display:flex;align-items:center;justify-content:space-between;gap:12px">'
-
-        # Left: numbers
-        f'<div>'
-        f'<div dir="rtl" style="font-size:3rem;font-weight:900;color:{cal_color};line-height:1;letter-spacing:-0.04em">'
-        f'{cal_remaining}</div>'
-        f'<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-top:5px;font-weight:500">'
-        f'{"חריגה" if cal_over else "קלוריות נותרות"}</div>'
-        f'<div dir="rtl" style="display:flex;gap:18px;margin-top:14px">'
-        f'<div><div dir="rtl" style="font-size:0.62rem;color:#545e70;margin-bottom:2px">אכלת</div>'
-        f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{int(cal_eaten)}</div></div>'
-        f'<div><div dir="rtl" style="font-size:0.62rem;color:#545e70;margin-bottom:2px">שרפת</div>'
-        f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{int(burned)}</div></div>'
-        f'<div><div dir="rtl" style="font-size:0.62rem;color:#545e70;margin-bottom:2px">יעד</div>'
-        f'<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb">{cal_t}</div></div>'
-        f'</div></div>'
-
-        # Right: ring
-        f'<div dir="rtl" style="position:relative;width:{sz1}px;height:{sz1}px;flex-shrink:0">'
-        f'<svg width="{sz1}" height="{sz1}" viewBox="0 0 {sz1} {sz1}" '
-        f'style="filter:drop-shadow(0 0 8px {cal_color}55)">'
-        f'<circle cx="{cx1}" cy="{cy1}" r="{r1}" fill="none" stroke="#252d3d" stroke-width="{sw1}"/>'
-        f'<circle cx="{cx1}" cy="{cy1}" r="{r1}" fill="none" stroke="{cal_color}" stroke-width="{sw1}" '
-        f'stroke-dasharray="{f1:.1f} {g1:.1f}" stroke-dashoffset="{c1*0.25:.1f}" stroke-linecap="round"/>'
-        f'</svg>'
-        f'<div dir="rtl" style="position:absolute;inset:0;display:flex;flex-direction:column;'
-        f'align-items:center;justify-content:center;text-align:center">'
-        f'<div dir="rtl" style="font-size:1.1rem;font-weight:900;color:{cal_color}">{int(cal_pct*100)}%</div>'
-        f'<div dir="rtl" style="font-size:0.5rem;color:{"#f87171" if cal_over else "#545e70"};margin-top:2px">'
-        f'{"חריגה" if cal_over else "מהיעד"}</div>'
-        f'</div></div>'
-        f'</div>'
-
-        # Macro row
-        f'<div dir="rtl" style="display:flex;gap:8px;margin-bottom:16px">'
-        f'{_mrng(prot_eaten, prot_t,  "#4f8ef7", "חלבון")}'
-        f'{_mrng(carbs_eaten, carbs_t, "#f59e0b", "פחמימות")}'
-        f'{_mrng(fat_eaten,  fat_t,   "#f472b6", "שומן")}'
-        f'</div>'
-
-        # Water strip
-        f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:16px;'
-        f'padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">'
-        f'<div dir="rtl" style="display:flex;align-items:center;gap:10px">'
-        f'<div dir="rtl" style="width:8px;height:8px;border-radius:50%;background:#4f8ef7"></div>'
-        f'<div><div dir="rtl" style="font-size:0.78rem;font-weight:600;color:#f4f6fb">{int(water_total)} מ״ל</div>'
-        f'<div dir="rtl" style="font-size:0.62rem;color:#545e70">מתוך {int(water_goal)} מ״ל</div></div>'
-        f'</div>'
-        f'<div dir="rtl" style="width:80px;height:6px;background:#252d3d;border-radius:99px;overflow:hidden">'
-        f'<div dir="rtl" style="height:100%;width:{min(water_total/max(water_goal,1),1)*100:.0f}%;'
-        f'background:#4f8ef7;border-radius:99px"></div>'
-        f'</div></div>'
-
-        # Recently logged
-        f'<div dir="rtl" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
-        f'<div dir="rtl" style="font-size:0.95rem;font-weight:700;color:#f4f6fb">אחרון שנרשם</div>'
-        f'</div>'
-        f'{feed_items_html}'
+    # ── Top bar ───────────────────────────────────────────────────────────────
+    st.markdown(
+        f'<div dir="rtl" style="display:flex;justify-content:space-between;align-items:center;'
+        f'margin-bottom:18px;padding:4px 2px 0">'
+        f'<div style="font-size:1.25rem;font-weight:900;color:#f4f6fb;letter-spacing:-.02em">BiteFit 🔥</div>'
+        f'<div style="font-size:.72rem;color:#6b7a95">{_date_str}</div>'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    st.markdown(dashboard_html, unsafe_allow_html=True)
+    # ── Concentric Activity Rings (Apple Watch style) ─────────────────────────
+    _R1, _R2, _R3, _SW = 62, 48, 34, 10          # radii + stroke
+    _C1 = 2*_math.pi*_R1
+    _C2 = 2*_math.pi*_R2
+    _C3 = 2*_math.pi*_R3
+
+    _cal_pct_v   = min(cal_eaten / max(cal_t,  1), 1.0)
+    _prot_pct_v  = min(prot_eaten / max(prot_t, 1), 1.0)
+    _water_pct_v = min(water_total / max(water_goal, 1), 1.0)
+
+    _cf1, _cg1 = _C1*_cal_pct_v,   _C1*(1-_cal_pct_v)
+    _cf2, _cg2 = _C2*_prot_pct_v,  _C2*(1-_prot_pct_v)
+    _cf3, _cg3 = _C3*_water_pct_v, _C3*(1-_water_pct_v)
+    _water_l    = water_total / 1000
+
+    # Remaining / over for calorie legend
+    _cal_diff    = cal_t - int(cal_eaten)
+    _cal_over    = _cal_diff < 0
+    _cal_lbl     = f'{"+" if _cal_over else ""}{abs(_cal_diff)} {"חריגה" if _cal_over else "נותרו"}'
+
+    st.markdown(
+        f'<div dir="rtl" style="background:#161b26;border-radius:28px;padding:22px 20px;'
+        f'margin-bottom:14px;display:flex;align-items:center;gap:20px">'
+
+        # ── SVG rings ──────────────────────────────────────────────────────────
+        f'<div style="position:relative;width:140px;height:140px;flex-shrink:0">'
+        f'<svg width="140" height="140" viewBox="0 0 140 140">'
+        # track circles
+        f'<circle cx="70" cy="70" r="{_R1}" fill="none" stroke="#2a1515" stroke-width="{_SW}"/>'
+        f'<circle cx="70" cy="70" r="{_R2}" fill="none" stroke="#152a15" stroke-width="{_SW}"/>'
+        f'<circle cx="70" cy="70" r="{_R3}" fill="none" stroke="#15152a" stroke-width="{_SW}"/>'
+        # progress circles
+        f'<circle cx="70" cy="70" r="{_R1}" fill="none" stroke="#f87171" stroke-width="{_SW}" '
+        f'stroke-dasharray="{_cf1:.1f} {_cg1:.1f}" stroke-dashoffset="{_C1*0.25:.1f}" stroke-linecap="round"/>'
+        f'<circle cx="70" cy="70" r="{_R2}" fill="none" stroke="#4ade80" stroke-width="{_SW}" '
+        f'stroke-dasharray="{_cf2:.1f} {_cg2:.1f}" stroke-dashoffset="{_C2*0.25:.1f}" stroke-linecap="round"/>'
+        f'<circle cx="70" cy="70" r="{_R3}" fill="none" stroke="#60a5fa" stroke-width="{_SW}" '
+        f'stroke-dasharray="{_cf3:.1f} {_cg3:.1f}" stroke-dashoffset="{_C3*0.25:.1f}" stroke-linecap="round"/>'
+        f'</svg>'
+        f'</div>'
+
+        # ── Legend ─────────────────────────────────────────────────────────────
+        f'<div style="flex:1;min-width:0">'
+        # Calories row
+        f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:15px">'
+        f'<div style="width:10px;height:10px;border-radius:50%;background:#f87171;flex-shrink:0"></div>'
+        f'<div style="font-size:.78rem;font-weight:600;color:#f4f6fb;flex:1">קלוריות</div>'
+        f'<div style="text-align:left">'
+        f'<span style="font-size:.9rem;font-weight:800;color:#f87171">{int(cal_eaten)}</span>'
+        f'<span style="font-size:.62rem;color:#6b7a95"> / {cal_t}</span>'
+        f'</div></div>'
+        # Protein row
+        f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:15px">'
+        f'<div style="width:10px;height:10px;border-radius:50%;background:#4ade80;flex-shrink:0"></div>'
+        f'<div style="font-size:.78rem;font-weight:600;color:#f4f6fb;flex:1">חלבון</div>'
+        f'<div style="text-align:left">'
+        f'<span style="font-size:.9rem;font-weight:800;color:#4ade80">{int(prot_eaten)}g</span>'
+        f'<span style="font-size:.62rem;color:#6b7a95"> / {prot_t}g</span>'
+        f'</div></div>'
+        # Water row
+        f'<div style="display:flex;align-items:center;gap:8px">'
+        f'<div style="width:10px;height:10px;border-radius:50%;background:#60a5fa;flex-shrink:0"></div>'
+        f'<div style="font-size:.78rem;font-weight:600;color:#f4f6fb;flex:1">מים</div>'
+        f'<div style="text-align:left">'
+        f'<span style="font-size:.9rem;font-weight:800;color:#60a5fa">{_water_l:.1f}L</span>'
+        f'<span style="font-size:.62rem;color:#6b7a95"> / {water_goal/1000:.1f}L</span>'
+        f'</div></div>'
+        f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── Quick action tiles (2×2 grid) ─────────────────────────────────────────
+    st.markdown("""
+    <style>
+    div[data-testid="stHorizontalBlock"]:has(.qa-tile) a[data-testid="stPageLink"] {
+        background: #161b26 !important;
+        border: 1px solid #252d3d !important;
+        border-radius: 18px !important;
+        padding: 14px 10px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 72px !important;
+        text-decoration: none !important;
+        color: #f4f6fb !important;
+        font-weight: 700 !important;
+        font-size: .8rem !important;
+        gap: 4px !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(.qa-tile) a[data-testid="stPageLink"]:hover {
+        border-color: #4f8ef7 !important;
+        background: #1a2235 !important;
+    }
+    </style>
+    <span class="qa-tile" style="display:none"></span>
+    """, unsafe_allow_html=True)
+
+    _qa1, _qa2, _qa3, _qa4 = st.columns(4)
+    with _qa1:
+        st.page_link("pages/10_chat_log.py", label="🍽\nארוחה", use_container_width=True)
+    with _qa2:
+        st.page_link("pages/12_barcode.py", label="📷\nברקוד", use_container_width=True)
+    with _qa3:
+        st.page_link("pages/7_workout_tracker.py", label="🏃\nאימון", use_container_width=True)
+    with _qa4:
+        st.page_link("pages/9_history.py", label="📊\nהיסטוריה", use_container_width=True)
+
+    st.markdown('<div style="height:6px"></div>', unsafe_allow_html=True)
+
+    # ── Food log (before water) ────────────────────────────────────────────────
+    _hdr_c1, _hdr_c2 = st.columns([3, 1])
+    _hdr_c1.markdown(
+        '<div dir="rtl" style="font-size:1rem;font-weight:800;color:#f4f6fb;margin:4px 0 10px">ארוחות היום</div>',
+        unsafe_allow_html=True,
+    )
+    with _hdr_c2:
+        st.markdown('<div style="margin-top:4px"></div>', unsafe_allow_html=True)
+        if st.button("🗑 מחק הכל", key="clear_food_log_btn_top", use_container_width=True):
+            st.session_state["_confirm_clear_log"] = True
+
+    if st.session_state.get("_confirm_clear_log"):
+        st.warning("למחוק את כל נתוני המזון של היום?")
+        _cc1t, _cc2t = st.columns(2)
+        if _cc1t.button("כן, מחק הכל", key="confirm_clear_yes_top", use_container_width=True, type="primary"):
+            _food_log_repo.clear_day(_DASH_USER, today)
+            st.session_state.pop("_confirm_clear_log", None)
+            st.rerun()
+        if _cc2t.button("ביטול", key="confirm_clear_no_top", use_container_width=True):
+            st.session_state.pop("_confirm_clear_log", None)
+            st.rerun()
+
+    _today_food_top = _food_log_repo.get_log(_DASH_USER, today)
+    if _today_food_top:
+        for _fe in reversed(_today_food_top):
+            _fe_color = MEAL_COLOR.get(_fe.meal_type, "#545e70")
+            st.markdown(
+                f'<div dir="rtl" style="background:#161b26;border-radius:14px;'
+                f'padding:12px 14px;margin-bottom:5px;display:flex;align-items:center;gap:12px">'
+                f'<div style="width:4px;height:36px;border-radius:99px;background:{_fe_color};flex-shrink:0"></div>'
+                f'<div style="flex:1;min-width:0">'
+                f'<div style="font-size:.86rem;font-weight:700;color:#f4f6fb;'
+                f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{_fe.food_name}</div>'
+                f'<div style="font-size:.68rem;color:#6b7a95;margin-top:2px">'
+                f'{MEAL_HEB.get(_fe.meal_type, _fe.meal_type)}'
+                + (f' · {datetime.fromisoformat(_fe.timestamp).strftime("%H:%M")}' if _fe.timestamp else "") +
+                f'</div></div>'
+                f'<div style="font-size:.84rem;font-weight:800;color:{_fe_color};flex-shrink:0">'
+                f'{int(_fe.calories)} קק״ל</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+            with st.expander("ערוך / מחק"):
+                _fe_is_recipe_t = _fe.food_id.startswith("recipe_")
+                _fe_food_obj_t  = _catalog.get_food_by_id(_fe.food_id) if not _fe_is_recipe_t else None
+                with st.form(f"home_edit_food_top_{_fe.entry_id}", clear_on_submit=True):
+                    _fe_grams_t = st.number_input(
+                        "גרם" if not _fe_is_recipe_t else "מנות × 100ג",
+                        min_value=1, max_value=3000,
+                        value=max(1, int(_fe.grams)), step=10 if not _fe_is_recipe_t else 100,
+                    )
+                    _fe_meal_t = st.selectbox(
+                        "ארוחה", options=list(MEAL_HEB.keys()),
+                        format_func=lambda k: MEAL_HEB[k],
+                        index=list(MEAL_HEB.keys()).index(_fe.meal_type)
+                              if _fe.meal_type in MEAL_HEB else 0,
+                        key=f"meal_sel_top_{_fe.entry_id}",
+                    )
+                    _fft1, _fft2 = st.columns(2)
+                    if _fft1.form_submit_button("שמור", use_container_width=True, type="primary"):
+                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
+                        if _fe_food_obj_t:
+                            _ratio_t = _fe_grams_t / 100.0
+                            _nn_t = _fe_food_obj_t.nutrition_per_100g
+                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
+                                food_id=_fe_food_obj_t.food_id,
+                                food_name=_fe_food_obj_t.name_he,
+                                grams=float(_fe_grams_t),
+                                calories=round(_nn_t.calories_kcal * _ratio_t, 1),
+                                protein=round(_nn_t.protein_g * _ratio_t, 1),
+                                carbs=round(_nn_t.carbs_g * _ratio_t, 1),
+                                fat=round(_nn_t.fat_g * _ratio_t, 1),
+                                meal_type=_fe_meal_t,
+                                timestamp=_fe.timestamp,
+                            ))
+                        else:
+                            _scale_t = _fe_grams_t / max(_fe.grams, 1)
+                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
+                                food_id=_fe.food_id, food_name=_fe.food_name,
+                                grams=float(_fe_grams_t),
+                                calories=round(_fe.calories * _scale_t, 1),
+                                protein=round(_fe.protein * _scale_t, 1),
+                                carbs=round(_fe.carbs * _scale_t, 1),
+                                fat=round(_fe.fat * _scale_t, 1),
+                                meal_type=_fe_meal_t, timestamp=_fe.timestamp,
+                            ))
+                        st.rerun()
+                    if _fft2.form_submit_button("מחק", use_container_width=True):
+                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
+                        st.rerun()
+    else:
+        st.markdown(
+            '<div dir="rtl" style="background:#161b26;border-radius:14px;'
+            'padding:20px;text-align:center;color:#545e70;font-size:.82rem">'
+            'לא נרשמו ארוחות היום<br><span style="font-size:.72rem">לחץ על 🍽 ארוחה למעלה כדי להוסיף</span>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+    st.markdown('<div style="height:4px"></div>', unsafe_allow_html=True)
 
     # ── Water quick-add ───────────────────────────────────────────────────────
     st.markdown(
-        '<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb;margin:4px 0 8px">מים</div>',
+        '<div dir="rtl" style="font-size:1rem;font-weight:800;color:#f4f6fb;margin:12px 0 10px">💧 מים</div>',
         unsafe_allow_html=True,
     )
     _water_repo_home = _WaterRepo()
@@ -809,102 +876,6 @@ if not run_btn and "last_plan" not in st.session_state:
                         _water_repo_home.remove_water_intake(_DASH_USER, _wi.water_id,
                                                               today.isoformat())
                         st.rerun()
-
-    # ── Food log edit/delete ──────────────────────────────────────────────────
-    _hdr_c1, _hdr_c2 = st.columns([3, 1])
-    _hdr_c1.markdown(
-        '<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb;margin:20px 0 8px">ארוחות היום</div>',
-        unsafe_allow_html=True,
-    )
-    with _hdr_c2:
-        st.markdown('<div style="margin-top:14px"></div>', unsafe_allow_html=True)
-        if st.button("מחק הכל", key="clear_food_log_btn", use_container_width=True):
-            st.session_state["_confirm_clear_log"] = True
-
-    # Confirm dialog
-    if st.session_state.get("_confirm_clear_log"):
-        st.warning("למחוק את כל נתוני המזון של היום?")
-        _cc1, _cc2 = st.columns(2)
-        if _cc1.button("כן, מחק הכל", key="confirm_clear_yes", use_container_width=True, type="primary"):
-            _food_log_repo.clear_day(_DASH_USER, today)
-            st.session_state.pop("_confirm_clear_log", None)
-            st.rerun()
-        if _cc2.button("ביטול", key="confirm_clear_no", use_container_width=True):
-            st.session_state.pop("_confirm_clear_log", None)
-            st.rerun()
-
-    _today_food = _food_log_repo.get_log(_DASH_USER, today)
-    if _today_food:
-        for _fe in reversed(_today_food):
-            _fe_color = MEAL_COLOR.get(_fe.meal_type, "#545e70")
-            st.markdown(
-                f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:14px;'
-                f'padding:10px 14px;margin-bottom:4px;display:flex;align-items:center;gap:10px">'
-                f'<div dir="rtl" style="width:3px;height:32px;border-radius:99px;background:{_fe_color};flex-shrink:0"></div>'
-                f'<div dir="rtl" style="flex:1">'
-                f'<div dir="rtl" style="font-size:0.84rem;font-weight:600;color:#f4f6fb">{_fe.food_name}</div>'
-                f'<div dir="rtl" style="font-size:0.68rem;color:#545e70;margin-top:2px">'
-                f'{MEAL_HEB.get(_fe.meal_type, _fe.meal_type)} · {_fe.grams:.0f}ג׳'
-                + (f' · {datetime.fromisoformat(_fe.timestamp).strftime("%H:%M")}' if _fe.timestamp else "") +
-                f'</div></div>'
-                f'<div dir="rtl" style="font-size:0.82rem;font-weight:700;color:{_fe_color}">{int(_fe.calories)} קק״ל</div>'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
-            with st.expander("ערוך / מחק"):
-                _fe_is_recipe = _fe.food_id.startswith("recipe_")
-                _fe_food_obj  = _catalog.get_food_by_id(_fe.food_id) if not _fe_is_recipe else None
-                with st.form(f"home_edit_food_{_fe.entry_id}", clear_on_submit=True):
-                    _fe_grams = st.number_input(
-                        "גרם" if not _fe_is_recipe else "מנות × 100ג",
-                        min_value=1, max_value=3000,
-                        value=max(1, int(_fe.grams)), step=10 if not _fe_is_recipe else 100,
-                    )
-                    _fe_meal = st.selectbox(
-                        "ארוחה", options=list(MEAL_HEB.keys()),
-                        format_func=lambda k: MEAL_HEB[k],
-                        index=list(MEAL_HEB.keys()).index(_fe.meal_type)
-                              if _fe.meal_type in MEAL_HEB else 0,
-                    )
-                    _ff1, _ff2 = st.columns(2)
-                    if _ff1.form_submit_button("שמור", use_container_width=True, type="primary"):
-                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
-                        if _fe_food_obj:
-                            _ratio = _fe_grams / 100.0
-                            _nn = _fe_food_obj.nutrition_per_100g
-                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
-                                food_id=_fe_food_obj.food_id,
-                                food_name=_fe_food_obj.name_he,
-                                grams=float(_fe_grams),
-                                calories=round(_nn.calories_kcal * _ratio, 1),
-                                protein=round(_nn.protein_g * _ratio, 1),
-                                carbs=round(_nn.carbs_g * _ratio, 1),
-                                fat=round(_nn.fat_g * _ratio, 1),
-                                meal_type=_fe_meal,
-                                timestamp=_fe.timestamp,
-                            ))
-                        else:
-                            # recipe entry: scale proportionally
-                            _scale = _fe_grams / max(_fe.grams, 1)
-                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
-                                food_id=_fe.food_id, food_name=_fe.food_name,
-                                grams=float(_fe_grams),
-                                calories=round(_fe.calories * _scale, 1),
-                                protein=round(_fe.protein * _scale, 1),
-                                carbs=round(_fe.carbs * _scale, 1),
-                                fat=round(_fe.fat * _scale, 1),
-                                meal_type=_fe_meal, timestamp=_fe.timestamp,
-                            ))
-                        st.rerun()
-                    if _ff2.form_submit_button("מחק", use_container_width=True):
-                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
-                        st.rerun()
-    else:
-        st.markdown(
-            '<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:14px;'
-            'padding:16px;text-align:center;color:#545e70;font-size:0.78rem">לא נרשמו ארוחות היום</div>',
-            unsafe_allow_html=True,
-        )
 
     bottom_nav("home")
     st.stop()
