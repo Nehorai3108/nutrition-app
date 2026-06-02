@@ -48,9 +48,9 @@ html,body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hid
 #live-screen canvas { display:none !important; }
 
 /* ── Live camera screen ─────────────────────────────── */
-#live-screen { display:none; position:relative; width:100%; }
-#video  { width:100%; height:220px; object-fit:cover; display:block; background:#111; }
-#frame  { position:absolute; top:0; left:0; right:0; height:220px; pointer-events:none; }
+#live-screen { display:none; flex-direction:column; position:relative; width:100%; }
+#video  { width:100%; height:240px; object-fit:cover; display:block; background:#111; border-radius:12px; }
+#frame  { position:absolute; top:0; left:0; right:0; height:240px; pointer-events:none; }
 .corner { position:absolute; width:24px; height:24px;
           border-color:#4f8ef7; border-style:solid; }
 .tl{top:12px;left:12px;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
@@ -68,11 +68,7 @@ html,body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hid
   text-align:center; color:rgba(255,255,255,.75);
   font-size:12px; direction:rtl;
 }
-#stop-btn {
-  width:100%; padding:10px; background:#2d1b1b;
-  border:none; cursor:pointer; color:#fc8181;
-  font-size:.9rem; border-radius:0 0 8px 8px;
-}
+/* stop button removed — camera stops automatically after scan */
 </style>
 </head>
 <body>
@@ -107,7 +103,6 @@ html,body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hid
     <div id="sweep"></div>
     <div id="live-hint">כוון את הברקוד אל המסגרת</div>
   </div>
-  <button id="stop-btn" onclick="stopLive()">✕ עצור מצלמה</button>
 </div>
 
 <script>
@@ -269,7 +264,7 @@ function _startLiveNative() {
     _stream=stream;
     var v=document.getElementById("video");
     v.srcObject=stream; v.play();
-    show("live-screen"); Streamlit.setFrameHeight(270);
+    show("live-screen"); Streamlit.setFrameHeight(250);
 
     var det=new BarcodeDetector({formats:["ean_13","ean_8","code_128","upc_a","upc_e","code_39","qr_code"]});
     var cand=null, hits=0;
@@ -312,7 +307,7 @@ function _startLiveZXing() {
     }
   ).then(function(){
     _stream=document.getElementById("video").srcObject;
-    show("live-screen"); Streamlit.setFrameHeight(270);
+    show("live-screen"); Streamlit.setFrameHeight(250);
   }).catch(function(e){
     show("scan-screen"); Streamlit.setFrameHeight(150);
     setMsg((e&&e.name==="NotAllowedError")
