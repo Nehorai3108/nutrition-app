@@ -1,0 +1,192 @@
+"""
+UserMealPreferences and UserRecipeVariant — first-login meal-picker state.
+
+A UserRecipeVariant is a user-personalized version of a base Recipe with
+ingredient quantity overrides (e.g. "Yossi's Omelette: 3 eggs instead of 2").
+UserMealPreferences holds the user's picks per meal-type, optional fixed-day
+overrides, and the set of variants they've created.
+
+All adjustments flow through MealAdjustmentService — UI callers and the future
+AI agent share the same model surface.
+"""
+from __future__ import annotations
+
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Dict, List, Optional
+
+from nutrition_app.utils import utcnow
+
+
+# Meal-type keys used as dict keys in `picks`. The first three reuse the
+# existing MealType enum values; `post_workout` and `treat` are tag-based
+# (no enum change — see plan decision #3).
+MEAL_TYPE_KEYS: List[str] = [
+    "breakfast", "lunch", "dinner", "post_workout", "treat",
+]
+
+WEEKDAYS: List[str] = [
+    "monday", "tuesday", "wednesday", "thursday",
+    "friday", "saturday", "sunday",
+]
+
+
+@dataclass
+class UserRecipeVariant:
+    """One user-personalized version of a base recipe.
+
+    `ingredient_overrides` maps `food_name_en` (the stable key on
+    RecipeIngredient) → new quantity in the recipe's native units. When
+    empty, the variant is just "the base recipe as-is".
+
+    `total_nutrition` is the *recomputed* per-portion nutrition after
+    overrides are applied. It's persisted so consumers don't have to
+    re-evaluate the catalog every render.
+    """
+    variant_id: str
+    base_recipe_id: str
+    name: str                                      # display name (e.g. "Yossi's Omelette")
+    meal_type: str                                 # one of MEAL_TYPE_KEYS
+    ingredient_overrides: Dict[str, float] = field(default_factory=dict)
+    total_nutrition: Dict[str, float] = field(default_factory=dict)  # {calories, protein, carbs, fat}
+    created_at: datetime = field(default_factory=utcnow)
+
+    @staticmethod
+    def new_id() -> str:
+        return f"var_{uuid.uuid4().hex[:12]}"
+
+    def to_dict(self) -> dict:
+        return {
+            "variant_id": self.variant_id,
+            "base_recipe_id": self.base_recipe_id,
+            "name": self.name,
+            "meal_type": self.meal_type,
+            "ingredient_overrides": self.ingredient_overrides,
+            "total_nutrition": self.total_nutrition,
+            "created_at": self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "UserRecipeVariant":
+        created = data.get("created_at")
+        if isinstance(created, str):
+            try:
+                created = datetime.fromisoformat(created)
+            except ValueError:
+                created = utcnow()
+        return cls(
+            variant_id=data["variant_id"],
+            base_recipe_id=data["base_recipe_id"],
+            name=data.get("name", ""),
+            meal_type=data.get("meal_type", ""),
+            ingredient_overrides=dict(data.get("ingredient_overrides") or {}),
+            total_nutrition=dict(data.get("total_nutrition") or {}),
+            created_at=created or utcnow(),
+        )
+
+
+@dataclass
+class UserMealPreferences:
+    """User's persisted meal-picker state.
+
+    `picks[meal_type]` is an ordered list of variant_ids — the weekly planner
+    rotates through them in order.
+
+    `fixed_day_overrides` keys are `"{weekday}.{meal_type}"` (e.g.
+    `"friday.breakfast"`) and values are variant_ids that override the
+    auto-rotation for that single weekday slot.
+
+    `liked_ingredients` is an ordered list of catalog `food_id`s the user
+    marked as favorites in the pre-step of the picker. Used by
+    `RecipeSuggestionService` to soft-rank candidates (more overlap → higher
+    in the list). Allergies and dislikes still hard-filter.
+
+    `onboarded_at` is set the first time the user completes the picker;
+    `None` means the picker should run on next login.
+    """
+    user_id: str
+    picks: Dict[str, List[str]] = field(default_factory=dict)
+    fixed_day_overrides: Dict[str, str] = field(default_factory=dict)
+    variants: List[UserRecipeVariant] = field(default_factory=list)
+    liked_ingredients: List[str] = field(default_factory=list)
+    skipped_meal_types: List[str] = field(default_factory=list)
+    onboarded_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    # Calm Mode toggles — all opt-in, off by default (FF_CALM_MODE_DEFAULT)
+    show_streaks: bool = False
+    daily_notifications: bool = False
+    weekly_summary: bool = False
+
+    def variant_by_id(self, variant_id: str) -> Optional[UserRecipeVariant]:
+        return next((v for v in self.variants if v.variant_id == variant_id), None)
+
+    def add_variant(self, variant: UserRecipeVariant) -> None:
+        if not self.variant_by_id(variant.variant_id):
+            self.variants.append(variant)
+
+    def remove_variant(self, variant_id: str) -> None:
+        self.variants = [v for v in self.variants if v.variant_id != variant_id]
+        for meal_type, pick_list in self.picks.items():
+            self.picks[meal_type] = [vid for vid in pick_list if vid != variant_id]
+        self.fixed_day_overrides = {
+            k: v for k, v in self.fixed_day_overrides.items() if v != variant_id
+        }
+
+    def to_dict(self) -> dict:
+        return {
+            "user_id": self.user_id,
+            "picks": self.picks,
+            "fixed_day_overrides": self.fixed_day_overrides,
+            "variants": [v.to_dict() for v in self.variants],
+            "liked_ingredients": list(self.liked_ingredients),
+            "skipped_meal_types": list(self.skipped_meal_types),
+            "onboarded_at": self.onboarded_at.isoformat() if isinstance(self.onboarded_at, datetime) else self.onboarded_at,
+            "updated_at": self.updated_at.isoformat() if isinstance(self.updated_at, datetime) else self.updated_at,
+            "show_streaks": self.show_streaks,
+            "daily_notifications": self.daily_notifications,
+            "weekly_summary": self.weekly_summary,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "UserMealPreferences":
+        def _parse_dt(value):
+            if isinstance(value, datetime):
+                return value
+            if isinstance(value, str):
+                try:
+                    return datetime.fromisoformat(value)
+                except ValueError:
+                    return None
+            return None
+
+        variants = [UserRecipeVariant.from_dict(v) for v in (data.get("variants") or [])]
+        picks = {k: list(v or []) for k, v in (data.get("picks") or {}).items()}
+        for mt in MEAL_TYPE_KEYS:
+            picks.setdefault(mt, [])
+        return cls(
+            user_id=data["user_id"],
+            picks=picks,
+            fixed_day_overrides=dict(data.get("fixed_day_overrides") or {}),
+            variants=variants,
+            liked_ingredients=list(data.get("liked_ingredients") or []),
+            skipped_meal_types=list(data.get("skipped_meal_types") or []),
+            onboarded_at=_parse_dt(data.get("onboarded_at")),
+            updated_at=_parse_dt(data.get("updated_at")),
+            show_streaks=bool(data.get("show_streaks", False)),
+            daily_notifications=bool(data.get("daily_notifications", False)),
+            weekly_summary=bool(data.get("weekly_summary", False)),
+        )
+
+    @classmethod
+    def empty(cls, user_id: str) -> "UserMealPreferences":
+        return cls(
+            user_id=user_id,
+            picks={mt: [] for mt in MEAL_TYPE_KEYS},
+            liked_ingredients=[],
+            skipped_meal_types=[],
+        )
+
+    @property
+    def is_onboarded(self) -> bool:
+        return self.onboarded_at is not None

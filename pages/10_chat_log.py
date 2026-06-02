@@ -36,7 +36,14 @@ def _get_catalog(_v=4):
 
 @st.cache_resource
 def _get_groq():
-    return Groq(api_key=st.secrets["groq_api_key"])
+    api_key = (
+        os.environ.get("GROQ_API_KEY")
+        or os.environ.get("groq_api_key")
+        or st.secrets.get("groq_api_key", "")
+    )
+    if not api_key:
+        return None
+    return Groq(api_key=api_key)
 
 @st.cache_resource
 def _get_recipe_mgr():
@@ -75,6 +82,10 @@ groq_client   = _get_groq()
 food_log_repo = FoodLogRepository()
 USER_ID       = require_auth()
 FOOD_LIST     = _build_food_list()
+
+if groq_client is None:
+    st.error("⚠️ מפתח Groq API חסר. בדוק את הגדרות ה-Secrets ב-Streamlit Cloud.")
+    st.stop()
 
 MEAL_HEB = {
     "breakfast":       "ארוחת בוקר",
