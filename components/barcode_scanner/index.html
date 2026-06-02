@@ -44,6 +44,9 @@ html,body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hid
   cursor:pointer; color:#63b3ed; font-size:.9rem; font-weight:600;
 }
 
+/* ── Hide ZXing result canvas (drawing only, not needed) */
+#live-screen canvas { display:none !important; }
+
 /* ── Live camera screen ─────────────────────────────── */
 #live-screen { display:none; position:relative; width:100%; }
 #video  { width:100%; height:220px; object-fit:cover; display:block; background:#111; }
@@ -125,22 +128,30 @@ Streamlit.setFrameHeight(150);
 Streamlit.setComponentReady();
 
 var _stream=null, _liveTimer=null, _zxingR=null, _zxingLoaded=false, _lastBC=null;
-var _autoStarted=false;
+var _autoStarted=false, _accepted=false;
 
-// On Streamlit rerun: only reset UI if we're not in live mode
+// On Streamlit rerun: restore correct screen state
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function(){
-  if (!_stream) {
-    show("scan-screen");
-    Streamlit.setFrameHeight(150);
-    // Auto-start live camera once on first render
-    if (!_autoStarted) {
-      _autoStarted = true;
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        document.getElementById("hint").textContent = "פותח מצלמה...";
-        startLive();
-      } else {
-        document.getElementById("hint").textContent = "לחץ לצילום ברקוד";
-      }
+  if (_stream) return;  // live camera active — don't touch UI
+
+  if (_accepted && _lastBC) {
+    // Barcode was scanned — keep showing ok-screen with rescan button
+    document.getElementById("bc-val").textContent = _lastBC;
+    show("ok-screen");
+    Streamlit.setFrameHeight(170);
+    return;
+  }
+
+  // No barcode yet — show scan screen and auto-start camera once
+  show("scan-screen");
+  Streamlit.setFrameHeight(150);
+  if (!_autoStarted) {
+    _autoStarted = true;
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      document.getElementById("hint").textContent = "פותח מצלמה...";
+      startLive();
+    } else {
+      document.getElementById("hint").textContent = "לחץ לצילום ברקוד";
     }
   }
 });
@@ -323,6 +334,7 @@ function stopLive(){
 function accept(bc) {
   if (!bc) return;
   _lastBC = bc;
+  _accepted = true;
   document.getElementById("bc-val").textContent = bc;
   show("ok-screen");
   Streamlit.setFrameHeight(170);
@@ -331,10 +343,12 @@ function accept(bc) {
 
 function resetAll() {
   _lastBC = null;
+  _accepted = false;
+  _autoStarted = false;  // allow camera to re-open on next render
   setMsg("","");
   show("scan-screen");
   Streamlit.setFrameHeight(150);
-  Streamlit.setComponentValue("");   // "" = reset signal (null can't be distinguished from "not yet scanned")
+  Streamlit.setComponentValue("");   // "" = reset signal
 }
 
 // ─────────────────────────────────────────────────────────────────────────
