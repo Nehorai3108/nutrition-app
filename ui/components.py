@@ -617,6 +617,44 @@ def inject_global_css() -> None:
         .nut-ring-sport::before {{ background: linear-gradient(90deg, {t.WARNING}, #f97316); }}
         .nut-ring-water::before {{ background: linear-gradient(90deg, {t.INFO}, {t.ACCENT}); }}
     </style>
+    <script>
+    /* Streamlit JS sets padding-top on stMain AFTER CSS loads — override it */
+    (function fixTopPadding() {{
+        function zeroTop() {{
+            var selectors = [
+                '[data-testid="stMain"]',
+                '[data-testid="stAppViewContainer"]',
+                '[data-testid="stMainBlockContainer"]',
+                '.main',
+                '.block-container'
+            ];
+            selectors.forEach(function(sel) {{
+                var els = document.querySelectorAll(sel);
+                els.forEach(function(el) {{
+                    el.style.setProperty('padding-top', '0', 'important');
+                    el.style.setProperty('margin-top',  '0', 'important');
+                }});
+            }});
+            /* Also force header height to 0 */
+            var hdr = document.querySelector('[data-testid="stHeader"]');
+            if (hdr) {{
+                hdr.style.setProperty('display', 'none', 'important');
+                hdr.style.setProperty('height',  '0',    'important');
+            }}
+        }}
+        /* Run immediately, then again after Streamlit re-renders */
+        zeroTop();
+        setTimeout(zeroTop, 100);
+        setTimeout(zeroTop, 500);
+        /* Also observe DOM mutations so Streamlit can't re-add padding */
+        if (window.MutationObserver) {{
+            new MutationObserver(zeroTop).observe(document.body, {{
+                childList: true, subtree: true, attributes: true,
+                attributeFilter: ['style']
+            }});
+        }}
+    }})();
+    </script>
     """
     st.markdown(css, unsafe_allow_html=True)
 
