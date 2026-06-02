@@ -81,11 +81,10 @@ html,body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hid
 <!-- Screen 1: Scan button -->
 <div id="scan-screen">
   <button id="scan-btn" onclick="document.getElementById('fileIn').click()">
-    <span style="font-size:1.4rem">📷</span> סרוק ברקוד
+    <span style="font-size:1.4rem">📷</span> צלם תמונה (גיבוי)
   </button>
-  <div id="hint">לחץ • צלם את הברקוד • התוצאה תופיע מיד</div>
+  <div id="hint">מצלמה נטענת...</div>
   <div id="msg"></div>
-  <div id="live-link" onclick="startLive()">🎥 מצלמה חיה (אם זמינה)</div>
 </div>
 
 <!-- Screen 2: Success -->
@@ -126,12 +125,23 @@ Streamlit.setFrameHeight(150);
 Streamlit.setComponentReady();
 
 var _stream=null, _liveTimer=null, _zxingR=null, _zxingLoaded=false, _lastBC=null;
+var _autoStarted=false;
 
 // On Streamlit rerun: only reset UI if we're not in live mode
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function(){
   if (!_stream) {
     show("scan-screen");
     Streamlit.setFrameHeight(150);
+    // Auto-start live camera once on first render
+    if (!_autoStarted) {
+      _autoStarted = true;
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        document.getElementById("hint").textContent = "פותח מצלמה...";
+        startLive();
+      } else {
+        document.getElementById("hint").textContent = "לחץ לצילום ברקוד";
+      }
+    }
   }
 });
 
@@ -266,8 +276,9 @@ function _startLiveNative() {
     }
     _liveTimer=setTimeout(tick,400);
   }).catch(function(e){
+    show("scan-screen"); Streamlit.setFrameHeight(150);
     setMsg((e&&e.name==="NotAllowedError")
-      ?"❌ אין הרשאת מצלמה — נסה לצלם תמונה":"❌ שגיאת מצלמה","fail");
+      ?"אין הרשאת מצלמה — לחץ לצלם תמונה":"לחץ לסרוק ברקוד","fail");
   });
 }
 
@@ -292,8 +303,9 @@ function _startLiveZXing() {
     _stream=document.getElementById("video").srcObject;
     show("live-screen"); Streamlit.setFrameHeight(270);
   }).catch(function(e){
+    show("scan-screen"); Streamlit.setFrameHeight(150);
     setMsg((e&&e.name==="NotAllowedError")
-      ?"❌ אין הרשאת מצלמה — נסה לצלם תמונה":"❌ שגיאת מצלמה","fail");
+      ?"אין הרשאת מצלמה — לחץ לצלם תמונה":"לחץ לסרוק ברקוד","fail");
   });
 }
 
