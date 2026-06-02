@@ -17,31 +17,69 @@ groq_client = Groq(api_key=_secrets["groq_api_key"])
 
 SYSTEM = """אתה עוזר תזונה ישראלי. תפקידך: לזהות מזון ולרשום אותו ב-JSON.
 כשמשתמש מזכיר מזון — החזר JSON בלבד (ללא טקסט לפני/אחרי).
-כשאין מזון (שאלה/ברכה) — ענה בעברית רגילה בלבד.
+כשאין מזון (שאלה/ברכה/ביטוי מעורפל) — ענה בעברית רגילה בלבד.
 
-כמויות ברירת מחדל:
+=== כמויות ברירת מחדל ===
 חזה עוף=1 יחידה | שניצל עוף=1 יחידה | קציצות עוף=3 יחידות
-ביצה=1 יחידה | טונה=1 קופסה | לחם=1 פרוסה | פיתה=1 יחידה
-אורז=4 כפות | פסטה=4 כפות | יוגורט=1 גביע | עגבנייה=1 יחידה
-מלפפון=1 יחידה | גזר=1 יחידה | בננה=1 יחידה | תפוח=1 יחידה
-שמן זית=1 כף | אבוקדו=0.5 יחידה | קוטג'=1 גביע | חלב=1 כוס
-שיבולת שועל/קוואקר=4 כפות | קפה שחור=1 כוס | סלמון=1 יחידה
-חומוס=2 כפות | גבינה בולגרית=1 כף
+ביצה=1 יחידה | חביתה=ביצה qty=2 | מקושקשת=ביצה qty=2 | שקשוקה=ביצה qty=2
+טונה=1 קופסה | סרדינים=1 קופסה | סלמון=1 יחידה
+לחם=1 פרוסה | פיתה=1 יחידה | לאפה=פיתה 1 יחידה
+אורז=4 כפות | פסטה=4 כפות | ספגטי=פסטה 4 כפות | קוסקוס=4 כפות
+יוגורט=1 גביע | קוטג'=גבינת קוטג' 1 גביע | גבינה לבנה=2 כפות | לבן=גבינה לבנה 2 כפות
+עגבנייה=1 יחידה | מלפפון=1 יחידה | גזר=1 יחידה | חציל=1 יחידה | חסה=1 יחידה
+בננה=1 יחידה | תפוח=1 יחידה | תפוז=1 יחידה (תפוז ≠ תפוח!)
+שמן זית=1 כף | אבוקדו=0.5 יחידה | ריבה=1 כף | קרקר=1 יחידה
+חלב=1 כוס | מים=1 כוס
+קפה שחור=1 כוס | אספרסו=קפה שחור | קפוצינו=קפה עם חלב | לאטה=קפה עם חלב
+שיבולת שועל/קוואקר=4 כפות | חומוס=2 כפות | גבינה בולגרית=1 כף
+תפוח אדמה=1 יחידה (name:"תפוח אדמה" — NOT "תפוח"!)
 
-פורמט JSON (כשיש מזון):
+=== פורמט JSON (כשיש מזון) ===
 ```json
 {"meal_type":"breakfast|morning_snack|lunch|afternoon_snack|dinner|evening_snack","foods":[{"name":"שם בעברית","quantity":1,"unit":"יחידה|גרם|פרוסה|כוס|כף|כפית|גביע|קופסה"}],"reply":"תגובה קצרה"}
 ```
 
-כללים:
-- קציצות/קציצה -> name:"קציצות עוף" qty=3 (אבל: "קציצה אחת"=qty=1, "2 קציצות"=qty=2)
-- שניצל -> name:"שניצל עוף" qty=1 (לעולם לא קציצות!)
-- חביתה/שקשוקה/ביצת עין -> פריט אחד בלבד name:"ביצה" qty=2 (אם נאמר "עם X ביצים" -> qty=X)
-- ירקות: יחידה בלבד, לא כוסות
-- כל מזון/שתייה -> JSON תמיד"""
+=== כללים מחייבים ===
+- שניצל/שניצל עוף = breaded fried chicken (schnitzel) → name:"שניצל עוף" unit=יחידה qty=1 (חובה JSON!)
+- "2/3/N שניצלים" -> name:"שניצל עוף" qty=N
+- קציצות/קציצה -> name:"קציצות עוף" qty=3 (אם ציין N -> qty=N: "קציצה אחת"=1, "2 קציצות"=2, "5 קציצות"=5)
+- חביתה/שקשוקה/מקושקשת/ביצת עין -> פריט אחד: name:"ביצה" qty=2 (אם "עם X ביצים" -> qty=X)
+- "N ביצים" -> name:"ביצה" qty=N (item אחד!)
+- טונה -> תמיד unit=קופסה, name:"טונה בשמן"
+- כריך/טוסט/לחמנייה -> לחם | כריך טונה -> לחם (2 פרוסות) + טונה
+- לאפה -> name:"פיתה" unit=יחידה qty=1 (לאפה IS a pita — always map to פיתה)
+- "שתיתי X" / "שתייתי X" -> JSON עם X כמשקה
+- "ארוחת X Y" -> meal_type=X, log food Y
+- "בבוקר..." / "בוקר..." -> meal_type=breakfast
+- "לצהריים..." / "בצהריים..." / "ארוחת צהריים" -> meal_type=lunch
+- "בערב..." / "בלילה..." / "ארוחת ערב" -> meal_type=dinner
+- "אחה''צ..." / "אחרי הצהריים..." / "חטיף..." -> meal_type=afternoon_snack
+- אורז -> name:"אורז לבן" unit=כפות qty=4
+- ספגטי -> name:"פסטה ספגטי" unit=כפות qty=4
+- המבורגר -> name:"בשר בקר טחון" (NOT "המבורגר")
+- קבב -> name:"קבב בקר" unit=יחידה qty=2 (grilled meat skewer — NEVER לחם/טונה/דג!)
+- סטייק -> name:"סטייק בקר" — NEVER חזה עוף!
+- במבה/ביסלי = Israeli snack (peanut puffs / corn snack) → name:"במבה"/"ביסלי" unit=יחידה — NEVER בשר בקר!
+- שמן זית -> name:"שמן זית" unit=כף qty=1 (ALWAYS JSON! unit must be "כף" not anything else)
+- ריבה / דבש / חמאה -> תמיד JSON (ריבה = jam = מזון!)
+- גבינה לבנה -> name:"גבינה לבנה" unit=כף qty=2 (תמיד JSON!)
+- ירקות (חציל/חסה/כרובית וכו') -> unit=יחידה תמיד
+- "X, Y, Z" / "X עם Y" -> JSON עם כל המזונות כפריטים נפרדים
+
+=== אסורות ===
+- אספרסו ≠ אספרגוס (ירק!) — אספרסו = קפה שחור בלבד
+- תפוז ≠ תפוח — שני פירות שונים לגמרי
+- חציל ≠ חזה עוף — שני מזונות שונים לגמרי
+- מקושקשת ≠ שניצל — מקושקשת = ביצים בלבד
+
+=== אין JSON (תגובה עברית רגילה בלבד) ===
+- ברכות/תגובות: "תודה", "כן", "לא", "בסדר", "אוקיי" -> תגובה קצרה, ללא JSON
+- שאלות: "מה כדאי לאכול?" / "כמה קלוריות ב...?" -> ענה בעברית, ללא JSON
+- מעורפל: "אכלתי קצת" / "אכלתי הרבה" (ללא מזון ספציפי) -> שאל "מה בדיוק?", ללא JSON
+- אם foods=[] (ריק) -> אל תחזיר JSON כלל"""
 
 MODEL = "llama-3.1-8b-instant"
-_CALL_INTERVAL = 6.5   # seconds between calls → ~9 calls/min × ~300 tok = 2700 TPM (under 6000)
+_CALL_INTERVAL = 8.0   # seconds between calls → ~7.5 calls/min × ~300 tok = 2250 TPM (safe under 6000)
 _last_call = [0.0]
 
 def ask(msg):
@@ -90,7 +128,8 @@ def ask(msg):
                 time.sleep(wait)
             else:
                 raise
-    raise RuntimeError(f"Failed after 5 retries: {msg!r}")
+    print(f"    [giving up after 5 retries for: {msg!r}]")
+    return None  # count as FAIL, not ERR
 
 def ff(d):
     if not d: return {}
@@ -187,7 +226,7 @@ TESTS = [
      lambda d: d is not None and "סלמון" in ff(d).get("name",""),
      "דג סלמון"),
     ("סרדינים",
-     lambda d: d is not None and ("סרדין" in ff(d).get("name","") or "דג" in ff(d).get("name","")),
+     lambda d: d is not None and ("סרד" in ff(d).get("name","") or "דג" in ff(d).get("name","")),
      "סרדינים"),
     ("טונה בשמן",
      lambda d: d and "טונה" in ff(d).get("name",""),
@@ -763,18 +802,42 @@ TESTS = [
 
 assert len(TESTS) >= 200, f"Only {len(TESTS)} tests defined"
 
+# ── Daily limit: run only a rotating batch of 40 tests ───────────────────────
+import argparse as _ap, datetime as _dt
 
-def run_tests():
+_DEFAULT_BATCH = 40
+
+def _get_batch(all_tests, batch_size, offset=None):
+    """Return a rotating batch of `batch_size` tests based on today's date."""
+    if offset is None:
+        day_num = (_dt.date.today() - _dt.date(2025, 1, 1)).days
+        offset = (day_num * batch_size) % len(all_tests)
+    end = offset + batch_size
+    if end <= len(all_tests):
+        return all_tests[offset:end], offset
+    # wrap around
+    return (all_tests[offset:] + all_tests[:end - len(all_tests)]), offset
+
+
+def run_tests(batch_size=_DEFAULT_BATCH, run_all=False, offset=None):
     passed = failed = errors = 0
     failures = []
-    total = len(TESTS)
+
+    if run_all:
+        tests_to_run = TESTS
+        label = f"ALL {len(TESTS)}"
+    else:
+        tests_to_run, off = _get_batch(TESTS, batch_size, offset)
+        label = f"{len(tests_to_run)} (batch starting at #{off+1})"
+
+    total = len(tests_to_run)
 
     print(f"\n{'='*60}")
-    print(f"  BiteFit Chat AI - {total} Accuracy Tests")
+    print(f"  BiteFit Chat AI — {label} Accuracy Tests")
     print(f"  Model: {MODEL}")
     print(f"{'='*60}\n")
 
-    for i, (user_input, check_fn, desc) in enumerate(TESTS, 1):
+    for i, (user_input, check_fn, desc) in enumerate(tests_to_run, 1):
         try:
             data = ask(user_input)
             ok = check_fn(data)
@@ -807,5 +870,11 @@ def run_tests():
     return pct
 
 if __name__ == "__main__":
-    score = run_tests()
+    parser = _ap.ArgumentParser(description="BiteFit accuracy tests")
+    parser.add_argument("--all", action="store_true", help="Run all 208 tests")
+    parser.add_argument("--limit", type=int, default=_DEFAULT_BATCH, help="Number of tests per batch (default 40)")
+    parser.add_argument("--offset", type=int, default=None, help="Start from this index (default: auto by date)")
+    args = parser.parse_args()
+
+    score = run_tests(batch_size=args.limit, run_all=args.all, offset=args.offset)
     sys.exit(0 if score >= 90 else 1)

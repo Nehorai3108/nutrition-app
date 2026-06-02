@@ -98,7 +98,7 @@ Always reply in Hebrew. Be warm, brief, accurate. Your job: identify food correc
 עוף ובשר:
   חזה עוף    = 1 יחידה (150g)
   שניצל עוף  = 1 יחידה (130g) — ONLY for "שניצל"
-  קציצות עוף = 3 יחידות (75g each) — ONLY for "קציצות/קציצה/קציצת עוף"
+  קציצות עוף = 3 יחידות (75g each) — for "קציצות/קציצה/קציצה אחת/קציצת עוף"
   ירך עוף    = 1 יחידה (120g)
   המבורגר    = 1 יחידה (150g)
   קבב        = 2 יחידות (80g each)
@@ -202,20 +202,61 @@ Be brief — 1-2 sentences max.
 - QUANTITY WORDS: אחד/אחת=1, שניים/שתיים=2, שלוש/שלושה=3, ארבע=4, חמש=5
 
 === ALWAYS LOG THESE — always return JSON, never just describe ===
-- קפה שחור / קפה → name:"קפה שחור" unit=כוס qty=1
+- קפה / קפה שחור / אספרסו / מקפה / אמריקנו → name:"קפה שחור" unit=כוס qty=1
+- קפוצינו / לאטה / קפה עם חלב → name:"קפה עם חלב" unit=כוס qty=1
 - חלב → name:"חלב" unit=כוס qty=1
-- מים → name:"מים" unit=כוס qty=1
+- מים (even "שתיתי מים" / "שתייה מים") → name:"מים" unit=כוס qty=1
 - סלמון / דג סלמון → name:"דג סלמון" unit=יחידה qty=1
-- קוואקר → name:"שיבולת שועל" unit=כפות qty=4
+- טונה (always) → name:"טונה בשמן" unit=קופסה qty=1
+- סרדינים → name:"סרדינים" unit=קופסה qty=1
+- קוואקר / שיבולת שועל → name:"שיבולת שועל" unit=כפות qty=4
+- קוסקוס → name:"קוסקוס" unit=כפות qty=4
+- אורז / אורז לבן → name:"אורז לבן" unit=כפות qty=4
+- ספגטי / פסטה → name:"פסטה ספגטי" unit=כפות qty=4
 - קוטג' / קוטג → name:"גבינת קוטג'" unit=גביע qty=1
-- חומוס (as food, not question) → name:"חומוס מוכן" unit=כפות qty=2
+- חומוס (as food) → name:"חומוס מוכן" unit=כפות qty=2
+- שניצל / שניצל עוף → name:"שניצל עוף" unit=יחידה qty=1
+- חסה → name:"חסה" unit=יחידה qty=1
+- חציל → name:"חציל" unit=יחידה qty=1
+- ריבה → name:"ריבה" unit=כף qty=1
+- קרקר → name:"קרקר" unit=יחידה qty=1
+- לאפה → name:"פיתה" unit=יחידה qty=1
+- תפוח אדמה (FULL NAME, not "תפוח") → name:"תפוח אדמה" unit=יחידה qty=1
+- שמן זית → name:"שמן זית" unit=כף qty=1  ← NEVER unit=שיוב or any garbled word
+- לבן / גבינת לבן / גבינה לבנה → name:"גבינה לבנה" unit=כף qty=2
+- "שתיתי X" / "שתייתי X" → log X as drink
+- "ארוחת X: Y" or "ארוחת X Y" → set meal_type=X, log food Y normally
+- "בבוקר..." / "בוקר..." → meal_type=breakfast
+- "לצהריים..." / "בצהריים..." → meal_type=lunch
+- "בערב..." / "בלילה..." → meal_type=dinner
+- "אחה''צ..." / "חטיף..." → meal_type=afternoon_snack
 
-=== IF NO FOOD AT ALL (pure question or greeting) — plain Hebrew only (no JSON) ==="""
+=== CRITICAL CONFUSION PREVENTION — these mistakes are FORBIDDEN ===
+- אספרסו = COFFEE (קפה שחור) ← NOT אספרגוס (vegetable!) — completely different!
+- סטייק = בשר בקר ← NOT עוף! Never map סטייק to chicken.
+- תפוז = orange fruit ← NOT תפוח (apple)! Completely different fruits.
+- חציל = eggplant ← NOT חזה עוף! Completely different.
+- מקושקשת = scrambled eggs (ביצה) ← NOT שניצל!
+- המבורגר = בשר בקר (name:"בשר בקר טחון") ← never return name:"המבורגר"
+- קבב = grilled meat skewer → name:"קבב בקר" unit=יחידה (NEVER לחם or טונה!)
+- כריך טונה → foods=[לחם x2 פרוסות, טונה x1 קופסה] — log BOTH bread and filling
+- "N ביצים" → qty=N, name="ביצה" (one item)
+- "חביתה עם N ביצים" → qty=N, name="ביצה" (ONE item only, never split into two)
+- "ארוחת צהריים שניצל" → meal_type=lunch, log שניצל עוף
+- "X, Y, Z" or "X עם Y ועם Z" → log ALL foods as separate items in foods array
+- If foods array would be EMPTY → do NOT return JSON at all
+
+=== IF NO FOOD AT ALL (pure question, greeting, or vague) — plain Hebrew only (no JSON) ===
+Examples of NO-JSON inputs:
+  "תודה", "כן", "לא", "בסדר", "אוקיי" → just reply warmly, NO JSON
+  "מה כדאי לאכול?" / "מה אני יכול לאכול?" → give advice, NO JSON
+  "אכלתי קצת" / "אכלתי הרבה" (no specific food) → ask "מה בדיוק אכלת?", NO JSON
+  "שאלה..." / "יש לי שאלה..." → answer the question, NO JSON"""
 
 
 # ── Food aliases: common Israeli names → searchable DB terms ──────────────────
 FOOD_ALIASES = {
-    "טוסט":          "toast",
+    "טוסט":          "לחם",
     "לחם לבן":       "לחם",
     "לחם מלא":       "לחם",
     "לחם שחור":      "לחם",
@@ -234,6 +275,9 @@ FOOD_ALIASES = {
     "צהובה":         "גבינה צהובה",
     "לבנה":          "גבינה לבנה",
     "שמנת":          "שמנת",
+    "לבן":           "גבינה לבנה",
+    "גבינת לבן":     "גבינה לבנה",
+    "קציצה":         "קציצות עוף",   # singular → canonical plural name
     "חזה":           "חזה עוף",
     "שניצל":         "שניצל עוף",
     "כנפיים":        "כנפי עוף",
@@ -275,6 +319,7 @@ FOOD_ALIASES = {
     "תרד":           "תרד",
     "תפוח אדמה":     "תפוח אדמה",
     "בטטה":          "בטטה",
+    "חציל":          "חציל",
     "חצילים":        "חציל",
     "קישוא":         "קישוא",
     "שמן זית":       "שמן זית",
@@ -288,8 +333,11 @@ FOOD_ALIASES = {
     "גלידה":         "גלידה",
     "קפה":           "קפה שחור",
     "אספרסו":        "קפה שחור",
+    "מקפה":          "קפה שחור",
+    "אמריקנו":       "קפה שחור",
     "לאטה":          "קפה עם חלב",
     "קפוצינו":       "קפה עם חלב",
+    "קפה נס":        "קפה שחור",
     "שוקו":          "משקה שוקולד",
     "מיץ תפוזים":    "מיץ תפוזים",
     "פיתה":          "פיתה",

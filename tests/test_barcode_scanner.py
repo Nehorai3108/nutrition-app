@@ -33,7 +33,7 @@ def test_scanner_html():
         ("setComponentValue sends barcode string",
          "setComponentValue" in html and "accept" in html),
         ("resetAll clears value",
-         "resetAll" in html and "setComponentValue(null)" in html),
+         "resetAll" in html and ('setComponentValue("")' in html or "setComponentValue('')" in html)),
     ]
 
     failed = [name for name, ok in checks if not ok]
