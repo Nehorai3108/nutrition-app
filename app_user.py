@@ -601,6 +601,129 @@ if not run_btn and "last_plan" not in st.session_state:
                   "lunch":"🍽","afternoon_snack":"🍎",
                   "dinner":"🌙","evening_snack":"🌜"}
 
+    # ── Spoonacular CDN food image slugs (no API key needed) ─────────────────
+    # URL: https://spoonacular.com/cdn/ingredients_100x100/{slug}.png
+    _FOOD_IMG: dict[str, str] = {
+        # ── עוף ──
+        "חזה עוף":              "chicken-breasts",
+        "עוף":                  "whole-chicken",
+        "כרעי עוף":             "chicken-legs",
+        "שוק עוף":              "chicken-drumstick",
+        "כנפי עוף":             "chicken-wings",
+        # ── בשר ──
+        "בשר בקר":              "beef-sirloin-raw",
+        "המבורגר":              "beef-patty",
+        "סטייק":                "beef-tenderloin",
+        "קציצות":               "meatballs",
+        "טורקי":                "turkey",
+        "הודו":                 "turkey",
+        # ── דגים ──
+        "סלמון":                "salmon",
+        "טונה":                 "canned-tuna",
+        "דג":                   "tilapia",
+        "סרדינים":              "sardine",
+        "שרימפס":               "shrimp",
+        # ── ביצים ודיירי ──
+        "ביצה":                 "egg",
+        "ביצים":                "egg",
+        "חלב":                  "milk",
+        "גבינת קוטג׳":          "cottage-cheese",
+        "קוטג׳":                "cottage-cheese",
+        "גבינה לבנה":           "cream-cheese",
+        "גבינה צהובה":          "cheddar-cheese",
+        "גבינת צ׳דר":           "cheddar-cheese",
+        "יוגורט":               "plain-yogurt",
+        "יוגורט יווני":         "plain-yogurt",
+        "גבינה":                "cheddar-cheese",
+        "חמאה":                 "butter",
+        "שמנת":                 "sour-cream",
+        # ── דגנים ולחם ──
+        "אורז לבן":             "rice",
+        "אורז":                 "rice",
+        "אורז חום":             "brown-rice",
+        "לחם מחיטה מלאה":       "whole-wheat-bread",
+        "לחם":                  "bread",
+        "פיתה":                 "pita-bread",
+        "פסטה":                 "pasta",
+        "מקרוני":               "macaroni",
+        "שיבולת שועל":          "rolled-oats",
+        "גרנולה":               "granola",
+        "קוסקוס":               "couscous",
+        "קינואה":               "quinoa",
+        "קמח":                  "all-purpose-flour",
+        "טורטייה":              "flour-tortilla",
+        "קרקר":                 "crackers",
+        # ── ירקות ──
+        "עגבנייה":              "tomatoes",
+        "עגבניות":              "tomatoes",
+        "מלפפון":               "cucumber",
+        "גזר":                  "carrots",
+        "ברוקולי":              "broccoli",
+        "כרובית":               "cauliflower",
+        "תרד":                  "spinach",
+        "חסה":                  "romaine-lettuce",
+        "כרוב":                 "green-cabbage",
+        "פלפל":                 "bell-pepper",
+        "פלפל אדום":            "red-pepper",
+        "פלפל ירוק":            "green-pepper",
+        "בצל":                  "white-onion",
+        "שום":                  "garlic",
+        "תפוח אדמה":            "potato",
+        "בטטה":                 "sweet-potato",
+        "זוקיני":               "zucchini",
+        "חצילים":               "eggplant",
+        "אספרגוס":              "asparagus",
+        "תירס":                 "corn",
+        "אפונה":                "green-peas",
+        "עדשים":                "lentils",
+        "שעועית":               "kidney-beans",
+        "חומוס":                "chickpeas",
+        "פול":                  "fava-beans",
+        "טופו":                 "tofu",
+        # ── פירות ──
+        "בננה":                 "bananas",
+        "תפוח":                 "apple",
+        "תפוח עץ":              "apple",
+        "תפוז":                 "orange",
+        "ענבים":                "grapes",
+        "תות שדה":              "strawberries",
+        "תות":                  "strawberries",
+        "אבטיח":                "watermelon",
+        "מלון":                 "honeydew-melon",
+        "אבוקדו":               "avocado",
+        "לימון":                "lemon",
+        "ליים":                 "lime",
+        "אפרסק":                "peach",
+        "שזיף":                 "plums",
+        "מנגו":                 "mango",
+        "אננס":                 "fresh-pineapple",
+        "קיווי":                "kiwi",
+        "אוכמניות":             "blueberries",
+        "פטל":                  "raspberries",
+        "תמר":                  "dates",
+        "צימוקים":              "raisins",
+        # ── שומנים וממרחים ──
+        "שמן זית":              "olive-oil",
+        "שמן":                  "vegetable-oil",
+        "חמאת בוטנים":          "peanut-butter",
+        "טחינה":                "tahini",
+        "חומוס (ממרח)":         "hummus",
+        "אגוזי מלך":            "walnuts",
+        "שקדים":                "almonds",
+        "קשיו":                 "cashew",
+        "אגוזי ברזיל":          "brazil-nuts",
+        "גרעינים":              "sunflower-seeds",
+        "זיתים":                "olives",
+        # ── שונות ──
+        "שוקולד":               "dark-chocolate",
+        "דבש":                  "honey",
+        "ריבה":                 "strawberry-jam",
+        "קפה":                  "coffee",
+        "תה":                   "tea",
+        "מיץ תפוזים":           "orange-juice",
+        "מים":                  "water",
+    }
+
     cal_pct     = cal_eaten / max(cal_t, 1)
     _food_log_v = _food_log
     _is_today   = True   # always show today
@@ -741,13 +864,29 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
                 f'{int(_fe.fat)}g שומן'
             )
+            # ── Food image (Spoonacular CDN) with emoji fallback ─────────────
+            _fe_slug = _FOOD_IMG.get(_fe.food_name, "")
+            if _fe_slug:
+                _icon_html = (
+                    f'<div style="width:50px;height:50px;border-radius:14px;'
+                    f'background:#1e2433;overflow:hidden;flex-shrink:0">'
+                    f'<img src="https://spoonacular.com/cdn/ingredients_100x100/{_fe_slug}.png"'
+                    f' width="50" height="50"'
+                    f' style="object-fit:cover;width:50px;height:50px;display:block"'
+                    f' onerror="this.parentElement.innerHTML=\'<span style=&quot;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.3rem&quot;>{_fe_icon}</span>\'"'
+                    f'></div>'
+                )
+            else:
+                _icon_html = (
+                    f'<div style="width:50px;height:50px;border-radius:14px;background:#1e2433;'
+                    f'display:flex;align-items:center;justify-content:center;font-size:1.3rem;'
+                    f'flex-shrink:0">{_fe_icon}</div>'
+                )
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border-radius:18px;'
                 f'padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px">'
-                # Icon circle
-                f'<div style="width:46px;height:46px;border-radius:14px;background:#1e2433;'
-                f'display:flex;align-items:center;justify-content:center;font-size:1.3rem;'
-                f'flex-shrink:0">{_fe_icon}</div>'
+                # Food image / icon
+                + _icon_html +
                 # Text
                 f'<div style="flex:1;min-width:0">'
                 f'<div style="font-size:.9rem;font-weight:700;color:#f4f6fb;'
