@@ -925,24 +925,25 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
                 f'{int(_fe.fat)}g שומן'
             )
-            # ── Food image (Spoonacular CDN) with emoji fallback ─────────────
+            # ── Food image: emoji always visible, image layered on top ──────
+            # Using CSS stacking so if the image fails to load the emoji
+            # shows through — no JavaScript onerror needed.
             _fe_slug = _get_food_slug(_fe.food_name)
-            if _fe_slug:
-                _icon_html = (
-                    f'<div style="width:50px;height:50px;border-radius:14px;'
-                    f'background:#1e2433;overflow:hidden;flex-shrink:0">'
-                    f'<img src="https://spoonacular.com/cdn/ingredients_100x100/{_fe_slug}.png"'
-                    f' width="50" height="50"'
-                    f' style="object-fit:cover;width:50px;height:50px;display:block"'
-                    f' onerror="this.parentElement.innerHTML=\'<span style=&quot;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.3rem&quot;>{_fe_icon}</span>\'"'
-                    f'></div>'
-                )
-            else:
-                _icon_html = (
-                    f'<div style="width:50px;height:50px;border-radius:14px;background:#1e2433;'
-                    f'display:flex;align-items:center;justify-content:center;font-size:1.3rem;'
-                    f'flex-shrink:0">{_fe_icon}</div>'
-                )
+            _img_tag = (
+                f'<img src="https://spoonacular.com/cdn/ingredients_100x100/{_fe_slug}.png"'
+                f' style="position:absolute;inset:0;width:50px;height:50px;'
+                f'object-fit:cover;border-radius:14px"'
+                f' onerror="this.style.display=\'none\'">'
+                if _fe_slug else ""
+            )
+            _icon_html = (
+                f'<div style="position:relative;width:50px;height:50px;'
+                f'border-radius:14px;background:#1e2433;flex-shrink:0;'
+                f'display:flex;align-items:center;justify-content:center;font-size:1.3rem">'
+                f'{_fe_icon}'
+                f'{_img_tag}'
+                f'</div>'
+            )
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border-radius:18px;'
                 f'padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px">'
