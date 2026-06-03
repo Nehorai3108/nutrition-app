@@ -116,7 +116,6 @@ def inject_global_css() -> None:
         [data-testid="stDeployButton"],
         [data-testid="stStatusWidget"],
         [data-testid="manage-app-button"],
-        [data-testid="stAppViewBlockContainer"] > div:last-child > div:last-child > div[style*="position: fixed"],
         .stDeployButton,
         .streamlit-wide-mode-fab,
         .viewerBadge_link__qRIco,
@@ -127,7 +126,15 @@ def inject_global_css() -> None:
         button[kind="deployButton"],
         [class*="deployButton"],
         [class*="statusWidget"],
-        [class*="manageApp"] {{ display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }}
+        [class*="manageApp"],
+        /* "Hosted with Streamlit" banner */
+        [data-testid="stHostedWithStreamlit"],
+        [class*="hostedWith"],
+        [class*="HostedWith"],
+        a[href*="streamlit.io/cloud"],
+        div[class*="badge"],
+        .stApp footer,
+        footer[class*="streamlit"] {{ display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }}
 
         /* ─── Nuclear top-padding removal ────────────────────────────── */
         .stApp {{
