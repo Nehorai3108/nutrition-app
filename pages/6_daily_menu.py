@@ -28,6 +28,45 @@ setup_persistent_auth()
 USER_ID = require_auth()
 _food_log_repo = FoodLogRepository()
 
+# ── Recipe image helpers ───────────────────────────────────────────────────────
+_RECIPE_IMG_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "storage_agents", "recipe_images", "approved",
+)
+
+# Ingredients to skip when choosing representative CDN image
+_IMG_SKIP = {"salt", "pepper", "water", "oil", "olive oil", "sugar", "flour"}
+
+
+def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
+    """Return an <img> HTML string for a recipe card.
+
+    Priority:
+      1. Local approved JPG (storage_agents/recipe_images/approved/)
+      2. Spoonacular ingredient CDN based on first meaningful ingredient
+    Returns empty string if nothing found.
+    """
+    # 1. Local approved image → base64 data-URI via shared helper
+    local_path = os.path.join(_RECIPE_IMG_DIR, f"{recipe_id}.jpg")
+    uri = _image_data_uri(local_path)
+    if uri:
+        return (
+            f'<img src="{uri}" '
+            f'style="width:84px;height:84px;object-fit:cover;display:block">'
+        )
+    # 2. First meaningful ingredient on Spoonacular CDN
+    if recipe:
+        for ing in recipe.get("ingredients", []):
+            en = (ing.get("food_name_en") or "").strip().lower()
+            if en and en not in _IMG_SKIP:
+                slug = en.replace(" ", "-")
+                return (
+                    f'<img src="https://spoonacular.com/cdn/ingredients_100x100/{slug}.png" '
+                    f'style="width:84px;height:84px;object-fit:cover;display:block" '
+                    f'onerror="this.style.display=\'none\'">'
+                )
+    return ""
+
 # Load user allergies from profile
 _profile_repo = ProfileRepository()
 _profile = _profile_repo.load(USER_ID)
@@ -861,21 +900,38 @@ def _render_search_result(
     name: str, food_id: str, meal_key: str, target_cal: int,
     cal_out: float, prot_out: float, carbs_out: float, fat_out: float,
     portion_label: str, btn_suffix: str, grams: float = 0.0,
-    is_recipe: bool = False,
+    is_recipe: bool = False, img_html: str = "",
 ):
     _cal_diff   = round(cal_out) - target_cal
     _diff_color = "#4ade80" if abs(_cal_diff) <= 40 else ("#f59e0b" if abs(_cal_diff) <= 100 else "#f87171")
     _meal_color = MEAL_COLOR_MAP.get(meal_key.upper(), "#4f8ef7")
     _cal_pct    = min(cal_out / max(target_cal, 1) * 100, 100)
 
+    # Header: image thumbnail (right in RTL) + name + meal badge
+    _img_block = (
+        f'<div dir="rtl" style="width:84px;height:84px;border-radius:14px;overflow:hidden;'
+        f'flex-shrink:0;background:#0d1117">{img_html}</div>'
+        if img_html else ""
+    )
+    _badge = (
+        f'<div dir="rtl" style="background:{_meal_color}22;border:1px solid {_meal_color}55;'
+        f'border-radius:99px;padding:3px 10px;font-size:0.7rem;color:{_meal_color};'
+        f'font-weight:600;white-space:nowrap">{MEAL_TYPE_HEB[meal_key]}</div>'
+    )
+    _header = (
+        f'<div dir="rtl" style="display:flex;align-items:center;gap:12px;margin-bottom:14px">'
+        f'{_img_block}'
+        f'<div dir="rtl" style="flex:1;min-width:0">'
+        f'<div dir="rtl" style="font-size:1rem;font-weight:800;color:#f4f6fb;margin-bottom:6px;'
+        f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{name}</div>'
+        f'{_badge}'
+        f'</div></div>'
+    )
+
     st.markdown(
         f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:20px;'
         f'padding:20px;margin:10px 0 14px">'
-        f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
-        f'<div dir="rtl" style="font-size:1rem;font-weight:800;color:#f4f6fb">{name}</div>'
-        f'<div dir="rtl" style="background:{_meal_color}22;border:1px solid {_meal_color}55;border-radius:99px;'
-        f'padding:3px 10px;font-size:0.7rem;color:{_meal_color};font-weight:600">'
-        f'{MEAL_TYPE_HEB[meal_key]}</div></div>'
+        + _header +
         f'<div dir="rtl" style="display:flex;align-items:flex-end;gap:6px;margin-bottom:14px">'
         + (
             f'<div dir="rtl" style="flex:1;font-size:0.82rem;color:#c4cdd8;line-height:1.6">{portion_label}</div>'
@@ -1024,6 +1080,7 @@ with tabs[-3]:
                         btn_suffix=f"{_rec_id}_s",
                         grams=float(_s_g),
                         is_recipe=True,
+                        img_html=_get_recipe_img_html(_rec_id, _rec),
                     )
                     with st.expander("הוראות הכנה"):
                         _steps = get_instructions(_rec_id)
@@ -1252,7 +1309,18 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
             s_ings, s_cal, s_prot, s_carbs, s_fat, s_grams = _scale_recipe(recipe, target_cal)
 
             match_pct = max(0, round(100 - abs(s_cal - target_cal) / max(target_cal, 1) * 100))
-            _img_uri  = _image_data_uri(recipe.get("image_path", ""))
+            # Try local approved image first, then Spoonacular CDN for the rest
+            _img_uri = _image_data_uri(recipe.get("image_path", ""))
+            if not _img_uri:
+                # Build a CDN URL from first meaningful ingredient
+                for _ing in recipe.get("ingredients", []):
+                    _en = (_ing.get("food_name_en") or "").strip().lower()
+                    if _en and _en not in _IMG_SKIP:
+                        _img_uri = (
+                            f"https://spoonacular.com/cdn/ingredients_100x100/"
+                            f"{_en.replace(' ', '-')}.png"
+                        )
+                        break
 
             st.markdown(
                 recipe_card_html(
@@ -1446,6 +1514,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                                 btn_suffix=f"ms_{meal_key}_{_mrid}_s",
                                 grams=float(_mr_sg),
                                 is_recipe=True,
+                                img_html=_get_recipe_img_html(_mrid, _mrec),
                             )
                             with st.expander("הוראות הכנה"):
                                 _mr_steps = get_instructions(_mrid)
