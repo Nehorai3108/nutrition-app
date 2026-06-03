@@ -112,6 +112,13 @@ def inject_global_css() -> None:
         [data-testid="stDecoration"] {{ display: none !important; }}
         [data-testid="collapsedControl"] {{ display: none !important; }}
         section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
+        /* ─── Hide Streamlit deploy / share button (red FAB) ─────────── */
+        [data-testid="stDeployButton"] {{ display: none !important; }}
+        .stDeployButton {{ display: none !important; }}
+        [data-testid="stStatusWidget"] {{ display: none !important; }}
+        ._profilePreview_gzau3_41 {{ display: none !important; }}
+        .viewerBadge_link__qRIco {{ display: none !important; }}
+        #deploy_button {{ display: none !important; }}
 
         /* ─── Nuclear top-padding removal ────────────────────────────── */
         .stApp {{
