@@ -50,14 +50,26 @@ def _get_recipe_mgr():
     return RecipeManager()
 
 @st.cache_resource
-def _build_food_list(_v=4) -> str:
+def _build_food_list(_v=5) -> str:
     """Build food + recipe catalog string for the AI system prompt.
-    Capped at ~2500 chars to stay well under Groq's 6000 TPM limit.
+    Sends Hebrew-first names, capped at ~3000 chars.
     """
     cat = FoodCatalog(db_path=_DB_PATH)
-    foods = cat.search_foods("", limit=500)
-    # Names only — serving-size data lives in the system prompt guide
-    lines = [f.name_he for f in foods if f.name_he]
+    # Get all foods sorted: Hebrew DB first, then by name
+    all_foods = cat.get_all_foods()
+    all_foods.sort(key=lambda f: (
+        0 if f.source == "json" else 1,
+        f.name_he or f.name_en or "",
+    ))
+    # Only foods with calorie data
+    all_foods = [f for f in all_foods if f.nutrition_per_100g.calories_kcal]
+
+    # Send up to 600 food names (Hebrew preferred)
+    lines = []
+    for f in all_foods[:600]:
+        name = f.name_he or f.name_en
+        if name:
+            lines.append(name)
 
     # Add recipe names so AI recognises complex dishes
     try:
@@ -70,10 +82,9 @@ def _build_food_list(_v=4) -> str:
     except Exception:
         pass
 
-    # Cap total length to avoid TPM limit (each Hebrew char ~1.5 tokens)
     result = ", ".join(lines)
-    if len(result) > 2500:
-        result = result[:2500]
+    if len(result) > 3000:
+        result = result[:3000]
     return result
 
 catalog       = _get_catalog()
@@ -537,10 +548,37 @@ def _build_profile_context(user_id: str) -> str:
         return ""
 
 
+def _build_knowledge_context(user_id: str) -> str:
+    """Load relevant knowledge modules for this user via the knowledge router."""
+    try:
+        from nutrition_app.knowledge.router import build_system_prompt as _ks_build
+        from nutrition_app.repositories.profile_repository import ProfileRepository as _PR
+        _profile_data = _PR().load(user_id)
+        # Map profile fields to router format
+        _prefs = _profile_data.get("meal_preferences", {})
+        _router_profile = {
+            "conditions":    _prefs.get("medical_conditions", []),
+            "intolerances":  _prefs.get("allergies", []),
+            "kashrut":       _prefs.get("kashrut", "none"),
+            "diet_pattern":  _prefs.get("diet_type", ""),
+            "sport_profile": _prefs.get("sport_type", ""),
+        }
+        return _ks_build(_router_profile)
+    except Exception:
+        return ""
+
+
 def _ask_groq(history: list, user_msg: str, pending: list = None):
     """Send to Groq, return (reply_text, food_data_or_None)."""
-    profile_ctx = _build_profile_context(USER_ID)
-    messages = [{"role": "system", "content": _build_system_prompt(FOOD_LIST, profile_ctx)}]
+    profile_ctx   = _build_profile_context(USER_ID)
+    knowledge_ctx = _build_knowledge_context(USER_ID)
+    # Combine: food-log system prompt + knowledge router context
+    base_prompt   = _build_system_prompt(FOOD_LIST, profile_ctx)
+    if knowledge_ctx:
+        full_prompt = base_prompt + "\n\n" + knowledge_ctx
+    else:
+        full_prompt = base_prompt
+    messages = [{"role": "system", "content": full_prompt}]
     messages += history
 
     # If there are pending entries, inject them as context so the AI can correct them
