@@ -549,21 +549,32 @@ def _build_profile_context(user_id: str) -> str:
 
 
 def _build_knowledge_context(user_id: str) -> str:
-    """Load relevant knowledge modules for this user via the knowledge router."""
+    """Return a compact (≤400 char) nutrition hint based on user profile.
+    The full knowledge modules are too large for every chat request — only
+    inject a brief summary so the model stays aware of constraints."""
     try:
-        from nutrition_app.knowledge.router import build_system_prompt as _ks_build
         from nutrition_app.repositories.profile_repository import ProfileRepository as _PR
         _profile_data = _PR().load(user_id)
-        # Map profile fields to router format
         _prefs = _profile_data.get("meal_preferences", {})
-        _router_profile = {
-            "conditions":    _prefs.get("medical_conditions", []),
-            "intolerances":  _prefs.get("allergies", []),
-            "kashrut":       _prefs.get("kashrut", "none"),
-            "diet_pattern":  _prefs.get("diet_type", ""),
-            "sport_profile": _prefs.get("sport_type", ""),
-        }
-        return _ks_build(_router_profile)
+        _conditions   = _prefs.get("medical_conditions", [])
+        _intolerances = _prefs.get("allergies", [])
+        _kashrut      = _prefs.get("kashrut", "none")
+        _diet         = _prefs.get("diet_type", "")
+        _sport        = _prefs.get("sport_type", "")
+
+        hints = []
+        if _conditions:
+            hints.append(f"מצבים רפואיים: {', '.join(_conditions)}")
+        if _intolerances:
+            hints.append(f"אי-סבילות/אלרגיות: {', '.join(_intolerances)} — אל תציע מזונות אלה")
+        if _kashrut and _kashrut != "none":
+            hints.append(f"כשרות: {_kashrut} — שמור על הפרדת בשר/חלב")
+        if _diet:
+            hints.append(f"דיאטה: {_diet}")
+        if _sport:
+            hints.append(f"ספורט: {_sport}")
+
+        return ("=== הגבלות תזונתיות למשתמש זה ===\n" + "\n".join(hints)) if hints else ""
     except Exception:
         return ""
 
@@ -726,10 +737,7 @@ def _render_chat():
     bubbles = ""
     if not msgs:
         bubbles = (
-            f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
-            f'<div style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
-            f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
-            f'border:1px solid #252d3d">&#x1F957;</div>'
+            f'<div dir="rtl" style="display:flex;margin-bottom:10px;align-items:flex-start">'
             f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
             f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
             f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
@@ -755,10 +763,7 @@ def _render_chat():
                 else:
                     bubble_content = txt
                 bubbles += (
-                    f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
-                    f'<div style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
-                    f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
-                    f'border:1px solid #252d3d">&#x1F957;</div>'
+                    f'<div dir="rtl" style="display:flex;margin-bottom:10px;align-items:flex-start">'
                     f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
                     f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
                     f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
@@ -766,12 +771,10 @@ def _render_chat():
                 )
             else:
                 bubbles += (
-                    f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;'
-                    f'align-items:flex-start;flex-direction:row-reverse">'
-                    f'<div style="width:30px;height:30px;border-radius:50%;background:#4f8ef7;'
-                    f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">&#x1F464;</div>'
+                    f'<div dir="rtl" style="display:flex;margin-bottom:10px;'
+                    f'align-items:flex-start;justify-content:flex-end">'
                     f'<div dir="rtl" style="background:#1a3a6b;border:1px solid #2d5096;'
-                    f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:88%;'
+                    f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:80%;'
                     f'font-size:0.86rem;color:#e8f0ff;line-height:1.55;direction:rtl">'
                     f'{txt}</div></div>'
                 )
