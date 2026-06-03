@@ -736,8 +736,15 @@ tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", "✏️ �
 tabs = st.tabs(tab_labels)
 
 _catalog = get_catalog()
+# Full list (used only for id→name lookups, NOT for selectbox options directly)
 _all_foods = sorted(_catalog.get_all_foods(), key=lambda f: f.name_he)
-_food_id_to_name = {f.food_id: f.name_he for f in _all_foods}
+_food_id_to_name = {f.food_id: (f.name_he or f.name_en or f.food_id) for f in _all_foods}
+# Default short list shown before the user types a search query:
+# Hebrew-DB foods (source='json') with valid calories, sorted by name
+_default_foods = sorted(
+    [f for f in _all_foods if f.nutrition_per_100g.calories_kcal and f.source in ("json", "manual")],
+    key=lambda f: f.name_he or "",
+)
 
 MEAL_TYPE_HEB = {
     "breakfast": "ארוחת בוקר", "morning_snack": "חטיף בוקר",
@@ -1028,14 +1035,26 @@ with tabs[-3]:
     # ═══════════════════════════════════════════════════════════════════════════
     else:  # ingredient mode
     # ═══════════════════════════════════════════════════════════════════════════
+        _ing_q = st.text_input(
+            "",
+            placeholder="חפש מוצר: עוף, אורז, בננה, יוגורט...",
+            key="ingredient_search_text",
+            label_visibility="collapsed",
+        )
+        _ing_results = (
+            _catalog.search_foods(_ing_q.strip(), limit=20)
+            if _ing_q.strip()
+            else _default_foods
+        )
+        _ing_opts = [f.food_id for f in _ing_results]
         search_food_id = st.selectbox(
             "",
-            options=[f.food_id for f in _all_foods],
-            format_func=lambda fid: _food_id_to_name.get(fid, fid),
+            options=_ing_opts if _ing_opts else [""],
+            format_func=lambda fid: _food_id_to_name.get(fid, fid) if fid else "—",
             key="search_food_sel",
             label_visibility="collapsed",
         )
-        _search_food = _catalog.get_food_by_id(search_food_id)
+        _search_food = _catalog.get_food_by_id(search_food_id) if search_food_id else None
 
         if _search_food:
             _n100   = _search_food.nutrition_per_100g
@@ -1080,10 +1099,23 @@ with tabs[-2]:
         '<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-bottom:14px">הוסף מוצר ידנית לפי גרמים</div>',
         unsafe_allow_html=True,
     )
+    _man_search_q = st.text_input(
+        "",
+        placeholder="חפש מוצר: עוף, אורז, גבינה...",
+        key="manual_food_search",
+        label_visibility="collapsed",
+    )
+    _man_results = (
+        _catalog.search_foods(_man_search_q.strip(), limit=20)
+        if _man_search_q.strip()
+        else _default_foods
+    )
     with st.form("manual_food_form", clear_on_submit=True):
+        _man_opts = [f.food_id for f in _man_results]
         sel_food = st.selectbox(
-            "מוצר", options=[f.food_id for f in _all_foods],
-            format_func=lambda fid: _food_id_to_name.get(fid, fid),
+            "מוצר",
+            options=_man_opts if _man_opts else [""],
+            format_func=lambda fid: _food_id_to_name.get(fid, fid) if fid else "—",
         )
         col_g, col_m = st.columns(2)
         man_grams = col_g.number_input("גרם", min_value=1, max_value=2000, value=100, step=10)
