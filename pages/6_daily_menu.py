@@ -33,9 +33,23 @@ _RECIPE_IMG_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "storage_agents", "recipe_images", "approved",
 )
+_RECIPE_IMAGES_DB = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data", "recipe_images.json",
+)
 
 # Ingredients to skip when choosing representative CDN image
 _IMG_SKIP = {"salt", "pepper", "water", "oil", "olive oil", "sugar", "flour"}
+
+
+@st.cache_data(ttl=3600)
+def _load_recipe_images() -> dict:
+    """Load recipe_id → image URL mapping from data/recipe_images.json."""
+    try:
+        with open(_RECIPE_IMAGES_DB, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
 
 
 def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
@@ -43,7 +57,7 @@ def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
 
     Priority:
       1. Local approved JPG (storage_agents/recipe_images/approved/)
-      2. Spoonacular ingredient CDN based on first meaningful ingredient
+      2. data/recipe_images.json (TheMealDB curated database)
     Returns empty string if nothing found.
     """
     # 1. Local approved image → base64 data-URI via shared helper
@@ -54,17 +68,14 @@ def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
             f'<img src="{uri}" '
             f'style="width:84px;height:84px;object-fit:cover;display:block">'
         )
-    # 2. First meaningful ingredient on Spoonacular CDN
-    if recipe:
-        for ing in recipe.get("ingredients", []):
-            en = (ing.get("food_name_en") or "").strip().lower()
-            if en and en not in _IMG_SKIP:
-                slug = en.replace(" ", "-")
-                return (
-                    f'<img src="https://spoonacular.com/cdn/ingredients_100x100/{slug}.png" '
-                    f'style="width:84px;height:84px;object-fit:cover;display:block" '
-                    f'onerror="this.style.display=\'none\'">'
-                )
+    # 2. Recipe images DB (TheMealDB URLs)
+    img_url = _load_recipe_images().get(recipe_id, "")
+    if img_url:
+        return (
+            f'<img src="{img_url}" '
+            f'style="width:84px;height:84px;object-fit:cover;display:block" '
+            f'onerror="this.style.display=\'none\'">'
+        )
     return ""
 
 # Load user allergies from profile
@@ -1309,18 +1320,10 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
             s_ings, s_cal, s_prot, s_carbs, s_fat, s_grams = _scale_recipe(recipe, target_cal)
 
             match_pct = max(0, round(100 - abs(s_cal - target_cal) / max(target_cal, 1) * 100))
-            # Try local approved image first, then Spoonacular CDN for the rest
+            # Image priority: local approved → recipe_images.json (TheMealDB)
             _img_uri = _image_data_uri(recipe.get("image_path", ""))
             if not _img_uri:
-                # Build a CDN URL from first meaningful ingredient
-                for _ing in recipe.get("ingredients", []):
-                    _en = (_ing.get("food_name_en") or "").strip().lower()
-                    if _en and _en not in _IMG_SKIP:
-                        _img_uri = (
-                            f"https://spoonacular.com/cdn/ingredients_100x100/"
-                            f"{_en.replace(' ', '-')}.png"
-                        )
-                        break
+                _img_uri = _load_recipe_images().get(recipe_id, "")
 
             st.markdown(
                 recipe_card_html(
