@@ -925,23 +925,19 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
                 f'{int(_fe.fat)}g שומן'
             )
-            # ── Food image: emoji always visible, image layered on top ──────
-            # Using CSS stacking so if the image fails to load the emoji
-            # shows through — no JavaScript onerror needed.
+            # ── Food image via CSS background-image ───────────────────────
+            # background-image silently shows nothing on failure — no broken
+            # icon, no JavaScript needed. Emoji shows when image is absent.
             _fe_slug = _get_food_slug(_fe.food_name)
-            _img_tag = (
-                f'<img src="https://spoonacular.com/cdn/ingredients_100x100/{_fe_slug}.png"'
-                f' style="position:absolute;inset:0;width:50px;height:50px;'
-                f'object-fit:cover;border-radius:14px"'
-                f' onerror="this.style.display=\'none\'">'
-                if _fe_slug else ""
+            _bg_img  = (
+                f"url('https://spoonacular.com/cdn/ingredients_100x100/{_fe_slug}.png')"
+                if _fe_slug else "none"
             )
             _icon_html = (
-                f'<div style="position:relative;width:50px;height:50px;'
-                f'border-radius:14px;background:#1e2433;flex-shrink:0;'
+                f'<div style="width:50px;height:50px;border-radius:14px;flex-shrink:0;'
+                f'background:#1e2433 {_bg_img} center/cover no-repeat;'
                 f'display:flex;align-items:center;justify-content:center;font-size:1.3rem">'
-                f'{_fe_icon}'
-                f'{_img_tag}'
+                f'{"" if _fe_slug else _fe_icon}'
                 f'</div>'
             )
             st.markdown(

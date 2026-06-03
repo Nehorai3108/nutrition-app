@@ -53,28 +53,27 @@ def _load_recipe_images() -> dict:
 
 
 def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
-    """Return an <img> HTML string for a recipe card.
+    """Return a div with the recipe image as CSS background-image.
 
+    CSS background-image silently shows nothing on failure — no broken
+    icon, no JavaScript needed.
     Priority:
-      1. Local approved JPG (storage_agents/recipe_images/approved/)
-      2. data/recipe_images.json (TheMealDB curated database)
-    Returns empty string if nothing found.
+      1. Local approved JPG (base64 data-URI)
+      2. data/recipe_images.json (TheMealDB URL)
     """
-    # 1. Local approved image → base64 data-URI via shared helper
+    # 1. Local approved image → base64 data-URI
     local_path = os.path.join(_RECIPE_IMG_DIR, f"{recipe_id}.jpg")
     uri = _image_data_uri(local_path)
-    if uri:
+    img_src = uri
+
+    # 2. Recipe images DB
+    if not img_src:
+        img_src = _load_recipe_images().get(recipe_id, "")
+
+    if img_src:
         return (
-            f'<img src="{uri}" '
-            f'style="width:84px;height:84px;object-fit:cover;display:block">'
-        )
-    # 2. Recipe images DB (TheMealDB URLs)
-    img_url = _load_recipe_images().get(recipe_id, "")
-    if img_url:
-        return (
-            f'<img src="{img_url}" '
-            f'style="width:84px;height:84px;object-fit:cover;display:block" '
-            f'onerror="this.style.display=\'none\'">'
+            f'<div style="width:84px;height:84px;border-radius:14px;flex-shrink:0;'
+            f'background:#0d1117 url(\'{img_src}\') center/cover no-repeat"></div>'
         )
     return ""
 
