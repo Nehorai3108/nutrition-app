@@ -112,13 +112,22 @@ def inject_global_css() -> None:
         [data-testid="stDecoration"] {{ display: none !important; }}
         [data-testid="collapsedControl"] {{ display: none !important; }}
         section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
-        /* ─── Hide Streamlit deploy / share button (red FAB) ─────────── */
-        [data-testid="stDeployButton"] {{ display: none !important; }}
-        .stDeployButton {{ display: none !important; }}
-        [data-testid="stStatusWidget"] {{ display: none !important; }}
-        ._profilePreview_gzau3_41 {{ display: none !important; }}
-        .viewerBadge_link__qRIco {{ display: none !important; }}
-        #deploy_button {{ display: none !important; }}
+        /* ─── Hide ALL Streamlit bottom-right floating buttons ──────── */
+        [data-testid="stDeployButton"],
+        [data-testid="stStatusWidget"],
+        [data-testid="manage-app-button"],
+        [data-testid="stAppViewBlockContainer"] > div:last-child > div:last-child > div[style*="position: fixed"],
+        .stDeployButton,
+        .streamlit-wide-mode-fab,
+        .viewerBadge_link__qRIco,
+        .viewerBadge_container__r5tak,
+        ._profilePreview_gzau3_41,
+        ._container_51w34_1,
+        #deploy_button,
+        button[kind="deployButton"],
+        [class*="deployButton"],
+        [class*="statusWidget"],
+        [class*="manageApp"] {{ display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }}
 
         /* ─── Nuclear top-padding removal ────────────────────────────── */
         .stApp {{
