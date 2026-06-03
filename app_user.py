@@ -601,189 +601,144 @@ if not run_btn and "last_plan" not in st.session_state:
                   "lunch":"🍽","afternoon_snack":"🍎",
                   "dinner":"🌙","evening_snack":"🌜"}
 
-    # ── Spoonacular CDN food image slugs (no API key needed) ─────────────────
-    # URL: https://spoonacular.com/cdn/ingredients_100x100/{slug}.png
-    _FOOD_IMG: dict[str, str] = {
-        # ── עוף ──
-        "חזה עוף":              "chicken-breasts",
-        "עוף":                  "whole-chicken",
-        "כרעי עוף":             "chicken-legs",
-        "שוק עוף":              "chicken-drumstick",
-        "כנפי עוף":             "chicken-wings",
-        # ── בשר ──
-        "בשר בקר":              "beef-sirloin-raw",
-        "המבורגר":              "beef-patty",
-        "סטייק":                "beef-tenderloin",
-        "קציצות":               "meatballs",
-        "טורקי":                "turkey",
-        "הודו":                 "turkey",
-        # ── דגים ──
-        "סלמון":                "salmon",
-        "טונה":                 "canned-tuna",
-        "דג":                   "tilapia",
-        "סרדינים":              "sardine",
-        "שרימפס":               "shrimp",
-        # ── ביצים ודיירי ──
-        "ביצה":                 "egg",
-        "ביצים":                "egg",
-        "חלב":                  "milk",
-        "גבינת קוטג׳":          "cottage-cheese",
-        "קוטג׳":                "cottage-cheese",
-        "גבינה לבנה":           "cream-cheese",
-        "גבינה צהובה":          "cheddar-cheese",
-        "גבינת צ׳דר":           "cheddar-cheese",
-        "יוגורט":               "plain-yogurt",
-        "יוגורט יווני":         "plain-yogurt",
-        "גבינה":                "cheddar-cheese",
-        "חמאה":                 "butter",
-        "שמנת":                 "sour-cream",
-        # ── דגנים ולחם ──
-        "אורז לבן":             "rice",
-        "אורז":                 "rice",
-        "אורז חום":             "brown-rice",
-        "לחם מחיטה מלאה":       "whole-wheat-bread",
-        "לחם":                  "bread",
-        "פיתה":                 "pita-bread",
-        "פסטה":                 "pasta",
-        "מקרוני":               "macaroni",
-        "שיבולת שועל":          "rolled-oats",
-        "גרנולה":               "granola",
-        "קוסקוס":               "couscous",
-        "קינואה":               "quinoa",
-        "קמח":                  "all-purpose-flour",
-        "טורטייה":              "flour-tortilla",
-        "קרקר":                 "crackers",
-        # ── ירקות ──
-        "עגבנייה":              "tomatoes",
-        "עגבניות":              "tomatoes",
-        "מלפפון":               "cucumber",
-        "גזר":                  "carrots",
-        "ברוקולי":              "broccoli",
-        "כרובית":               "cauliflower",
-        "תרד":                  "spinach",
-        "חסה":                  "romaine-lettuce",
-        "כרוב":                 "green-cabbage",
-        "פלפל":                 "bell-pepper",
-        "פלפל אדום":            "red-pepper",
-        "פלפל ירוק":            "green-pepper",
-        "בצל":                  "white-onion",
-        "שום":                  "garlic",
-        "תפוח אדמה":            "potato",
-        "בטטה":                 "sweet-potato",
-        "זוקיני":               "zucchini",
-        "חצילים":               "eggplant",
-        "אספרגוס":              "asparagus",
-        "תירס":                 "corn",
-        "אפונה":                "green-peas",
-        "עדשים":                "lentils",
-        "שעועית":               "kidney-beans",
-        "חומוס":                "chickpeas",
-        "פול":                  "fava-beans",
-        "טופו":                 "tofu",
-        # ── פירות ──
-        "בננה":                 "bananas",
-        "תפוח":                 "apple",
-        "תפוח עץ":              "apple",
-        "תפוז":                 "orange",
-        "ענבים":                "grapes",
-        "תות שדה":              "strawberries",
-        "תות":                  "strawberries",
-        "אבטיח":                "watermelon",
-        "מלון":                 "honeydew-melon",
-        "אבוקדו":               "avocado",
-        "לימון":                "lemon",
-        "ליים":                 "lime",
-        "אפרסק":                "peach",
-        "שזיף":                 "plums",
-        "מנגו":                 "mango",
-        "אננס":                 "fresh-pineapple",
-        "קיווי":                "kiwi",
-        "אוכמניות":             "blueberries",
-        "פטל":                  "raspberries",
-        "תמר":                  "dates",
-        "צימוקים":              "raisins",
-        # ── שומנים וממרחים ──
-        "שמן זית":              "olive-oil",
-        "שמן":                  "vegetable-oil",
-        "חמאת בוטנים":          "peanut-butter",
-        "טחינה":                "tahini",
-        "חומוס (ממרח)":         "hummus",
-        "אגוזי מלך":            "walnuts",
-        "שקדים":                "almonds",
-        "קשיו":                 "cashew",
-        "אגוזי ברזיל":          "brazil-nuts",
-        "גרעינים":              "sunflower-seeds",
-        "זיתים":                "olives",
-        # ── שונות ──
-        "שוקולד":               "dark-chocolate",
-        "דבש":                  "honey",
-        "ריבה":                 "strawberry-jam",
-        "קפה":                  "coffee",
-        "תה":                   "tea",
-        "מיץ תפוזים":           "orange-juice",
-        "מים":                  "water",
-        # ── נוספות ──
-        "אורז בר":              "wild-rice",
-        "בוטנים":               "peanuts",
-        "חמאת שקדים":           "almond-butter",
-        "אבקת חרוב":            "carob-powder",
-        "אבקת חלבון":           "whey-powder",
-        "גבינת ריקוטה":         "ricotta",
-        "גבינת פטה":            "feta",
-        "קרם גבינה":            "cream-cheese",
-        "שמן קוקוס":            "coconut-oil",
-        "קוקוס":                "coconut",
-        "חמניות":               "sunflower-seeds",
-        "פיסטוקים":             "pistachio-nuts",
-        "פיסטוק":               "pistachio-nuts",
-        "אגוזים":               "mixed-nuts",
-        "אגוז":                 "walnuts",
-        "פקאן":                 "pecans",
-        "קמח שיבולת שועל":      "rolled-oats",
-        "חיטה":                 "whole-wheat",
-        "כוסמת":                "buckwheat",
-        "שעורה":                "barley",
-        "גרעיני דלעת":          "pumpkin-seeds",
-        "פנקייק":               "pancakes",
-        "וופל":                 "waffles",
-        "שייק":                 "milkshake",
-        "מיץ":                  "orange-juice",
-        "סלט":                  "salad",
-        "מרק":                  "vegetable-broth",
-        "פיצה":                 "pizza",
-        "בורגר":                "burger",
-        "שניצל":                "schnitzel",
-        "חמבה":                 "mango-chutney",
-        "הוּמוּס":              "hummus",
-        "חומוס ממרח":           "hummus",
-        "פלאפל":                "chickpea-flour",
-        "שקשוקה":               "egg",
-        "לביבות":               "potato-pancakes",
-        "קציצה":                "meatballs",
-        "כופתאות":              "dumpling",
+    # ── Food category tiles: emoji + gradient ────────────────────────────────
+    # (emoji, color_start, color_end)  — no external images, 100% reliable
+    _C = {
+        # proteins
+        "עוף":    ("🍗", "#e55a00", "#ff8c42"),
+        "בשר":    ("🥩", "#b91c1c", "#ef4444"),
+        "דג":     ("🐟", "#0369a1", "#38bdf8"),
+        "סלמון":  ("🐟", "#0e7490", "#22d3ee"),
+        "טונה":   ("🐟", "#1e40af", "#60a5fa"),
+        "ביצה":   ("🥚", "#b45309", "#fbbf24"),
+        "שניצל":  ("🍗", "#c2410c", "#fb923c"),
+        "קציצ":   ("🥩", "#9f1239", "#f43f5e"),
+        "המבורגר":("🍔", "#92400e", "#d97706"),
+        "סטייק":  ("🥩", "#7f1d1d", "#dc2626"),
+        "שרימפס": ("🦐", "#9a3412", "#f97316"),
+        "הודו":   ("🦃", "#854d0e", "#ca8a04"),
+        # dairy
+        "יוגורט": ("🥣", "#6d28d9", "#a78bfa"),
+        "קוטג":   ("🧀", "#7c3aed", "#c4b5fd"),
+        "גבינ":   ("🧀", "#6d28d9", "#a78bfa"),
+        "חלב":    ("🥛", "#1e3a5f", "#3b82f6"),
+        "חמאה":   ("🧈", "#92400e", "#f59e0b"),
+        "שמנת":   ("🥛", "#312e81", "#818cf8"),
+        # grains
+        "אורז":   ("🍚", "#78350f", "#d97706"),
+        "פסטה":   ("🍝", "#b45309", "#f59e0b"),
+        "לחם":    ("🍞", "#92400e", "#d97706"),
+        "פיתה":   ("🫓", "#a16207", "#eab308"),
+        "שיבולת": ("🥣", "#065f46", "#34d399"),
+        "גרנולה": ("🥣", "#065f46", "#10b981"),
+        "קינואה": ("🌾", "#4d7c0f", "#84cc16"),
+        "קוסקוס": ("🍚", "#a16207", "#fbbf24"),
+        "בורגול": ("🌾", "#78350f", "#d97706"),
+        "פנקייק": ("🥞", "#b45309", "#f59e0b"),
+        "וופל":   ("🧇", "#92400e", "#d97706"),
+        # vegetables
+        "ברוקולי":("🥦", "#166534", "#22c55e"),
+        "גזר":    ("🥕", "#c2410c", "#f97316"),
+        "עגבני":  ("🍅", "#b91c1c", "#ef4444"),
+        "מלפפון": ("🥒", "#15803d", "#4ade80"),
+        "תרד":    ("🥬", "#14532d", "#16a34a"),
+        "כרובית": ("🥦", "#166534", "#4ade80"),
+        "בטטה":   ("🍠", "#c2410c", "#f97316"),
+        "תפוח אדמה":("🥔","#92400e","#d97706"),
+        "אבוקדו": ("🥑", "#15803d", "#86efac"),
+        "חצילים": ("🍆", "#7e22ce", "#c084fc"),
+        "פלפל":   ("🫑", "#15803d", "#4ade80"),
+        "זוקיני": ("🥒", "#166534", "#22c55e"),
+        "בצל":    ("🧅", "#92400e", "#fbbf24"),
+        "שום":    ("🧄", "#7c3aed", "#c4b5fd"),
+        "תירס":   ("🌽", "#ca8a04", "#fde047"),
+        "אפונה":  ("🟢", "#166534", "#22c55e"),
+        # fruits
+        "בננה":   ("🍌", "#ca8a04", "#fde047"),
+        "תפוח":   ("🍎", "#b91c1c", "#f87171"),
+        "תפוז":   ("🍊", "#c2410c", "#fb923c"),
+        "ענבים":  ("🍇", "#6d28d9", "#a78bfa"),
+        "תות":    ("🍓", "#9f1239", "#fb7185"),
+        "אבטיח":  ("🍉", "#15803d", "#4ade80"),
+        "מנגו":   ("🥭", "#b45309", "#fbbf24"),
+        "אוכמניות":("🫐","#3730a3","#818cf8"),
+        "פטל":    ("🍓", "#be185d", "#f472b6"),
+        "תמר":    ("🟤", "#78350f", "#b45309"),
+        "אננס":   ("🍍", "#a16207", "#fde047"),
+        "קיווי":  ("🥝", "#166534", "#86efac"),
+        # legumes
+        "עדשים":  ("🫘", "#78350f", "#b45309"),
+        "שעועית": ("🫘", "#166534", "#22c55e"),
+        "חומוס":  ("🫘", "#a16207", "#fbbf24"),
+        "פול":    ("🫘", "#166534", "#4ade80"),
+        "טופו":   ("⬜", "#1e3a5f", "#64748b"),
+        # nuts & fats
+        "אגוזי מלך":("🌰","#78350f","#b45309"),
+        "שקדים":  ("🌰", "#92400e", "#d97706"),
+        "פיסטוק": ("🟢", "#166534", "#22c55e"),
+        "בוטנים": ("🥜", "#78350f", "#d97706"),
+        "קשיו":   ("🌰", "#a16207", "#fbbf24"),
+        "אגוזים": ("🌰", "#78350f", "#b45309"),
+        "אגוז":   ("🌰", "#78350f", "#b45309"),
+        "פקאן":   ("🌰", "#78350f", "#b45309"),
+        "שמן זית":("🫒", "#4d7c0f", "#84cc16"),
+        "טחינה":  ("🫙", "#92400e", "#d97706"),
+        "חמאת בוטנים":("🥜","#78350f","#d97706"),
+        # drinks & smoothies
+        "שייק":   ("🥤", "#7c3aed", "#c084fc"),
+        "סמוזי":  ("🥤", "#7c3aed", "#c084fc"),
+        "מיץ":    ("🍹", "#c2410c", "#fb923c"),
+        "קפה":    ("☕", "#1c1917", "#57534e"),
+        "תה":     ("🍵", "#166534", "#22c55e"),
+        "מים":    ("💧", "#0369a1", "#38bdf8"),
+        # dishes
+        "שקשוקה": ("🍳", "#b45309", "#fbbf24"),
+        "סלט":    ("🥗", "#166534", "#22c55e"),
+        "מרק":    ("🍲", "#92400e", "#d97706"),
+        "חומוס ממרח":("🫘","#a16207","#fbbf24"),
+        "פלאפל":  ("🧆", "#a16207", "#fbbf24"),
+        "פיצה":   ("🍕", "#b91c1c", "#f87171"),
+        "בורגר":  ("🍔", "#92400e", "#d97706"),
+        "פסטה":   ("🍝", "#b45309", "#f59e0b"),
+        "לביבות": ("🥞", "#b45309", "#f59e0b"),
+        "כופתאות":("🥟", "#1e3a5f", "#60a5fa"),
+        "סולת":   ("🥣", "#78350f", "#d97706"),
+        # protein supplements
+        "אבקת חלבון":("💪","#7c3aed","#a78bfa"),
+        "חלבון":  ("💪", "#7c3aed", "#a78bfa"),
+        # sweets
+        "שוקולד": ("🍫", "#1c1917", "#78350f"),
+        "דבש":    ("🍯", "#a16207", "#fde047"),
+        "ריבה":   ("🍓", "#9f1239", "#f43f5e"),
+        "עוגה":   ("🎂", "#be185d", "#f472b6"),
+        "עוגיה":  ("🍪", "#92400e", "#d97706"),
     }
 
-    # High-priority keywords (proteins / main dishes) that win over longer carb/veggie keys
-    _FOOD_IMG_PRIORITY = {
-        "חזה עוף", "עוף", "סלמון", "טונה", "בשר בקר", "המבורגר", "סטייק",
-        "שרימפס", "דג", "הודו", "טורקי", "קציצות", "שניצל", "ביצה", "ביצים",
-    }
+    # Priority order: these keys are checked FIRST (more specific terms)
+    _TILE_PRIORITY = [
+        "חזה עוף","אבקת חלבון","חלבון","סמוזי","יוגורט יווני","יוגורט",
+        "גבינת קוטג׳","קוטג׳","תפוח אדמה","שמן זית","חמאת בוטנים",
+        "שיבולת שועל","אגוזי מלך","גבינת פטה","גבינת ריקוטה","שוקולד מריר",
+        "תות שדה","מיץ תפוזים","מיץ","פלפל אדום","פלפל ירוק","פלפל",
+        "חומוס ממרח","חומוס","סלמון","טונה","בשר בקר","המבורגר","שניצל",
+        "קציצות","קציצה","הודו","טורקי","שרימפס","ביצה","ביצים","דג",
+        "עוף", "בשר",
+    ]
+    _DEFAULT_TILE = ("🍽", "#1e293b", "#334155")
 
-    def _get_food_slug(food_name: str) -> str:
-        """Return Spoonacular CDN slug — exact match, then partial (protein-priority)."""
-        # 1. Exact match
-        slug = _FOOD_IMG.get(food_name, "")
-        if slug:
-            return slug
-        # 2. Partial match: priority keys first (proteins), then longest regular key
-        for key in _FOOD_IMG_PRIORITY:
+    def _get_tile(food_name: str) -> tuple:
+        """Return (emoji, color1, color2) for the food name."""
+        # Priority keys first (exact and partial)
+        for key in _TILE_PRIORITY:
             if key in food_name:
-                return _FOOD_IMG[key]
+                if key in _C:
+                    return _C[key]
+        # Then scan all keys by longest match
         best_key, best_len = "", 0
-        for key in _FOOD_IMG:
+        for key in _C:
             if key in food_name and len(key) > best_len:
                 best_key, best_len = key, len(key)
-        return _FOOD_IMG.get(best_key, "")
+        return _C.get(best_key, _DEFAULT_TILE)
 
     cal_pct     = cal_eaten / max(cal_t, 1)
     _food_log_v = _food_log
@@ -925,19 +880,14 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
                 f'{int(_fe.fat)}g שומן'
             )
-            # ── Food image via CSS background-image ───────────────────────
-            # background-image silently shows nothing on failure — no broken
-            # icon, no JavaScript needed. Emoji shows when image is absent.
-            _fe_slug = _get_food_slug(_fe.food_name)
-            _bg_img  = (
-                f"url('https://spoonacular.com/cdn/ingredients_100x100/{_fe_slug}.png')"
-                if _fe_slug else "none"
-            )
+            # ── Food tile: emoji on gradient background ───────────────────
+            _tile_emoji, _tile_c1, _tile_c2 = _get_tile(_fe.food_name)
             _icon_html = (
                 f'<div style="width:50px;height:50px;border-radius:14px;flex-shrink:0;'
-                f'background:#1e2433 {_bg_img} center/cover no-repeat;'
-                f'display:flex;align-items:center;justify-content:center;font-size:1.3rem">'
-                f'{"" if _fe_slug else _fe_icon}'
+                f'background:linear-gradient(135deg,{_tile_c1},{_tile_c2});'
+                f'display:flex;align-items:center;justify-content:center;font-size:1.5rem;'
+                f'box-shadow:0 2px 8px {_tile_c1}55">'
+                f'{_tile_emoji}'
                 f'</div>'
             )
             st.markdown(
