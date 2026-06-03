@@ -1,0 +1,33 @@
+{
+  "run_id": "2026-05-26_171323_sel",
+  "ts": "2026-05-26T17:32:29+00:00",
+  "task_id": "25e0cfd9-808d-4bf4-8036-2319672fd54f",
+  "verdict": "approve",
+  "reason": "All 4 acceptance criteria PASS: food_075 removed from afternoon_snack and replaced with food_031 (fruit category from catalog); total calories 1769.9 kcal is -0.60% from original 1780.5 kcal (within ±5%); no other meal slots were modified.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "AFTERNOON_SNACK slot no longer contains food_075 (אורז בסמטי, category=grain)",
+      "result": "PASS",
+      "evidence": "timing_fix plan afternoon_snack items are food_056, food_057, food_031 — food_075 is absent; confirmed by direct JSON comparison of 2026-05-26_17-23-19_timing_fix.json"
+    },
+    {
+      "criterion": "Replacement item has category in {nut_seed, fruit, dairy, vegetable} and is drawn from foods_extended.json",
+      "result": "PASS",
+      "evidence": "food_031 (תפוח/Apple) has category=fruit per nutrition_app/data/foods_extended.json; item exists in catalog and is not invented"
+    },
+    {
+      "criterion": "Total plan calories stay within ±5% of original 1780.5 kcal (1691–1869 kcal)",
+      "result": "PASS",
+      "evidence": "New plan totals.calories_kcal = 1769.9 kcal; manual sum of all items also = 1769.9 kcal; deviation = -0.60%, well within ±5% limit"
+    },
+    {
+      "criterion": "No other meal slots (breakfast, morning_snack, lunch, dinner) are modified",
+      "result": "PASS",
+      "evidence": "Direct item-level comparison of breakfast, morning_snack, lunch, dinner between iter_20 and timing_fix: all 4 slots have identical food_ids and quantities"
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false
+}

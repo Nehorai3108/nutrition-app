@@ -1,0 +1,16 @@
+=== BiteFit Agent: 04_implementor ===
+Started: 05/31/2026 19:00:01
+===========================================
+Done.
+
+**Implemented: FIX 1 Γאפ `bottom_nav("water")` now works correctly**
+
+- **File changed:** `ui/components.py:621Γאף631`
+- **Change:** Added `("water", "pages/16_hydration.py", "╫₧╫ש╫¥", "≡ƒעº")` to the `bottom_nav` items list, between `"workout"` and `"history"`.
+- **Before:** key `"water"` wasn't recognised Γזע `active_idx` defaulted to 0 Γזע home tab highlighted when user was on the hydration page.
+- **After:** `active_idx` resolves to 5 Γזע water/≡ƒעº tab is highlighted correctly.
+- **Verification:** `python -m py_compile ui/components.py` Γזע OK
+
+**Still open from audit:** FIX 2 (`calculate_hydration_goal` in nutrition_engine.py) and FIX 3 (water total widget in daily_menu.py header).
+===========================================
+Finished: 05/31/2026 19:01:14 (1.21573858833333min) ExitCode: 0

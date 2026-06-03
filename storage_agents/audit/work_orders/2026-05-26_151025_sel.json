@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-05-26_151025_sel",
+  "ts": "2026-05-26T15:10:25+00:00",
+  "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+  "task_type": "fix_meal_timing",
+  "priority": "high",
+  "task_details": "BREAKFAST contains PROTEIN category item: טונה",
+  "rationale": "A previous attempt (ff5a5c94) to fix BREAKFAST/PROTEIN was rejected by the Critic because only הודו was replaced while טונה — the actual PROTEIN item specified — was left in the slot. This fresh task (1248f250) targets טונה directly and is high-priority, making it the correct next move to clear the backlog of meal-timing violations and avoid continued Critic rejections.",
+  "acceptance_criteria": [
+    "BREAKFAST slot in the most recent plan (storage_agents/plans/2026-04-16_12-56-51_iter_20.json or the active plan) no longer contains any item with category=PROTEIN (specifically, the item 'טונה' must be absent from BREAKFAST).",
+    "The replacement item placed in the BREAKFAST slot has category in {GRAIN, DAIRY, FRUIT, VEGETABLE} — NOT PROTEIN or CONDIMENT.",
+    "Total kcal in the plan stays within ±5% of the original plan's total kcal.",
+    "All other meal slots and items remain unchanged."
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+  ],
+  "execution_hint": "Direct edit to the active plan JSON: locate the BREAKFAST slot, find the item with category=PROTEIN (טונה), and replace it with a GRAIN or DAIRY item of equivalent kcal from the food catalog. Do NOT touch other slots. Verify no other PROTEIN items remain in BREAKFAST before writing. The previous builder only replaced הודו and missed טונה — ensure this run removes טונה specifically."
+}

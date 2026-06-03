@@ -1,0 +1,28 @@
+{
+  "run_id": "2026-05-27_191208_sel",
+  "ts": "2026-05-27T19:12:08+00:00",
+  "task_id": "ce326286-8a48-4b5d-aff8-b9ec758a9ab7",
+  "task_type": "add_feature_flagged",
+  "priority": "HIGH",
+  "task_details": "Add a 'protein-of-the-day' widget on the home tab, above the calorie ring. Show protein g consumed vs personalized floor (1.6 g/kg lean body mass derived from existing BMR/TDEE inputs), with a color-coded ring (red <70%, yellow 70-90%, green >=90%) and a Hebrew label 'חלבון להיום'. Keep the existing calorie dashboard accessible via a tab toggle. Add user_profile.lean_body_mass_kg (nullable) and user_preferences.primary_metric ('calories'|'protein', default 'calories'). Behind feature flag FF_PROTEIN_FIRST_WIDGET (OFF by default).",
+  "rationale": "Israel local hour is 22 — the 22-03 UI/feature window has just opened, so add_feature_flagged tasks are eligible again after being filtered out for the prior six selector cycles. HIGH-priority ce326286 (protein widget) outranks MEDIUM 8ea45a76 (GLP-1 flag); the third pending entry (de41286a improve_copy) is a malformed re-entry from a 17:36Z auto-revert and has no 'details'/'priority' fields, so it is not actionable. Last-5 verdicts = [reject, uncertain, uncertain, approve, approve] — only 1 reject so the circuit breaker is clear, but the reject (16:12 run) was caused by truncation of app_user.py during the calm-mode build. Since THIS task also edits app_user.py, the work order makes a pre-edit tar backup and an explicit ast-parse + size-no-shrink post-gate mandatory.",
+  "acceptance_criteria": [
+    "Feature flag FF_PROTEIN_FIRST_WIDGET is registered in nutrition_app/feature_flags.py (or equivalent) and defaults to False; grep confirms no production caller flips it True.",
+    "When FF_PROTEIN_FIRST_WIDGET is True the home tab in app_user.py renders the protein widget ABOVE the existing calorie ring, and the Hebrew label 'חלבון להיום' appears byte-for-byte in the widget header.",
+    "user_profile schema has a new Optional[float] field lean_body_mass_kg; existing user records with None fall back to a BMR-derived LBM estimate inside macro_calculator.py (must NOT silently default to 0).",
+    "user_meal_preferences has primary_metric: Literal['calories','protein'] = 'calories'; to_dict/from_dict round-trip the new field; the repository loader supplies 'calories' for legacy records missing the key.",
+    "Protein ring color thresholds match spec exactly: red when ratio < 0.70, yellow when 0.70 <= ratio < 0.90, green when ratio >= 0.90 — assert via small unit test or visible named constants.",
+    "Calorie dashboard remains accessible via a tab toggle when the flag is ON; nothing is deleted from existing calorie/inventory/plan tab rendering — diff in app_user.py shows only additions plus the new toggle wrapper.",
+    "Post-edit gate: python3 -c 'import ast; ast.parse(open(\"app_user.py\",\"rb\").read().decode(\"utf-8\"))' exits 0 AND `wc -c app_user.py` is >= the pre-edit size (prevents recurrence of the 16:12 truncation failure)."
+  ],
+  "files_likely_to_change": [
+    "app_user.py",
+    "nutrition_app/models/user_profile.py",
+    "nutrition_app/models/user_meal_preferences.py",
+    "nutrition_app/repositories/user_meal_preferences_repository.py",
+    "nutrition_app/feature_flags.py",
+    "nutrition_app/macro_calculator.py",
+    "config/strings_he.json (add 'חלבון להיום' key if a strings module is the canonical source)"
+  ],
+  "execution_hint": "Direct edits, no CLI executor exists for add_feature_flagged. Order: (1) MANDATORY tar backup: tar -czf storage_agents/audit/backups/2026-05-27_191208_sel_before.tar.gz app_user.py nutrition_app/models/user_profile.py nutrition_app/models/user_meal_preferences.py nutrition_app/feature_flags.py nutrition_app/macro_calculator.py — verify tar lists all 5 files. (2) Register FF_PROTEIN_FIRST_WIDGET=False in nutrition_app/feature_flags.py. (3) Extend user_profile model with Optional[float] lean_body_mass_kg + update to_dict/from_dict. (4) Extend user_meal_preferences with primary_metric Literal default 'calories' + update repo loader. (5) Add Boer-formula LBM fallback in macro_calculator.py for the None case. (6) In app_user.py, inside the existing home/dashboard tab only, add a flag-gated branch that renders the protein ring above the calorie ring; do NOT touch tab_inventory / tab_plan / other tab blocks. (7) Post-edit gate: ast-parse app_user.py AND wc -c app_user.py >= backup size. If either gate fails, immediately tar -xzf the backup and report failure (this is the same failure mode that killed 16:12)."
+}

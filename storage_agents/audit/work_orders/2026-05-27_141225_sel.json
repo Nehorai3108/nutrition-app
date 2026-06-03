@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-27_141225_sel",
+  "ts": "2026-05-27T14:12:25+00:00",
+  "task_id": "74edb64a-bd38-4235-8b8b-7119065530d5",
+  "task_type": "fix_meal_timing",
+  "priority": "LOW",
+  "task_details": "Audit the most recent 7 plan files in storage_agents/plans/. The BREAKFAST slot should contain no items with category=PROTEIN (heavy meat/fish at breakfast is wrong for Israeli context). Replace any such items with category in {GRAIN, DAIRY, FRUIT}.",
+  "rationale": "Current Israel local time is 17:11 IDT (outside 22-03 quiet window), so UI/feature_flagged tasks (3 HIGH/MEDIUM items in queue) are filtered out per window rule. Of the two remaining allowlisted data-fix tasks (both LOW), fix_meal_timing is picked over improve_variety by lexicographic task_id tiebreak (74... < 8b...). It is also a clean, atomic per-plan transformation that complements the variety fix run at 21:12 yesterday — keeping the recent build_reports diverse rather than running improve_variety twice in a row.",
+  "acceptance_criteria": [
+    "BREAKFAST slot in each of the 7 most-recent storage_agents/plans/*.json files contains zero items with category=PROTEIN",
+    "Every replacement item has category in {GRAIN, DAIRY, FRUIT} and is drawn from the existing food catalog (no new foods added)",
+    "Total daily kcal per plan stays within +/-5% of the original",
+    "Original plan files are preserved (either via .bak copies or a new *_timing_fix.json variant alongside the originals, mirroring the 2026-05-26_17-23-19_timing_fix.json convention already present in storage_agents/plans/)"
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/<7 most recent plan_*.json or dated plan files>",
+    "(optional) storage_agents/plans/<file>_timing_fix.json variants"
+  ],
+  "execution_hint": "Run 'python3 -m nutrition_app.agents.task_executor --task-id 74edb64a-bd38-4235-8b8b-7119065530d5' first; if that path is not wired up for fix_meal_timing, fall back to a direct script that (1) globs storage_agents/plans/*.json sorted by mtime desc, takes top 7, (2) for each plan finds BREAKFAST items where category==PROTEIN, (3) selects a swap from the food catalog with category in {GRAIN,DAIRY,FRUIT} matching kcal +/-5%, (4) writes a sibling *_timing_fix.json. Use the Agent 3 (Food) catalog for lookups and Agent 4 (Inventory) only for availability sanity check; do NOT deduct inventory."
+}

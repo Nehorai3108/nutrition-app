@@ -1,0 +1,34 @@
+=== BiteFit Agent: 05_audit ===
+Started: 06/01/2026 23:00:02
+===========================================
+Audit complete. Here's the summary:
+
+---
+
+## Audit Results
+
+### Brief Critiques
+
+**design_brief.md Γאפ 3 issues:**
+- Item 1's "current state" is stale: bottom_nav is already in 9 pages, not 3-4. Only 6 pages still need it (`0_profile`, `4_inventory`, `8_calendar`, `7_weekly_workout_plan`, `2_recipes`, `13_meal_preferences`).
+- Item 2 FAB: the implementation sketch is broken Γאפ a static HTML `<div>` can't trigger Streamlit navigation. The acceptance criterion is unachievable as written.
+- Item 5 acceptance criteria ("no visual flash", "~240px columns") require a browser to verify. Replace with a grep check on the `layout=` param.
+
+**structure_brief.md Γאפ 2 issues:**
+- P0 (rotate credentials) has no verifiable completion criterion.
+- P8 (delete `.tmpnew` files): still not done Γאפ all 4 temp files confirmed present in git status.
+
+**research_brief.md Γאפ CRITICAL:**
+- Two research briefs are concatenated in one file. Lines 164Γאף262 are a stale v1 that still lists Hydration Tracking as a missing feature, directly contradicting the v2 section above it. Delete lines 164Γאף262.
+
+### Implementor Feedback
+
+**Last run: "Add 'water' key to bottom_nav"** Γאפ **APPROVED**
+
+All 3 acceptance criteria verified in source. Two self-reported open items (FIX 2: `calculate_hydration_goal` in engine, FIX 3: water total in daily_menu) confirmed still open.
+
+### Next Priority
+
+Combine design_brief Items 1 + 5 into one pass: wire `bottom_nav()` + flip `layout="wide"Γזע"centered"` on the 6 remaining stranded pages. Both changes are grep-verifiable and touch the same files Γאפ doing them separately would be wasteful.
+===========================================
+Finished: 06/01/2026 23:04:08 (4.10345368666667min) ExitCode: 0

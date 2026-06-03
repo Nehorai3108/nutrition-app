@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-05-26_211257_sel",
+  "ts": "2026-05-26T21:12:57+00:00",
+  "task_id": "8ffd46bb-bc55-43bb-900e-80750e931179",
+  "task_type": "improve_variety",
+  "priority": "medium",
+  "task_details": "food_id food_011 appears in 5/7 plans. Force rotation.",
+  "rationale": "food_011 (הודו / Turkey Breast) appears in 12 of the 20 most recent plan files, consistently slotted in breakfast — the current planner only looks back 3 plans for its recently_used exclusion set, which is too narrow to prevent a high-frequency food from dominating across the weekly cycle. With the queue down to a single task and recent verdicts showing 4 approvals and 1 uncertain (no rejects), this is the right moment to address root-cause planner variety logic.",
+  "acceptance_criteria": [
+    "nutrition_app/agents/agent_5_planner/meal_planner.py: _load_recently_used() expands its lookback from 3 to at least 7 plan files",
+    "After the change, running the planner against the existing food catalog produces a new plan where food_011 is absent from the meal that food_011 most recently occupied (breakfast) — verified by inspecting the generated plan JSON",
+    "food_011 appearance rate across any sliding window of 7 consecutive generated plans does not exceed 2 occurrences (i.e. <= 2/7), enforced by the expanded recently_used window",
+    "All existing unit tests in nutrition_app/tests/unit/test_meal_planner.py continue to pass with no modifications to the test file"
+  ],
+  "files_likely_to_change": [
+    "nutrition_app/agents/agent_5_planner/meal_planner.py"
+  ],
+  "execution_hint": "Direct edit to nutrition_app/agents/agent_5_planner/meal_planner.py — change the slice in _load_recently_used() from files[:3] to files[:7], then run: cd '/sessions/brave-wizardly-tesla/mnt/אפליקציית תזונאי/' && python3 -m pytest nutrition_app/tests/unit/test_meal_planner.py -v to verify no regressions."
+}

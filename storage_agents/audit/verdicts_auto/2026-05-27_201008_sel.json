@@ -1,0 +1,48 @@
+{
+  "run_id": "2026-05-27_201008_sel",
+  "ts": "2026-05-27T22:00:00+00:00",
+  "task_id": "8ea45a76-6376-4e68-ba13-909353c26ad2",
+  "verdict": "approve",
+  "reason": "All seven acceptance criteria met. Single Optional[bool] glp1_medication_in_use added to UserProfile with full to_dict/from_dict round-trip; flag-gated macro_calculator branch lowers calorie-floor threshold by 200 kcal (1200->1000) and uses PROTEIN_PER_KG_LBM_GLP1 (1.6 g/kg LBM, same as today's default) when both FF_GLP1_AWARE_TARGETS is True AND user opted in; behavior preserved when flag off. Both pages render Hebrew tri-state radio with prefer-not-to-say; educational card gated by glp1_card_seen marker; Hebrew strings present in config/strings_he.json with all 3 prior home.* keys intact. No forbidden GLP-1 detail (name/dose/timing) added. app_user.py untouched by this build.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "FF_GLP1_AWARE_TARGETS remains registered in feature_flags.py and stays False by default",
+      "result": "PASS",
+      "evidence": "nutrition_app/feature_flags.py line 8: 'FF_GLP1_AWARE_TARGETS = False    # GLP-1 medication protein-floor adjustment (not yet shipped)'"
+    },
+    {
+      "criterion": "UserProfile gains Optional[bool] glp1_medication_in_use = None; round-trips through to_dict/from_dict; NO other GLP1-related field added",
+      "result": "PASS",
+      "evidence": "nutrition_app/models/user.py declares 'glp1_medication_in_use: Optional[bool] = None'; to_dict emits the key; from_dict casts via bool() with None-passthrough. profile_repository.py contains only the single glp1_medication_in_use key (and a glp1_card_seen UI marker, which is UI-state, not medical detail). No name/dose/schedule/timing fields anywhere."
+    },
+    {
+      "criterion": "When FF_GLP1_AWARE_TARGETS is ON AND user.glp1_medication_in_use is True: protein floor uses 1.6 g/kg LBM AND calorie-floor warning threshold reduced by 200 kcal; otherwise byte-identical behavior",
+      "result": "PASS",
+      "evidence": "macro_calculator.py defines PROTEIN_PER_KG_LBM_GLP1=1.6 and GLP1_CALORIE_FLOOR_REDUCTION_KCAL=200.0; _glp1_active() gate returns False when flag off OR field is False/None, so calorie_floor_warning_threshold returns standard 1200 and protein_floor_g uses standard coefficient. When gate active, threshold drops to 1000. Note: standard PROTEIN_PER_KG_LBM is also 1.6 today, so protein-floor numeric output is unchanged either way — but the flag-gated branch exists as required by the criterion."
+    },
+    {
+      "criterion": "pages/0_profile.py and pages/14_settings.py render Hebrew tri-state radio (yes/no/prefer-not-to-say) and persist via existing profile repository",
+      "result": "PASS",
+      "evidence": "Both files import feature_flags and gate the section behind FF_GLP1_AWARE_TARGETS; both use st.radio with three labels (כן/לא/מעדיף לא לענות) mapped via _label_to_val={yes:True, no:False, prefer-not-to-say:None}; both call ProfileRepository (0_profile.py via existing save flow, 14_settings.py via _profile_repo_glp1.save)."
+    },
+    {
+      "criterion": "On first toggle to True, one-time educational card displays Hebrew title and disclaimer; 'seen' marker prevents reappearance",
+      "result": "PASS",
+      "evidence": "Both pages: 'if _new_glp1 is True and not _card_seen' gates rendering of the title 'שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1' and disclaimer 'איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.'; on save, glp1_card_seen=True is persisted (pages/0_profile.py line 376, pages/14_settings.py line 173)."
+    },
+    {
+      "criterion": "Hebrew strings in config/strings_he.json (not hardcoded); existing keys untouched",
+      "result": "PASS",
+      "evidence": "config/strings_he.json contains glp1.question, glp1.option.yes/no/prefer_not_to_say, glp1.educational_card.title/disclaimer alongside the original 3 home.* keys (preserved byte-for-byte). The .py files use .get(key, hebrew_fallback) — JSON is the source of truth, fallbacks are defensive and only activate if file is missing."
+    },
+    {
+      "criterion": "Existing inventory tab, calorie ring, plan tab, and other unrelated UI not modified",
+      "result": "PASS",
+      "evidence": "files_changed list excludes app_user.py and all pages except 0_profile.py and 14_settings.py. Builder self-check verified app_user.py byte-identical (69597 bytes pre-build snapshot) and 14 other pages byte-identical."
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false
+}

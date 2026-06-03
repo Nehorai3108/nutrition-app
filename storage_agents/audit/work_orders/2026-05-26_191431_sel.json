@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-26_191431_sel",
+  "ts": "2026-05-26T19:14:31.137995+00:00",
+  "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+  "task_type": "fix_meal_timing",
+  "priority": "medium",
+  "task_details": "REQUEUED — CRITIC_REJECT: Criterion 4 FAIL — LUNCH slot was modified: food_058/טחינה and food_059/רוטב עגבניות removed and food_012/טונה relocated from BREAKFAST to LUNCH. Builder must replace PROTEIN items with non-PROTEIN foods without touching other slots.",
+  "rationale": "This is the oldest task_id (1248f250 < 8ffd46bb < ff5a5c94 lexicographically) among three medium-priority allowlisted tasks. The BREAKFAST slot currently contains two PROTEIN items (food_011/הודו, food_012/טונה) that violate meal-timing rules; prior fix attempts failed because builders relocated proteins to other slots or left a second PROTEIN item intact — the requeue reason contains an explicit constraint (do NOT touch LUNCH or any other slot) that must be respected this time.",
+  "acceptance_criteria": [
+    "BREAKFAST slot in the active plan (storage_agents/plans/2026-05-26_17-23-19_timing_fix.json) contains zero items with category=protein — both food_011/הודו and food_012/טונה must be absent.",
+    "Every replacement food added to BREAKFAST has category in {grain, dairy, fruit, fat, nut_seed} — no PROTEIN category foods permitted in any form.",
+    "Total BREAKFAST kcal remains within ±5% of baseline 570.1 kcal, i.e. in the range 541.5–598.6 kcal (sum replacement servings × kcal/100g to verify).",
+    "LUNCH, MORNING_SNACK, AFTERNOON_SNACK, and DINNER slots are byte-identical to the pre-fix state — food_ids, quantities, and order must be untouched. food_058/טחינה and food_059/רוטב עגבניות must remain in LUNCH; food_012/טונה must NOT appear in LUNCH or any other slot.",
+    "The plan's overall calorie total (plan.totals.kcal or equivalent) is updated to reflect the new BREAKFAST items and falls within ±5% of the pre-fix overall total of 2231.9 kcal."
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/2026-05-26_17-23-19_timing_fix.json"
+  ],
+  "execution_hint": "Direct JSON edit to storage_agents/plans/2026-05-26_17-23-19_timing_fix.json. In the breakfast meal object, remove the two entries for food_011 (הודו, PROTEIN, ~202.5 kcal) and food_012 (טונה, PROTEIN, ~116.0 kcal). Replace them with two non-PROTEIN catalog items whose combined kcal totals ~318 kcal to keep BREAKFAST in range. Suggested pairing: food_073/גרנולה (grain, 40g serving, 188.4 kcal) + food_040/גבינה בולגרית (dairy, 50g serving, 120.0 kcal) ≈ 308 kcal → BREAKFAST total ≈ 560 kcal (within 541–599 range). Do NOT touch the lunch, morning_snack, afternoon_snack, or dinner meal objects. After editing, recompute plan.totals.kcal as the sum of all slot totals."
+}

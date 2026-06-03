@@ -1,0 +1,47 @@
+{
+  "run_id": "2026-05-27_161243_sel",
+  "ts": "2026-05-27T16:33:05+00:00",
+  "task_id": "de41286a-1fa5-4fb9-9e36-2e5419cb19e0",
+  "what_was_done": "Calm Mode v2 strings + defaults: gated the home-tab banner behind FF_CALM_MODE_DEFAULT, added two new boolean prefs (daily_reminders_enabled, weekly_summary_email; default False) alongside existing show_streaks (also False), wired toggles into the Settings 'מצב שקט' section, and created config/strings_he.json with the exact Hebrew banner copy.",
+  "files_changed": [
+    "app_user.py",
+    "config/strings_he.json",
+    "nutrition_app/models/user_meal_preferences.py",
+    "nutrition_app/repositories/user_meal_preferences_repository.py",
+    "pages/14_settings.py"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "user_preferences defaults/schema include three new boolean keys (show_streaks, daily_reminders_enabled, weekly_summary_email) all defaulting to False",
+      "result": "PASS",
+      "evidence": "user_meal_preferences.py lines 117/122/123 declare all three as bool=False; to_dict() and from_dict() serialise/deserialise the new keys; isolated Python import verified default values all False."
+    },
+    {
+      "criterion": "Exact Hebrew banner string present in strings source used by home tab on first open",
+      "result": "PASS",
+      "evidence": "config/strings_he.json CALM_MODE_HOME_BANNER holds the exact required string 'אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה.'; app_user.py loads it via _load_calm_banner_text() and uses it in st.info(); same string also present as fallback literal in app_user.py."
+    },
+    {
+      "criterion": "Settings section labeled 'מצב שקט' exposes toggles for the three new preferences",
+      "result": "PASS",
+      "evidence": "pages/14_settings.py line 48 renders the 'מצב שקט' header; toggles wired at lines 55-62 (show_streaks), 86-93 (daily_reminders_enabled), 95-102 (weekly_summary_email)."
+    },
+    {
+      "criterion": "No existing streak or notification logic is removed — diff must show only additions plus default flips True→False",
+      "result": "PASS",
+      "evidence": "Legacy daily_notifications and weekly_summary fields/toggles retained intact in model, repo, and settings page; new daily_reminders_enabled/weekly_summary_email keys are additive. All default values were already False, so no True→False flips were needed in this change set."
+    },
+    {
+      "criterion": "Banner gated by FF_CALM_MODE_DEFAULT so it does not appear globally without the flag",
+      "result": "PASS",
+      "evidence": "app_user.py line 81 imports FF_CALM_MODE_DEFAULT; line 102 condition: 'if _FF_CALM_MODE_DEFAULT and not st.session_state.get(_calm_banner_shown)'. Flag registered in nutrition_app/feature_flags.py."
+    }
+  ],
+  "backup_path": "/sessions/vigilant-kind-mayer/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-27_161243_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "cd \"C:\\Users\\User\\Desktop\\אפליקציית תזונאי\" && tar -xzf storage_agents/audit/backups/2026-05-27_161243_sel_before.tar.gz   # git revert blocked by index.lock"
+}

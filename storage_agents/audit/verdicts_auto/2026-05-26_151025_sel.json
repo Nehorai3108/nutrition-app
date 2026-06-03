@@ -1,0 +1,33 @@
+{
+  "run_id": "2026-05-26_151025_sel",
+  "ts": "2026-05-26T15:32:30+00:00",
+  "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+  "verdict": "reject",
+  "reason": "Builder removed both PROTEIN items from BREAKFAST (criterion 1: PASS) and added valid GRAIN/DAIRY replacements (criterion 2: PASS), but violated criterion 4 by modifying LUNCH: food_058/טחינה and food_059/רוטב עגבניות were deleted from LUNCH, and food_012/טונה was relocated there instead of being replaced. Other slots must remain untouched.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "BREAKFAST slot no longer contains any item with category=PROTEIN (specifically, טונה must be absent)",
+      "result": "PASS",
+      "evidence": "After edit, BREAKFAST items are food_017/שיבולת שועל, food_023/חמאת בוטנים, food_025/שומשום, food_033/תותים, food_037/יוגורט יווני — neither food_011/הודו nor food_012/טונה (both category=protein per extended catalog) appear in BREAKFAST ✓"
+    },
+    {
+      "criterion": "Replacement item placed in BREAKFAST slot has category in {GRAIN, DAIRY, FRUIT, VEGETABLE}",
+      "result": "PASS",
+      "evidence": "food_017/שיבולת שועל=grain, food_037/יוגורט יווני=dairy per foods_extended.json — both replacements are valid categories ✓"
+    },
+    {
+      "criterion": "Total kcal in the plan stays within ±5% of the original plan total kcal",
+      "result": "PASS",
+      "evidence": "Before (d16ea2b): 1780.5 kcal → After: 1763.0 kcal — deviation = -0.98%, within ±5% ✓"
+    },
+    {
+      "criterion": "All other meal slots and items remain unchanged",
+      "result": "FAIL",
+      "evidence": "LUNCH was modified: before_commit had food_016/בטטה, food_050/שעועית לבנה, food_051/אדממה, food_058/טחינה, food_059/רוטב עגבניות (kcal=635.0); after edit LUNCH has food_016/בטטה, food_050/שעועית לבנה, food_051/אדממה, food_012/טונה (kcal=617.5). Builder relocated טונה to LUNCH instead of replacing it with a non-protein food ✗"
+    }
+  ],
+  "reverted": true,
+  "revert_method": "git_catfile_manual",
+  "revert_failed": false
+}

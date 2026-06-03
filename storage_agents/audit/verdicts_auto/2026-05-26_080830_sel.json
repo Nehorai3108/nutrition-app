@@ -1,0 +1,32 @@
+{
+  "run_id": "2026-05-26_080830_sel",
+  "ts": "2026-05-26T08:32:27+00:00",
+  "task_id": "ff5a5c94-1bb0-43c1-9904-0f7aa958d402",
+  "verdict": "reject",
+  "reason": "Criterion 1 FAIL: טונה (tuna, food_012, PROTEIN category) remained in the BREAKFAST slot after the fix — builder replaced הודו with שיבולת שועל but left a second PROTEIN item (טונה) untouched. The criterion requires NO PROTEIN-category items in BREAKFAST, not merely the removal of הודו specifically.",
+  "criterion_results": [
+    {
+      "criterion": "The BREAKFAST slot no longer contains any item with food_name='הודו' or category='PROTEIN'",
+      "result": "FAIL",
+      "evidence": "Diff removes food_011 (הודו, 144.4g, PROTEIN) and adds food_017 (שיבולת שועל, 50.1g, GRAIN) ✓ for הודו. However, food_012 (טונה, tuna) with PROTEIN category was present in BREAKFAST both before and after — the builder left it in place, violating the 'no PROTEIN in BREAKFAST' part of the criterion."
+    },
+    {
+      "criterion": "The replacement item placed in the BREAKFAST slot has a category in {GRAIN, DAIRY, FRUIT, VEGETABLE}",
+      "result": "PASS",
+      "evidence": "Diff adds food_017 (שיבולת שועל / oats) which is GRAIN category ✓. Calorie match: 194.9 kcal before and after."
+    },
+    {
+      "criterion": "Total daily kcal in the plan stays within ±5% of the original total",
+      "result": "PASS",
+      "evidence": "Plan totals field shows 1780.5 kcal both before and after (0% change). Breakfast kcal is identical (529.3 kcal); only macro breakdown shifted with the swap."
+    },
+    {
+      "criterion": "No other meal slots or food items in the plan are altered beyond the BREAKFAST fix",
+      "result": "PASS",
+      "evidence": "Staged diff shows only the breakfast.items[0] entry changed (הודו→שיבולת שועל) and the breakfast totals updated accordingly. All other meal slots (morning_snack, lunch, afternoon_snack, dinner) are byte-for-byte identical between before and after states."
+    }
+  ],
+  "reverted": true,
+  "revert_failed": false,
+  "revert_method": "git restore blocked by stale index.lock (sandbox permission issue). Restored via git cat-file -p 5b1b25f (HEAD blob) copied directly to disk. File is back to pre-change state (הודו in breakfast). Task re-queued in pending_tasks.json with note 'auto_reverted_2026-05-26_080830_sel'."
+}

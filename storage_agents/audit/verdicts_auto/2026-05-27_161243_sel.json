@@ -1,0 +1,39 @@
+{
+  "run_id": "2026-05-27_161243_sel",
+  "ts": "2026-05-27T17:36:45+00:00",
+  "task_id": "de41286a-1fa5-4fb9-9e36-2e5419cb19e0",
+  "verdict": "reject",
+  "reason": "Build catastrophically corrupted app_user.py: the entire `with tab_inventory:` block was deleted and the file truncated mid-UTF8 character (file no longer parses — UnicodeDecodeError at byte 64705). Also violates criterion #4 which requires 'diff must show only additions plus default flips'; diff showed 15 lines of deletions in app_user.py. Builder's self-check missed the truncation entirely. Other files (model, repo, settings page, config/strings_he.json) were correctly implemented, but the app_user.py break makes the change unshippable.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "user_preferences defaults/schema include three new boolean keys (show_streaks, daily_reminders_enabled, weekly_summary_email) all defaulting to False",
+      "result": "PASS",
+      "evidence": "user_meal_preferences.py diff adds daily_reminders_enabled: bool = False and weekly_summary_email: bool = False; show_streaks: bool = False was already present at line 117. to_dict and from_dict serialise/deserialise the new keys with default False."
+    },
+    {
+      "criterion": "Exact Hebrew banner string present in strings source used by home tab on first open",
+      "result": "PASS",
+      "evidence": "config/strings_he.json (new file) contained CALM_MODE_HOME_BANNER with the exact required string 'אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה.'; app_user.py defined _load_calm_banner_text() that reads it (verified in diff hunk @@ -74,10 +74,35 @@)."
+    },
+    {
+      "criterion": "Settings section labeled 'מצב שקט' (Calm Mode) exposes toggles for the three new preferences",
+      "result": "PASS",
+      "evidence": "pages/14_settings.py already has 'מצב שקט' h3 header at line 48 (pre-existing); diff adds toggles for daily_reminders_enabled (lines 86-93) and weekly_summary_email (lines 95-102); existing show_streaks toggle at lines 55-61 covers the third pref."
+    },
+    {
+      "criterion": "No existing streak or notification logic is removed — diff must show only additions plus default flips True→False",
+      "result": "FAIL",
+      "evidence": "app_user.py diff shows the entire Tab 4 Inventory rendering block deleted (lines 1206-1218 of the original removed: `with tab_inventory:` plus its full body). Strictly the deleted code is inventory-rendering, not streak/notification — but the criterion also says 'diff must show only additions plus default flips', which is violated by 15 lines of deletions. Worse: app_user.py was left truncated mid-UTF8 character, failing Python parse with UnicodeDecodeError at byte 64705."
+    },
+    {
+      "criterion": "Banner gated by FF_CALM_MODE_DEFAULT so it does not appear globally without the flag",
+      "result": "PASS",
+      "evidence": "app_user.py diff line +98 imports FF_CALM_MODE_DEFAULT and the new guard 'if _FF_CALM_MODE_DEFAULT and not st.session_state.get(\"_calm_banner_shown\"):' gates the st.info() call. Note: FF_CALM_MODE_DEFAULT was already registered in nutrition_app/feature_flags.py before this build (build report misleadingly implies it was newly added), but the gating itself is in place."
+    }
+  ],
+  "reverted": true,
+  "revert_method": "tar_restore",
+  "revert_failed": false,
+  "revert_notes": "git_revert failed (dirty working tree; no new commit existed since git was blocked at build time). 'tar --overwrite -xzf storage_agents/audit/backups/2026-05-27_161243_sel_before.tar.gz' restored app_user.py, user_meal_preferences.py, user_meal_preferences_repository.py, pages/14_settings.py — all 4 now match HEAD/backup state; app_user.py parses cleanly. config/strings_he.json could not be deleted (filesystem denies unlink on this mount) so was truncated to 0 bytes; the empty config/ dir remains but is dormant since app_user.py no longer references it."
+}

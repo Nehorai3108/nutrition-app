@@ -1,0 +1,39 @@
+=== BiteFit Agent: 03_research ===
+Started: 05/31/2026 08:05:06
+===========================================
+Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
+Brief written to `storage_agents/briefs/research_brief.md`. Here's the summary:
+
+---
+
+## Audit Results — What BiteFit Has
+
+| Page | Feature |
+|------|---------|
+| `0_profile.py` | User profile, goals, personal details |
+| `6_daily_menu.py` | Daily meal recommendations (breakfast/lunch/dinner) |
+| `11_meal_wizard.py` | Guided meal plan wizard |
+| `13_meal_preferences.py` | First-login meal preferences picker |
+| `14_settings.py` | Settings (calm mode, quiet settings) |
+| `4_inventory.py` | Personal inventory management |
+| `8_calendar.py` | Calendar with food/water/workout tracking (scaffold) |
+| `9_history.py` | History and weekly planning |
+| `10_chat_log.py` | AI nutrition chat (Groq llama-3.3-70b) |
+| `12_barcode.py` | Barcode scanning + community database |
+| `5_scanner.py` + `2_receipt_scanner.py` | Receipt OCR → inventory |
+| `7_workout_tracker.py` + `7_weekly_workout_plan.py` | Workout tracking and plans |
+| `2_recipes.py` + `3_recipe_detail.py` | Recipe browsing and detail |
+
+---
+
+## Top 3 Recommended Features (from the brief)
+
+1. **Intermittent Fasting Timer** — S complexity, high retention, zero competition in Hebrew market. New `pages/15_fasting.py` + minimal model. Reuses calendar + data manager.
+
+2. **Water Tracking** — S complexity, calendar already has a water scaffold, just needs a backend + dedicated UI page. Goal auto-calculated from existing `weight_kg` + `activity_level`.
+
+3. **Kosher Status on Barcode Scan** — M complexity, highest Israeli-market differentiation. BiteFit already scans barcodes — just needs `kosher_resolver.py` pulling from Open Food Facts + Rabbinate data. Kaspenu launched April 2025 and proved demand.
+
+**Deprioritized:** CGM integration (partnership agreements needed), full social features (cold-start problem), AI meal photo scanning (poor accuracy on Israeli cuisine with generic models).
+===========================================
+Finished: 05/31/2026 08:08:45 (3.63965429min) ExitCode: 0

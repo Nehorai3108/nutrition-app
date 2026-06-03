@@ -1,0 +1,35 @@
+=== BiteFit Agent: 01_designer ===
+Started: 05/31/2026 15:00:01
+===========================================
+Design brief written to `storage_agents/briefs/design_brief.md`. Here's a summary of what it covers:
+
+---
+
+## Audit Findings
+
+**Strengths already in place:**
+- Solid dark-theme design token system (`ui/theme.py`) aligned with Lifesum/Cal AI conventions
+- SVG calorie + macro rings on the home dashboard
+- Global RTL CSS applied to all Streamlit containers
+- Mobile-first: 480px max-width centered layout
+- Chrome hidden (header, footer, MainMenu)
+
+---
+
+## Top 5 Improvements
+
+| # | Change | Files | Effort |
+|---|--------|-------|--------|
+| 1 | **Wire `bottom_nav()` on all 12 missing pages** Γאפ users on profile, inventory, history, etc. have no navigation | 12 pages | S |
+| 2 | **Add a "Log Food" FAB** Γאפ a fixed `+` button above the bottom bar on the home screen; the primary nutrition app action has no visible CTA | `app_user.py`, `ui/components.py` | S |
+| 3 | **Strip workout + water blocks from sidebar** Γאפ ~300 lines of form logic in a hidden sidebar; functionality already exists in dedicated pages | `app_user.py` lines 265Γאף555 | M |
+| 4 | **Step-by-step onboarding wizard** in profile page Γאפ replace 3-tab all-at-once form with 1-question-per-screen flow (steps 0Γאף5) + TDEE "wow" result screen | `pages/0_profile.py` | L |
+| 5 | **Fix `layout="wide"` Γזע `layout="centered"`** on all sub-pages Γאפ eliminates layout flash and column sizing artifacts since CSS already caps at 480px | All sub-pages | S |
+
+## Quick Wins included:
+- Noto Sans Hebrew font fallback
+- RTL progress bar direction fix (CSS `scaleX(-1)`)
+- Calm Mode banner duplication fix
+- Replace hardcoded `<h2>/<h3>` in settings.py with design-system components
+===========================================
+Finished: 05/31/2026 15:07:14 (7.21553959666667min) ExitCode: 0

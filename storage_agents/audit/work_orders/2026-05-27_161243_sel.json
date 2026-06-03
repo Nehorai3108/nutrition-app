@@ -1,0 +1,24 @@
+{
+  "run_id": "2026-05-27_161243_sel",
+  "ts": "2026-05-27T16:12:43+00:00",
+  "task_id": "de41286a-1fa5-4fb9-9e36-2e5419cb19e0",
+  "task_type": "improve_copy",
+  "priority": "MEDIUM",
+  "task_details": "Add a Hebrew 'calm mode' banner string and three new user_preference defaults. Banner text on first home-tab open: 'אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה.' Add three boolean keys to user_preferences with default False: show_streaks, daily_reminders_enabled, weekly_summary_email. Do NOT delete existing streak/notification code — only flip defaults to OFF and add the toggles in a new Settings → 'מצב שקט' (Calm Mode) section.",
+  "rationale": "Two of three pending tasks are add_feature_flagged, which are window-restricted to 22:00–03:00 Israel time and currently filtered out (it is 19:11 IL now). The only allowlisted, in-window candidate is this improve_copy task. It is also a low-risk, additive copy/defaults change (effort=S) behind FF_CALM_MODE_DEFAULT — a safe pick after a string of 'uncertain' verdicts where the last two builds had no observable git commit; an additive strings/defaults change is easy for the critic to verify.",
+  "acceptance_criteria": [
+    "user_preferences defaults/schema include three new boolean keys (show_streaks, daily_reminders_enabled, weekly_summary_email) all defaulting to False",
+    "The exact Hebrew banner string 'אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה.' is present in the strings/copy source used by the home tab on first open",
+    "A new Settings section labeled 'מצב שקט' (Calm Mode) exposes toggles for the three new preferences",
+    "No existing streak or notification logic is removed — diff must show only additions plus default flips from True→False (search for removed function/class definitions to confirm)",
+    "Banner is gated by feature flag FF_CALM_MODE_DEFAULT (or its first-open trigger) so it does not appear globally without the flag being enabled"
+  ],
+  "files_likely_to_change": [
+    "app_user.py",
+    "storage_agents/user_preferences/ (defaults file or schema)",
+    "config/strings_he.json (create if missing)",
+    "feature_flags.py (add FF_CALM_MODE_DEFAULT)",
+    "pages/ or components/ Settings screen for the 'מצב שקט' section"
+  ],
+  "execution_hint": "Direct edit. Builder should: (1) grep for 'show_streaks' / 'daily_reminders' / 'weekly_summary' in app_user.py and storage_agents/user_preferences to locate the preferences schema; (2) add the three booleans with default False without removing existing logic; (3) add or create config/strings_he.json with the banner key (e.g. CALM_MODE_HOME_BANNER) — note: no config/ dir was found at repo root, so creating config/strings_he.json is acceptable; (4) register FF_CALM_MODE_DEFAULT in feature_flags.py (default OFF); (5) add a 'מצב שקט' section in the Settings page wiring the new toggles. Take a tar.gz backup of app_user.py + user_preferences before editing for rollback."
+}

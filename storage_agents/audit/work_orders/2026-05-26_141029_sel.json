@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-05-26_141029_sel",
+  "ts": "2026-05-26T14:10:29+00:00",
+  "task_id": "00f77913-6693-414e-a639-1b3d8743850e",
+  "task_type": "fix_meal_timing",
+  "priority": "high",
+  "task_details": "LUNCH contains CONDIMENT category item: טחינה",
+  "rationale": "Five high-priority fix_meal_timing tasks are pending, all confirmed present in the active plan (2026-04-16_12-56-51_iter_20.json). Task 00f77913 is lexicographically the oldest, making it the correct tiebreak pick. Fixing the CONDIMENT (טחינה, 119 kcal) in LUNCH is the highest-impact single fix — it contributes the most misplaced calories of any single CONDIMENT item — and resolves a clear category violation without the prior-rejection risk associated with the BREAKFAST/טונה issue.",
+  "acceptance_criteria": [
+    "LUNCH slot in the active plan (2026-04-16_12-56-51_iter_20.json) no longer contains any item with category=CONDIMENT; specifically טחינה (tahini) is absent from LUNCH items.",
+    "Replacement item added to LUNCH has a category appropriate for a main meal slot (PROTEIN, VEGETABLE, LEGUME, or GRAIN) — not CONDIMENT, SPICE, or SAUCE.",
+    "Total kcal of all LUNCH items stays within ±5% of original (635.0 kcal), i.e. between 603.2 and 666.8 kcal.",
+    "Plan-level total kcal stays within ±5% of pre-fix total (1780.5 kcal), i.e. between 1691.5 and 1869.5 kcal."
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+  ],
+  "execution_hint": "Direct JSON edit to storage_agents/plans/2026-04-16_12-56-51_iter_20.json: locate the 'lunch' meal entry, find the item where name_he='טחינה', remove it, and insert a PROTEIN or VEGETABLE replacement of similar caloric value (~119 kcal) chosen from the food catalog (e.g., עוף/chicken ~120 kcal, or גבינה לבנה/cottage cheese ~110 kcal). Recalculate totals.calories_kcal after the swap."
+}

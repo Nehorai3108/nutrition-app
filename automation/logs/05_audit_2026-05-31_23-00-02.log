@@ -1,0 +1,40 @@
+=== BiteFit Agent: 05_audit ===
+Started: 05/31/2026 23:00:02
+===========================================
+Audit complete. Here's the summary:
+
+---
+
+## Audit Summary Γאפ 2026-05-31
+
+### Brief Critiques
+
+**design_brief.md Γאפ 6 issues:**
+- `pages/16_hydration.py` is still listed as missing `bottom_nav()` Γאפ already done
+- Acceptance criterion says "5 bottom-nav icons" but nav now has 9
+- Quick wins item has wrong key: says `bottom_nav("hydration")`, correct key is `"water"`
+- Two acceptance criteria for Item 5 are browser-only / unverifiable mechanically
+- `fab_html(label, page_url)` signature in brief contradicts the body (no `page_url` in actual function)
+- Line number ranges for `app_user.py` may be stale (file is modified in git)
+
+**structure_brief.md Γאפ 4 issues:**
+- Heading says 8 blockers, content has 9
+- No acceptance criteria per blocker Γאפ implementors can't verify their own work
+- Scope is unbounded (3Γאף6 weeks of work, not a session brief)
+- P3 Capacitor item requires external infrastructure Γאפ needs BLOCKED ON notation
+
+**research_brief.md Γאפ 4 issues:**
+- v1 and v2 both live in the file; v1 is obsolete but not removed
+- `agent_11_recipes/` path still cited despite being flagged as non-existent in prior audit
+- Feature #8 partially implemented but brief not updated to reflect it
+- Zero measurable acceptance criteria anywhere (systemic gap)
+
+### Implementor: Last Run (Add "water" to bottom_nav)
+**APPROVED** Γאפ all 3 criteria verified against source. Minimal change, no regressions.
+
+Three open items tracked: FIX 2 (`nutrition_engine.py` hydration goal), FIX 3 (daily_menu water total), and `layout="wide"` in the hydration page.
+
+### Next Priority
+Wire `bottom_nav()` on the 11 remaining dead-end pages Γאפ highest leverage UX fix, mechanical work, same pass should also fix `layout="wide"` Γזע `"centered"` on each.
+===========================================
+Finished: 05/31/2026 23:04:40 (4.62441567833333min) ExitCode: 0

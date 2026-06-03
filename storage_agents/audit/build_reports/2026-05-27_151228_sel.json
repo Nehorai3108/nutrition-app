@@ -1,0 +1,52 @@
+{
+  "run_id": "2026-05-27_151228_sel",
+  "ts": "2026-05-27T15:23:49+00:00",
+  "task_id": "8b3297cd-383c-4252-b5e7-66e94f6dfd9e",
+  "what_was_done": "Created reusable variety-fix script nutrition_app/scripts/fix_plan_variety.py that joins plan items to the food catalog, computes per-day share of PROTEIN/GRAIN/VEG/FRUIT/DAIRY, and writes <plan>_variety_fix.json siblings only when a category exceeds 60% (preserving kcal +/- 5%). Ran the script over the 7 newest plan files; all 7 already satisfy the rule (max observed category share 0.2857, well below 0.60), so no plan files were modified.",
+  "files_changed": [
+    "nutrition_app/scripts/fix_plan_variety.py",
+    "nutrition_app/scripts/__init__.py",
+    "storage_agents/tasks/pending_tasks.json",
+    "storage_agents/tasks/completed_tasks.json"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "The 7 newest plan_*.json files under storage_agents/plans/ each have no food category (PROTEIN, GRAIN, VEG, FRUIT, DAIRY) exceeding 60% of items per day after the fix",
+      "result": "PASS",
+      "evidence": "Script output shows all 7 plans had violation=None; max category share observed was VEG=0.2857 in 2026-05-26_17-23-19_timing_fix.json. All shares well under the 0.60 threshold."
+    },
+    {
+      "criterion": "Plans are joined against the food catalog to look up category per food_id (plan items do not carry a category field, only food_id/food_name)",
+      "result": "PASS",
+      "evidence": "Script loads nutrition_app/data/foods_extended.json into a {food_id: item} dict, then looks up category for each plan item by food_id (compute_category_shares -> CATALOG_TO_RULE mapping)."
+    },
+    {
+      "criterion": "Any plan that required a swap has exactly one item replaced; replacement food_id exists in the existing food catalog (no new foods added)",
+      "result": "UNCERTAIN",
+      "evidence": "No swaps were needed in this run (no violations). The script enforces single-item swap and chooses replacement_fid from catalog.values(), so the criterion is structurally satisfied; no real evidence available because no plan was modified."
+    },
+    {
+      "criterion": "After swap, total daily kcal of the plan stays within +/- 5% of the pre-swap total",
+      "result": "UNCERTAIN",
+      "evidence": "No swaps performed. Script checks deviation <= 0.05 before accepting any candidate (pick_replacement KCAL_TOLERANCE=0.05), so the criterion is structurally enforced if a swap is ever required."
+    },
+    {
+      "criterion": "Plans that already satisfy the 60% rule are left unmodified (no spurious edits)",
+      "result": "PASS",
+      "evidence": "All 7 plans satisfy the rule; find on plans dir for '*_variety_fix.json' returns empty -> no sibling files were created, no originals were touched."
+    },
+    {
+      "criterion": "Each modified plan is written back as a sibling file with suffix _variety_fix.json (do not overwrite the original) and includes a 'variety_fix' provenance block listing original_item food_id, replacement food_id, and the category share before/after",
+      "result": "UNCERTAIN",
+      "evidence": "No plan required modification, so no sibling file was produced. The script implements out_path = plan_path.with_name(stem + '_variety_fix.json') and writes a 'variety_fix' block with original_item, replacement_item, category_shares_before, category_shares_after, daily_kcal_before/after; structurally satisfies the criterion when triggered."
+    }
+  ],
+  "backup_path": "storage_agents/audit/backups/2026-05-27_151228_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "Git is locked; use tar fallback: tar -xzf 'C:\\\\Users\\\\User\\\\Desktop\\\\אפליקציית תזונאי\\\\storage_agents\\\\audit\\\\backups\\\\2026-05-27_151228_sel_before.tar.gz' -C 'C:\\\\Users\\\\User\\\\Desktop\\\\אפליקציית תזונאי'  # plus remove nutrition_app/scripts/ and revert pending/completed task json",
+  "git_blocked_note": "git_blocked=true; .git/index.lock could not be removed (permission denied). BEFORE and AFTER hashes are identical because no commit was made. Rollback via tar: tar -xzf storage_agents/audit/backups/2026-05-27_151228_sel_before.tar.gz -C <project_root> ; this restores everything except storage_agents/audit (excluded from snapshot)."
+}

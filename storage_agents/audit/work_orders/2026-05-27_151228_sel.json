@@ -1,0 +1,22 @@
+{
+  "run_id": "2026-05-27_151228_sel",
+  "ts": "2026-05-27T15:12:28+00:00",
+  "task_id": "8b3297cd-383c-4252-b5e7-66e94f6dfd9e",
+  "task_type": "improve_variety",
+  "priority": "LOW",
+  "task_details": "Scan the most recent 7 plan files in storage_agents/plans/. For each daily plan, check meal variety: no single food category (PROTEIN, GRAIN, VEG, FRUIT, DAIRY) should account for more than 60% of items across the day. If any plan violates this, swap one item to balance.",
+  "rationale": "Local time 18:11 Israel is outside the 22-03 UI/feature window, so the three UI/feature tasks (improve_copy, two add_feature_flagged) are filtered out. That leaves only one allowlisted data-fix task in the queue — improve_variety, LOW. No backlog (10/10 work orders have build reports), and last-5 verdicts show no rejects (3 approve, 2 uncertain), so the circuit breaker is clear and we can proceed with the daytime data-fix filler.",
+  "acceptance_criteria": [
+    "The 7 newest plan_*.json files under storage_agents/plans/ each have no food category (PROTEIN, GRAIN, VEG, FRUIT, DAIRY) exceeding 60% of items per day after the fix",
+    "Plans are joined against the food catalog to look up category per food_id (plan items do not carry a category field, only food_id/food_name)",
+    "Any plan that required a swap has exactly one item replaced; replacement food_id exists in the existing food catalog (no new foods added)",
+    "After swap, total daily kcal of the plan stays within ±5% of the pre-swap total",
+    "Plans that already satisfy the 60% rule are left unmodified (no spurious edits)",
+    "Each modified plan is written back as a sibling file with suffix _variety_fix.json (do not overwrite the original) and includes a 'variety_fix' provenance block listing original_item food_id, replacement food_id, and the category share before/after"
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/*_variety_fix.json (new sibling files for any plan that violated the 60% rule)",
+    "nutrition_app/agents/agent4_inventory.py or nutrition_app/agents/agent5_planner.py (if a reusable variety helper is added)"
+  ],
+  "execution_hint": "Direct script: load the 7 newest plan_*.json by mtime, join each item's food_id against the food catalog (contracts/ or data/ — Agent 3 owns the catalog) to get categories, compute per-day category share, and for any plan where share>0.60 pick one item from the over-represented category and replace with a same-meal item from an under-represented category preserving ±5% kcal. Write outputs as <original>_variety_fix.json. No CLI executor exists for this task type — a small standalone Python script in nutrition_app/scripts/fix_plan_variety.py is the cleanest path."
+}

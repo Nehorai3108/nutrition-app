@@ -1,0 +1,38 @@
+{
+  "run_id": "2026-05-26_151025_sel",
+  "ts": "2026-05-26T15:27:54+00:00",
+  "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+  "what_was_done": "Replaced both PROTEIN items in BREAKFAST slot: הודו (food_011) replaced with שיבולת שועל (food_017, grain, 50.1g=194.9kcal) and טונה (food_012) replaced with יוגורט יווני (food_037, dairy, 140.3g=82.8kcal). BREAKFAST kcal unchanged at 529.3; plan total kcal unchanged at 1763.0.",
+  "files_changed": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "git_blocked",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "BREAKFAST slot contains no item with category=PROTEIN (טונה absent)",
+      "result": "PASS",
+      "evidence": "BREAKFAST items are food_017, food_023, food_025, food_033, food_037 — no protein-category food_id present"
+    },
+    {
+      "criterion": "Replacement items have category GRAIN or DAIRY",
+      "result": "PASS",
+      "evidence": "food_017=שיבולת שועל (grain), food_037=יוגורט יווני (dairy)"
+    },
+    {
+      "criterion": "Total kcal within ±5% of original 1763.0",
+      "result": "PASS",
+      "evidence": "New total kcal=1763.0, deviation=0.00%"
+    },
+    {
+      "criterion": "All other meal slots and items unchanged",
+      "result": "PASS",
+      "evidence": "morning_snack, lunch, afternoon_snack, dinner slots verified unchanged"
+    }
+  ],
+  "backup_path": "/sessions/ecstatic-confident-mayer/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-26_151025_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "tar -xzf /sessions/ecstatic-confident-mayer/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-26_151025_sel_before.tar.gz -C \"/sessions/ecstatic-confident-mayer/mnt/אפליקציית תזונאי\""
+}

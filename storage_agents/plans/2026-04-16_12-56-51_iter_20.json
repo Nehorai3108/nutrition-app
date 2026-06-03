@@ -151,33 +151,33 @@
           "inventory_item_id": null
         },
         {
-          "food_id": "food_058",
-          "food_name": "טחינה",
-          "quantity_g": 20.0,
-          "calories_kcal": 119.0,
-          "protein_g": 3.4,
-          "carbs_g": 4.2,
-          "fat_g": 10.8,
+          "food_id": "food_029",
+          "food_name": "גזר",
+          "quantity_g": 100.0,
+          "calories_kcal": 41.0,
+          "protein_g": 0.9,
+          "carbs_g": 9.6,
+          "fat_g": 0.2,
           "from_inventory": false,
           "inventory_item_id": null
         },
         {
-          "food_id": "food_059",
-          "food_name": "רוטב עגבניות",
-          "quantity_g": 50.0,
-          "calories_kcal": 14.5,
-          "protein_g": 0.7,
-          "carbs_g": 2.7,
-          "fat_g": 0.2,
+          "food_id": "food_049",
+          "food_name": "אפונה ירוקה",
+          "quantity_g": 100.0,
+          "calories_kcal": 81.0,
+          "protein_g": 5.4,
+          "carbs_g": 14.5,
+          "fat_g": 0.4,
           "from_inventory": false,
           "inventory_item_id": null
         }
       ],
       "totals": {
-        "calories_kcal": 635.0,
-        "protein_g": 33.7,
-        "carbs_g": 93.2,
-        "fat_g": 17.0
+        "calories_kcal": 623.5,
+        "protein_g": 35.9,
+        "carbs_g": 110.4,
+        "fat_g": 6.6
       }
     },
     {

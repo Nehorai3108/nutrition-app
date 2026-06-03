@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-26_201334_sel",
+  "ts": "2026-05-26T20:13:46+00:00",
+  "task_id": "ff5a5c94-1bb0-43c1-9904-0f7aa958d402",
+  "task_type": "fix_meal_timing",
+  "priority": "medium",
+  "task_details": "REQUEUED (prior critic reject + uncertain). Original: remove all PROTEIN-category items from BREAKFAST slot and replace with appropriate alternatives. Requeue reason: 'CRITIC_REJECT: Criterion 1 FAIL — טונה (tuna, PROTEIN) remains in BREAKFAST slot after fix. Builder only replaced הודו but left a second PROTEIN item untouched.' Status: a subsequent build (verdict 2026-05-26_191431_sel, 'uncertain') appears to have fixed BREAKFAST (criteria 1-3 PASS). However the verdict was UNCERTAIN due to: (a) food_058/טחינה and food_059/רוטב עגבניות absent from LUNCH — this is a PRE-EXISTING condition from an earlier botched fix, not introduced by this task; (b) work-order calorie baseline was incorrectly cited as 2231.9 kcal (the target_calories_kcal field) when the actual pre-fix file total was 1818.6 kcal. Builder must VERIFY the current file state is fully correct and produce a clean verifiable output.",
+  "rationale": "This is the only allowlisted task in the queue and has been pending since an initial reject followed by an uncertain verdict. The uncertain verdict was caused by incorrect baseline numbers in the prior work order, not by builder error — the BREAKFAST fix itself passed criteria 1-3. A verification pass with corrected acceptance criteria will allow the Critic to issue a definitive APPROVE.",
+  "acceptance_criteria": [
+    "BREAKFAST slot in storage_agents/plans/2026-05-26_17-23-19_timing_fix.json contains zero items with category=protein; current expected items are food_023(fat), food_025(nut_seed), food_033(fruit), food_073(grain), food_040(dairy)",
+    "food_011/הודו and food_012/טונה are absent from ALL 5 meal slots (BREAKFAST, MORNING_SNACK, LUNCH, AFTERNOON_SNACK, DINNER)",
+    "BREAKFAST slot totals.calories_kcal is within ±5% of 570.1 kcal baseline (range 541.5–598.6 kcal); current stored value is 560.0 kcal which is within range",
+    "MORNING_SNACK, AFTERNOON_SNACK, and DINNER slots are unchanged from the current file state; LUNCH slot contains food_016/food_050/food_051/food_029/food_049 (food_058/food_059 absence is a PRE-EXISTING condition — do NOT penalize builder for this)",
+    "plan totals.calories_kcal equals the sum of all 5 meal slot totals (correct value: 1849.3 kcal = 560.0+223.2+623.5+224.1+218.5); do NOT compare against target_calories_kcal (2231.9) which is the nutritional goal, not the pre-fix actual total"
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/2026-05-26_17-23-19_timing_fix.json"
+  ],
+  "execution_hint": "READ storage_agents/plans/2026-05-26_17-23-19_timing_fix.json and verify each criterion above. If BREAKFAST is already clean (no protein items) and totals are correct, produce a verification report documenting each criterion result with evidence — the Critic can then issue a definitive APPROVE. Do NOT re-edit the file if the fix is already correct. Use nutrition_app/data/foods_extended.json as the authoritative food catalog for category lookups."
+}

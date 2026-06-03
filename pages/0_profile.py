@@ -284,10 +284,76 @@ with tab_personal:
     except Exception as e:
         st.warning(f"מלא פרטים כדי לראות חישוב ({e})")
 
+    # ── GLP-1 medication question (feature-flagged) ───────────────────────────
+    # Persists `glp1_medication_in_use` (tri-state: True / False / None) into
+    # the profile even when FF_GLP1_AWARE_TARGETS is OFF, so toggling the flag
+    # later cannot lose data. The UI question only appears when the flag is ON.
+    import json as _json_glp1
+    from nutrition_app import feature_flags as _ff_glp1
+
+    _new_glp1 = profile.get("glp1_medication_in_use")
+    if getattr(_ff_glp1, "FF_GLP1_AWARE_TARGETS", False):
+        try:
+            with open(
+                os.path.join(
+                    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    "config", "strings_he.json",
+                ),
+                "r",
+                encoding="utf-8",
+            ) as _f_strs:
+                _strings_he = _json_glp1.load(_f_strs)
+        except (OSError, ValueError):
+            _strings_he = {}
+
+        _q       = _strings_he.get("glp1.question",
+                                   "האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג׳ארו)?")
+        _opt_yes = _strings_he.get("glp1.option.yes", "כן")
+        _opt_no  = _strings_he.get("glp1.option.no", "לא")
+        _opt_na  = _strings_he.get("glp1.option.prefer_not_to_say", "מעדיף לא לענות")
+
+        st.divider()
+        _cur = profile.get("glp1_medication_in_use")
+        _label_to_val = {_opt_yes: True, _opt_no: False, _opt_na: None}
+        _val_to_label = {True: _opt_yes, False: _opt_no, None: _opt_na}
+        _cur_label    = _val_to_label.get(_cur, _opt_na)
+        _opts         = [_opt_yes, _opt_no, _opt_na]
+        _picked = st.radio(
+            _q,
+            options=_opts,
+            index=_opts.index(_cur_label),
+            horizontal=True,
+            key="glp1_tri_state_profile",
+        )
+        _new_glp1 = _label_to_val[_picked]
+
+        # First-toggle educational card: show once per profile lifetime,
+        # marker `glp1_card_seen` is persisted to prevent reappearance.
+        _card_seen = bool(profile.get("glp1_card_seen", False))
+        if _new_glp1 is True and not _card_seen:
+            _card_title = _strings_he.get(
+                "glp1.educational_card.title",
+                "שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1",
+            )
+            _card_disclaimer = _strings_he.get(
+                "glp1.educational_card.disclaimer",
+                "איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.",
+            )
+            st.markdown(
+                f'<div dir="rtl" style="background:#1e2433;border:1px solid #f59e0b;'
+                f'border-radius:14px;padding:14px 16px;margin-top:10px">'
+                f'<div style="font-size:0.95rem;font-weight:700;color:#f4f6fb;margin-bottom:6px">'
+                f'{_card_title}</div>'
+                f'<div style="font-size:0.78rem;color:#8892a4;line-height:1.5">'
+                f'{_card_disclaimer}</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
     # ── Save ─────────────────────────────────────────────────────────────────
     st.divider()
     if st.button("💾 שמור פרטים אישיים", type="primary", use_container_width=True):
-        profile.update({
+        _update = {
             "name":             new_name,
             "gender":           new_gender.value,
             "date_of_birth":    new_dob.isoformat(),
@@ -300,7 +366,15 @@ with tab_personal:
             "weeks_to_goal":    new_weeks,
             "target_weight_kg": new_target_weight,
             "notes":            profile.get("notes") or None,
-        })
+            # Persist GLP-1 self-report independent of FF state so flipping
+            # the flag later doesn't lose data.
+            "glp1_medication_in_use": _new_glp1,
+        }
+        # Set seen-marker after the user actively confirms GLP-1=True so
+        # the educational card never reappears on subsequent renders.
+        if _new_glp1 is True:
+            _update["glp1_card_seen"] = True
+        profile.update(_update)
         repo.save(profile)
         st.success("✅ פרטים אישיים נשמרו!")
         st.rerun()

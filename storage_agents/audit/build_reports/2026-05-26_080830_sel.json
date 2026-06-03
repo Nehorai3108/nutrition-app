@@ -1,0 +1,15 @@
+{
+  "run_id": "2026-05-26_080830_sel",
+  "ts": "2026-05-26T08:08:32+00:00",
+  "task_id": "ff5a5c94-1bb0-43c1-9904-0f7aa958d402",
+  "what_was_done": "Replaced הודו (turkey, PROTEIN category) in the BREAKFAST slot of plan 2026-04-16_12-56-51_iter_20.json with שיבולת שועל (oats, GRAIN category) at 50.1g, maintaining identical caloric contribution of 194.9 kcal; overall plan total kcal unchanged at 1780.5.",
+  "files_changed": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "outcome": "executed",
+  "stderr_tail": "",
+  "note": "Git commit of change was blocked by sandbox permissions (index.lock). File was successfully modified on disk and verified via JSON parse.",
+  "rollback_cmd": "cd \"C:\\Users\\User\\Desktop\\אפליקציית תזונאי\" && git revert d16ea2be860e1728274860554074bd88b229328a --no-edit"
+}

@@ -1,0 +1,32 @@
+=== BiteFit Agent: 02_structure ===
+Started: 05/31/2026 16:00:03
+===========================================
+Brief written to `storage_agents/briefs/structure_brief.md`. Here's the summary of what was found:
+
+---
+
+## Key Findings
+
+### Immediate Security Action Required
+- **`SUPABASE_SERVICE_KEY`** is in `.env` on disk Γאפ this key bypasses all Row Level Security. Rotate it now in the Supabase dashboard and move it to platform secrets only.
+- **`DATABASE_URL`** contains a plaintext PostgreSQL password Γאפ same action needed.
+
+### PWA Status: Scaffolded but Non-Functional
+`manifest.json` and `sw.js` exist but are completely inert Γאפ Streamlit doesn't serve `static/` without `staticDir` configured, no `<link rel="manifest">` is injected, and no service worker is registered anywhere. Three small changes (P1ΓאףP2) fix this.
+
+### iOS Store Path: Requires Capacitor
+Apple doesn't accept PWAs in the App Store. Recommended path: deploy Streamlit to HTTPS (Community Cloud / Railway), wrap it with a Capacitor.js shell, then submit the native app. The existing PWA investment (manifest, SW) still works for Android TWA.
+
+### Top Blockers (ordered)
+| Priority | Issue |
+|----------|-------|
+| P0 | Rotate service key + DB password |
+| P1 | Wire manifest + SW into Streamlit (`staticDir`, JS injection) |
+| P2 | Replace CDN icons with self-hosted PNGs |
+| P3 | `showErrorDetails = false` in config |
+| P4 | Sync `pyproject.toml` with `requirements.txt` |
+| P5 | Configure real GROQ + USDA API keys |
+| P6 | Deploy to HTTPS |
+| P7 | Write privacy policy (required for health app store submission) |
+===========================================
+Finished: 05/31/2026 16:03:25 (3.36849891min) ExitCode: 0

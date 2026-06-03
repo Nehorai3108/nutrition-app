@@ -1,0 +1,43 @@
+{
+  "run_id": "2026-05-27_151228_sel",
+  "ts": "2026-05-27T15:35:00+00:00",
+  "task_id": "8b3297cd-383c-4252-b5e7-66e94f6dfd9e",
+  "verdict": "uncertain",
+  "reason": "Builder produced a clean, reusable script (nutrition_app/scripts/fix_plan_variety.py, 326 lines) that independently re-runs and confirms all 7 newest plans satisfy the <=60% rule (max observed share VEG=0.2857 in 2026-05-26_17-23-19_timing_fix.json). No originals were touched (mtimes pre-date the build) and no *_variety_fix.json siblings were created. Criteria 1, 2, 5 pass with direct evidence; criteria 3, 4, 6 are conditional on a swap occurring -- none did, so they are only verifiable by code inspection (which shows correct structural enforcement: single-item swap, KCAL_TOLERANCE=0.05, sibling write + variety_fix provenance block). Marking UNCERTAIN for the swap-conditional criteria per the hard rule against faking confidence. No revert; the build did the right thing for the observed data and does not damage the project.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "The 7 newest plan_*.json files under storage_agents/plans/ each have no food category (PROTEIN, GRAIN, VEG, FRUIT, DAIRY) exceeding 60% of items per day after the fix",
+      "result": "PASS",
+      "evidence": "Independent re-run of fix_plan_variety.py confirms all 7 plans have violation=None; max share across all 7 is VEG=0.2857 in 2026-05-26_17-23-19_timing_fix.json. All other shares <=0.2381. Well under the 0.60 threshold."
+    },
+    {
+      "criterion": "Plans are joined against the food catalog to look up category per food_id (plan items do not carry a category field, only food_id/food_name)",
+      "result": "PASS",
+      "evidence": "Script loads nutrition_app/data/foods_extended.json into a {food_id: item} dict (load_catalog, line 41-44) and looks up category for each plan item by food_id (compute_category_shares, line 76). Catalog confirmed to contain protein/grain/vegetable/fruit/dairy categories among others."
+    },
+    {
+      "criterion": "Any plan that required a swap has exactly one item replaced; replacement food_id exists in the existing food catalog (no new foods added)",
+      "result": "UNCERTAIN",
+      "evidence": "No plan required a swap in this run. Code review: pick_replacement returns a single (mi, ii, replacement_fid, new_item) tuple and replacement is drawn from catalog.values() via catalog_candidates_for_rule (line 146-148), structurally enforcing the criterion. No empirical evidence available because the trigger never fired."
+    },
+    {
+      "criterion": "After swap, total daily kcal of the plan stays within +/-5% of the pre-swap total",
+      "result": "UNCERTAIN",
+      "evidence": "No swaps performed. Code review: pick_replacement enforces 'if deviation <= KCAL_TOLERANCE' with KCAL_TOLERANCE=0.05 (line 38, 178). Structurally enforced if ever triggered; no execution evidence available."
+    },
+    {
+      "criterion": "Plans that already satisfy the 60% rule are left unmodified (no spurious edits)",
+      "result": "PASS",
+      "evidence": "All 7 plans satisfy the rule. find on plans dir for '*_variety_fix.json' returns empty. Original plan files' mtimes (e.g., 2026-05-27 14:26:54 for iter_19_timing_fix.json) pre-date the build run (15:23). No spurious edits."
+    },
+    {
+      "criterion": "Each modified plan is written back as a sibling file with suffix _variety_fix.json (do not overwrite the original) and includes a 'variety_fix' provenance block listing original_item food_id, replacement food_id, and the category share before/after",
+      "result": "UNCERTAIN",
+      "evidence": "No plan required modification, so no sibling file was produced. Code review (process_plan_file, line 248-279): builds plan['variety_fix'] = {original_item:{food_id,...,category_rule}, replacement_item:{food_id,...,category_rule}, category_shares_before, category_shares_after, daily_kcal_before, daily_kcal_after, kcal_deviation_pct, rule_threshold} and writes to plan_path.with_name(stem + '_variety_fix.json'). Structurally satisfies the criterion when triggered; no execution evidence."
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false
+}

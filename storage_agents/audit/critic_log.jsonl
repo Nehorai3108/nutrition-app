@@ -1,1 +1,36 @@
 {"ts":"2026-05-26T08:08:42+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts": "2026-05-26T08:32:27+00:00", "reviewed_run_id": "2026-05-26_080830_sel", "verdict": "reject", "reverted": true}
+{"ts":"2026-05-26T14:34:58+00:00","reviewed_run_id":"2026-05-26_141029_sel","verdict":"approve","reverted":false,"revert_method":null}
+{"ts":"2026-05-26T15:32:30+00:00","reviewed_run_id":"2026-05-26_151025_sel","verdict":"reject","reverted":true,"revert_method":"git_catfile_manual"}
+{"ts":"2026-05-26T16:32:31+00:00","reviewed_run_id":"2026-05-26_161028_sel","verdict":"approve","reverted":false,"revert_method":null}
+{"ts": "2026-05-26T17:32:29+00:00", "reviewed_run_id": "2026-05-26_171323_sel", "verdict": "approve", "reverted": false, "revert_method": null}
+{"ts":"2026-05-26T18:32:33+00:00","reviewed_run_id":"2026-05-26_181027_sel","verdict":"approve","reverted":false,"revert_method":null}
+{"ts":"2026-05-26T19:35:50+00:00","reviewed_run_id":"2026-05-26_191431_sel","verdict":"uncertain","reverted":false,"revert_method":null}
+{"ts":"2026-05-26T20:33:37+00:00","reviewed_run_id":"2026-05-26_201334_sel","verdict":"approve","reverted":false,"revert_method":null}
+{"ts":"2026-05-26T21:32:34+00:00","reviewed_run_id":"2026-05-26_211257_sel","verdict":"approve","reverted":false,"revert_method":null}
+{"ts": "2026-05-26T22:33:04.679074+00:00", "action": "skip", "reason": "nothing_to_review"}
+{"ts":"2026-05-26T23:32:59+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T00:33:02+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T01:32:55+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T02:32:52+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T03:33:08+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T04:33:13+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T05:33:14+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T06:33:20+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T07:33:18+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T08:33:21+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T14:35:52+00:00","reviewed_run_id":"2026-05-27_141225_sel","verdict":"uncertain","reverted":false,"revert_method":null}
+{"ts":"2026-05-27T15:35:10+00:00","reviewed_run_id":"2026-05-27_151228_sel","verdict":"uncertain","reverted":false,"revert_method":null}
+{"ts":"2026-05-27T17:36:45+00:00","reviewed_run_id":"2026-05-27_161243_sel","verdict":"reject","reverted":true,"revert_method":"tar_restore"}
+{"ts":"2026-05-27T18:32:27+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T19:32:17+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts": "2026-05-27T20:34:27+00:00", "reviewed_run_id": "2026-05-27_191208_sel", "verdict": "approve", "reverted": false, "revert_method": null}
+{"ts":"2026-05-27T21:36:01+00:00","reviewed_run_id":"2026-05-27_201008_sel","verdict":"approve","reverted":false,"revert_method":null}
+{"ts":"2026-05-27T21:36:01+00:00","reviewed_run_id":"2026-05-27_211009_sel","verdict":"uncertain","reverted":false,"revert_method":null}
+{"ts":"2026-05-27T22:32:31+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-27T23:32:36+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-28T00:32:21+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-28T01:32:41+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-28T02:32:29+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-28T03:32:23+00:00","action":"skip","reason":"nothing_to_review"}
+{"ts":"2026-05-28T04:32:39+00:00","action":"skip","reason":"nothing_to_review"}

@@ -1,0 +1,18 @@
+=== BiteFit Agent: 03_research ===
+Started: 05/31/2026 17:00:01
+===========================================
+Brief is complete. Here's what the research agent added that materially changed the picture:
+
+**Key updates from live market research:**
+
+1. **Caloria is a real threat** Γאפ Hebrew UI, 50K+ Israeli foods, 3M global products, barcode scanner. It's the closest feature-complete competitor to BiteFit. The differentiation must come from GLP-1 support, fasting, and gamification Γאפ things Caloria lacks.
+
+2. **AI Photo Scanning should be un-deprioritized** Γאפ DexCom shipped it July 2025, Lifesum shipped multimodal (photo/voice/barcode) early 2025. It's moving from premium to expected. Using a third-party API (LogMeal, Clarifai) drops complexity from L Γזע M, making it a 6Γאף9 month roadmap item rather than a "never."
+
+3. **GLP-1 tracker is validated as a category** Γאפ Glapp, Shotsy, Pep are standalone apps. Users want this integrated in their main tracker, not a separate app. First Hebrew-integrated tracker wins.
+
+4. **Market sizing confirmed large** Γאפ AI nutrition coaching growing 27% CAGR; gamification delivers measurable 40% engagement lift.
+
+Full brief at `storage_agents/briefs/research_brief.md` Γאפ v2 section prepended, original v1 preserved below it.
+===========================================
+Finished: 05/31/2026 17:03:35 (3.56142805min) ExitCode: 0

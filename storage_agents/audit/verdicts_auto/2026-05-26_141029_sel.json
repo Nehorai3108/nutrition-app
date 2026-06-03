@@ -1,0 +1,33 @@
+{
+  "run_id": "2026-05-26_141029_sel",
+  "ts": "2026-05-26T14:32:30+00:00",
+  "task_id": "00f77913-6693-414e-a639-1b3d8743850e",
+  "verdict": "approve",
+  "reason": "All 4 acceptance criteria PASS: LUNCH no longer contains any CONDIMENT (טחינה and רוטב עגבניות removed), replacement טונה has category=protein (approved category), LUNCH kcal=617.5 is within ±5% of 635.0 (range 603.2–666.8), and plan total 1763.0 is within ±5% of 1780.5 (range 1691.5–1869.5).",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "LUNCH slot no longer contains any item with category=CONDIMENT; specifically טחינה (tahini) is absent from LUNCH items.",
+      "result": "PASS",
+      "evidence": "Backup confirms before-state had food_058 (טחינה, condiment, 119 kcal) and food_059 (רוטב עגבניות, 14.5 kcal) in LUNCH. Current plan LUNCH contains only: food_016 (בטטה), food_050 (שעועית לבנה), food_051 (אדממה), food_012 (טונה) — food_db.py confirms all as non-CONDIMENT categories."
+    },
+    {
+      "criterion": "Replacement item added to LUNCH has a category appropriate for a main meal slot (PROTEIN, VEGETABLE, LEGUME, or GRAIN) — not CONDIMENT, SPICE, or SAUCE.",
+      "result": "PASS",
+      "evidence": "food_db.py FoodDatabase.search('tuna') returns category=protein for food UUID matching טונה. Protein is explicitly in the approved set. Verified via live DB query."
+    },
+    {
+      "criterion": "Total kcal of all LUNCH items stays within ±5% of original (635.0 kcal), i.e. between 603.2 and 666.8 kcal.",
+      "result": "PASS",
+      "evidence": "Before: 635.0 kcal (backup confirms). After: 172.0+208.5+121.0+116.0=617.5 kcal. 617.5 is within [603.2, 666.8]. Math verified: removed 119.0+14.5=133.5 kcal, added 116.0 kcal → net -17.5 kcal."
+    },
+    {
+      "criterion": "Plan-level total kcal stays within ±5% of pre-fix total (1780.5 kcal), i.e. between 1691.5 and 1869.5 kcal.",
+      "result": "PASS",
+      "evidence": "Before: 1780.5 kcal (confirmed in backup + plan file). After: 1763.0 kcal (read from plan totals). 1763.0 is within [1691.5, 1869.5]. Math: 1780.5-133.5+116.0=1763.0 ✓"
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false
+}

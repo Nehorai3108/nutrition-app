@@ -1,0 +1,39 @@
+{
+  "run_id": "2026-05-26_211257_sel",
+  "ts": "2026-05-26T21:23:23+00:00",
+  "task_id": "8ffd46bb-bc55-43bb-900e-80750e931179",
+  "what_was_done": "Changed _load_recently_used() lookback in meal_planner.py from files[:3] to files[:7] and updated its docstring. This causes the planner to exclude foods seen in the last 7 plans (instead of 3), preventing high-frequency foods like food_011 (Turkey Breast) from reappearing in consecutive meal plans.",
+  "files_changed": [
+    "nutrition_app/agents/agent_5_planner/meal_planner.py"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "nutrition_app/agents/agent_5_planner/meal_planner.py: _load_recently_used() expands its lookback from 3 to at least 7 plan files",
+      "result": "PASS",
+      "evidence": "Verified files[:3] replaced with files[:7] in source; grep confirms only files[:7] present; docstring updated to 'last 7 plans'."
+    },
+    {
+      "criterion": "After the change, running the planner against the existing food catalog produces a new plan where food_011 is absent from the meal that food_011 most recently occupied (breakfast)",
+      "result": "PASS",
+      "evidence": "Ran planner programmatically; food_011 in recently_used=True (80 foods loaded from 7 plans); generated plan breakfast=['food_002','food_052','food_080','food_085','food_086'], food_011 absent."
+    },
+    {
+      "criterion": "food_011 appearance rate across any sliding window of 7 consecutive generated plans does not exceed 2 occurrences (<=2/7)",
+      "result": "PASS",
+      "evidence": "Generated 7 consecutive plans programmatically; food_011 appeared in 0/7 plans (well within <=2/7 limit)."
+    },
+    {
+      "criterion": "All existing unit tests in nutrition_app/tests/unit/test_meal_planner.py continue to pass with no modifications to the test file",
+      "result": "PASS",
+      "evidence": "pytest ran 5 tests: test_generates_meals, test_plan_has_items, test_plan_respects_run_id, test_plan_has_calories, test_empty_plan_fails_validation — all PASSED in 0.42s."
+    }
+  ],
+  "backup_path": "storage_agents/audit/backups/2026-05-26_211257_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "cd \"C:\\Users\\User\\Desktop\\\\u05d0\\u05e4\\u05dc\\u05d9\\u05e7\\u05e6\\u05d9\\u05d9\\u05ea \\u05ea\\u05d6\\u05d5\\u05e0\\u05d0\\u05d9\" && git revert d16ea2be860e1728274860554074bd88b229328a --no-edit",
+  "note": "git_blocked=true; lock file at .git/index.lock could not be removed (sandbox permissions). File successfully modified and verified on disk. Rollback via: tar -xzf storage_agents/audit/backups/2026-05-26_211257_sel_before.tar.gz -C <project_root>"
+}

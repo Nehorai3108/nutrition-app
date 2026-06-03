@@ -624,6 +624,7 @@ def bottom_nav(active: str = "home") -> None:
         ("chat",     "pages/10_chat_log.py",           "צאט",        "💬"),
         ("barcode",  "pages/12_barcode.py",            "ברקוד",      "📲"),
         ("workout",  "pages/7_workout_tracker.py",     "אימון",      "💪"),
+        ("water",    "pages/16_hydration.py",          "מים",        "💧"),
         ("history",  "pages/9_history.py",             "היסטוריה",   "📊"),
         ("profile",  "pages/0_profile.py",             "פרופיל",     "👤"),
         ("settings", "pages/14_settings.py",           "הגדרות",     "⚙️"),

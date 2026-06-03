@@ -1,0 +1,62 @@
+{
+  "run_id": "2026-05-27_191208_sel",
+  "ts": "2026-05-27T19:36:25+00:00",
+  "task_id": "ce326286-8a48-4b5d-aff8-b9ec758a9ab7",
+  "what_was_done": "Added FF_PROTEIN_FIRST_WIDGET-gated protein-of-the-day widget above the home-tab calorie ring in app_user.py (Hebrew label 'חלבון להיום'), with a Streamlit st.radio toggle so the calorie dashboard remains accessible. Extended UserProfile with Optional[float] lean_body_mass_kg (None default) round-tripped through to_dict/from_dict. Extended UserMealPreferences with primary_metric: Literal['calories','protein'] = 'calories' round-tripped everywhere and supplied as 'calories' by the Supabase repo loader for legacy rows missing the column. Created nutrition_app/macro_calculator.py with effective_lbm_kg (Boer fallback, raises on zero inputs — never silently 0), protein_floor_g (1.6 g/kg LBM), protein_ring_color with exact named threshold constants RING_THRESHOLD_RED=0.70 / RING_THRESHOLD_YELLOW=0.90. Added unit test test_protein_ring_thresholds.py and populated config/strings_he.json with the new Hebrew keys. FF_PROTEIN_FIRST_WIDGET remains False in feature_flags.py; no production caller flips it True.",
+  "files_changed": [
+    "app_user.py",
+    "nutrition_app/models/user.py",
+    "nutrition_app/models/user_meal_preferences.py",
+    "nutrition_app/repositories/user_meal_preferences_repository.py",
+    "nutrition_app/macro_calculator.py",
+    "nutrition_app/tests/unit/test_protein_ring_thresholds.py",
+    "config/strings_he.json",
+    "storage_agents/tasks/pending_tasks.json",
+    "storage_agents/tasks/completed_tasks.json"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "Feature flag FF_PROTEIN_FIRST_WIDGET registered and defaults False; no production caller flips True.",
+      "result": "PASS",
+      "evidence": "nutrition_app/feature_flags.py line 7: FF_PROTEIN_FIRST_WIDGET = False; grep finds only the import in app_user.py and references in comments — no '= True' or boolean-flip assignment anywhere outside backups/worktrees."
+    },
+    {
+      "criterion": "Protein widget renders ABOVE the calorie ring on home tab with the Hebrew label 'חלבון להיום' byte-for-byte in the header.",
+      "result": "PASS",
+      "evidence": "app_user.py line 829 contains 'חלבון להיום' inside the widget header div; the protein widget render call (line 861) precedes the calorie ring render call (line 866) inside the same home-dashboard branch."
+    },
+    {
+      "criterion": "UserProfile gains Optional[float] lean_body_mass_kg; missing values fall back to a non-zero Boer-derived LBM (never silently 0).",
+      "result": "PASS",
+      "evidence": "nutrition_app/models/user.py declares Optional[float] = None and round-trips through to_dict/from_dict. effective_lbm_kg uses measured value when >0 else Boer formula; raises ValueError when height_cm/weight_kg are non-positive; clamps min LBM to 15 kg so it can never collapse to 0."
+    },
+    {
+      "criterion": "UserMealPreferences gains primary_metric Literal['calories','protein']='calories'; round-trips; repo loader supplies 'calories' for legacy rows.",
+      "result": "PASS",
+      "evidence": "user_meal_preferences.py field at line 127; to_dict at line 152; from_dict sanitizes unknown values back to 'calories' at line 191. Repository _sb_load returns row.get('primary_metric') or 'calories' (line 84) and _sb_save persists prefs.primary_metric (line 101)."
+    },
+    {
+      "criterion": "Ring color thresholds match spec exactly via named constants and a unit test.",
+      "result": "PASS",
+      "evidence": "macro_calculator.py defines RING_THRESHOLD_RED=0.70 and RING_THRESHOLD_YELLOW=0.90; protein_ring_color uses strict '<' comparisons. test_protein_ring_thresholds.py asserts both constants and 9 boundary cases. Inline smoke-run produced ALL_E2E_TESTS_PASS."
+    },
+    {
+      "criterion": "Calorie dashboard remains accessible via tab toggle when flag is ON; only additions + new toggle wrapper.",
+      "result": "PASS",
+      "evidence": "The insertion only ADDS a try/except FF-gated block between the existing dashboard_html assembly and the existing st.markdown(dashboard_html,...) call. The calorie ring rendering line is unchanged; the st.radio (label_visibility='collapsed') gives the user explicit חלבון|קלוריות access. tab_inventory/tab_plan and other tab blocks were not touched."
+    },
+    {
+      "criterion": "Post-edit gate: app_user.py ast.parse exits 0 AND wc -c >= pre-edit size 64707.",
+      "result": "PASS",
+      "evidence": "ast.parse exited 0; new size 69597 bytes, delta +4890; no truncation."
+    }
+  ],
+  "backup_path": "storage_agents/audit/backups/2026-05-27_191208_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "cd \"C:\\Users\\User\\Desktop\\אפליקציית תזונאי\" && tar -xzf storage_agents/audit/backups/2026-05-27_191208_sel_before.tar.gz .    # git_blocked=true: tar fallback",
+  "notes": "git index.lock is held by another process and cannot be removed (EPERM); the BEFORE/AFTER commits both fall back to the pre-existing HEAD d16ea2be... A tar.gz snapshot of the whole project root (minus .git and storage_agents/audit) was written before any edits and the rollback command above uses it instead of . The on-disk Edit/Write tools were silently truncating UTF-8 files in this Hebrew-named folder (observed truncation at the file's original byte length); all real edits were applied via bash + python3 round-tripped through utf-8, which is correctly persisted."
+}

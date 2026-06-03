@@ -1,1 +1,101 @@
-[]
+[
+  {
+    "task_id": "00f77913-6693-414e-a639-1b3d8743850e",
+    "run_id": "2026-05-26_141029_sel",
+    "outcome": "executed",
+    "completed_at": "2026-05-26T14:23:20+00:00"
+  },
+  {
+    "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+    "run_id": "2026-05-26_151025_sel",
+    "outcome": "executed",
+    "completed_at": "2026-05-26T15:27:35+00:00"
+  },
+  {
+    "task_id": "e36abee6-4ed1-4b7b-86bc-1e464fc04b11",
+    "run_id": "2026-05-26_161028_sel",
+    "task_type": "fix_meal_timing",
+    "outcome": "executed",
+    "completed_at": "2026-05-26T16:26:42.217613+00:00",
+    "files_changed": [
+      "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+    ]
+  },
+  {
+    "task_id": "25e0cfd9-808d-4bf4-8036-2319672fd54f",
+    "task_type": "fix_meal_timing",
+    "run_id": "2026-05-26_171323_sel",
+    "outcome": "executed",
+    "completed_at": "2026-05-26T17:23:19+00:00",
+    "files_changed": [
+      "storage_agents/plans/2026-05-26_17-23-19_timing_fix.json"
+    ]
+  },
+  {
+    "task_id": "d4b43db4-bd12-4c2d-ab9c-0d1133b8e4a0",
+    "run_id": "2026-05-26_181027_sel",
+    "ts": "2026-05-26T18:27:16+00:00",
+    "outcome": "executed",
+    "task_type": "fix_meal_timing"
+  },
+  {
+    "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+    "run_id": "2026-05-26_191431_sel",
+    "ts": "2026-05-26T19:23:22+00:00",
+    "outcome": "executed"
+  },
+  {
+    "task_id": "ff5a5c94-1bb0-43c1-9904-0f7aa958d402",
+    "run_id": "2026-05-26_201334_sel",
+    "ts": "2026-05-26T20:23:21+00:00",
+    "outcome": "executed",
+    "task_type": "fix_meal_timing"
+  },
+  {
+    "task_id": "8ffd46bb-bc55-43bb-900e-80750e931179",
+    "type": "improve_variety",
+    "run_id": "2026-05-26_211257_sel",
+    "outcome": "executed",
+    "ts": "2026-05-26T21:23:23+00:00"
+  },
+  {
+    "task_id": "74edb64a-bd38-4235-8b8b-7119065530d5",
+    "run_id": "2026-05-27_141225_sel",
+    "task_type": "fix_meal_timing",
+    "outcome": "executed",
+    "completed_at": "2026-05-27T14:27:46+00:00"
+  },
+  {
+    "task_id": "8b3297cd-383c-4252-b5e7-66e94f6dfd9e",
+    "run_id": "2026-05-27_151228_sel",
+    "task_type": "improve_variety",
+    "outcome": "executed",
+    "ts": "2026-05-27T15:23:49+00:00",
+    "completed_at": "2026-05-27T15:23:49+00:00",
+    "files_changed": [
+      "nutrition_app/scripts/fix_plan_variety.py",
+      "nutrition_app/scripts/__init__.py"
+    ],
+    "note": "All 7 newest plans already satisfy <=60% per-category rule; no plan files modified (max share observed 0.2857)."
+  },
+  {
+    "task_id": "ce326286-8a48-4b5d-aff8-b9ec758a9ab7",
+    "run_id": "2026-05-27_191208_sel",
+    "ts": "2026-05-27T19:35:45+00:00",
+    "outcome": "executed",
+    "agent": "builder"
+  },
+  {
+    "task_id": "8ea45a76-6376-4e68-ba13-909353c26ad2",
+    "run_id": "2026-05-27_201008_sel",
+    "ts": "2026-05-27T20:39:14+00:00",
+    "outcome": "executed",
+    "builder": "Agent 2"
+  },
+  {
+    "task_id": "de41286a-1fa5-4fb9-9e36-2e5419cb19e0",
+    "run_id": "2026-05-27_211009_sel",
+    "ts": "2026-05-27T21:31:33.057031+00:00",
+    "outcome": "executed"
+  }
+]

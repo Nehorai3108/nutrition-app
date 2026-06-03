@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-26_171323_sel",
+  "ts": "2026-05-26T17:13:23+00:00",
+  "task_id": "25e0cfd9-808d-4bf4-8036-2319672fd54f",
+  "task_type": "fix_meal_timing",
+  "priority": "high",
+  "task_details": "AFTERNOON_SNACK contains GRAIN category item: אורז בסמטי",
+  "rationale": "Two requeued fix_meal_timing tasks have already failed once each; picking this fresh high-priority timing violation avoids repeating a pattern of builder rejections. Of the two fresh high-priority tasks, this one (afternoon_snack/grain) was added to the queue first and targets a clear category mismatch: a GRAIN item (אורז בסמטי, food_075) appearing in the AFTERNOON_SNACK slot, which should contain lighter items (nut_seed, fruit, or dairy).",
+  "acceptance_criteria": [
+    "AFTERNOON_SNACK slot in the latest active plan no longer contains food_075 (אורז בסמטי, category=grain); verified by checking 'meal_type'='afternoon_snack' items in the updated plan JSON.",
+    "Replacement item has category in {nut_seed, fruit, dairy, vegetable} and is drawn from the approved food catalog (foods_extended.json), not invented.",
+    "Total plan calories stay within ±5% of the original 1780.5 kcal (i.e., 1691–1869 kcal).",
+    "No other meal slots (breakfast, morning_snack, lunch, dinner) are modified — only the afternoon_snack slot is touched."
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json",
+    "storage_agents/plans/<new_timing_fix_variant>.json"
+  ],
+  "execution_hint": "Direct edit to the active plan JSON: locate the afternoon_snack meal, remove food_075/אורז בסמטי, and substitute with a nut_seed or fruit item of similar caloric weight (≈100–150 kcal) from foods_extended.json. Save result as a new timing_fix variant. Do NOT touch other slots or run the full pipeline executor."
+}

@@ -1,0 +1,27 @@
+{
+  "run_id": "2026-05-27_201008_sel",
+  "ts": "2026-05-27T20:10:08+00:00",
+  "task_id": "8ea45a76-6376-4e68-ba13-909353c26ad2",
+  "task_type": "add_feature_flagged",
+  "priority": "MEDIUM",
+  "task_details": "Add a single user-profile boolean: glp1_medication_in_use (default null). Onboarding and Settings get a Hebrew question 'האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג׳ארו)?'. When True: raise protein floor to 1.6 g/kg LBM in macro calculator, lower the calorie-floor warning threshold by 200 kcal, and show a one-time educational card 'שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1' with disclaimer 'איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.' DO NOT store medication name, dose, timing, or any injection data — single boolean flag only. Behind feature flag FF_GLP1_AWARE_TARGETS (OFF by default).",
+  "rationale": "Only two tasks are pending. Task 8ea45a76 (this one) has explicit MEDIUM priority, fresh acceptance criteria, and is a low-blast-radius addition behind FF_GLP1_AWARE_TARGETS (already registered = False in nutrition_app/feature_flags.py). The other pending item, de41286a (improve_copy), was just auto-reverted at 17:36 after corrupting app_user.py and has no priority field — selecting it again now would re-enter the same failure path. UI/feature window is open: current Israel local time ~23:10 IDT (within the 22–03 quiet window).",
+  "acceptance_criteria": [
+    "FF_GLP1_AWARE_TARGETS remains registered in nutrition_app/feature_flags.py and stays False by default; no production caller flips it True",
+    "UserProfile (nutrition_app/models/user.py) gains Optional[bool] glp1_medication_in_use = None; round-trips through to_dict/from_dict; NO other GLP1-related field (no name, dose, schedule, timing) is added anywhere in the codebase",
+    "When FF_GLP1_AWARE_TARGETS is ON AND user.glp1_medication_in_use is True: macro_calculator returns protein floor = 1.6 g/kg LBM AND the calorie-floor warning threshold is reduced by 200 kcal vs the standard threshold; when flag is OFF or field is False/None, behavior is byte-identical to today",
+    "pages/0_profile.py (onboarding) and pages/14_settings.py both render the Hebrew question 'האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג׳ארו)?' as a tri-state control (yes / no / prefer-not-to-say or null) and persist the boolean via the existing profile repository",
+    "When the user toggles glp1_medication_in_use to True for the first time, a one-time educational card displays the Hebrew title 'שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1' and the disclaimer 'איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.' — verified by a 'seen' marker that prevents the card from reappearing on the next render",
+    "Hebrew strings live in config/strings_he.json (not hardcoded in .py files); existing keys are untouched",
+    "Existing inventory tab, calorie ring, plan tab, and other unrelated UI in app_user.py and pages/* are not modified (no truncation, no UTF-8 corruption — diff against HEAD before commit)"
+  ],
+  "files_likely_to_change": [
+    "nutrition_app/models/user.py",
+    "nutrition_app/macro_calculator.py",
+    "nutrition_app/repositories/profile_repository.py",
+    "pages/0_profile.py",
+    "pages/14_settings.py",
+    "config/strings_he.json"
+  ],
+  "execution_hint": "1) Add Optional[bool] glp1_medication_in_use=None to UserProfile + to_dict/from_dict, plus repository round-trip. 2) Extend macro_calculator with a flag-gated branch: if FF_GLP1_AWARE_TARGETS and profile.glp1_medication_in_use → protein_floor_g uses 1.6 g/kg LBM (today's default) AND calorie_floor_warning_threshold -= 200; ELSE keep current non-GLP1 default (likely 1.2 g/kg LBM). 3) Add Hebrew strings to config/strings_he.json (question, educational card title, disclaimer). 4) Add the tri-state radio + first-toggle educational card to pages/0_profile.py and pages/14_settings.py — wrap reads in feature_flags.FF_GLP1_AWARE_TARGETS so the UI question stays hidden when flag is OFF; persist the boolean even when flag is OFF so toggling FF later doesn't lose data. 5) Before committing, run `git diff -- app_user.py pages/` and verify no unrelated tabs were touched. Run any existing macro_calculator unit tests."
+}

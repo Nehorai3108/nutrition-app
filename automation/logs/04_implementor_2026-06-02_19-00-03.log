@@ -1,0 +1,13 @@
+=== BiteFit Agent: 04_implementor ===
+Started: 06/02/2026 19:00:03
+===========================================
+Done. Summary of what was implemented:
+
+**FIX 2 Γאפ Promote hydration goal calculation to nutrition engine**
+
+- **`nutrition_engine.py`**: Added `calculate_hydration_goal(weight_kg: float) -> float` as a module-level public function with the same formula as the page-local version (35 ml/kg, ┬▒50 ml rounding, clamped 1500Γאף4000 ml, default 2000 ml).
+- **`pages/16_hydration.py`**: Removed the private `_calc_goal_from_profile()` function, imported `calculate_hydration_goal` from the engine, and replaced the call site.
+
+Verification: both files compile clean; `calculate_hydration_goal(70)=2450`, `(0)=2000`, `(120)=4000` Γ£ו.
+===========================================
+Finished: 06/02/2026 19:03:14 (3.18057188166667min) ExitCode: 0

@@ -1,0 +1,58 @@
+{
+  "run_id": "2026-05-27_211009_sel",
+  "ts": "2026-05-27T21:22:56+00:00",
+  "task_id": "de41286a-1fa5-4fb9-9e36-2e5419cb19e0",
+  "what_was_done": "Added two new opt-in Calm Mode boolean fields (daily_reminders_enabled, weekly_summary_email) to UserMealPreferences and surfaced toggles for them in pages/14_settings.py under the existing 'מצב שקט' section. Added 'home.calm_mode_banner' key to config/strings_he.json with the exact Hebrew string. Inserted an additive banner block inside `with tab_targets:` in app_user.py, gated by FF_CALM_MODE_DEFAULT and a per-session marker '_calm_banner_targets_shown'. FF_CALM_MODE_DEFAULT left at its current value (True) — banner gating now points at it. Repository _sb_load/_sb_save extended for round-trip; drift-tolerant loop will strip unknown columns gracefully if Supabase schema lacks them.",
+  "files_changed": [
+    "nutrition_app/models/user_meal_preferences.py",
+    "nutrition_app/repositories/user_meal_preferences_repository.py",
+    "config/strings_he.json",
+    "app_user.py",
+    "pages/14_settings.py"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "user_meal_preferences.py adds daily_reminders_enabled and weekly_summary_email; show_streaks preserved; both round-trip through to_dict/from_dict with default False",
+      "result": "PASS",
+      "evidence": "Fields declared at lines 126-127; to_dict at 161-162; from_dict at 194-195. Round-trip test executed: defaults False, to_dict/from_dict preserves all three."
+    },
+    {
+      "criterion": "config/strings_he.json gains 'home.calm_mode_banner' with EXACT Hebrew string; all 9 existing keys preserved byte-for-byte",
+      "result": "PASS",
+      "evidence": "Banner key present with exact string. All 9 prior keys compared byte-for-byte against backup and verified identical."
+    },
+    {
+      "criterion": "app_user.py renders banner inside `with tab_targets:` gated by FF_CALM_MODE_DEFAULT AND session_state marker; insertion is purely additive",
+      "result": "PASS",
+      "evidence": "Banner block at lines 1176-1179 inside `with tab_targets:` (line 1175). Gate: `if _FF_CALM_TARGETS and not st.session_state.get('_calm_banner_targets_shown')`. Helper function `_calm_mode_banner_text` at line 1147 reads strings_he.json. No existing lines deleted (verified by diff: only insertions)."
+    },
+    {
+      "criterion": "pages/14_settings.py 'מצב שקט' section exposes toggles for both new fields; show_streaks toggle unchanged; uses existing repository",
+      "result": "PASS",
+      "evidence": "New toggles at lines 83-99 (תזכורות יומיות / סיכום שבועי באימייל) bound to _prefs.daily_reminders_enabled and _prefs.weekly_summary_email; existing show_streaks toggle at lines 55-62 unchanged; uses same UserMealPreferencesRepository.save() path."
+    },
+    {
+      "criterion": "STRUCTURAL INTEGRITY: app_user.py decodes UTF-8, py_compile passes, byte length 69420 (within ±2000 of 69597 baseline), all four `with tab_*:` blocks present, tab_inventory body preserved (19 lines, identical to baseline)",
+      "result": "PASS",
+      "evidence": "Bytes=69420 (delta=-177). UTF-8 decode OK. py_compile OK. grep -c '^with tab_' = 4 at lines 1175/1213/1282/1314. tab_inventory body line count = 19 (same as baseline). NOTE: line endings normalized from CRLF to LF during Python rewrite (smaller byte count); content otherwise additive only."
+    },
+    {
+      "criterion": "Diff scope: only the 5 listed files modified",
+      "result": "PASS",
+      "evidence": "Compared md5 of every .py/.json under project (excluding storage_agents/audit, .git, the 5 allowed files) against backup — no unexpected changes detected."
+    },
+    {
+      "criterion": "FF_CALM_MODE_DEFAULT remains registered in feature_flags.py",
+      "result": "PASS",
+      "evidence": "Line 6: `FF_CALM_MODE_DEFAULT = True`. Left value unchanged (True) — banner gating now points at it. Builder did not flip default."
+    }
+  ],
+  "backup_path": "/sessions/blissful-gracious-wright/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-27_211009_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "cd \"C:\\\\Users\\\\User\\\\Desktop\\\\אפליקציית תזונאי\" && tar -xzf storage_agents/audit/backups/2026-05-27_211009_sel_before.tar.gz   # git_blocked=true, no revert commit available",
+  "notes": "Git index.lock present (held by another process); BEFORE/AFTER commits both blocked. tar.gz backup at storage_agents/audit/backups/2026-05-27_211009_sel_before.tar.gz provides rollback. ALSO NOTE: the Edit tool was observed to truncate files to their original byte size on this filesystem — same failure mode as the 2026-05-27_161243 build. This run worked around by switching to Python str-replace + shutil.copyfile for app_user.py, the repository, the prefs model, and 14_settings.py. The model and 14_settings.py system-reminder showing baseline content during the run confirms restore-from-tar after first Edit truncation worked correctly."
+}

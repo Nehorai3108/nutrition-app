@@ -24,6 +24,10 @@ _DEFAULTS = {
         "disliked_foods": [],        # food names to avoid
         "meals_per_day": 5,
     },
+    # GLP-1 medication self-report — tri-state (True / False / None).
+    # Persisted independent of FF_GLP1_AWARE_TARGETS so toggling the flag
+    # later does not lose data. NO other GLP1 detail is stored.
+    "glp1_medication_in_use": None,
     "updated_at": "",
 }
 
@@ -97,6 +101,7 @@ class ProfileRepository:
             "target_weight_kg": row.get("target_weight_kg"),
             "weeks_to_goal":    row.get("weeks_to_goal"),
             "meal_preferences": {**_DEFAULTS["meal_preferences"], **prefs},
+            "glp1_medication_in_use": row.get("glp1_medication_in_use"),
         })
         return d
 
@@ -115,6 +120,7 @@ class ProfileRepository:
             "target_weight_kg": profile.get("target_weight_kg"),
             "weeks_to_goal":    profile.get("weeks_to_goal"),
             "meal_preferences": profile.get("meal_preferences", {}),
+            "glp1_medication_in_use": profile.get("glp1_medication_in_use"),
             "updated_at":       datetime.now().isoformat(),
         }
         # Schema drift: older Supabase projects may be missing newer columns.
@@ -173,3 +179,4 @@ class ProfileRepository:
             self._sb_save(profile)
         else:
             self._local_save(profile)
+

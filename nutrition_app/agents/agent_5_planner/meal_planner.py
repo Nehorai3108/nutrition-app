@@ -130,7 +130,7 @@ class MealPlanner:
         return str(legacy_plans_dir())
 
     def _load_recently_used(self):
-        """Load food IDs used in the last 3 plans for rotation."""
+        """Load food IDs used in the last 7 plans for rotation."""
         plans_dir = self._get_plans_dir()
         if not os.path.isdir(plans_dir):
             return
@@ -138,7 +138,7 @@ class MealPlanner:
             [f for f in os.listdir(plans_dir) if f.endswith(".json")],
             reverse=True,
         )
-        for f in files[:3]:
+        for f in files[:7]:
             try:
                 with open(os.path.join(plans_dir, f), "r", encoding="utf-8") as fh:
                     plan_data = json.load(fh)

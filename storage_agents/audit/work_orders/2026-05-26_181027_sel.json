@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-05-26_181027_sel",
+  "ts": "2026-05-26T18:10:27+00:00",
+  "task_id": "d4b43db4-bd12-4c2d-ab9c-0d1133b8e4a0",
+  "task_type": "fix_meal_timing",
+  "priority": "high",
+  "task_details": "DINNER contains CONDIMENT category item: כוסברה",
+  "rationale": "The DINNER slot in the active plan contains food_082 (כוסברה, category=CONDIMENT), which violates meal-timing rules. This is the highest-priority pending task (high), and recent verdicts show the builder has been successfully fixing similar CONDIMENT-in-slot issues (two consecutive approvals for condiment removals from LUNCH). Addressing this now keeps data quality high before the requeued BREAKFAST-PROTEIN tasks are retried.",
+  "acceptance_criteria": [
+    "DINNER slot in storage_agents/plans/2026-05-26_17-23-19_timing_fix.json no longer contains any item with category=CONDIMENT (food_082/כוסברה must be absent)",
+    "Replacement item has category in {VEGETABLE, GRAIN, PROTEIN, LEGUME, DAIRY, FRUIT} — any non-CONDIMENT, non-SPICE category appropriate for a dinner slot",
+    "No other meal slots (breakfast, morning_snack, lunch, afternoon_snack) are modified — only the DINNER slot changes",
+    "Plan total calories (currently 1769.9 kcal) remain within ±5% of that value after the swap (i.e., between 1681 kcal and 1858 kcal)"
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/2026-05-26_17-23-19_timing_fix.json"
+  ],
+  "execution_hint": "Direct edit to storage_agents/plans/2026-05-26_17-23-19_timing_fix.json: remove the food_082 entry from the dinner items array and replace it with a suitable vegetable from the catalog (e.g. f_il_153/כוסברה with category=vegetable, or another vegetable not already in the dinner slot). Verify no other slots are touched."
+}

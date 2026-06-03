@@ -1,0 +1,38 @@
+{
+  "run_id": "2026-05-26_161028_sel",
+  "ts": "2026-05-26T16:32:31+00:00",
+  "task_id": "e36abee6-4ed1-4b7b-86bc-1e464fc04b11",
+  "verdict": "approve",
+  "reason": "All five acceptance criteria verified against actual file content and git original. Both condiment items (food_058, food_059) removed from LUNCH and replaced with food_029 (vegetable) and food_049 (legume); calories at 623.5 kcal within required ±5% band; all four other meal slots byte-for-byte identical to original commit.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "LUNCH slot contains zero items with category=condiment — both food_058 and food_059 must be gone",
+      "result": "PASS",
+      "evidence": "Current LUNCH items: [food_016, food_050, food_051, food_029, food_049]. food_058 and food_059 absent. foods_extended.json confirms food_029=vegetable, food_049=legume — no condiment present."
+    },
+    {
+      "criterion": "Each removed condiment replaced IN-PLACE with allowed category (vegetable/legume/carbohydrate/protein/grain/dairy/fruit/nut_seed)",
+      "result": "PASS",
+      "evidence": "food_058 replaced by food_029 (category=vegetable ✓); food_059 replaced by food_049 (category=legume ✓). Both in the allowed set per foods_extended.json."
+    },
+    {
+      "criterion": "Replacement food_ids from foods_extended.json and no duplication/cross-slot moves",
+      "result": "PASS",
+      "evidence": "food_029 and food_049 confirmed present in foods_extended.json. Full plan food_id list has no duplicates across all 5 slots."
+    },
+    {
+      "criterion": "LUNCH slot totals.calories_kcal within ±5% of original 635.0 kcal (603.2–666.8)",
+      "result": "PASS",
+      "evidence": "LUNCH totals.calories_kcal=623.5. Arithmetic verified: 172.0+208.5+121.0+41.0+81.0=623.5. Within 603.2–666.8 range ✓."
+    },
+    {
+      "criterion": "All other meal slots (breakfast, morning_snack, afternoon_snack, dinner) byte-for-byte identical",
+      "result": "PASS",
+      "evidence": "JSON deep comparison of each non-lunch slot against git original commit d16ea2be: breakfast IDENTICAL, morning_snack IDENTICAL, afternoon_snack IDENTICAL, dinner IDENTICAL."
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false
+}

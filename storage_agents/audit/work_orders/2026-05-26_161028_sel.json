@@ -1,0 +1,20 @@
+{
+  "run_id": "2026-05-26_161028_sel",
+  "ts": "2026-05-26T16:10:28+00:00",
+  "task_id": "e36abee6-4ed1-4b7b-86bc-1e464fc04b11",
+  "task_type": "fix_meal_timing",
+  "priority": "high",
+  "task_details": "LUNCH contains CONDIMENT category item: רוטב עגבניות",
+  "rationale": "This is the oldest high-priority fix_meal_timing task. The LUNCH slot in plan 2026-04-16_12-56-51_iter_20.json contains TWO condiment items (food_058 טחינה and food_059 רוטב עגבניות), both of which must be replaced. A previous builder run (2026-05-26_151025_sel, task 1248f250) was CRITIC_REJECTed for removing these items but simultaneously moving food_012/טונה from BREAKFAST into LUNCH — this work order explicitly forbids cross-slot movement to prevent repeat failure.",
+  "acceptance_criteria": [
+    "LUNCH slot in plan 2026-04-16_12-56-51_iter_20.json contains zero items with category='condiment' after the fix — both food_058 (טחינה) and food_059 (רוטב עגבניות) must be gone.",
+    "Each removed condiment item is replaced IN-PLACE with a new food item whose category is one of: vegetable, legume, carbohydrate, protein, grain, dairy, fruit, nut_seed — NOT condiment.",
+    "Replacement food_ids must come from the foods_extended.json catalog and must NOT already appear in the LUNCH slot or in any other slot of the same plan (no duplication, no cross-slot moves).",
+    "LUNCH slot totals.calories_kcal after fix stays within ±5% of the original 635.0 kcal (i.e., between 603.2 and 666.8 kcal).",
+    "All other meal slots (breakfast, morning_snack, afternoon_snack, dinner) in the plan remain byte-for-byte identical — their items, order, and totals are untouched."
+  ],
+  "files_likely_to_change": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+  ],
+  "execution_hint": "Direct edit to storage_agents/plans/2026-04-16_12-56-51_iter_20.json: locate the 'lunch' meal_type block, remove items with food_id food_058 and food_059, insert two replacement items (e.g. food_017 גזר / carbohydrate or similar lunch-appropriate vegetables from foods_extended.json), recalculate totals.calories_kcal for the LUNCH block. Do NOT touch any other meal block. Run a JSON validity check before saving."
+}

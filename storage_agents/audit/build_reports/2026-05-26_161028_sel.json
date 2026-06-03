@@ -1,0 +1,44 @@
+{
+  "run_id": "2026-05-26_161028_sel",
+  "ts": "2026-05-26T16:23:17+00:00",
+  "task_id": "e36abee6-4ed1-4b7b-86bc-1e464fc04b11",
+  "what_was_done": "Replaced two condiment items in the LUNCH slot of plan 2026-04-16_12-56-51_iter_20.json: food_058 (טחינה) was replaced with food_029 (גזר/carrot, 100g, 41 kcal) and food_059 (רוטב עגבניות) was replaced with food_049 (אפונה ירוקה/green peas, 100g, 81 kcal). Lunch totals were recalculated to 623.5 kcal (within ±5% of original 635.0 kcal).",
+  "files_changed": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "LUNCH slot contains zero items with category='condiment' — both food_058 (טחינה) and food_059 (רוטב עגבניות) must be gone",
+      "result": "PASS",
+      "evidence": "Lunch items after fix: [food_016, food_050, food_051, food_029, food_049]. Neither food_058 nor food_059 present. No item in food_map with category=condiment."
+    },
+    {
+      "criterion": "Each removed condiment item replaced IN-PLACE with a new food item whose category is one of: vegetable, legume, carbohydrate, protein, grain, dairy, fruit, nut_seed",
+      "result": "PASS",
+      "evidence": "food_029 (גזר) is category=vegetable; food_049 (אפונה ירוקה) is category=legume. Both are in the allowed set."
+    },
+    {
+      "criterion": "Replacement food_ids come from foods_extended.json and do NOT already appear in LUNCH or any other slot (no duplication, no cross-slot moves)",
+      "result": "PASS",
+      "evidence": "food_029 and food_049 confirmed in foods_extended.json. All food_ids across all meals are unique — no duplicates found."
+    },
+    {
+      "criterion": "LUNCH slot totals.calories_kcal stays within ±5% of original 635.0 kcal (603.2–666.8)",
+      "result": "PASS",
+      "evidence": "New lunch calories_kcal=623.5, which is within the required range of 603.2–666.8."
+    },
+    {
+      "criterion": "All other meal slots (breakfast, morning_snack, afternoon_snack, dinner) remain byte-for-byte identical",
+      "result": "PASS",
+      "evidence": "All four other slots verified to have identical items and totals as the original. Python dict comparison confirmed no changes."
+    }
+  ],
+  "backup_path": "/sessions/zen-sweet-johnson/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-26_161028_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "tar -xzf \"/sessions/zen-sweet-johnson/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-26_161028_sel_before.tar.gz\" -C \"/sessions/zen-sweet-johnson/mnt/אפליקציית תזונאי\"",
+  "note": "git_blocked=true: stale index.lock could not be deleted (permissions). Rollback via tar: tar -xzf storage_agents/audit/backups/2026-05-26_161028_sel_before.tar.gz -C <project_root>"
+}

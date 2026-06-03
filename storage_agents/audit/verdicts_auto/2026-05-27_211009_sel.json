@@ -1,0 +1,48 @@
+{
+  "run_id": "2026-05-27_211009_sel",
+  "ts": "2026-05-27T22:00:00+00:00",
+  "task_id": "de41286a-1fa5-4fb9-9e36-2e5419cb19e0",
+  "verdict": "uncertain",
+  "reason": "Six of seven criteria PASS — fields added with round-trip, banner string exactly matches, structural integrity holds (UTF-8 OK, py_compile OK, 69420 bytes vs 69597 baseline = within ±2000, all four 'with tab_*:' blocks present, tab_inventory body=19 lines). One criterion UNCERTAIN: criterion 3 requires the banner insertion to be 'purely additive — no existing lines may be deleted or rewritten,' but the builder's own report discloses CRLF→LF line-ending normalization across app_user.py during a Python str-replace rewrite. Content is additive (banner block + helper + FF import only), but every line was technically rewritten by the eol normalization. The previous failure mode (truncation) did NOT recur, so the spirit of the criterion is met; however the letter is borderline. Verdict 'uncertain' rather than 'approve' to flag the rewrite-vs-pure-insertion ambiguity for Neo's review. No revert: practical integrity is intact and verdict is not 'reject'.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "user_meal_preferences.py adds daily_reminders_enabled and weekly_summary_email; show_streaks preserved; both round-trip with default False",
+      "result": "PASS",
+      "evidence": "show_streaks at line 122 (unchanged: bool=False). New daily_reminders_enabled at 126, weekly_summary_email at 127. to_dict emits both (lines 161-162). from_dict reads both with bool(... False default) at lines 194-195."
+    },
+    {
+      "criterion": "config/strings_he.json gains home.calm_mode_banner with EXACT Hebrew string; all 9 existing keys preserved byte-for-byte",
+      "result": "PASS",
+      "evidence": "Banner key present: 'אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה.' — exact match. All 3 home.* and 6 glp1.* keys still present and intact. Total 10 keys, 791 bytes."
+    },
+    {
+      "criterion": "Banner inserted purely additively inside `with tab_targets:` gated by FF_CALM_MODE_DEFAULT AND session_state marker",
+      "result": "UNCERTAIN",
+      "evidence": "Banner block at lines 1176-1179 inside `with tab_targets:` (line 1175) IS additive in content. Gate uses `_FF_CALM_TARGETS and not st.session_state.get('_calm_banner_targets_shown')`. HOWEVER, builder report itself discloses CRLF→LF line-ending normalization on app_user.py during the rewrite (delta -177 bytes). Strictly: every line was rewritten by the EOL change. Practically: file content is preserved and the criterion's intent (don't break the file like the prior run did) is satisfied."
+    },
+    {
+      "criterion": "pages/14_settings.py 'מצב שקט' section exposes toggles for daily_reminders_enabled and weekly_summary_email; show_streaks toggle unchanged",
+      "result": "PASS",
+      "evidence": "Lines 83-99 of pages/14_settings.py: 'תזכורות יומיות' toggle binds to _prefs.daily_reminders_enabled; 'סיכום שבועי באימייל' toggle binds to _prefs.weekly_summary_email. show_streaks toggle at lines 55-62 unchanged. Persistence via _repo.save(_prefs)."
+    },
+    {
+      "criterion": "STRUCTURAL INTEGRITY of app_user.py (UTF-8, py_compile, byte length ±2000, four 'with tab_*:' blocks, tab_inventory body preserved)",
+      "result": "PASS",
+      "evidence": "Verified live: UTF-8 decode OK; py_compile OK; bytes=69420 (delta -177 from 69597 baseline, within ±2000); grep -c '^with tab_' = 4 at lines 1175/1213/1282/1314; tab_inventory body line count = 19 (matches baseline)."
+    },
+    {
+      "criterion": "Diff scope: only the 5 listed files modified",
+      "result": "PASS",
+      "evidence": "Builder self-check ran md5 comparison across all .py/.json files (excluding allowed list) against backup tar; no unexpected modifications detected. No file deleted or truncated."
+    },
+    {
+      "criterion": "FF_CALM_MODE_DEFAULT remains registered in feature_flags.py",
+      "result": "PASS",
+      "evidence": "feature_flags.py line 6: 'FF_CALM_MODE_DEFAULT = True   # all gamification is opt-in; streaks/notifications off by default'. Builder did not flip default (banner gating now points at it)."
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false
+}

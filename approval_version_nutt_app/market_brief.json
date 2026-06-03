@@ -1,116 +1,139 @@
 {
-  "week_of": "2026-05-18",
-  "iso_week": "2026-W21",
-  "generated_at": "2026-05-24T05:15:00Z",
+  "week_of": "2026-05-25",
+  "iso_week": "2026-W22",
+  "generated_at": "2026-05-31T04:50:00Z",
   "agent": "Market Intelligence Agent",
-  "landscape_summary": "Week 21 was defined by two stories. (1) MyFitnessPal's redesign backlash is hardening into a trust crisis — three weeks after the new Today tab shipped, the company has confirmed there will be no rollback (PiunikaWeb, May 5) and users are exploiting a region-switch workaround to keep the old UI; meanwhile MFP's March acquisition of teen-built Cal AI ($30M ARR, 15M downloads) and the March launch of MyFitnessPal Ads (a wellness retail-media network) make clear the strategic direction is AI-monetization-first, user-trust-later. (2) Noom's microdose GLP-1 program dropped its BMI eligibility floor from 25 to 21 this week and bundled a 17-biomarker home-test kit at $149/mo, while also acquiring a compounding pharmacy — Noom is no longer in our reference set as a consumer tracker; it is a vertically integrated longevity-medicine company. Yazio and Lose It shipped maintenance-only releases. Lifesum continues to roll its chat-style AI Tracking but App Store reviews flag misidentification (cashews → shrimp) and auto-renewal billing disputes. The cross-app review pattern is unmistakable: intrusive monetization, paywalled-once-free features, and dopamine-loop gamification are bleeding trust across every competitor. A calm, Hebrew-first, ad-free product is more defensible than it was two weeks ago.",
+  "landscape_summary": "Week 22 was a quiet shipping week dominated by integration and paywall moves, not headline launches. MyFitnessPal's Winter Release 2026 went live alongside a May 26 Fitbit/Google Health integration that finally syncs individual food names (not just meal totals) — but the feature is Premium/Premium+ gated, deepening the W21 pattern of bleeding once-free capability behind paywalls (MyFitnessPal Help). The MFP redesign backlash continues unresolved; Reddit and the MFP community board are still active with workaround threads three weeks in. Lose It's 2026 'Liquid Glass' iOS 26 refresh shipped with an 85%-top-3 search redesign — a calm-UI signal — but also followed through on moving the barcode scanner ('Scan It') and other legacy-free features behind the paywall (NutriScan). Yazio shipped maintenance only (v12.85.0 → 12.86.1, APKMirror). Lifesum is still rolling its chat-style AI Tracking but accuracy complaints persist. Noom continues its drift out of the consumer-tracker category — this week's news was a 3D Body Scan feature and curated 'Muscle Defense' fitness library, which only sharpen the 'Noom is now a longevity-medicine company' read from W21 (BarBend, Noom 2026 H2 update). Two cross-app patterns are sharpening: (1) AI photo/voice logging is now table stakes — every competitor ships it, none differentiate on accuracy, and the next defensible moat is the correction loop (edit-before-confirm), not the recognition itself; (2) paywall creep is uniform, and the free-feature anchor is collapsing under everyone. A Hebrew-first, free-tier-honest product retains the W21 positioning advantage and gains a second one this week: a correction-loop UX that Lifesum's cashew-as-shrimp problem proves the category has not yet solved.",
   "competitor_highlights": [
     {
       "app": "MyFitnessPal",
       "bullets": [
-        "Redesign backlash hardens: company confirmed (PiunikaWeb, May 5) the new Today tab is 'the path forward' with no rollback — users are switching account region to Turkey as a workaround. Trust damage is now visible in App Store reviews.",
-        "Cal AI acquisition (announced Mar 2, 2026 per TechCrunch) — bought the viral teen-built photo-calorie app (15M downloads, $30M ARR) and is integrating it into MFP's 20M-item food database. AI-logging is now MFP's flagship.",
-        "MyFitnessPal Ads launched Mar 17, 2026 (GlobeNewswire) — wellness retail-media network monetizing the user base for brand advertisers. User-experience cost is real; reviews already cite ad density."
+        "Winter Release 2026 shipped (MyFitnessPal Blog, late May) — bundles the Today tab redesign, Streaks view, Healthy Habits section, refreshed macros layout. The Today tab redesign backlash from W19-21 is still active on the community board and Reddit (PiunikaWeb).",
+        "May 26, 2026: Fitbit + Google Health integration now syncs individual food names (not just meal totals) — but ONLY for Premium and Premium+ subscribers (MyFitnessPal Help, May 26). Another once-free interoperability now paywalled.",
+        "No public response to the redesign workaround (users switching account region to Turkey for legacy UI). Trust posture for the week: defensive."
       ]
     },
     {
       "app": "Yazio",
       "bullets": [
-        "Maintenance week: v12.83.1 → 12.85.1 shipped (May 15-21, APKMirror) with generic 'further improvements' release notes — no headline features.",
-        "Still leaning on the 'AI Calorie Tracker' rebrand and the IF + photo + barcode bundle as the durable wedge.",
-        "Influx Inc. partnership for multilingual support (LeadIQ) signals international scaling — Hebrew is NOT yet on their roadmap."
+        "Maintenance week: v12.85.0 (May 20, APKMirror) → v12.86.1 (LiteAPKs) shipped with generic 'improvements and bug fixes' notes. No headline features.",
+        "AI Calorie Tracker positioning is now the default brand framing across all stores; AI photo logging remains Premium-gated.",
+        "Still no Hebrew localization on the public roadmap. Multilingual scaling is happening (Polish, Finnish, Czech via Lifesum this week — Yazio absent), but Hebrew remains an open lane."
       ]
     },
     {
       "app": "Lose It",
       "bullets": [
-        "Mid-May 2026 release was bug fixes only (Uptodown) — feature velocity has stalled.",
-        "The 2026 paywall move (barcode 'Scan It' + macro tracking now Premium-only for new users, per NutriScan) is generating sustained backlash in reviews; opportunity for a free Hebrew-first scanner remains wide open.",
-        "Voice meal logging ('Say It') + single-photo full-meal AI logging remain the marketed AI features (FitBudd)."
+        "'Liquid Glass' iOS 26 refresh shipped this cycle (Lose It blog, late May) — leaner tab bar, 'Day Complete' moved beneath meals, new date-picker popover on the dashboard. A clear calm-UI direction.",
+        "Search experience redesigned around an internal '85% top-3 match' metric — dense lists swapped for spread-out cards, one-tap Quick Add (Lose It blog). A real UX improvement.",
+        "Confirmed paywall move: 'Scan It' barcode scanner and several legacy-free features now Premium-only for new users (NutriScan 2026 review). Sustained backlash in reviews; free-Hebrew-scanner opportunity hasn't closed."
       ]
     },
     {
       "app": "Noom",
       "bullets": [
-        "BIGGEST move of the week: microdose GLP-1 program dropped BMI eligibility from 25 to 21 (eMarketer, MobiHealthNews) — 'the vast majority of US adults' is now the TAM. $149/mo includes at-home 17-biomarker test kits.",
-        "Also launched a $129 compounded GLP-1 SKU with industry-first 'taper-off guarantee' positioning (Noom press), and acquired a compounding pharmacy (MobiHealthNews) for supply-chain vertical integration.",
-        "Repositioning from 'weight loss app' to 'proactive whole-health / longevity medicine' (Fitt Insider). Noom is no longer a consumer-tracker competitor — they have left the field. Removes pressure from one direction; signals the consumer-tracker category is being abandoned by the premium player."
+        "New: 3D Body Scan feature using the phone camera, tracking fat/muscle changes over time (Noom 2026 H2 product update, BarBend May 2026). Differentiates from 'number on the scale' framing.",
+        "Muscle Defense™ Workouts library launched alongside the GLP-1 push — explicit lean-mass-preservation positioning during medication-assisted weight loss. Validates W21's protein-floor recommendation.",
+        "Continued drift out of consumer-tracker space: now bundling biomarker tests, body scans, fitness video, and compounded GLP-1 SKUs. The aspirational competitor is no longer a tracker; remove from weekly benchmarking after W23."
       ]
     },
     {
       "app": "Lifesum",
       "bullets": [
-        "AI Tracking (chat-style multimodal entry) continuing its May 2026 rollout — Premium-gated; users can toggle back to Classic Tracking under Customize Diary (Lifesum Helpdesk).",
-        "Accuracy collapse in App Store reviews: cashews identified as shrimp, mug-in-photo logged as coffee, barcode scans doubling/tripling calories (NutriScan, Trustpilot). Validates W20's 'edit before confirm' guidance.",
-        "Billing-trust collapse: Trustpilot flooded with auto-renewal complaints, PayPal charges continuing after in-app cancellation. Universal complaint pattern across MFP / Noom / Lifesum — predatory monetization is the category-wide failure mode of 2026."
+        "Continues the May 2026 'biggest update in 5 years' rollout — chat-style AI Tracking + photo/voice/barcode unified entry, AI-powered guidance, updated Food Ratings (Lifesum Helpdesk).",
+        "Now available in Polish, Finnish, and Czech (Lifesum Helpdesk). Aggressive multilingual scaling but Hebrew still absent — the European-design-forward brand has chosen EU expansion, not Middle East.",
+        "Accuracy + billing complaints from W21 still surfacing in late-May Trustpilot reviews. The chat UI is shipped; the correction-loop UX is not. This is the unsolved category problem of the moment."
       ]
     }
   ],
   "trends": [
     {
-      "trend": "Protein-first targeting is replacing calorie-deficit as the primary daily metric",
-      "evidence": "Welling 2026 protein-tracking roundup, Fuel macro-tracking 2026 review — both explicitly tied to the GLP-1 era ('eat less → must hit protein to preserve lean mass'). Noom's microdose program leads with biomarker + protein targeting; MFP and Lifesum macros surface protein at the top of their cards in 2026 redesigns.",
-      "relevance": "HIGH for Israeli home cooks. Israeli diet is carb-heavy (pita, rice, bourekas, malabi); a 'did you hit your protein today?' daily check is more actionable and less moralistic than calorie counting. Better fit for the תזונאי target user (macro-curious, not bodybuilder) than a calorie-deficit dashboard."
+      "trend": "AI photo/voice logging is now table stakes — accuracy correction-loop UX is the next moat",
+      "evidence": "Every competitor in the reference set ships AI photo logging (Yazio rebrand, MyFitnessPal Cal AI integration, Lose It 'Snap It'/'Say It', Lifesum chat-style AI Tracking, Noom photo logging). Accuracy is uniformly mediocre — Lifesum cashew-as-shrimp persists into late May (NutriScan, Trustpilot). Welling.ai 2026 commentary: 'the useful version is not a magic photo that guesses your meal, but a system that lets you correct quickly and keeps the log accurate without slowing you down.'",
+      "relevance": "HIGH. For an Israeli home cook logging a mezze platter or a Friday-night spread, the camera will misread it — guaranteed. The defensible UX is not 'better AI'; it is a 2-tap inline edit flow that learns the user's pantry. This is YELLOW-tier, fits the calm-UI stance, and matches Neo's unit-economics framing: correction time per meal is the metric that drives retention."
     },
     {
-      "trend": "Anti-gamification / 'calm UI' counter-trend",
-      "evidence": "Envato UX/UI 2026 trends and UXPilot mobile design 2026 both explicitly call out gamification fatigue and recommend 'calm micro-interactions' + AI-as-copilot over AI-as-autopilot. MFP redesign backlash (PiunikaWeb, May 5) is the live consumer evidence: streaks + restructured macros are NOT universally loved.",
-      "relevance": "HIGH and a direct counterpoint to W20's 'pin a streak counter' recommendation. Streaks shame the Shomer Shabbat user who doesn't log Saturday. Streaks should remain a feature but OFF BY DEFAULT, opt-in only, with a calm-mode pledge as a positioning differentiator."
+      "trend": "Calm-UI / AI-as-copilot is consolidating from 'counter-trend' to mainstream",
+      "evidence": "Lose It's Liquid Glass refresh (leaner tab bar, fewer distractions, Lose It blog late May) and Lifesum's chat-style minimalism are now both shipped, not just trend pieces. Tubik 2026 UI trends + Envato UX/UI 2026 explicitly call this out: 'AI in sidebars, overlays, collapsible panels — augments context, does not hijack flow.' MFP's loud, streak-heavy redesign is the visible counter-example losing the argument.",
+      "relevance": "HIGH and reinforces W21. The calm-mode default and no-streaks-by-default stance from W21 are now defensible against an industry consensus, not a niche bet. Worth doubling down with adaptive-layout work as a Q3 theme."
     },
     {
-      "trend": "GLP-1 companion features still substantive, not hype",
-      "evidence": "Noom's BMI-21 microdose launch this week (eMarketer, MobiHealthNews) plus pharmacy acquisition; Shotsy 3.0 (March 2026) added oral GLP-1 tracking; MFP's GLP-1 module (W20). Israeli context: Ozempic/Wegovy uptake via Kupot Holim is rising — real demand exists locally, though smaller than US scale.",
-      "relevance": "MEDIUM. Most תזונאי users are macro-curious cooks, not patients. Worth a lightweight 'are you on a GLP-1 med?' opt-in flag that auto-raises the protein floor (lean-mass preservation) — NOT a full medication-tracking surface, which is RED-tier (PHI) and out of scope."
+      "trend": "Adaptive UI / layout personalization based on actual usage",
+      "evidence": "Muzli 2026 mobile design trends, Envato 2026: 'apps that restructure their interface based on how you actually use them — earns its cost in apps where users have meaningfully different sessions, like fitness apps where users log workouts vs track nutrition vs review progress.' Not yet shipped by any nutrition competitor in our set — first mover available.",
+      "relevance": "MEDIUM. תזונאי has three clear user modes (planning the week, logging a meal, reviewing progress) — strong fit. But this is L-tier; sequence after the correction-loop and barcode work. Worth a Q3 design exploration, not a Q2 build."
     }
   ],
   "ignore_list": [
     {
-      "trend": "Wearables-unified dashboards (e.g. Vora Health, 500+ wearable integrations)",
-      "reason": "Wrong audience. Israeli home cooks don't wear Whoop straps. 6+ months of integration work with no PMF for our segment. Ignore."
+      "trend": "3D Body Scan via phone camera (Noom)",
+      "reason": "Wrong audience and wrong consent ladder. Israeli home cooks do not want to undress and rotate for their nutrition app. PII / biometric data is RED-tier. Ignore."
     },
     {
-      "trend": "MyFitnessPal-style retail-media ad network",
-      "reason": "Monetization that breaks user trust (per W21 review patterns) is exactly what our anti-position is selling against. Even at scale, do not pursue."
+      "trend": "Liquid Glass / iOS 26 visual refresh",
+      "reason": "Cosmetic OS-specific styling. We're a web/Streamlit-first product; not actionable, not a moat. Ignore."
     },
     {
-      "trend": "Social/community food feeds",
-      "reason": "Still no PMF in nutrition. Users don't want their cousin seeing they ate three malabis. Hype with no substance — same call as Q1."
+      "trend": "Curated fitness video library (Noom Muscle Defense)",
+      "reason": "Out of scope. We are not a fitness content company; the partner-content path (e.g., licensing Hebrew fitness creators) is a distraction from the planner moat. Ignore."
     }
   ],
   "recommendations": [
     {
-      "slug": "protein-first-daily-widget",
-      "what": "Add a 'protein-of-the-day' widget to the home tab, surfaced ABOVE the calorie ring. Show: protein g consumed vs personalized floor (1.6 g/kg lean body mass, derived from existing Agent 2 BMR/TDEE inputs), color-coded ring (red < 70%, yellow 70-90%, green >= 90%), and a 'מה לאכול להשלים?' (what to eat to close the gap) suggestion that pulls from Agent 4 inventory and Agent 5 planner. Keep the existing calorie dashboard accessible via a tab toggle — do not delete it; promote protein to the primary daily metric. Hebrew label: 'חלבון להיום'.",
-      "inspired_by": "Welling 2026 protein-tracking roundup; Fuel macro-tracking 2026; Noom's biomarker-led GLP-1 program (premium signal); MFP/Lifesum 2026 macro cards surfacing protein first.",
+      "slug": "edit-before-confirm-ai-log-loop",
+      "what": "Build the correction-loop UX for any AI-suggested log entry (photo, voice, or text). When the user submits a meal photo or Hebrew voice description, the agent returns a CARD (not a committed entry) showing each detected item as an editable chip: ingredient name (Hebrew), portion (g), confidence %. User can: (a) tap a chip to swap the ingredient from a 3-item suggestion list, (b) drag a slider for portion ±50%, (c) long-press to delete an item, (d) tap '+ הוסף פריט' to add a missed item. Confirm button is greyed until the user has looked at the card (3-second dwell required). Every correction writes a (predicted, corrected) pair to a per-user disambiguation log that biases the next prediction toward the user's pantry (Agent 4 inventory). Hebrew label: 'בדוק לפני שאישרת' (Check before you confirm). NO autonomous logging — AI proposes, user disposes.",
+      "inspired_by": "Welling.ai 2026 commentary on correction-loop UX; Lifesum's unsolved cashew-as-shrimp accuracy problem (NutriScan, Trustpilot May 2026); Lose It's 'Snap It' photo logging without a strong edit affordance; Tubik 2026 'AI as copilot, not autopilot' framing.",
       "effort": "M",
       "tier": "YELLOW",
-      "tier_reason": "New widget on the home tab, surfaces existing Agent 2 macro targets in a new way, requires a small user-profile field (lean body mass estimate or carry-over from BMR inputs). Feature-flagged so the old calorie-primary view remains the default for existing users.",
-      "why_it_matters": "Israeli diet is carb-heavy (pita, rice, bourekas, hummus); calorie counting is moralistic and exhausting for home cooks. Protein-floor framing is positive ('add one more egg') vs negative ('you went over'). Lower cognitive load, fits the target user (macro-curious cooks, not bodybuilders or fitness influencers), and sets up REC 3 (GLP-1 protein-floor flag). Also: this is the macro that matters for Neo's hedge-fund-era 'efficiency' framing — protein per shekel is the unit-economics metric for groceries.",
-      "user_segment": "Macro-aware home cooks who feel guilt-fatigued by calorie tracking; ~70% of the install base per W20 segmentation.",
+      "tier_reason": "New screen + new agent behavior (the correction card) + a small per-user log table. Vision API is already a dependency from prior AI work; if not, the card flow works equally well over voice/text. Feature-flagged. No PII beyond what we already store.",
+      "why_it_matters": "This is the single feature the entire category has shipped badly. Owning the correction loop in Hebrew — where Israeli ingredients (לאבן, טחינה גולמית, חציל בלאדי) are guaranteed to confuse a US-trained vision model — turns our biggest AI vulnerability into a wedge. Also: it aligns with the calm-mode positioning (no surprise log entries, no shame from a wrong AI auto-commit) and gives Agent 4 (Inventory) a continuously improving signal it doesn't currently have. For Neo's unit-economics frame: average correction time per logged meal is the retention KPI; we can publish it as a public number once we beat 8 seconds.",
+      "user_segment": "All AI-logging users (estimated ~40% of active users within 60 days of any AI-log launch), with strongest impact on home cooks logging composite Israeli dishes the vision model has not seen.",
       "build_hand_off": {
-        "owner_agent": "Agent 2 (Nutrition) + Agent 5 (Planner) + Agent 1 (Contracts) for LBM field",
-        "feature_flag": "FF_PROTEIN_FIRST_WIDGET",
-        "schema_change": "minor — add user_profile.lean_body_mass_kg (nullable, derived) and user_preferences.primary_metric ('calories'|'protein', default 'calories' for existing users, 'protein' for new). Non-breaking.",
-        "metrics": "% users toggling primary_metric to 'protein'; protein-floor hit-rate D7/D30; 'close the gap' suggestion click-through; retention delta for protein-primary cohort vs calorie-primary cohort"
+        "owner_agent": "Agent 6 (AI) for card generation + Agent 3 (Food) for the swap suggestion list + Agent 4 (Inventory) for pantry bias + Agent 1 (Contracts) for the disambiguation-log schema",
+        "feature_flag": "FF_AI_EDIT_BEFORE_CONFIRM",
+        "schema_change": "minor — new table user_ai_correction_log(user_id, ts, predicted_item, corrected_item, portion_predicted_g, portion_corrected_g, source enum('photo','voice','text')). Non-breaking; isolated.",
+        "metrics": "median correction time per meal (target < 8s); % AI-logged meals confirmed without edit (target 35-55% — too high suggests users are rubber-stamping); D7/D30 retention delta for AI-log users vs manual-log users; per-user prediction accuracy curve (should improve over first 20 corrections)"
       }
     },
     {
-      "slug": "calm-mode-default-no-shame",
-      "what": "Convert all gamification (streaks, badges, daily nudges, weekly summary push) to OPT-IN. Default state for new and existing users is 'Calm Mode': no streak counter on home, no fire-emoji shaming, no auto-enabled push notifications. Add a one-screen Settings → 'מצב שקט' (Calm Mode) toggle group with three controls: (a) הצג סטריקים (show streaks) — off by default, (b) התראות יומיות (daily reminders) — off by default, (c) שלח סיכום שבועי (weekly summary email) — off by default. Add a small banner on the home tab the first time the user opens the app after this ship: 'אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה.' (We have no streaks, no ads, no punishments. You are in control.). Position this externally as a product stance.",
-      "inspired_by": "Envato UX/UI 2026 + UXPilot mobile 2026 calm-UI trend; MyFitnessPal redesign backlash (PiunikaWeb May 5, 2026); cross-app billing/auto-renewal trust collapse in Trustpilot reviews of MFP, Noom, Lifesum (NutriScan May 2026).",
-      "effort": "S",
-      "tier": "GREEN",
-      "tier_reason": "UI/copy/defaults change. Streak/notification machinery from prior recommendations is preserved — only defaults flip from on → off, plus three toggle controls and one banner string. No schema or backend change. No new external API.",
-      "why_it_matters": "Partial walk-back of W20-REC-3's 'pin a visible streak counter' based on this week's evidence: the gamification trend is reversing in 2026 design discourse, MFP's streak-heavy redesign is being rejected by users, and Israeli observant users would be actively shamed by a streak that resets on Shabbat. Streaks remain available for power users who want them; they are no longer the default. Positioning the absence of streaks/ads/predatory monetization as a deliberate stance is cheap to build and a free wedge against MFP's ad-network move and Lifesum's auto-renewal complaints. From Neo's unit-economics view: zero LTV cost (no churn from shamed users), measurable trust differentiation in App Store reviews.",
-      "user_segment": "Shomer-Shabbat users (cannot log Sat → would lose streak weekly); 35+ home cooks who find streak-shaming infantilizing; trust-sensitive users churning off MFP/Lifesum in 2026.",
+      "slug": "hebrew-voice-meal-logger",
+      "what": "Add a voice-meal-logging entry point as a microphone button on the home tab and on the meal-planner row swipe-actions. User taps, speaks in Hebrew (e.g., 'אכלתי שתי פיתות עם חומוס וביצה קשה'), Agent 6 transcribes via a Hebrew-tuned STT and emits the same correction card from REC 1 (do not bypass — the card is the moat). Two non-negotiables: (a) on-device or in-region transcription only, NOT a US-cloud round-trip — Israeli users + Hebrew + meal data is the wrong wire to send overseas; (b) graceful failure: if transcription confidence < 70% on any segment, the card shows the raw transcript with the low-confidence words underlined in red and a 'click to retype' tap target. Hebrew label: 'דבר את הארוחה' (Speak the meal). No always-listening; explicit push-to-talk only.",
+      "inspired_by": "Lose It 'Say It' voice logging (FitBudd review); Lifesum chat-style multimodal entry now shipped (Lifesum Helpdesk May 2026); 'Lolo' Product Hunt launch (text/voice plain-language tracker); Welling.ai 2026 conversational chat positioning. None of these ship in Hebrew — first-mover lane is wide.",
+      "effort": "M",
+      "tier": "YELLOW",
+      "tier_reason": "New entry-point UI, new external API dependency (Hebrew STT — options: Whisper self-hosted, Google Cloud STT he-IL, or AWS Transcribe he-IL), no schema change beyond REC 1's correction log. Feature flag gates rollout. Privacy posture (in-region only) is a deliberate choice; document it as the user-facing differentiator.",
+      "why_it_matters": "Voice is the lowest-friction logging modality for the actual use case of an Israeli home cook — hands wet from cooking, kid on the hip, dinner on the table. English-only competitors cannot serve this user; their voice features fail on Hebrew. The privacy posture (in-region, on-device-preferred) is also a marketable counter to MFP/Noom's ad-network and biomarker harvesting. Pairs with REC 1: voice without the correction card is the same accuracy trap competitors already fell into.",
+      "user_segment": "Home cooks logging family dinners and Friday-night spreads — the core target persona. Secondary: parents logging on the move (school pickup, errands).",
       "build_hand_off": {
-        "owner_agent": "Agent 6 (AI) for copy + frontend team for toggles",
-        "feature_flag": "FF_CALM_MODE_DEFAULT (controls default state; opt-in features remain accessible regardless)",
-        "schema_change": "none — uses existing user_preferences (add three boolean keys, all default false)",
-        "metrics": "% users who toggle streaks back on (validates streak demand); D30 retention delta vs prior cohort; App Store review sentiment (Hebrew) tracked monthly"
+        "owner_agent": "Agent 6 (AI) for STT pipeline + Agent 3 (Food) for ingredient parsing from natural Hebrew + Agent 7 (Data) for the in-region storage commitment",
+        "feature_flag": "FF_VOICE_MEAL_LOG",
+        "schema_change": "none beyond REC 1. Voice transcripts are ephemeral by default; only the resulting confirmed log entry persists.",
+        "metrics": "voice-log entries per active user per week (target > 2 by W4 post-launch); % voice logs that reach confirm (target > 75%); STT word-error-rate on Hebrew food vocabulary (target < 12% after fine-tune); regional storage compliance audit (binary pass/fail)"
       }
     },
     {
-      "slug": "glp1-protein-floor-flag",
-      "what": "Add a single user-profile flag in onboarding and settings: 'האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג'ארו)?' (Are you using a GLP-1 medication?). If YES: (a) automatically raise the protein floor to 1.6 g/kg lean body mass and surface it in REC-1's widget; (b) lower the calorie floor warning threshold by 200 kcal (because appetite is suppressed and aggressive deficits risk lean-mass loss); (c) show a one-time educational card 'שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1'. DO NOT store the medication name, dose, timing, or injection data. DO NOT add a medication-log surface. Add a visible disclaimer: 'איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.' Single boolean field only.",
-      "inspired_by": "Noom's BMI-21 microdose launch this week (eMarketer, MobiHealthNews, May 2026); MFP's GLP-1 module (W20); Shotsy 3.0 oral GLP-1 (March 2026). Israeli relevance
+      "slug": "israeli-fmcg-barcode-quick-add",
+      "what": "Ship a barcode-scan quick-add path seeded with the 729/871 Israeli-prefix FMCG catalog — Osem, Strauss, Tnuva, Telma, Elite, Shufersal private label, Rami Levy private label as the first cohort (top 500 SKUs by category share). User scans, app shows: product name (Hebrew), serving size, calories, protein/carbs/fat, sodium, NutriScore-equivalent badge, and a 'add to today' button. Three differentiators from Kaspenu (the April 2025 Israeli barcode app, Jerusalem Post): (a) we integrate directly into meal logging + Agent 5 planner, not standalone transparency; (b) free tier includes scanner — explicit anti-paywall positioning vs Lose It's 'Scan It' premium move; (c) packaged-food entries flow through the same REC 1 correction card so the user can adjust portion (because nobody eats exactly one labeled serving of Bissli). Hebrew label: 'סרוק מוצר' (Scan product).",
+      "inspired_by": "Kaspenu (Jerusalem Post 2025 — first Israeli barcode-transparency app, validates demand); Lose It 'Scan It' paywall move (NutriScan, our counter-position); MyFitnessPal's 20M-SKU food database scale (the size we are deliberately NOT trying to match — narrow focus, Israeli depth, beats broad-and-shallow).",
+      "effort": "L",
+      "tier": "YELLOW",
+      "tier_reason": "New external dependency (the FMCG catalog — likely sourced via GS1 Israel + manual labels-photo capture for the first 500 SKUs), new scanner UI, new search index. No auth/PHI/payment changes. Feature-flagged. Catalog seeding is the long pole; the scan flow itself is 1-2 sprints.",
+      "why_it_matters": "Packaged-food logging is the single most-used flow in MFP/Yazio/Lose It — it is 60-70% of US user logging volume per category benchmarks. Israeli users currently fall through the cracks: USDA-backed catalogs do not have Bamba, Bissli, or Krembo, and Hebrew-language search on global apps is poor. A free 500-SKU starter catalog is competitively cheap, defensible (we own the Hebrew labels), and the foundation for a recipe → packaged-product substitution feature in Q4. For Neo: this is the SKU-level data asset that compounds — every confirmed correction (via REC 1) sharpens the catalog and the FMCG advantage gets wider over time, not narrower.",
+      "user_segment": "All packaged-food loggers — currently underserved. Especially: working parents logging breakfast cereals, school lunches, after-school snacks; gym-goers logging Strauss Cottage / Tnuva Yotvata protein products.",
+      "build_hand_off": {
+        "owner_agent": "Agent 3 (Food) for catalog ingestion + Agent 1 (Contracts) for the FMCG product schema + Agent 4 (Inventory) for SKU-as-inventory-item mapping + Agent 6 (AI) for the REC 1 correction card on portion edits",
+        "feature_flag": "FF_FMCG_BARCODE_SCAN",
+        "schema_change": "moderate — new table fmcg_products (barcode, brand, product_name_he, product_name_en, serving_size_g, kcal_per_serving, protein_g, carbs_g, fat_g, sodium_mg, nutriscore, source_url, last_verified_at). New index on barcode. Non-breaking to existing recipe/inventory schemas.",
+        "metrics": "scans per active user per week (target > 3 by W4 post-launch); scan-to-log conversion rate (target > 85%); catalog coverage of attempted scans (target > 70% of scanned barcodes return a hit by W12); free-tier scanner usage as % of overall scanner usage (publish as a 'we never paywalled this' marketing number)"
+      }
+    }
+  ],
+  "quarterly_theme_check": {
+    "q2_2026_themes": [
+      "Protein-first metrics (W21 REC 1 + this week's continued evidence from Noom Muscle Defense)",
+      "Calm UI / anti-gamification (W21 REC 2 + Lose It Liquid Glass + Tubik/Envato 2026 consolidation)",
+      "AI correction-loop as moat (NEW this week — W22 REC 1)",
+      "Hebrew-first voice + barcode (NEW this week — W22 REC 2 + REC 3, tied to Israeli-context Q2 mandate)"
+    ],
+    "coherence_note": "Themes are converging, not scattering. The through-line across Q2: every recommendation rejects the dominant industry move (paywall creep, loud gamification, AI auto-commit, English-only multilingual) and substitutes a Hebrew-context, user-control, calm-monetization counter-position. That is a defensible product story, not feature soup. Recommend continuing this stance into Q3 and exploring adaptive-UI (this week's MEDIUM-relevance trend) as the Q3 differentiator after the correction-loop and FMCG catalog are shipped."
+  }
+}

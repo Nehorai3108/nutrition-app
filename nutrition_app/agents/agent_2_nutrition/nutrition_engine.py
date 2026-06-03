@@ -209,6 +209,19 @@ class NutritionEngine:
         return errors
 
 
+def calculate_hydration_goal(weight_kg: float) -> float:
+    """
+    Return recommended daily water goal in ml based on body weight.
+
+    Formula: 35 ml/kg, rounded to the nearest 50 ml.
+    Clamped: minimum 1500 ml, maximum 4000 ml.
+    Returns 2000.0 when weight_kg is unknown (0 or negative).
+    """
+    if weight_kg > 0:
+        return max(1500.0, min(4000.0, round(weight_kg * 35 / 50) * 50))
+    return 2000.0
+
+
 def adjust_targets_for_workouts(
     targets: NutritionTargets,
     workouts: List,

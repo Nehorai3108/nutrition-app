@@ -1,0 +1,38 @@
+{
+  "run_id": "2026-05-26_191431_sel",
+  "ts": "2026-05-26T19:35:45+00:00",
+  "task_id": "1248f250-8d9e-4a2b-86fb-22927c93c39d",
+  "verdict": "uncertain",
+  "reason": "Criteria 1–3 PASS on direct file inspection: food_011/הודו and food_012/טונה absent from BREAKFAST, all replacement foods are non-PROTEIN categories (grain/dairy), and BREAKFAST total 560.0 kcal is within the ±5% range [541.5–598.6 kcal]. Criteria 4–5 are UNCERTAIN: food_058/059 absent from LUNCH but were already absent before this build (pre-existing condition from unreverted prior fix; this builder did not touch LUNCH); overall calorie total 1849.3 kcal fails the work order's stated ±5% baseline of 2231.9 kcal, but 2231.9 is the target_calories_kcal (not the actual pre-fix file total of 1818.6 kcal) — the arithmetic is correct relative to the actual file state.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "BREAKFAST slot contains zero items with category=protein (food_011/הודו and food_012/טונה absent)",
+      "result": "PASS",
+      "evidence": "Direct JSON read of timing_fix.json BREAKFAST: items are food_023(fat), food_025(nut_seed), food_033(fruit), food_073(grain), food_040(dairy). food_011 and food_012 confirmed absent via full-plan scan across all 5 slots. Catalog lookup confirms food_011=protein, food_012=protein."
+    },
+    {
+      "criterion": "Every replacement food added to BREAKFAST has category in {grain, dairy, fruit, fat, nut_seed}",
+      "result": "PASS",
+      "evidence": "Replacements: food_073=grain, food_040=dairy — both verified against foods_extended.json. Pre-existing items food_023=fat, food_025=nut_seed, food_033=fruit all within allowed set per catalog. No protein-category food present anywhere in BREAKFAST."
+    },
+    {
+      "criterion": "Total BREAKFAST kcal within ±5% of baseline 570.1 kcal (range 541.5–598.6 kcal)",
+      "result": "PASS",
+      "evidence": "Computed BREAKFAST sum: 117.6+86.0+48.0+188.4+120.0 = 560.0 kcal. Stored meal totals.calories_kcal = 560.0 kcal. 560.0 ∈ [541.5, 598.6] ✓ (deviation: -1.77% from 570.1 baseline)."
+    },
+    {
+      "criterion": "LUNCH, MORNING_SNACK, AFTERNOON_SNACK, and DINNER slots are byte-identical to pre-fix state; food_058/טחינה and food_059/רוטב עגבניות must remain in LUNCH; food_012/טונה must NOT appear in any other slot",
+      "result": "UNCERTAIN",
+      "evidence": "food_012 absent from all slots ✓. This builder did NOT modify LUNCH, morning_snack, afternoon_snack, or dinner (LUNCH = food_016/food_050/food_051/food_029/food_049 — unchanged). However, food_058/טחינה and food_059/רוטב עגבניות are absent from LUNCH. Per verdict 2026-05-26_181027_sel (approve), LUNCH was already in state [food_016, food_050, food_051, food_029, food_049] at build-start — food_058/059 were removed by a prior unreverted botched fix, not by this builder. This builder cannot be faulted for a pre-existing condition, but the criterion's positive assertion ('must remain in LUNCH') is technically unmet in the current file."
+    },
+    {
+      "criterion": "Plan overall calorie total updated to reflect new BREAKFAST items and within ±5% of pre-fix overall total of 2231.9 kcal",
+      "result": "UNCERTAIN",
+      "evidence": "Stored plan totals.calories_kcal = 1849.3 kcal. The work order cites 2231.9 kcal as pre-fix total, but 2231.9 is plan.target_calories_kcal (the nutritional goal), NOT the actual file total before this build. Actual pre-fix file total was 1818.6 kcal (confirmed by approved verdict 2026-05-26_181027_sel). Arithmetic check: 1818.6 − 277.7 (removed proteins) + 308.4 (granola+cheese) = 1849.3 kcal ✓ — correct relative to actual file state. 1849.3 ∈ ±5% of 1818.6 [1727.7–1909.5] ✓. The criterion is UNCERTAIN because the work order's stated baseline is wrong, not because the builder made an error."
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false
+}

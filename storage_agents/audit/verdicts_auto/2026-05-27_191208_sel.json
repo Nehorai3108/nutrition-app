@@ -1,0 +1,49 @@
+{
+  "run_id": "2026-05-27_191208_sel",
+  "ts": "2026-05-27T20:34:17+00:00",
+  "task_id": "ce326286-8a48-4b5d-aff8-b9ec758a9ab7",
+  "verdict": "approve",
+  "reason": "All 7 acceptance criteria verified against on-disk files. Feature flag default False with no production True-flip; protein widget renders above calorie ring with 'חלבון להיום' header byte-for-byte; lean_body_mass_kg + Boer fallback never silently zero (clamps at 15 kg, raises on bad inputs); primary_metric round-trips with safe 'calories' default for legacy rows; ring constants 0.70/0.90 pinned by unit test; calorie dashboard preserved + accessible via st.radio toggle; ast.parse OK and file grew from 64707 to 69597 bytes (+4890, no truncation).",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "FF_PROTEIN_FIRST_WIDGET registered, defaults False, no production True-flip",
+      "result": "PASS",
+      "evidence": "nutrition_app/feature_flags.py line 7: 'FF_PROTEIN_FIRST_WIDGET = False'. Grep across .py files (excluding backups) finds only the constant definition, an import in app_user.py:789 ('from ... import FF_PROTEIN_FIRST_WIDGET as _FF_PROTEIN'), and references in comments/docstrings — no '= True' or other flip anywhere in production code."
+    },
+    {
+      "criterion": "Protein widget renders ABOVE calorie ring on home tab with 'חלבון להיום' byte-for-byte in widget header",
+      "result": "PASS",
+      "evidence": "app_user.py lines 783-866 contain a try/except-wrapped  block; the widget HTML header contains 'חלבון להיום' (verified literally in the f-string at line ~829); st.markdown(_protein_widget_html,...) at line 864 precedes st.markdown(dashboard_html,...) at line 867 — protein widget renders ABOVE the existing calorie ring."
+    },
+    {
+      "criterion": "UserProfile gains Optional[float] lean_body_mass_kg; missing values fall back to BMR/Boer-derived LBM (never silently 0)",
+      "result": "PASS",
+      "evidence": "nutrition_app/models/user.py:29 declares 'lean_body_mass_kg: Optional[float] = None'; to_dict (line 56) and from_dict (lines 74-76) round-trip the field. macro_calculator.effective_lbm_kg uses measured value when >0 else Boer formula; raises ValueError when height_cm/weight_kg are non-positive; clamps min LBM to 15.0 kg so it can never collapse to 0."
+    },
+    {
+      "criterion": "UserMealPreferences gains primary_metric Literal['calories','protein']='calories'; round-trips; repo loader supplies 'calories' for legacy",
+      "result": "PASS",
+      "evidence": "user_meal_preferences.py line 128 declares 'primary_metric: Literal[\"calories\", \"protein\"] = \"calories\"'; to_dict serializes at line 160; from_dict at line 191 falls back to 'calories' when data.get('primary_metric') is not in PRIMARY_METRIC_VALUES (handles missing/invalid). user_meal_preferences_repository.py:84 uses 'row.get(\"primary_metric\") or \"calories\"' for legacy rows; _sb_save persists prefs.primary_metric."
+    },
+    {
+      "criterion": "Ring color thresholds match spec exactly via named constants/unit test (red<0.70, yellow 0.70-0.90, green>=0.90)",
+      "result": "PASS",
+      "evidence": "macro_calculator.py defines RING_THRESHOLD_RED=0.70 and RING_THRESHOLD_YELLOW=0.90 as named constants; protein_ring_color uses strict '<' comparisons matching spec. test_protein_ring_thresholds.py pins both constants and asserts 9 boundary cases including the exact-boundary cases ratio=0.70 → yellow and ratio=0.90 → green."
+    },
+    {
+      "criterion": "Calorie dashboard remains accessible via tab toggle when flag ON; only additions + new toggle wrapper",
+      "result": "PASS",
+      "evidence": "The flag-gated block (lines 783-866) is an ADDITION only — the existing st.markdown(dashboard_html, unsafe_allow_html=True) call still fires immediately after (line 867), preserving the calorie ring. An st.radio toggle (חלבון|קלוריות, label_visibility='collapsed') provides explicit user access. tab_inventory and tab_plan remain at lines 1147/1190/1291 untouched."
+    },
+    {
+      "criterion": "Post-edit gate: ast.parse exits 0 AND wc -c >= pre-edit size 64707",
+      "result": "PASS",
+      "evidence": "Re-ran python3 -c 'import ast; ast.parse(open(\"app_user.py\",\"rb\").read().decode(\"utf-8\"))' → exit 0 (printed AST_PARSE_OK). wc -c app_user.py = 69597 bytes, which is >= the claimed pre-edit 64707 (delta +4890). No truncation recurrence of the 16:12 failure."
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false,
+  "notes": "git_blocked=true and before_commit==after_commit (d16ea2b) per the build report — the change exists on disk but is not committed. Rollback (if ever needed) requires 'tar -xzf storage_agents/audit/backups/2026-05-27_191208_sel_before.tar.gz' since git index.lock was held by another process during the build. Backup tar verified present (13.3 MB, contains project root snapshot including app_user.py / models / macro_calculator.py)."
+}

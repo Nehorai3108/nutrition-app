@@ -1,0 +1,33 @@
+{
+  "date": "2026-05-26",
+  "started_at": "2026-05-26T21:25:39.906785",
+  "finished_at": "2026-05-26T21:25:39.913202",
+  "queue_processing": {
+    "total": 0,
+    "resolved": 0,
+    "failed": 0,
+    "details": []
+  },
+  "report": {
+    "date": "2026-05-26",
+    "cache_size": 19,
+    "queue_size": 3,
+    "coverage_rate": 86.4,
+    "resolved_today": 0,
+    "top_failed": [
+      {
+        "query": "sfenj moroccan",
+        "attempts": 3
+      },
+      {
+        "query": "quinoa energy cake",
+        "attempts": 3
+      },
+      {
+        "query": "xyz_totally_unknown_food_12345",
+        "attempts": 2
+      }
+    ],
+    "trend": null
+  }
+}

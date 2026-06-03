@@ -1,0 +1,12 @@
+{
+  "home.protein_today_header": "חלבון להיום",
+  "home.primary_metric_toggle.protein": "חלבון",
+  "home.primary_metric_toggle.calories": "קלוריות",
+  "glp1.question": "האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג׳ארו)?",
+  "glp1.option.yes": "כן",
+  "glp1.option.no": "לא",
+  "glp1.option.prefer_not_to_say": "מעדיף לא לענות",
+  "glp1.educational_card.title": "שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1",
+  "glp1.educational_card.disclaimer": "איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.",
+  "home.calm_mode_banner": "אצלנו אין סטריקים. אין פרסומות. אין עונשים. אתה בשליטה."
+}

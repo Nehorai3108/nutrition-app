@@ -1,0 +1,58 @@
+{
+  "run_id": "2026-05-27_201008_sel",
+  "ts": "2026-05-27T20:39:14+00:00",
+  "task_id": "8ea45a76-6376-4e68-ba13-909353c26ad2",
+  "what_was_done": "Added GLP-1 medication self-report (single Optional[bool]) behind FF_GLP1_AWARE_TARGETS. UserProfile gains glp1_medication_in_use field with full to_dict/from_dict and ProfileRepository round-trip. macro_calculator exposes a flag-gated branch: when FF is ON and field is True, protein floor uses PROTEIN_PER_KG_LBM_GLP1 (1.6 g/kg LBM) and calorie-floor warning threshold drops by 200 kcal; otherwise behavior is byte-identical. Both pages/0_profile.py and pages/14_settings.py render the Hebrew question 'האם אתה משתמש בתרופת GLP-1 (אוזמפיק / ויגובי / מונג׳ארו)?' as a tri-state radio (כן / לא / מעדיף לא לענות) gated by FF_GLP1_AWARE_TARGETS; on first toggle to True a one-time educational card with the title and medical disclaimer renders, gated by a persisted glp1_card_seen marker. All Hebrew strings live in config/strings_he.json. No other GLP1 detail (name, dose, schedule, timing, injection) is stored anywhere.",
+  "files_changed": [
+    "nutrition_app/models/user.py",
+    "nutrition_app/macro_calculator.py",
+    "nutrition_app/repositories/profile_repository.py",
+    "config/strings_he.json",
+    "pages/0_profile.py",
+    "pages/14_settings.py"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "FF_GLP1_AWARE_TARGETS remains registered in nutrition_app/feature_flags.py and stays False by default; no production caller flips it True",
+      "result": "PASS",
+      "evidence": "FF_GLP1_AWARE_TARGETS=False; grep for FF_GLP1_AWARE_TARGETS=True returns no production matches"
+    },
+    {
+      "criterion": "UserProfile gains Optional[bool] glp1_medication_in_use = None; round-trips through to_dict/from_dict; NO other GLP1-related field is added anywhere",
+      "result": "PASS",
+      "evidence": "default None; to_dict/from_dict round-trips True/False/None correctly; no forbidden fields (name/dose/schedule/timing) anywhere in nutrition_app/, pages/, ui/, config/"
+    },
+    {
+      "criterion": "When FF_GLP1_AWARE_TARGETS is ON AND user.glp1_medication_in_use is True: macro_calculator returns protein floor = 1.6 g/kg LBM AND the calorie-floor warning threshold is reduced by 200 kcal; when flag is OFF or field is False/None, behavior is byte-identical to today",
+      "result": "PASS",
+      "evidence": "ON+True → floor=98.3g (1.6*LBM), threshold=1000.0; OFF or False/None → floor=98.3g (baseline), threshold=1200.0; byte-identical when FF off"
+    },
+    {
+      "criterion": "pages/0_profile.py (onboarding) and pages/14_settings.py both render the Hebrew question as a tri-state control (yes/no/prefer-not-to-say or null) and persist the boolean via the existing profile repository",
+      "result": "PASS",
+      "evidence": "both pages render st.radio with glp1.question, _label_to_val={yes:True, no:False, prefer-not-to-say:None}; persistence uses ProfileRepository.save in both pages"
+    },
+    {
+      "criterion": "When the user toggles glp1_medication_in_use to True for the first time, a one-time educational card displays the Hebrew title and disclaimer — verified by a 'seen' marker that prevents the card from reappearing",
+      "result": "PASS",
+      "evidence": "both pages render the title 'שמירה על מסת שריר חשובה במיוחד בתקופת GLP-1' and disclaimer 'איננו תחליף לייעוץ רפואי. דבר עם הרופא או התזונאי שלך.' gated by 'if _new_glp1 is True and not _card_seen'; glp1_card_seen marker persisted to profile on save"
+    },
+    {
+      "criterion": "Hebrew strings live in config/strings_he.json (not hardcoded in .py files); existing keys are untouched",
+      "result": "PASS",
+      "evidence": "added 6 glp1.* keys to strings_he.json; original 3 home.* keys preserved; .py fallback strings exist but the JSON file is the source of truth (loaded first)"
+    },
+    {
+      "criterion": "Existing inventory tab, calorie ring, plan tab, and other unrelated UI in app_user.py and pages/* are not modified (no truncation, no UTF-8 corruption)",
+      "result": "PASS",
+      "evidence": "app_user.py byte-identical to pre-build snapshot (69597 bytes); 14 other pages byte-identical to snapshot; only pages/0_profile.py and pages/14_settings.py modified by this build"
+    }
+  ],
+  "backup_path": "/sessions/nice-upbeat-edison/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-27_201008_sel_before.tar.gz",
+  "stderr_tail": "",
+  "rollback_cmd": "tar -xzf storage_agents/audit/backups/2026-05-27_201008_sel_before.tar.gz -C ."
+}

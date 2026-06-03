@@ -1,0 +1,8 @@
+
+[2026-05-31T04:51:25.579842] 2026-W22
+  Report: 2026-W22.html generated OK
+  JSON:   approval_version_nutt_app/market_brief.json generated OK
+  Email:  NOT SENT - no Gmail/SMTP connector available in scheduled session.
+          .eml draft saved alongside report; user can double-click to open in default mail client.
+          To: dviryona8@gmail.com  CC: nehoraios08@gmail.com
+          Subject: Nutrition App Research [2026-W22]

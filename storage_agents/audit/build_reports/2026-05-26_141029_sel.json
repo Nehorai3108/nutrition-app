@@ -1,0 +1,38 @@
+{
+  "run_id": "2026-05-26_141029_sel",
+  "ts": "2026-05-26T14:23:20+00:00",
+  "task_id": "00f77913-6693-414e-a639-1b3d8743850e",
+  "what_was_done": "Removed both CONDIMENT items from LUNCH in plan 2026-04-16_12-56-51_iter_20.json (טחינה food_058 @119 kcal and רוטב עגבניות food_059 @14.5 kcal) and replaced them with טונה (food_012, PROTEIN category) @100g = 116.0 kcal. Updated LUNCH totals and plan-level totals accordingly.",
+  "files_changed": [
+    "storage_agents/plans/2026-04-16_12-56-51_iter_20.json"
+  ],
+  "before_commit": "d16ea2be860e1728274860554074bd88b229328a",
+  "after_commit": "unknown_git_locked",
+  "git_blocked": true,
+  "outcome": "executed",
+  "self_check": [
+    {
+      "criterion": "LUNCH slot no longer contains any item with category=CONDIMENT; specifically טחינה (tahini) is absent from LUNCH items",
+      "result": "PASS",
+      "evidence": "Both food_058 (טחינה) and food_059 (רוטב עגבניות) were removed. LUNCH now contains: בטטה, שעועית לבנה, אדממה, טונה — none of which are CONDIMENT category."
+    },
+    {
+      "criterion": "Replacement item added to LUNCH has a category appropriate for a main meal slot (PROTEIN, VEGETABLE, LEGUME, or GRAIN)",
+      "result": "PASS",
+      "evidence": "Replacement item is טונה (food_012) with category=protein in the food catalog — explicitly in the approved set."
+    },
+    {
+      "criterion": "Total kcal of all LUNCH items stays within ±5% of original (635.0 kcal), i.e. between 603.2 and 666.8 kcal",
+      "result": "PASS",
+      "evidence": "New LUNCH total = 617.5 kcal (172.0 + 208.5 + 121.0 + 116.0), which is within [603.2, 666.8]."
+    },
+    {
+      "criterion": "Plan-level total kcal stays within ±5% of pre-fix total (1780.5 kcal), i.e. between 1691.5 and 1869.5 kcal",
+      "result": "PASS",
+      "evidence": "New plan total = 1763.0 kcal (1780.5 - 133.5 + 116.0), which is within [1691.5, 1869.5]."
+    }
+  ],
+  "backup_path": "/sessions/fervent-ecstatic-volta/mnt/אפליקציית תזונאי/storage_agents/audit/backups/2026-05-26_141029_sel_plan_before.json",
+  "stderr_tail": "",
+  "rollback_cmd": "cp \"C:\\Users\\User\\Desktop\\\\u05d0\\u05e4\\u05dc\\u05d9\\u05e7\\u05e6\\u05d9\\u05d9\\u05ea \\u05ea\\u05d6\\u05d5\\u05e0\\u05d0\\u05d9\\storage_agents\\audit\\backups\\2026-05-26_141029_sel_plan_before.json\" \"C:\\Users\\User\\Desktop\\\\u05d0\\u05e4\\u05dc\\u05d9\\u05e7\\u05e6\\u05d9\\u05d9\\u05ea \\u05ea\\u05d6\\u05d5\\u05e0\\u05d0\\u05d9\\storage_agents\\plans\\2026-04-16_12-56-51_iter_20.json\""
+}

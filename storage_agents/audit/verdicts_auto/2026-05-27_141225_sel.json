@@ -1,0 +1,34 @@
+{
+  "run_id": "2026-05-27_141225_sel",
+  "ts": "2026-05-27T14:35:52+00:00",
+  "task_id": "74edb64a-bd38-4235-8b8b-7119065530d5",
+  "verdict": "uncertain",
+  "reason": "Builder created 4 *_timing_fix.json sibling variants (food_037 dairy + food_017 grain replacements) that contain zero PROTEIN items at breakfast, with kcal totals identical (0.000% delta) to originals. Criteria 2/3/4 pass cleanly. Criterion 1 is genuinely ambiguous: after the build, two ORIGINAL files (2026-04-16_12-56-51_iter_20.json, 2026-04-16_12-56-50_variety_0.json) still sit inside the top-7 by mtime and still contain PROTEIN items at breakfast (food_011 הודו, food_012 טונה). The execution_hint explicitly mandated 'writes a sibling *_timing_fix.json' and criterion 4 explicitly requires originals be preserved 'alongside' the variants — so the build followed instructions, but the literal wording of criterion 1 is not met for the originals that remain in the top-7. Not reverting; the work is semantically correct under the sibling-variant convention.",
+  "no_clean_git_rollback": true,
+  "criterion_results": [
+    {
+      "criterion": "BREAKFAST slot in each of the 7 most-recent plan files contains zero category=PROTEIN items",
+      "result": "UNCERTAIN",
+      "evidence": "Under the 'intended set' reading (the 7 plan files most-recent at task-creation time + their fixed-variant substitutions), all 7 are clean: 4 via new _timing_fix variants (iter_19, variety_0, variety_2, iter_20) and 3 already clean (2026-05-26_17-23-19_timing_fix.json, variety_1 files). Under a strict literal reading of the current directory state by mtime, the post-build top-7 still includes 2 originals (2026-04-16_12-56-51_iter_20.json, 2026-04-16_12-56-50_variety_0.json) that retain food_011/food_012 PROTEIN items at breakfast. Whether this is a violation depends on which reading the criterion intends; execution_hint and criterion 4 favor the intended-set reading."
+    },
+    {
+      "criterion": "Every replacement item has category in {GRAIN, DAIRY, FRUIT} and is drawn from the existing food catalog",
+      "result": "PASS",
+      "evidence": "Inspected each new *_timing_fix.json breakfast: replacements use food_037 יוגורט יווני (category=dairy) and food_017 שיבולת שועל (category=grain). Both present in nutrition_app/data/foods_extended.json. No new food_id values introduced."
+    },
+    {
+      "criterion": "Total daily kcal per plan stays within +/-5% of original",
+      "result": "PASS",
+      "evidence": "Direct comparison of totals.calories_kcal between each original and its _timing_fix variant: iter_19 1819.5→1819.5, variety_0 2510.0→2510.0, variety_2 1885.9→1885.9, iter_20 1780.5→1780.5. Delta = 0.000% across all 4 modified plans, well under 5%."
+    },
+    {
+      "criterion": "Original plan files preserved via sibling *_timing_fix.json variants",
+      "result": "PASS",
+      "evidence": "All 4 source plan files (iter_19, variety_0, variety_2, iter_20 originals) remain on disk with their original May 14/26 mtimes; new variants sit alongside them as separate _timing_fix.json files following the 2026-05-26_17-23-19_timing_fix.json naming convention."
+    }
+  ],
+  "reverted": false,
+  "revert_method": null,
+  "revert_failed": false,
+  "notes": "git_blocked=true on build side — before_commit==after_commit (d16ea2b...). Diff inspection was performed via Read on the actual changed JSON files, not via git show. Rollback (if ever needed) would require: tar -xzf storage_agents/audit/backups/2026-05-27_141225_sel_before.tar.gz -C <project_root>"
+}
