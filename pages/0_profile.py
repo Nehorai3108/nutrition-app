@@ -313,9 +313,9 @@ with tab_prefs:
     col1, col2 = st.columns(2)
 
     with col1:
-        kashrut_map = {"parve": "פרווה (הכל)", "dairy": "חלבי בלבד", "meat": "בשרי בלבד"}
+        kashrut_map = {"none": "ללא הגבלה", "parve": "פרווה", "dairy": "חלבי בלבד", "meat": "בשרי בלבד", "strict": "כשרות מהודרת"}
         kashrut_opts = list(kashrut_map.keys())
-        cur_k = prefs.get("kashrut", "parve")
+        cur_k = prefs.get("kashrut", "none")
         new_kashrut = st.radio("כשרות", options=kashrut_opts,
                                format_func=lambda x: kashrut_map[x],
                                index=kashrut_opts.index(cur_k) if cur_k in kashrut_opts else 0,
@@ -332,6 +332,42 @@ with tab_prefs:
         custom_allergy = st.text_input("הוסף אלרגיה מותאמת", key="custom_allergy")
         if custom_allergy and custom_allergy not in new_allergies:
             new_allergies = new_allergies + [custom_allergy]
+
+        st.markdown("**🏥 מצבים רפואיים:**")
+        medical_opts = ["דיסליפידמיה / כולסטרול גבוה", "סוכרת סוג 2", "IBS / מעי רגיז",
+                        "GERD / ריפלוקס", "צליאק", "מחלת לב", "יתר לחץ דם", "מחלת כליות"]
+        cur_conditions = prefs.get("medical_conditions", [])
+        new_conditions = st.multiselect("בחר מצבים", options=medical_opts,
+                                         default=[c for c in cur_conditions if c in medical_opts])
+
+        st.markdown("**🏃 סוג ספורט / פעילות:**")
+        sport_map = {
+            "": "לא מגדיר",
+            "gym": "חדר כושר / כוח",
+            "running": "ריצה / אירובי",
+            "team_sport": "ספורט קבוצתי",
+            "bodybuilding": "בניית גוף / פיזיק",
+            "martial_arts": "ספורט לחימה",
+            "cycling": "רכיבה / שחייה",
+        }
+        cur_sport = prefs.get("sport_type", "")
+        new_sport = st.selectbox("סוג ספורט", options=list(sport_map.keys()),
+                                  format_func=lambda x: sport_map[x],
+                                  index=list(sport_map.keys()).index(cur_sport) if cur_sport in sport_map else 0)
+
+        st.markdown("**🥗 סגנון תזונה:**")
+        diet_map = {
+            "": "ללא העדפה מיוחדת",
+            "mediterranean": "ים-תיכוני",
+            "keto": "קטוגנית / Low Carb",
+            "if": "צום לסירוגין (IF)",
+            "vegetarian": "צמחוני",
+            "vegan": "טבעוני",
+        }
+        cur_diet = prefs.get("diet_type", "")
+        new_diet = st.selectbox("סגנון תזונה", options=list(diet_map.keys()),
+                                 format_func=lambda x: diet_map[x],
+                                 index=list(diet_map.keys()).index(cur_diet) if cur_diet in diet_map else 0)
 
     with col2:
         # ── מזונות מועדפים ────────────────────────────────────────────────
@@ -387,11 +423,14 @@ with tab_prefs:
 
     if st.button("💾 שמור העדפות תזונה", type="primary", use_container_width=True):
         profile["meal_preferences"] = {
-            "kashrut":         new_kashrut,
-            "allergies":       new_allergies,
-            "preferred_foods": new_preferred,
-            "disliked_foods":  new_disliked,
-            "meals_per_day":   new_meals_per_day,
+            "kashrut":            new_kashrut,
+            "allergies":          new_allergies,
+            "medical_conditions": new_conditions,
+            "sport_type":         new_sport,
+            "diet_type":          new_diet,
+            "preferred_foods":    new_preferred,
+            "disliked_foods":     new_disliked,
+            "meals_per_day":      new_meals_per_day,
         }
         repo.save(profile)
         # Reset chip state so it reloads from saved profile

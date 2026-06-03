@@ -225,46 +225,61 @@ Be brief — 1-2 sentences max.
 
 === ALWAYS LOG THESE — always return JSON, never just describe ===
 - קפה / קפה שחור / אספרסו / מקפה / אמריקנו → name:"קפה שחור" unit=כוס qty=1
-- קפוצינו / לאטה / קפה עם חלב → name:"קפה עם חלב" unit=כוס qty=1
+- קפוצינו / לאטה / קפה הפוך / קפה עם חלב → name:"קפה הפוך" unit=כוס qty=1
 - חלב → name:"חלב" unit=כוס qty=1
-- מים (even "שתיתי מים" / "שתייה מים") → name:"מים" unit=כוס qty=1
+- מים (even "שתיתי מים") → name:"מים" unit=כוס qty=1
 - סלמון / דג סלמון → name:"דג סלמון" unit=יחידה qty=1
-- טונה (always) → name:"טונה בשמן" unit=קופסה qty=1
+- טונה → name:"טונה בשמן" unit=קופסה qty=1
 - סרדינים → name:"סרדינים" unit=קופסה qty=1
-- קוואקר / שיבולת שועל → name:"שיבולת שועל" unit=כפות qty=4
+- קוואקר / שיבולת שועל / פתיתי שיבולת → name:"שיבולת שועל" unit=כפות qty=4
 - קוסקוס → name:"קוסקוס" unit=כפות qty=4
 - אורז / אורז לבן → name:"אורז לבן" unit=כפות qty=4
 - ספגטי / פסטה → name:"פסטה ספגטי" unit=כפות qty=4
 - קוטג' / קוטג → name:"גבינת קוטג'" unit=גביע qty=1
 - חומוס (as food) → name:"חומוס מוכן" unit=כפות qty=2
 - שניצל / שניצל עוף → name:"שניצל עוף" unit=יחידה qty=1
+- שניצל תירס → name:"שניצל תירס" unit=יחידה qty=1
+- שניצל כרובית → name:"שניצל כרובית" unit=יחידה qty=1
+- נאגטס / נגטס → name:"נאגטס עוף" unit=יחידה qty=3
+- לביבות / לביבה → name:"לביבות תפוחי אדמה" unit=יחידה qty=3
+- שקשוקה → name:"שקשוקה" unit=גרם qty=300
+- מג'דרה / מגדרה → name:"מג'דרה" unit=גרם qty=200
+- סביח → name:"סביח" unit=יחידה qty=1
 - חסה → name:"חסה" unit=יחידה qty=1
 - חציל → name:"חציל" unit=יחידה qty=1
 - ריבה → name:"ריבה" unit=כף qty=1
-- קרקר → name:"קרקר" unit=יחידה qty=1
-- לאפה → name:"פיתה" unit=יחידה qty=1
+- קרקר / קרקרים → name:"קרקרים" unit=יחידה qty=5
+- לאפה / לאפות → name:"פיתה" unit=יחידה qty=1
 - תפוח אדמה (FULL NAME, not "תפוח") → name:"תפוח אדמה" unit=יחידה qty=1
-- שמן זית → name:"שמן זית" unit=כף qty=1  ← NEVER unit=שיוב or any garbled word
-- לבן / גבינת לבן / גבינה לבנה → name:"גבינה לבנה" unit=כף qty=2
-- "שתיתי X" / "שתייתי X" → log X as drink
-- "ארוחת X: Y" or "ארוחת X Y" → set meal_type=X, log food Y normally
-- "בבוקר..." / "בוקר..." → meal_type=breakfast
+- שמן זית → name:"שמן זית" unit=כף qty=1
+- לבן / גבינת לבן → name:"גבינה לבנה" unit=כף qty=2
+- גבינה בולגרית / גבינה מלוחה → name:"גבינה בולגרית" unit=גרם qty=30
+- ביסלי → name:"ביסלי" unit=גרם qty=30
+- במבה → name:"במבה" unit=גרם qty=30
+- מרק עוף → name:"מרק עוף" unit=כוס qty=1
+- "שתיתי X" → log X as drink
+- "ארוחת X: Y" → set meal_type=X, log food Y
+- "בבוקר..." → meal_type=breakfast
 - "לצהריים..." / "בצהריים..." → meal_type=lunch
 - "בערב..." / "בלילה..." → meal_type=dinner
 - "אחה''צ..." / "חטיף..." → meal_type=afternoon_snack
 
 === CRITICAL CONFUSION PREVENTION — these mistakes are FORBIDDEN ===
-- אספרסו = COFFEE (קפה שחור) ← NOT אספרגוס (vegetable!) — completely different!
+- אספרסו = COFFEE (קפה שחור) ← NOT אספרגוס (vegetable!)
 - סטייק = בשר בקר ← NOT עוף! Never map סטייק to chicken.
-- תפוז = orange fruit ← NOT תפוח (apple)! Completely different fruits.
-- חציל = eggplant ← NOT חזה עוף! Completely different.
+- תפוז = orange fruit ← NOT תפוח (apple)!
+- חציל = eggplant ← NOT חזה עוף!
 - מקושקשת = scrambled eggs (ביצה) ← NOT שניצל!
 - המבורגר = בשר בקר (name:"בשר בקר טחון") ← never return name:"המבורגר"
-- קבב = grilled meat skewer → name:"קבב בקר" unit=יחידה (NEVER לחם or טונה!)
-- כריך טונה → foods=[לחם x2 פרוסות, טונה x1 קופסה] — log BOTH bread and filling
+- קבב = grilled meat → name:"קבב בקר" unit=יחידה (NEVER לחם or טונה!)
+- שניצל תירס ≠ שניצל עוף — COMPLETELY DIFFERENT! תירס=corn schnitzel
+- כריך טונה → foods=[לחם x2 פרוסות, טונה x1 קופסה]
 - "N ביצים" → qty=N, name="ביצה" (one item)
-- "חביתה עם N ביצים" → qty=N, name="ביצה" (ONE item only, never split into two)
+- "חביתה עם N ביצים" → qty=N, name="ביצה" (ONE item only)
 - "ארוחת צהריים שניצל" → meal_type=lunch, log שניצל עוף
+- לביבות ≠ פנקייק ← לביבות = potato pancakes, פנקייק = sweet pancakes
+- פרגית / ירך עוף → name:"פרגית" unit=יחידה qty=1 (NOT חזה עוף!)
+- מרק = soup → name:"מרק עוף" or "מרק ירקות" by context
 - "X, Y, Z" or "X עם Y ועם Z" → log ALL foods as separate items in foods array
 - If foods array would be EMPTY → do NOT return JSON at all
 
@@ -687,9 +702,11 @@ if st.session_state._ai_processing and st.session_state._pending_user_msg:
         import traceback as _tb
         st.session_state["_last_chat_error"] = _tb.format_exc()
         if "429" in str(_e) or "rate_limit" in str(_e).lower():
-            _reply_text = "השרת עמוס כרגע, נסה שוב בעוד 30 שניות"
+            _reply_text = "⏳ יש עומס על השרת כרגע — נסה שוב בעוד כמה שניות"
+        elif "timeout" in str(_e).lower() or "connection" in str(_e).lower():
+            _reply_text = "🔌 בעיית חיבור — בדוק אינטרנט ונסה שוב"
         else:
-            _reply_text = "אופס, תקלה טכנית. נסה שוב"
+            _reply_text = "⚠️ תקלה זמנית — נסה שוב"
         _food_data = None
 
     # Remove temporary "thinking" bubble
