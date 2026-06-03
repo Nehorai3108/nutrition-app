@@ -563,29 +563,85 @@ def _build_profile_context(user_id: str) -> str:
         return ""
 
 
+## ── Hebrew → router key mappings ────────────────────────────────────────────
+_HE_CONDITION_MAP = {
+    "דיסליפידמיה / כולסטרול גבוה": "dyslipidemia",
+    "כולסטרול":     "dyslipidemia",
+    "סוכרת סוג 2":  "diabetes",
+    "סוכרת":        "diabetes",
+    "ibs / מעי רגיז": "ibs",
+    "ibs":          "ibs",
+    "מעי רגיז":     "ibs",
+    "gerd / ריפלוקס": "gerd",
+    "gerd":         "gerd",
+    "ריפלוקס":      "gerd",
+    "צליאק":        "celiac",
+    "מחלת לב":      "dyslipidemia",
+    "יתר לחץ דם":   "dyslipidemia",
+    "מחלת כליות":   "gi_disorder",
+}
+_HE_INTOLERANCE_MAP = {
+    "גלוטן":   "gluten",
+    "לקטוז":   "lactose",
+    "בוטנים":  "peanuts",
+    "אגוזים":  "nuts",
+    "ביצים":   "eggs",
+    "דגים":    "fish",
+    "סויה":    "soy",
+    "שומשום":  "sesame",
+}
+_HE_SPORT_MAP = {
+    "gym":          "gym",
+    "running":      "running",
+    "team_sport":   "team_sport",
+    "bodybuilding": "bodybuilding",
+    "martial_arts": "martial_arts",
+    "cycling":      "cycling",
+}
+_HE_DIET_MAP = {
+    "mediterranean": "mediterranean",
+    "keto":          "keto",
+    "if":            "if",
+    "vegetarian":    "vegetarian",
+    "vegan":         "vegan",
+}
+
+
 def _build_knowledge_context(user_id: str) -> str:
-    """Return a compact (≤400 char) nutrition hint based on user profile.
-    The full knowledge modules are too large for every chat request — only
-    inject a brief summary so the model stays aware of constraints."""
+    """Return a compact nutrition hint based on user profile.
+    Maps Hebrew profile values → router English keys → loads correct modules."""
     try:
         from nutrition_app.repositories.profile_repository import ProfileRepository as _PR
         _profile_data = _PR().load(user_id)
         _prefs = _profile_data.get("meal_preferences", {})
-        _conditions   = _prefs.get("medical_conditions", [])
-        _intolerances = _prefs.get("allergies", [])
-        _kashrut      = _prefs.get("kashrut", "none")
-        _diet         = _prefs.get("diet_type", "")
-        _sport        = _prefs.get("sport_type", "")
+
+        # Map Hebrew conditions → router keys
+        _conditions = []
+        for c in _prefs.get("medical_conditions", []):
+            key = _HE_CONDITION_MAP.get(c.lower(), _HE_CONDITION_MAP.get(c, c))
+            _conditions.append(key)
+
+        # Map Hebrew intolerances → router keys
+        _intolerances = []
+        for a in _prefs.get("allergies", []):
+            key = _HE_INTOLERANCE_MAP.get(a, a.lower())
+            _intolerances.append(key)
+
+        _kashrut = _prefs.get("kashrut", "none")
+        _diet    = _prefs.get("diet_type", "")
+        _sport   = _prefs.get("sport_type", "")
 
         hints = []
-        if _conditions:
-            hints.append(f"מצבים רפואיים: {', '.join(_conditions)}")
-        if _intolerances:
-            hints.append(f"אי-סבילות/אלרגיות: {', '.join(_intolerances)} — אל תציע מזונות אלה")
+        raw_conditions = _prefs.get("medical_conditions", [])
+        raw_allergies  = _prefs.get("allergies", [])
+        if raw_conditions:
+            hints.append(f"מצבים רפואיים: {', '.join(raw_conditions)}")
+        if raw_allergies:
+            hints.append(f"אלרגיות/אי-סבילות: {', '.join(raw_allergies)} — אל תציע מזונות אלה")
         if _kashrut and _kashrut != "none":
             hints.append(f"כשרות: {_kashrut} — שמור על הפרדת בשר/חלב")
         if _diet:
-            hints.append(f"דיאטה: {_diet}")
+            hints.append(f"סגנון תזונה: {_diet}")
         if _sport:
             hints.append(f"ספורט: {_sport}")
 
