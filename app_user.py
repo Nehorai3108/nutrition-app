@@ -124,7 +124,40 @@ def _load_recipe_images() -> dict:
     except Exception:
         return {}
 
-_RECIPE_IMAGES = _load_recipe_images()
+@st.cache_data
+def _load_manual_images() -> dict:
+    _p = os.path.join(os.path.dirname(__file__), "data", "food_images_manual.json")
+    try:
+        with open(_p, encoding="utf-8") as _f:
+            d = _json.load(_f)
+            return {**d.get("recipes", {}), **d.get("ingredients", {})}
+    except Exception:
+        return {}
+
+_RECIPE_IMAGES  = _load_recipe_images()
+_MANUAL_IMAGES  = _load_manual_images()
+
+
+def _get_food_image(food_id: str, food_name_he: str, food_name_en: str = "") -> str:
+    """Return best image URL for a food/recipe entry."""
+    # 1. Recipe from recipe_images.json
+    if food_id.startswith("recipe_"):
+        _rid = "recipe_" + food_id.split("recipe_")[-1]
+        url = _RECIPE_IMAGES.get(_rid, "")
+        if url:
+            return url
+    # 2. Manual mapping — try English name first, then Hebrew
+    for _key in [food_name_en.lower(), food_name_he.lower()]:
+        if _key and _key in _MANUAL_IMAGES:
+            return _MANUAL_IMAGES[_key]
+    # 3. Partial match on manual mapping
+    for _key, _url in _MANUAL_IMAGES.items():
+        if _key and ((_key in food_name_en.lower()) or (_key in food_name_he.lower())):
+            return _url
+    # 4. TheMealDB ingredient fallback
+    if food_name_en:
+        return f"https://www.themealdb.com/images/ingredients/{food_name_en.replace(' ', '%20')}-Small.png"
+    return ""
 
 _profile_repo = _ProfileRepo()
 _profile = _profile_repo.load(_USER_ID)
@@ -907,21 +940,13 @@ if not run_btn and "last_plan" not in st.session_state:
             _m_fat    = sum(e.fat      for e in _entries)
             _m_time   = datetime.fromisoformat(_entries[-1].timestamp).strftime("%H:%M") if _entries[-1].timestamp else ""
 
-            # Pick best image: first recipe entry, else first ingredient
+            # Pick best image from entries
             _m_img = ""
             for _e in _entries:
-                if _e.food_id.startswith("recipe_"):
-                    _r = "recipe_" + _e.food_id.split("recipe_")[-1]
-                    _m_img = _RECIPE_IMAGES.get(_r, "")
-                    if _m_img:
-                        break
-            if not _m_img:
-                for _e in _entries:
-                    _fo = _catalog.get_food_by_id(_e.food_id)
-                    _ing = (_fo.name_en if _fo else "").replace(" ", "%20")
-                    if _ing:
-                        _m_img = f"https://www.themealdb.com/images/ingredients/{_ing}-Small.png"
-                        break
+                _fo = _catalog.get_food_by_id(_e.food_id) if not _e.food_id.startswith("recipe_") else None
+                _m_img = _get_food_image(_e.food_id, _e.food_name, _fo.name_en if _fo else "")
+                if _m_img:
+                    break
 
             _img_block = (
                 f'<div style="width:100%;height:180px;'

@@ -54,6 +54,35 @@ def _load_recipe_images() -> dict:
 
 _RECIPE_IMAGES_DM = _load_recipe_images()
 
+@st.cache_data(ttl=3600)
+def _load_manual_images_dm() -> dict:
+    _p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "food_images_manual.json")
+    try:
+        with open(_p, encoding="utf-8") as f:
+            d = json.load(f)
+            return {**d.get("recipes", {}), **d.get("ingredients", {})}
+    except Exception:
+        return {}
+
+_MANUAL_IMAGES_DM = _load_manual_images_dm()
+
+
+def _get_food_img_url_dm(food_id: str, food_name_he: str, food_name_en: str = "") -> str:
+    if food_id.startswith("recipe_"):
+        _rid = "recipe_" + food_id.split("recipe_")[-1]
+        url = _RECIPE_IMAGES_DM.get(_rid, "")
+        if url:
+            return url
+    for _key in [food_name_en.lower(), food_name_he.lower()]:
+        if _key and _key in _MANUAL_IMAGES_DM:
+            return _MANUAL_IMAGES_DM[_key]
+    for _key, _url in _MANUAL_IMAGES_DM.items():
+        if _key and ((_key in food_name_en.lower()) or (_key in food_name_he.lower())):
+            return _url
+    if food_name_en:
+        return f"https://www.themealdb.com/images/ingredients/{food_name_en.replace(' ', '%20')}-Small.png"
+    return ""
+
 
 def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
     """Return a div with the recipe image as CSS background-image.
@@ -1243,13 +1272,8 @@ with tabs[-2]:
             if _time_str:
                 _meta += f' · {_time_str}'
             # Build food image URL
-            if entry.food_id.startswith("recipe_"):
-                _rid_entry = "recipe_" + entry.food_id.split("recipe_")[-1]
-                _img_url_entry = _RECIPE_IMAGES_DM.get(_rid_entry, "")
-            else:
-                _food_obj_img = _catalog.get_food_by_id(entry.food_id)
-                _ing_name = (_food_obj_img.name_en if _food_obj_img else "").replace(" ", "%20")
-                _img_url_entry = f"https://www.themealdb.com/images/ingredients/{_ing_name}-Small.png" if _ing_name else ""
+            _food_obj_img = _catalog.get_food_by_id(entry.food_id) if not entry.food_id.startswith("recipe_") else None
+            _img_url_entry = _get_food_img_url_dm(entry.food_id, entry.food_name, _food_obj_img.name_en if _food_obj_img else "")
             _img_html = (
                 f'<img src="{_img_url_entry}" '
                 f'style="width:44px;height:44px;object-fit:cover;border-radius:10px;flex-shrink:0;" '
