@@ -94,15 +94,18 @@ def _load_images():
     try: return json.load(open(_IMAGES_FILE, encoding="utf-8"))
     except: return {}
 
-def _save_and_push(recipe_id: str, url: str):
+def _save_image(recipe_id: str, url: str):
     imgs = _load_images()
     imgs[recipe_id] = url
     with open(_IMAGES_FILE, "w", encoding="utf-8") as f:
         json.dump(imgs, f, ensure_ascii=False, indent=2)
+
+def _push_to_git():
     try:
-        subprocess.run(["git", "add", "data/recipe_images.json"], cwd=_ROOT, capture_output=True)
-        subprocess.run(["git", "commit", "-m", f"img: {recipe_id}"], cwd=_ROOT, capture_output=True)
-        subprocess.run(["git", "push", "origin", "main"], cwd=_ROOT, capture_output=True)
+        subprocess.Popen(
+            'git add data/recipe_images.json && git commit -m "img update" && git push origin main',
+            cwd=_ROOT, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
     except: pass
 
 # ── Session state ───────────────────────────────────────────────────────────
@@ -154,10 +157,10 @@ for recipe in page_recs:
         for i, (col, url) in enumerate(zip(cols, opts)):
             col.image(url, use_container_width=True)
             if col.button("בחר", key=f"pick_{rid}_{i}", use_container_width=True, type="primary"):
-                _save_and_push(rid, url)
+                _save_image(rid, url)
+                _push_to_git()
                 st.session_state.img_opts.pop(rid, None)
                 st.session_state.img_offset.pop(rid, None)
-                st.toast(f"✓ {name_he} נשמר!", icon="✅")
                 st.rerun()
 
         if st.button("3 תמונות אחרות", key=f"more_{rid}"):
