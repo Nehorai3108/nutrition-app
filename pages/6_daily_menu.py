@@ -739,22 +739,51 @@ if _AI_MENU_KEY in st.session_state:
             _alts = st.session_state[_swap_key]
             if _alts:
                 st.markdown(
-                    '<div dir="rtl" style="font-size:0.75rem;color:#8892a4;'
-                    'margin:6px 0 4px">בחר חלופה:</div>',
+                    '<div dir="rtl" style="font-size:0.85rem;font-weight:700;'
+                    'color:#f4f6fb;margin:14px 0 10px">בחר חלופה:</div>',
                     unsafe_allow_html=True,
                 )
                 for _j, _alt in enumerate(_alts):
                     _alt_cal  = _alt.get("total_calories",
                                    sum(f.get("calories", 0) for f in _alt.get("foods", [])))
                     _alt_name = _alt.get("meal_name", "חלופה")
-                    _alt_foods_str = " · ".join(
-                        _natural_food_text(f)
-                        for f in _alt.get("foods", [])[:3]
+                    _alt_prot = sum(f.get("protein", 0) for f in _alt.get("foods", []))
+                    _alt_carbs= sum(f.get("carbs", 0) for f in _alt.get("foods", []))
+                    _alt_fat  = sum(f.get("fat", 0) for f in _alt.get("foods", []))
+                    _alt_foods_list = [
+                        _natural_food_text(f) for f in _alt.get("foods", [])[:4]
+                    ]
+                    _foods_html = "".join(
+                        f'<div style="font-size:0.72rem;color:#8892a4;padding:3px 0;'
+                        f'border-bottom:1px solid #1e2535">{item}</div>'
+                        for item in _alt_foods_list
+                    )
+                    st.markdown(
+                        f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                        f'border-radius:16px;padding:14px 16px;margin-bottom:10px">'
+                        f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+                        f'<div style="font-size:0.9rem;font-weight:700;color:#f4f6fb">{_alt_name}</div>'
+                        f'<div style="font-size:0.85rem;font-weight:800;color:#4f8ef7">{int(_alt_cal)} קק״ל</div>'
+                        f'</div>'
+                        f'<div style="margin-bottom:10px">{_foods_html}</div>'
+                        f'<div style="display:flex;gap:6px">'
+                        f'<div style="flex:1;background:#0d1117;border-radius:8px;padding:6px;text-align:center">'
+                        f'<div style="font-size:0.75rem;font-weight:700;color:#4f8ef7">{int(_alt_prot)}g</div>'
+                        f'<div style="font-size:0.58rem;color:#545e70">חלבון</div></div>'
+                        f'<div style="flex:1;background:#0d1117;border-radius:8px;padding:6px;text-align:center">'
+                        f'<div style="font-size:0.75rem;font-weight:700;color:#f59e0b">{int(_alt_carbs)}g</div>'
+                        f'<div style="font-size:0.58rem;color:#545e70">פחמימות</div></div>'
+                        f'<div style="flex:1;background:#0d1117;border-radius:8px;padding:6px;text-align:center">'
+                        f'<div style="font-size:0.75rem;font-weight:700;color:#f472b6">{int(_alt_fat)}g</div>'
+                        f'<div style="font-size:0.58rem;color:#545e70">שומן</div></div>'
+                        f'</div></div>',
+                        unsafe_allow_html=True,
                     )
                     if st.button(
-                        f" {_alt_name} — {_alt_cal} קק״ל\n{_alt_foods_str}",
+                        "בחר ארוחה זו",
                         key=f"pick_alt_{_i}_{_j}",
                         use_container_width=True,
+                        type="primary",
                     ):
                         _ai_meals[_i] = _alt
                         st.session_state[_AI_MENU_KEY] = _ai_meals
