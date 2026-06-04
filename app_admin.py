@@ -38,44 +38,24 @@ if not is_admin():
     # this block only runs after a successful login + rerun
 
 #  Navigation — explicitly register admin pages 
-# Admin nav bar
+_p_agents    = st.Page("pages_admin/1_agents_dashboard.py", title="סוכנים",       icon=None, default=True)
+_p_photos    = st.Page("pages_admin/2_photo_manager.py",    title="מנהל תמונות",  icon=None)
+_p_audit     = st.Page("pages_admin/3_audit_logs.py",       title="ביקורת לוג",   icon=None)
+_p_settings  = st.Page("pages_admin/4_settings.py",         title="הגדרות",       icon=None)
+_p_fimages   = st.Page("pages_admin/5_food_images.py",      title="תמונות מזון",  icon=None)
+
 with st.sidebar:
     st.markdown("### ניהול מערכת")
-    st.page_link("pages_admin/1_agents_dashboard.py", label="סוכנים")
-    st.page_link("pages_admin/2_photo_manager.py",    label="מנהל תמונות")
-    st.page_link("pages_admin/3_audit_logs.py",       label="ביקורת לוג")
-    st.page_link("pages_admin/4_settings.py",         label="הגדרות")
-    st.page_link("pages_admin/5_food_images.py",      label="תמונות מזון")
+    st.page_link(_p_agents,   label="סוכנים")
+    st.page_link(_p_photos,   label="מנהל תמונות")
+    st.page_link(_p_audit,    label="ביקורת לוג")
+    st.page_link(_p_settings, label="הגדרות")
+    st.page_link(_p_fimages,  label="תמונות מזון")
 
 pg = st.navigation(
     {
         "ניהול מערכת": [
-            st.Page(
-                "pages_admin/1_agents_dashboard.py",
-                title="סוכנים",
-                icon=None,
-                default=True,
-            ),
-            st.Page(
-                "pages_admin/2_photo_manager.py",
-                title="מנהל תמונות",
-                icon=None,
-            ),
-            st.Page(
-                "pages_admin/3_audit_logs.py",
-                title="ביקורת לוג",
-                icon=None,
-            ),
-            st.Page(
-                "pages_admin/4_settings.py",
-                title="הגדרות",
-                icon=None,
-            ),
-            st.Page(
-                "pages_admin/5_food_images.py",
-                title="תמונות מזון",
-                icon=None,
-            ),
+            _p_agents, _p_photos, _p_audit, _p_settings, _p_fimages,
         ],
         "מערכת": [
             st.Page(
