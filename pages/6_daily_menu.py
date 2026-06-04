@@ -839,9 +839,73 @@ if _AI_MENU_KEY in st.session_state:
             unsafe_allow_html=True,
         )
 
+# ── Shopping List ──────────────────────────────────────────────────────────
+if _AI_MENU_KEY in st.session_state:
+    _ai_meals_sl = st.session_state[_AI_MENU_KEY]
+    with st.expander("רשימת קניות לתפריט היומי"):
+        # Aggregate ingredients from all meals
+        from collections import defaultdict
+        _shopping = defaultdict(float)  # name_he → grams
+        _shopping_en = {}               # name_he → name_en
+        for _meal_sl in _ai_meals_sl:
+            for _food_sl in _meal_sl.get("foods", []):
+                _fname_sl    = _food_sl.get("name", "")
+                _fname_en_sl = _food_sl.get("name_en", "")
+                _grams_sl    = float(_food_sl.get("quantity", 0) or _food_sl.get("grams", 0))
+                if _fname_sl:
+                    _shopping[_fname_sl] += _grams_sl
+                    if _fname_en_sl:
+                        _shopping_en[_fname_sl] = _fname_en_sl
+
+        if _shopping:
+            # Group by category using catalog
+            _cat_map = {"protein": "חלבונים", "grain": "דגנים", "vegetable": "ירקות",
+                        "fruit": "פירות", "dairy": "חלב וגבינה", "fat": "שומנים",
+                        "legume": "קטניות", "condiment": "תבלינים ורטבים", "other": "שונות"}
+            _by_cat = defaultdict(list)
+            _catalog_sl = get_catalog()
+            for _item, _g in sorted(_shopping.items()):
+                _hits = _catalog_sl.search_foods(_item, limit=1)
+                _cat = _hits[0].category if _hits else "other"
+                _by_cat[_cat].append((_item, _g))
+
+            # Copy-to-clipboard text
+            _list_text = "רשימת קניות BiteFit\n\n"
+            for _cat_key, _items in sorted(_by_cat.items()):
+                _cat_label = _cat_map.get(_cat_key, _cat_key)
+                _list_text += f"── {_cat_label} ──\n"
+                for _n, _g in _items:
+                    _list_text += f"• {_n}" + (f" ({int(_g)}ג)" if _g > 0 else "") + "\n"
+                _list_text += "\n"
+
+            # Display
+            for _cat_key, _items in sorted(_by_cat.items()):
+                _cat_label = _cat_map.get(_cat_key, _cat_key)
+                st.markdown(
+                    f'<div style="font-size:0.78rem;font-weight:700;color:#4f8ef7;'
+                    f'margin:10px 0 4px;text-transform:uppercase">{_cat_label}</div>',
+                    unsafe_allow_html=True
+                )
+                for _n, _g in _items:
+                    _g_str = f" — {int(_g)}ג" if _g > 0 else ""
+                    st.markdown(
+                        f'<div style="display:flex;justify-content:space-between;'
+                        f'padding:5px 8px;background:#161b26;border-radius:8px;'
+                        f'margin-bottom:3px;font-size:0.82rem">'
+                        f'<span style="color:#f4f6fb">{_n}</span>'
+                        f'<span style="color:#545e70">{_g_str}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+            st.code(_list_text, language=None)
+            st.caption("העתק את הטקסט למעלה לשליחה בוואטסאפ")
+        else:
+            st.info("הפק תפריט יומי כדי לראות רשימת קניות")
+
 st.divider()
 
-#  Meal tab selector 
+#  Meal tab selector
 tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", " ידני", " נשנוש"]
 tabs = st.tabs(tab_labels)
 
