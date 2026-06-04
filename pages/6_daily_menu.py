@@ -1244,7 +1244,8 @@ with tabs[-2]:
                 _meta += f' · {_time_str}'
             # Build food image URL
             if entry.food_id.startswith("recipe_"):
-                _img_url_entry = _RECIPE_IMAGES_DM.get(entry.food_id, "")
+                _rid_entry = "recipe_" + entry.food_id.split("recipe_")[-1]
+                _img_url_entry = _RECIPE_IMAGES_DM.get(_rid_entry, "")
             else:
                 _food_obj_img = _catalog.get_food_by_id(entry.food_id)
                 _ing_name = (_food_obj_img.name_en if _food_obj_img else "").replace(" ", "%20")

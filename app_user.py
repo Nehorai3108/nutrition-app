@@ -893,7 +893,8 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.fat)}g שומן'
             )
             if _fe.food_id.startswith("recipe_"):
-                _img_src_fe = _RECIPE_IMAGES.get(_fe.food_id, "")
+                _rid = "recipe_" + _fe.food_id.split("recipe_")[-1]
+                _img_src_fe = _RECIPE_IMAGES.get(_rid, "")
             else:
                 _fe_food_obj_icon = _catalog.get_food_by_id(_fe.food_id)
                 _ing_name_fe = (_fe_food_obj_icon.name_en if _fe_food_obj_icon else "").replace(" ", "%20")
