@@ -44,13 +44,12 @@ _p_audit     = st.Page("pages_admin/3_audit_logs.py",       title="ביקורת 
 _p_settings  = st.Page("pages_admin/4_settings.py",         title="הגדרות",       icon=None)
 _p_fimages   = st.Page("pages_admin/5_food_images.py",      title="תמונות מזון",  icon=None)
 
-with st.sidebar:
-    st.markdown("### ניהול מערכת")
-    st.page_link(_p_agents,   label="סוכנים")
-    st.page_link(_p_photos,   label="מנהל תמונות")
-    st.page_link(_p_audit,    label="ביקורת לוג")
-    st.page_link(_p_settings, label="הגדרות")
-    st.page_link(_p_fimages,  label="תמונות מזון")
+cols_nav = st.columns(5)
+cols_nav[0].page_link(_p_agents,   label="סוכנים",       use_container_width=True)
+cols_nav[1].page_link(_p_photos,   label="מנהל תמונות",  use_container_width=True)
+cols_nav[2].page_link(_p_audit,    label="ביקורת לוג",   use_container_width=True)
+cols_nav[3].page_link(_p_settings, label="הגדרות",       use_container_width=True)
+cols_nav[4].page_link(_p_fimages,  label="תמונות מזון",  use_container_width=True)
 
 pg = st.navigation(
     {
