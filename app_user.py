@@ -892,17 +892,16 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
                 f'{int(_fe.fat)}g שומן'
             )
-            _img_src_fe = ""
             if _fe.food_id.startswith("recipe_"):
-                _local_path_fe = os.path.join(os.path.dirname(__file__), "storage_agents", "recipe_images", "approved", f"{_fe.food_id}.jpg")
-                _img_src_fe = _recipe_image_data_uri(_local_path_fe) or _RECIPE_IMAGES.get(_fe.food_id, "")
+                _img_src_fe = _RECIPE_IMAGES.get(_fe.food_id, "")
             else:
                 _fe_food_obj_icon = _catalog.get_food_by_id(_fe.food_id)
                 _ing_name_fe = (_fe_food_obj_icon.name_en if _fe_food_obj_icon else "").replace(" ", "%20")
                 _img_src_fe = f"https://www.themealdb.com/images/ingredients/{_ing_name_fe}-Small.png" if _ing_name_fe else ""
             _icon_html = (
-                f'<div style="width:50px;height:50px;border-radius:14px;flex-shrink:0;'
-                f'background:#0d1117 url(\'{_img_src_fe}\') center/cover no-repeat"></div>'
+                f'<img src="{_img_src_fe}" '
+                f'style="width:50px;height:50px;object-fit:cover;border-radius:14px;flex-shrink:0;" '
+                f'onerror="this.style.display=\'none\'" />'
             ) if _img_src_fe else ""
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border-radius:18px;'
