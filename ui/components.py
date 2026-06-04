@@ -14,7 +14,7 @@ from . import theme as t
 from .icons import icon as _icon, has_icon
 from .labels import KASHRUT_LABELS, KASHRUT_ICON, MEAL_LABELS, MEAL_ICON
 
-# ── Global CSS injection ────────────────────────────────────────────────────
+#  Global CSS injection 
 
 _CSS_FLAG = "_nut_ui_css_injected"
 
@@ -30,12 +30,12 @@ def inject_global_css() -> None:
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-        /* ─── Global & RTL ────────────────────────────────────────────── */
+        /*  Global & RTL  */
         html, body, [class*="css"] {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }}
 
-        /* ── RTL for all text-bearing Streamlit containers ────────────── */
+        /*  RTL for all text-bearing Streamlit containers  */
         [data-testid="stMarkdownContainer"],
         [data-testid="stMarkdownContainer"] p,
         [data-testid="stMarkdownContainer"] div,
@@ -77,6 +77,12 @@ def inject_global_css() -> None:
             direction: rtl !important;
             text-align: right !important;
         }}
+        /* Hide "Press Enter to submit form" hint in all text inputs */
+        [data-testid="InputInstructions"],
+        .stTextInput small,
+        .stTextArea small {{
+            display: none !important;
+        }}
         /* Radio option text */
         .stRadio [data-testid="stMarkdownContainer"] p {{
             direction: rtl !important;
@@ -98,19 +104,63 @@ def inject_global_css() -> None:
             direction: rtl !important;
             text-align: right !important;
         }}
-        /* ─── Hide Streamlit chrome ───────────────────────────────────── */
-        header[data-testid="stHeader"] {{ display: none !important; }}
+        /*  Hide Streamlit chrome completely  */
+        header[data-testid="stHeader"] {{ display: none !important; height: 0 !important; }}
         footer {{ display: none !important; }}
         #MainMenu {{ display: none !important; }}
         [data-testid="stToolbar"] {{ display: none !important; }}
         [data-testid="stDecoration"] {{ display: none !important; }}
-        /* Hide collapsed sidebar toggle arrow (black strip on left) */
         [data-testid="collapsedControl"] {{ display: none !important; }}
         section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
+        /*  Hide ALL Streamlit bottom-right floating buttons  */
+        [data-testid="stDeployButton"],
+        [data-testid="stStatusWidget"],
+        [data-testid="manage-app-button"],
+        .stDeployButton,
+        .streamlit-wide-mode-fab,
+        .viewerBadge_link__qRIco,
+        .viewerBadge_container__r5tak,
+        ._profilePreview_gzau3_41,
+        ._container_51w34_1,
+        #deploy_button,
+        button[kind="deployButton"],
+        [class*="deployButton"],
+        [class*="statusWidget"],
+        [class*="manageApp"],
+        /* "Hosted with Streamlit" banner */
+        [data-testid="stHostedWithStreamlit"],
+        [class*="hostedWith"],
+        [class*="HostedWith"],
+        a[href*="streamlit.io/cloud"],
+        div[class*="badge"],
+        .stApp footer,
+        footer[class*="streamlit"] {{ display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }}
+
+        /*  Nuclear top-padding removal  */
+        .stApp {{
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }}
+        [data-testid="stAppViewContainer"] {{
+            padding-top: 0 !important;
+            margin-top:  0 !important;
+        }}
+        [data-testid="stAppViewContainer"] > section,
+        [data-testid="stMain"] {{
+            padding-top: 0 !important;
+            margin-top:  0 !important;
+        }}
+        .main {{
+            padding-top: 0 !important;
+            margin-top:  0 !important;
+        }}
+        .stApp > div {{ padding-top: 0 !important; margin-top: 0 !important; }}
+        /* Streamlit sometimes adds this class for the top spacer */
+        [data-testid="stVerticalBlock"] > div:empty {{ display: none !important; }}
 
         .main .block-container {{
             direction: rtl;
-            padding-top: 0.75rem;
+            padding-top: 0.5rem !important;
             padding-bottom: 90px;
             max-width: 480px;
             margin: 0 auto;
@@ -145,7 +195,7 @@ def inject_global_css() -> None:
             text-align: right;
         }}
 
-        /* ─── Buttons ─────────────────────────────────────────────────── */
+        /*  Buttons  */
         .stButton > button,
         .stDownloadButton > button {{
             min-height: {t.HIT_TARGET};
@@ -175,7 +225,7 @@ def inject_global_css() -> None:
         }}
         .stButton > button:active {{ transform: translateY(0) scale(0.98); }}
 
-        /* ─── Secondary buttons — compact, minimal ───────────────────── */
+        /*  Secondary buttons — compact, minimal  */
         button[data-testid="baseButton-secondary"] {{
             background: transparent !important;
             border: 1px solid {t.BORDER} !important;
@@ -200,7 +250,7 @@ def inject_global_css() -> None:
             border-radius: {t.RADIUS_SM};
         }}
 
-        /* ─── Metrics ─────────────────────────────────────────────────── */
+        /*  Metrics  */
         [data-testid="metric-container"] {{
             background: {t.SURFACE_2};
             border: 1px solid {t.BORDER};
@@ -214,7 +264,7 @@ def inject_global_css() -> None:
             transform: translateY(-1px);
         }}
 
-        /* ─── Expanders ───────────────────────────────────────────────── */
+        /*  Expanders  */
         [data-testid="stExpander"] {{
             background: {t.SURFACE} !important;
             border: 1px solid {t.BORDER} !important;
@@ -225,7 +275,7 @@ def inject_global_css() -> None:
             border-color: {t.BORDER_2} !important;
         }}
 
-        /* ─── Cards ───────────────────────────────────────────────────── */
+        /*  Cards  */
         .nut-card {{
             background: {t.SURFACE};
             border: 1px solid {t.BORDER};
@@ -253,7 +303,7 @@ def inject_global_css() -> None:
         }}
         .nut-card-clickable:hover::before {{ opacity: 1; }}
 
-        /* ─── Page header ─────────────────────────────────────────────── */
+        /*  Page header  */
         .nut-pageheader {{
             display: flex;
             align-items: center;
@@ -298,7 +348,7 @@ def inject_global_css() -> None:
             margin-top: 3px;
         }}
 
-        /* ─── Section header ──────────────────────────────────────────── */
+        /*  Section header  */
         .nut-section {{
             display: flex;
             align-items: center;
@@ -320,7 +370,7 @@ def inject_global_css() -> None:
             border-radius: 2px;
         }}
 
-        /* ─── Chips & badges ──────────────────────────────────────────── */
+        /*  Chips & badges  */
         .nut-chip {{
             display: inline-flex;
             align-items: center;
@@ -339,12 +389,12 @@ def inject_global_css() -> None:
         .nut-chip-dairy {{ background:{t.KASHRUT_BG['dairy']}; color:{t.KASHRUT_COLORS['dairy']}; border-color:{t.KASHRUT_COLORS['dairy']}33; }}
         .nut-chip-parve {{ background:{t.KASHRUT_BG['parve']}; color:{t.KASHRUT_COLORS['parve']}; border-color:{t.KASHRUT_COLORS['parve']}33; }}
 
-        /* ─── Status text ─────────────────────────────────────────────── */
+        /*  Status text  */
         .nut-status-ok   {{ color: {t.SUCCESS}; font-weight: 700; }}
         .nut-status-warn {{ color: {t.WARNING}; font-weight: 700; }}
         .nut-status-fail {{ color: {t.DANGER};  font-weight: 700; }}
 
-        /* ─── Macro tiles ─────────────────────────────────────────────── */
+        /*  Macro tiles  */
         .nut-macro-grid {{
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -380,7 +430,7 @@ def inject_global_css() -> None:
         .nut-mt-carbs   .nut-macro-val {{ color: {t.CARBS_COLOR}; }}
         .nut-mt-fat     .nut-macro-val {{ color: {t.FAT_COLOR}; }}
 
-        /* ─── Welcome cards ───────────────────────────────────────────── */
+        /*  Welcome cards  */
         .nut-welcome-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -429,7 +479,7 @@ def inject_global_css() -> None:
         .nut-welcome-title {{ font-weight: 700; font-size: 1.05rem; color: {t.TEXT}; letter-spacing: -0.01em; }}
         .nut-welcome-sub {{ font-size: 0.82rem; color: {t.TEXT_MUTED}; margin-top: 6px; line-height: 1.5; }}
 
-        /* ─── Login form ──────────────────────────────────────────────── */
+        /*  Login form  */
         .nut-login-card {{
             max-width: 420px;
             margin: 60px auto;
@@ -440,7 +490,7 @@ def inject_global_css() -> None:
             box-shadow: {t.SHADOW_LG}, 0 0 0 1px rgba(124,92,255,0.08);
         }}
 
-        /* ─── Recipe images ───────────────────────────────────────────── */
+        /*  Recipe images  */
         .nut-recipe-image {{
             width: 100%;
             height: 220px;
@@ -450,30 +500,30 @@ def inject_global_css() -> None:
             display: block;
         }}
 
-        /* ─── Divider ─────────────────────────────────────────────────── */
+        /*  Divider  */
         hr {{
             border: none !important;
             border-top: 1px solid {t.BORDER} !important;
             margin: 18px 0 !important;
         }}
 
-        /* ─── Dataframes ──────────────────────────────────────────────── */
+        /*  Dataframes  */
         [data-testid="stDataFrame"] {{
             border-radius: {t.RADIUS_LG} !important;
             overflow: hidden;
             border: 1px solid {t.BORDER} !important;
         }}
 
-        /* ─── Alerts / info boxes ─────────────────────────────────────── */
+        /*  Alerts / info boxes  */
         [data-testid="stAlert"] {{
             border-radius: {t.RADIUS_LG} !important;
             border-left-width: 4px !important;
         }}
 
-        /* ─── Hide auto-generated Streamlit nav ───────────────────────── */
+        /*  Hide auto-generated Streamlit nav  */
         [data-testid="stSidebarNav"] {{ display: none !important; }}
 
-        /* ─── Custom Hebrew nav links ─────────────────────────────────── */
+        /*  Custom Hebrew nav links  */
         [data-testid="stPageLink"] a {{
             border-radius: {t.RADIUS} !important;
             padding: 8px 12px !important;
@@ -492,7 +542,7 @@ def inject_global_css() -> None:
             font-weight: 600 !important;
         }}
 
-        /* ─── Mobile responsive ───────────────────────────────────────── */
+        /*  Mobile responsive  */
         .nut-rings-grid {{
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -535,7 +585,7 @@ def inject_global_css() -> None:
             .nut-macro-tile .nut-macro-lbl {{ font-size: 0.6rem !important; }}
         }}
 
-        /* ─── Bottom nav bar ──────────────────────────────────────────── */
+        /*  Bottom nav bar  */
         .nut-bottom-nav {{
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -567,7 +617,7 @@ def inject_global_css() -> None:
         .nut-nav-item.active {{ color: {t.PRIMARY}; }}
         .nut-nav-item .nav-icon {{ font-size: 1.4rem; line-height: 1; }}
 
-        /* ─── Premium ring card ───────────────────────────────────────── */
+        /*  Premium ring card  */
         .nut-ring-card {{
             background: {t.SURFACE};
             border: 1px solid {t.BORDER_2};
@@ -590,10 +640,48 @@ def inject_global_css() -> None:
         .nut-ring-sport::before {{ background: linear-gradient(90deg, {t.WARNING}, #f97316); }}
         .nut-ring-water::before {{ background: linear-gradient(90deg, {t.INFO}, {t.ACCENT}); }}
     </style>
+    <script>
+    /* Streamlit JS sets padding-top on stMain AFTER CSS loads — override it */
+    (function fixTopPadding() {{
+        function zeroTop() {{
+            var selectors = [
+                '[data-testid="stMain"]',
+                '[data-testid="stAppViewContainer"]',
+                '[data-testid="stMainBlockContainer"]',
+                '.main',
+                '.block-container'
+            ];
+            selectors.forEach(function(sel) {{
+                var els = document.querySelectorAll(sel);
+                els.forEach(function(el) {{
+                    el.style.setProperty('padding-top', '0', 'important');
+                    el.style.setProperty('margin-top',  '0', 'important');
+                }});
+            }});
+            /* Also force header height to 0 */
+            var hdr = document.querySelector('[data-testid="stHeader"]');
+            if (hdr) {{
+                hdr.style.setProperty('display', 'none', 'important');
+                hdr.style.setProperty('height',  '0',    'important');
+            }}
+        }}
+        /* Run immediately, then again after Streamlit re-renders */
+        zeroTop();
+        setTimeout(zeroTop, 100);
+        setTimeout(zeroTop, 500);
+        /* Also observe DOM mutations so Streamlit can't re-add padding */
+        if (window.MutationObserver) {{
+            new MutationObserver(zeroTop).observe(document.body, {{
+                childList: true, subtree: true, attributes: true,
+                attributeFilter: ['style']
+            }});
+        }}
+    }})();
+    </script>
     """
     st.markdown(css, unsafe_allow_html=True)
 
-    # ── PWA: manifest + service-worker registration ───────────────────────────
+    #  PWA: manifest + service-worker registration 
     st.markdown(
         '<link rel="manifest" href="/app/static/manifest.json">'
         '<meta name="mobile-web-app-capable" content="yes">'
@@ -612,87 +700,125 @@ def inject_global_css() -> None:
 
 
 def bottom_nav(active: str = "home") -> None:
-    """Fixed bottom nav — uses st.page_link so clicks stay in Streamlit's router.
+    """Fixed bottom nav using st.page_link — preserves WebSocket session and
+    session_state so the user is never sent back to the login screen on
+    navigation.  The active page is highlighted automatically via
+    aria-current="page" set by Streamlit on the current page's link.
 
-    Visual style is preserved via CSS that targets the horizontal column block
-    immediately after a sentinel marker we emit. Active state is communicated
-    by an `--active` CSS variable injected per render.
+    Carries the full multi-user destination set (food, chat, barcode, workout,
+    water, history, profile, settings) while using main's Material-icon look and
+    aria-current highlighting.
     """
+    #  Page map: key → (file_path, material_icon, label)
     items = [
-        ("home",     "app_user.py",                    "בית",        "🏠"),
-        ("food",     "pages/6_daily_menu.py",          "תזונה",      "🍽️"),
-        ("chat",     "pages/10_chat_log.py",           "צאט",        "💬"),
-        ("barcode",  "pages/12_barcode.py",            "ברקוד",      "📲"),
-        ("workout",  "pages/7_workout_tracker.py",     "אימון",      "💪"),
-        ("water",    "pages/16_hydration.py",          "מים",        "💧"),
-        ("history",  "pages/9_history.py",             "היסטוריה",   "📊"),
-        ("profile",  "pages/0_profile.py",             "פרופיל",     "👤"),
-        ("settings", "pages/14_settings.py",           "הגדרות",     "⚙️"),
+        ("home",     "app_user.py",                ":material/home:",             "בית"),
+        ("food",     "pages/6_daily_menu.py",      ":material/restaurant:",       "תזונה"),
+        ("chat",     "pages/10_chat_log.py",       ":material/forum:",            "צאט"),
+        ("barcode",  "pages/12_barcode.py",        ":material/qr_code_scanner:",  "ברקוד"),
+        ("workout",  "pages/7_workout_tracker.py", ":material/fitness_center:",   "אימון"),
+        ("water",    "pages/16_hydration.py",      ":material/water_drop:",       "מים"),
+        ("history",  "pages/9_history.py",         ":material/bar_chart:",        "היסטוריה"),
+        ("profile",  "pages/0_profile.py",         ":material/person:",           "פרופיל"),
+        ("settings", "pages/14_settings.py",       ":material/settings:",         "הגדרות"),
     ]
 
-    # Map active key → column index so we can highlight the right cell.
-    active_idx = next((i for i, it in enumerate(items) if it[0] == active), 0)
-
-    # Sentinel + CSS. The :has() selector lets us reach the column block that
-    # immediately follows the sentinel marker we emit below.
+    #  CSS
     st.markdown(
-        f"""
-<style>
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) {{
-    margin: 0 !important;
-    padding: 0 !important;
-}}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] {{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999;
-    background: #0d0f14;
-    border-top: 1px solid #1e2433;
-    padding: 6px 0 max(env(safe-area-inset-bottom), 10px) !important;
-    margin: 0 !important;
-}}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] [data-testid="stHorizontalBlock"] {{
-    gap: 0 !important;
-}}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] a[data-testid="stPageLink-NavLink"] {{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    text-decoration: none;
-    color: #3a4254;
-    padding: 6px 4px;
-    border-radius: 8px;
-    font-size: 0.62rem;
-    font-weight: 500;
-    line-height: 1.3;
-    transition: color .15s, background .15s;
-}}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] a[data-testid="stPageLink-NavLink"]:hover {{
-    color: #8892a4;
-    background: rgba(255,255,255,0.04);
-}}
-/* Highlight the active nav cell */
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child({active_idx + 1}) a[data-testid="stPageLink-NavLink"] {{
-    color: #4f8ef7 !important;
-}}
-/* Body padding so content isn't hidden behind the fixed bar */
-[data-testid="stMain"] .block-container {{
-    padding-bottom: 80px !important;
-}}
-</style>
-<div class="bf-nav-marker"></div>
-""",
+        """
+        <style>
+        /* Add bottom padding so page content isn't hidden behind the nav */
+        .block-container { padding-bottom: 88px !important; }
+
+        /* Fix the columns block that contains our page-links to the bottom */
+        [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"]) {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 9999 !important;
+            background: #0d0f14 !important;
+            border-top: 1px solid #1e2433 !important;
+            margin: 0 !important;
+            padding: 4px 0 max(env(safe-area-inset-bottom), 8px) !important;
+            gap: 0 !important;
+            display: flex !important;
+            align-items: stretch !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Each column inside the nav */
+        [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"])
+        > [data-testid="stColumn"] {
+            flex: 1 !important;
+            padding: 0 !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* The page-link container */
+        [data-testid="stPageLink"] {
+            width: 100% !important;
+            text-align: center !important;
+        }
+
+        /* The anchor element */
+        [data-testid="stPageLink-NavLink"] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 3px !important;
+            color: #3a4254 !important;
+            text-decoration: none !important;
+            padding: 5px 4px !important;
+            font-size: 0.6rem !important;
+            font-weight: 500 !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            min-height: 48px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            transition: color .15s !important;
+        }
+
+        /* Hover */
+        [data-testid="stPageLink-NavLink"]:hover {
+            color: #8892a4 !important;
+            background: transparent !important;
+        }
+
+        /* Active page (Streamlit sets aria-current="page") */
+        [data-testid="stPageLink-NavLink"][aria-current="page"] {
+            color: #4f8ef7 !important;
+            font-weight: 600 !important;
+        }
+
+        /* Emoji icon inside the link */
+        [data-testid="stPageLink-NavLink"] p,
+        [data-testid="stPageLink-NavLink"] span {
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        [data-testid="stPageLink-NavLink"] > span:first-child {
+            font-size: 1.35rem !important;
+        }
+        </style>
+        """,
         unsafe_allow_html=True,
     )
 
+    #  Render nav items as columns of page-links
     cols = st.columns(len(items))
-    for i, (key, page, label, icon) in enumerate(items):
-        with cols[i]:
-            st.page_link(page, label=f"{icon} {label}", use_container_width=True)
+    for col, (key, page, icon, label) in zip(cols, items):
+        with col:
+            st.page_link(page, label=label, icon=icon)
 
 
 def reset_css_flag() -> None:
@@ -703,7 +829,7 @@ def reset_css_flag() -> None:
     st.session_state.pop(_CSS_FLAG, None)
 
 
-# ── Page header ────────────────────────────────────────────────────────────
+#  Page header 
 
 def page_header(title: str, icon_name: str = "plate",
                 subtitle: Optional[str] = None) -> None:
@@ -722,7 +848,7 @@ def page_header(title: str, icon_name: str = "plate",
     )
 
 
-# ── Section header ─────────────────────────────────────────────────────────
+#  Section header 
 
 def section_header(title: str, icon_name: str = "menu") -> None:
     """Render a smaller in-page section header with an icon."""
@@ -734,7 +860,7 @@ def section_header(title: str, icon_name: str = "menu") -> None:
     )
 
 
-# ── Icon button ────────────────────────────────────────────────────────────
+#  Icon button 
 
 def icon_button(label: str, icon_name: str = "confirm", *,
                 key: Optional[str] = None,
@@ -769,49 +895,49 @@ def icon_button(label: str, icon_name: str = "confirm", *,
 # These are picked for clarity and good RTL behavior. SVG icons remain the
 # primary visual language in cards/headers; buttons use these for compactness.
 _GLYPHS = {
-    "home": "🏠",
+    "home": "",
     "back": "←",
-    "menu": "☰",
-    "search": "🔎",
-    "add": "＋",
-    "delete": "🗑",
-    "edit": "✎",
-    "confirm": "✓",
-    "close": "✕",
-    "clear": "🧹",
-    "save": "💾",
-    "play": "▶",
+    "menu": "",
+    "search": "",
+    "add": "",
+    "delete": "",
+    "edit": "",
+    "confirm": "",
+    "close": "",
+    "clear": "",
+    "save": "",
+    "play": "",
     "refresh": "↻",
-    "info": "ⓘ",
-    "warning": "⚠",
-    "calendar": "📅",
-    "settings": "⚙",
-    "login": "🔓",
+    "info": "",
+    "warning": "",
+    "calendar": "",
+    "settings": "",
+    "login": "",
     "logout": "⎋",
-    "lock": "🔒",
-    "recipe": "🍳",
-    "plate": "🍽",
-    "utensils": "🍴",
-    "breakfast": "🌅",
-    "lunch": "🍽",
-    "dinner": "🌙",
-    "snack": "🍎",
-    "flame": "🔥",
-    "protein": "💪",
-    "carbs": "🌾",
-    "fat": "🫒",
-    "training": "🏋",
-    "dumbbell": "🏋",
-    "running": "🏃",
-    "inventory": "📦",
-    "package": "📦",
-    "scan": "🔍",
-    "receipt": "🧾",
-    "agent": "🤖",
-    "user": "👤",
-    "star": "⭐",
-    "target": "🎯",
-    "trophy": "🏆",
+    "lock": "",
+    "recipe": "",
+    "plate": "",
+    "utensils": "",
+    "breakfast": "",
+    "lunch": "",
+    "dinner": "",
+    "snack": "",
+    "flame": "",
+    "protein": "",
+    "carbs": "",
+    "fat": "",
+    "training": "",
+    "dumbbell": "",
+    "running": "",
+    "inventory": "",
+    "package": "",
+    "scan": "",
+    "receipt": "",
+    "agent": "",
+    "user": "",
+    "star": "",
+    "target": "",
+    "trophy": "",
 }
 
 
@@ -819,7 +945,7 @@ def _unicode_glyph(name: str) -> str:
     return _GLYPHS.get(name, "•")
 
 
-# ── Kashrut & meal badges ───────────────────────────────────────────────────
+#  Kashrut & meal badges 
 
 def kashrut_badge_html(kashrut: str) -> str:
     """HTML chip for a kashrut category — icon + Hebrew text + color."""
@@ -844,7 +970,7 @@ def meal_badge_html(meal_key: str) -> str:
     )
 
 
-# ── Macro grid ──────────────────────────────────────────────────────────────
+#  Macro grid 
 
 def macro_grid_html(cal: int, protein: int, carbs: int, fat: int) -> str:
     """Render a 4-column macro tile grid as HTML — Cal AI style."""
@@ -926,7 +1052,7 @@ def calorie_ring_html(consumed: int, target: int,
     """
 
 
-# ── Recipe card ─────────────────────────────────────────────────────────────
+#  Recipe card 
 
 def recipe_card_html(recipe: dict, image_uri: str = "",
                      match_pct: Optional[int] = None,
@@ -952,8 +1078,11 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
     href      = f"/recipe_detail?id={recipe_id}"
     alt       = name_he or "מתכון"
 
+    # Use CSS background-image so failed loads show nothing (no broken icon)
     image_block = (
-        f'<img src="{image_uri}" alt="{alt}" class="nut-recipe-image" />'
+        f'<div class="nut-recipe-image" '
+        f'style="background:#0d1117 url(\'{image_uri}\') center/cover no-repeat" '
+        f'aria-label="{alt}"></div>'
         if image_uri else ""
     )
 
@@ -976,10 +1105,14 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
             f'{match_pct}% התאמה</span>'
         )
 
+    image_wrapper = (
+        f'<div style="position:relative">{image_block}</div>' if image_block else ""
+    )
+
     return (
         f'<a href="{href}" target="_self" style="text-decoration:none;color:inherit">'
         f'<div class="nut-card nut-card-clickable" style="padding:0;overflow:hidden">'
-        f'{"<div style=\'position:relative\'>" + image_block + "</div>" if image_block else ""}'
+        f'{image_wrapper}'
         f'<div class="nut-card-body" style="padding:16px 18px">'
         f'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px">'
         f'<div style="font-size:1rem;font-weight:700;color:{t.TEXT};line-height:1.3">{name_he}</div>'
@@ -987,14 +1120,14 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
         f'</div>'
         f'<div style="font-size:0.8rem;color:{t.TEXT_MUTED};margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">'
         f'<span>⏱ {prep} דק׳</span>'
-        f'{"<span style=\'color:" + match_color + ";font-weight:600\'>" + str(match_pct) + "% התאמה</span>" if match_pct is not None else ""}'
+        f'{match_html}'
         f'</div>'
         f'{macro_grid_html(cal, protein, carbs, fat)}'
         f'</div></div></a>'
     )
 
 
-# ── Welcome card ────────────────────────────────────────────────────────────
+#  Welcome card 
 
 def welcome_card_html(href: str, icon_name: str, title: str, subtitle: str) -> str:
     return (
@@ -1006,7 +1139,7 @@ def welcome_card_html(href: str, icon_name: str, title: str, subtitle: str) -> s
     )
 
 
-# ── Top navigation menu ─────────────────────────────────────────────────────
+#  Top navigation menu 
 
 # Maps display label → page file path. Order matters.
 _NAV_ITEMS = [
@@ -1136,7 +1269,7 @@ def nav_menu(active: Optional[str] = None) -> None:
     st.markdown("<div style='margin-bottom:10px'></div>", unsafe_allow_html=True)
 
 
-# ── Section context manager (sugar) ─────────────────────────────────────────
+#  Section context manager (sugar) 
 
 @contextmanager
 def section(title: str, icon_name: str = "menu"):

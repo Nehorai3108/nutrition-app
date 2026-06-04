@@ -14,14 +14,9 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Optional
 
 from nutrition_app.utils import utcnow
-
-
-# Allowed values for UserMealPreferences.primary_metric. Kept as a module-level
-# tuple so callers (UI toggle, validators) reference one source of truth.
-PRIMARY_METRIC_VALUES: tuple = ("calories", "protein")
 
 
 # Meal-type keys used as dict keys in `picks`. The first three reuse the
@@ -122,13 +117,6 @@ class UserMealPreferences:
     show_streaks: bool = False
     daily_notifications: bool = False
     weekly_summary: bool = False
-    # Additional Calm Mode toggles (new in 2026-05-27 build) — additive, off by default
-    daily_reminders_enabled: bool = False
-    weekly_summary_email: bool = False
-    # Primary metric for the home dashboard — controls which ring leads
-    # the view when FF_PROTEIN_FIRST_WIDGET is enabled. Defaults to
-    # 'calories' so legacy users see no change.
-    primary_metric: Literal["calories", "protein"] = "calories"
 
     def variant_by_id(self, variant_id: str) -> Optional[UserRecipeVariant]:
         return next((v for v in self.variants if v.variant_id == variant_id), None)
@@ -158,9 +146,6 @@ class UserMealPreferences:
             "show_streaks": self.show_streaks,
             "daily_notifications": self.daily_notifications,
             "weekly_summary": self.weekly_summary,
-            "daily_reminders_enabled": self.daily_reminders_enabled,
-            "weekly_summary_email": self.weekly_summary_email,
-            "primary_metric": self.primary_metric,
         }
 
     @classmethod
@@ -191,15 +176,6 @@ class UserMealPreferences:
             show_streaks=bool(data.get("show_streaks", False)),
             daily_notifications=bool(data.get("daily_notifications", False)),
             weekly_summary=bool(data.get("weekly_summary", False)),
-            daily_reminders_enabled=bool(data.get("daily_reminders_enabled", False)),
-            weekly_summary_email=bool(data.get("weekly_summary_email", False)),
-            # Legacy records that pre-date FF_PROTEIN_FIRST_WIDGET don't
-            # carry this key — fall back to the default 'calories'.
-            primary_metric=(
-                data["primary_metric"]
-                if data.get("primary_metric") in PRIMARY_METRIC_VALUES
-                else "calories"
-            ),
         )
 
     @classmethod

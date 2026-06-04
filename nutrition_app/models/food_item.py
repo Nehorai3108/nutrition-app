@@ -31,7 +31,16 @@ class NutritionPer100g:
 
     @classmethod
     def from_dict(cls, data: dict) -> "NutritionPer100g":
-        return cls(**data)
+        # Support both short keys (calories/protein/carbs/fat) and long keys (calories_kcal etc.)
+        return cls(
+            calories_kcal=data.get("calories_kcal", data.get("calories", 0.0)),
+            protein_g=data.get("protein_g", data.get("protein", 0.0)),
+            carbs_g=data.get("carbs_g", data.get("carbs", 0.0)),
+            fat_g=data.get("fat_g", data.get("fat", 0.0)),
+            fiber_g=data.get("fiber_g", data.get("fiber", 0.0)),
+            sugar_g=data.get("sugar_g", data.get("sugar", 0.0)),
+            sodium_mg=data.get("sodium_mg", data.get("sodium", 0.0)),
+        )
 
 
 @dataclass
@@ -65,11 +74,15 @@ class FoodItem:
 
     @classmethod
     def from_dict(cls, data: dict) -> "FoodItem":
+        try:
+            category = FoodCategory(data["category"])
+        except (ValueError, KeyError):
+            category = FoodCategory.OTHER
         return cls(
             food_id=data["food_id"],
             name_he=data["name_he"],
             name_en=data["name_en"],
-            category=FoodCategory(data["category"]),
+            category=category,
             nutrition_per_100g=NutritionPer100g.from_dict(data["nutrition_per_100g"]),
             default_unit=UnitType(data.get("default_unit", "gram")),
             default_serving_g=data.get("default_serving_g", 100.0),

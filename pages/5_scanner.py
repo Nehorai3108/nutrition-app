@@ -15,7 +15,7 @@ from ui.components import (
 from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-st.set_page_config(page_title="BiteFit · סריקה", page_icon="📷", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="BiteFit · סריקה", page_icon="", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
 
@@ -108,7 +108,7 @@ def parse_text_list(text: str) -> list[str]:
     return [line.strip("•-– ,").strip() for line in text.splitlines() if line.strip()]
 
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
+#  Sidebar 
 with st.sidebar:
     st.markdown(
         f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>',
@@ -132,17 +132,17 @@ with st.sidebar:
         st.session_state["ocr_space_key"] = api_key_input
 
     if st.session_state.get("ocr_space_key"):
-        st.success("✅ מפתח מוכן")
+        st.success(" מפתח מוכן")
     else:
         st.markdown("""
         <div style="background:#1a2a1a;border-radius:8px;padding:12px;font-size:0.85em;direction:rtl;line-height:1.7">
-        <b>🆓 קבלת מפתח חינמי (500 סריקות/חודש):</b><br><br>
+        <b> קבלת מפתח חינמי (500 סריקות/חודש):</b><br><br>
         1. פתח: <b>ocr.space/ocrapi</b><br>
         2. גלול למטה לטופס <b>"Free OCR API"</b><br>
         3. הכנס אימייל ולחץ <b>Send</b><br>
         4. תקבל מפתח ישירות לאימייל<br>
         5. הדבק אותו כאן<br><br>
-        ⚡ <b>לבדיקה מהירה</b> (3/שעה בלבד):<br>
+         <b>לבדיקה מהירה</b> (3/שעה בלבד):<br>
         הכנס: <code>helloworld</code>
         </div>
         """, unsafe_allow_html=True)
@@ -150,7 +150,7 @@ with st.sidebar:
     st.divider()
     render_chatbot_sidebar()
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+#  Main 
 nav_menu(active="סריקת קבלה")
 page_header(
     "סריקת קבלה / רשימת סופר",
@@ -161,8 +161,8 @@ page_header(
 st.info(f"מוסיף מוצרים למלאי שלך")
 st.divider()
 
-# ── טאבים ────────────────────────────────────────────────────────────────────
-tab_image, tab_text = st.tabs(["📷 תמונת קבלה", "📝 הדבקת רשימה ידנית"])
+#  טאבים 
+tab_image, tab_text = st.tabs([" תמונת קבלה", " הדבקת רשימה ידנית"])
 
 detected_names: list[str] = []
 
@@ -218,10 +218,10 @@ with tab_text:
     if "scan_results" in st.session_state and not detected_names:
         detected_names = st.session_state.get("scan_results", [])
 
-# ── תוצאות ────────────────────────────────────────────────────────────────────
+#  תוצאות 
 if detected_names:
     st.divider()
-    st.markdown("### ✅ תוצאות זיהוי")
+    st.markdown("###  תוצאות זיהוי")
 
     matched, unmatched = match_to_catalog(detected_names)
 
@@ -232,7 +232,7 @@ if detected_names:
         for food in matched:
             col_check, col_name, col_qty = st.columns([1, 4, 2])
             checked = col_check.checkbox("", value=True, key=f"chk_{food['food_id']}")
-            col_name.write(f"✅ {food['name_he']} ({food['name_en']})")
+            col_name.write(f" {food['name_he']} ({food['name_en']})")
             qty = col_qty.number_input(
                 "גרם", min_value=1, max_value=9999, value=300,
                 key=f"qty_scan_{food['food_id']}", label_visibility="collapsed",
@@ -254,7 +254,7 @@ if detected_names:
         st.markdown(f"**{len(unmatched)} פריטים לא זוהו בקטלוג:**")
         for name in unmatched:
             col_n, col_q, col_b = st.columns([4, 2, 2])
-            col_n.write(f"❓ {name}")
+            col_n.write(f" {name}")
             custom_qty = col_q.number_input(
                 "גרם", min_value=1, value=300,
                 key=f"uq_{name}", label_visibility="collapsed",

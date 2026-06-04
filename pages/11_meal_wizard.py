@@ -48,15 +48,23 @@ _profile_repo = ProfileRepository()
 _profile = _profile_repo.load(USER_ID)
 
 # ── Food catalog (cached) ────────────────────────────────────────────────────
+_DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "storage", "nutrition.db")
+
 @st.cache_resource
 def _load_catalog():
-    cat = FoodCatalog()
+    cat = FoodCatalog(db_path=_DB_PATH)
     foods = cat.get_all_foods()
+    # Only keep foods with calorie data for display
+    foods = [f for f in foods if f.nutrition_per_100g.calories_kcal]
     by_cat = {}
     for f in foods:
         by_cat.setdefault(f.category, []).append(f)
     for c in by_cat:
-        by_cat[c].sort(key=lambda x: x.name_he)
+        by_cat[c].sort(key=lambda x: (
+            0 if x.source == "json" else 1,   # Hebrew-DB foods first
+            x.name_he or x.name_en or ""
+        ))
     return {f.food_id: f for f in foods}, by_cat
 
 FOOD_LOOKUP, FOODS_BY_CATEGORY = _load_catalog()

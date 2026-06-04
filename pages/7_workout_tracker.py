@@ -34,7 +34,7 @@ _weight = float(_prof.get("weight_kg", 80))
 
 today = date.today()
 
-# ── Workout type catalogue ────────────────────────────────────────────────────
+#  Workout type catalogue 
 TYPES = [
     (WorkoutType.STRENGTH, "כוח",     "#f87171"),
     (WorkoutType.RUNNING,  "ריצה",    "#4ade80"),
@@ -53,7 +53,7 @@ WORKOUT_LABEL = {wt: lbl   for wt, lbl, _   in TYPES}
 WORKOUT_COLOR = {wt: color for wt, _,   color in TYPES}
 
 
-# ── Load today's workouts ──────────────────────────────────────────────────────
+#  Load today's workouts 
 workout_data    = _repo.get_workout_data(USER_ID)
 today_workouts  = workout_data.daily_log.get(today.isoformat(), [])
 total_duration  = sum(w.duration_minutes for w in today_workouts)
@@ -63,7 +63,7 @@ total_burned    = sum(
     for w in today_workouts
 )
 
-# ── Header ─────────────────────────────────────────────────────────────────────
+#  Header 
 st.markdown(
     f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 16px">'
     f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb">אימונים</div>'
@@ -72,7 +72,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Today stats strip ──────────────────────────────────────────────────────────
+#  Today stats strip 
 st.markdown(
     f'<div dir="rtl" style="display:flex;gap:8px;margin-bottom:20px">'
     f'<div dir="rtl" style="flex:1;background:#161b26;border:1px solid #252d3d;border-radius:16px;'
@@ -91,7 +91,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Today's logged workouts ────────────────────────────────────────────────────
+#  Today's logged workouts 
 if today_workouts:
     st.markdown(
         '<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb;margin-bottom:10px">אימוני היום</div>',
@@ -148,13 +148,13 @@ if today_workouts:
 
     st.markdown('<div dir="rtl" style="height:8px"></div>', unsafe_allow_html=True)
 
-# ── Add workout ────────────────────────────────────────────────────────────────
+#  Add workout 
 st.markdown(
     '<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb;margin-bottom:12px">הוסף אימון</div>',
     unsafe_allow_html=True,
 )
 
-# ── Add workout form ───────────────────────────────────────────────────────────
+#  Add workout form 
 with st.form("add_workout_form", clear_on_submit=True):
     # TYPES = (WorkoutType, label, color)
     sel_type = st.selectbox(
@@ -188,7 +188,7 @@ with st.form("add_workout_form", clear_on_submit=True):
         _repo.add_daily_workout(USER_ID, today, entry)
         st.rerun()
 
-# ── Weekly history ─────────────────────────────────────────────────────────────
+#  Weekly history 
 st.markdown(
     '<div dir="rtl" style="font-size:0.88rem;font-weight:700;color:#f4f6fb;margin:20px 0 12px">7 ימים אחרונים</div>',
     unsafe_allow_html=True,

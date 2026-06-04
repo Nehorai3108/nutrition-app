@@ -5,235 +5,359 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:100%; background:#0d0f14; font-family:sans-serif; direction:rtl; }
+html,body { width:100%; background:#0d0f14; font-family:sans-serif; overflow:hidden; }
 
-/* hidden file input */
-#cam-input { display:none; }
-
-/* big tap-to-scan button */
+/* ── Scan button screen ─────────────────────────────── */
+#scan-screen {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:12px; padding:20px 16px; min-height:150px;
+}
 #scan-btn {
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  width:100%; padding:22px 16px;
+  width:100%; max-width:300px; padding:18px 24px;
   background:linear-gradient(135deg,#2563eb,#4f8ef7);
   border:none; border-radius:16px; cursor:pointer;
-  color:#fff; font-size:1.15rem; font-weight:700;
-  box-shadow:0 6px 24px rgba(79,142,247,0.4);
-  transition:opacity .15s;
-  -webkit-tap-highlight-color: transparent;
+  color:#fff; font-size:1.1rem; font-weight:700;
+  box-shadow:0 6px 24px rgba(79,142,247,.4);
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  -webkit-tap-highlight-color:transparent;
 }
 #scan-btn:active { opacity:.8; }
-
-/* preview of photo taken */
-#preview-wrap {
-  display:none; position:relative;
-  width:100%; border-radius:14px; overflow:hidden;
-  background:#000; max-height:220px;
-}
-#preview { width:100%; max-height:220px; object-fit:contain; display:block; }
-
-/* scanning spinner over preview */
-#scanning-overlay {
-  display:none;
-  position:absolute; inset:0; background:rgba(0,0,0,0.55);
-  align-items:center; justify-content:center; flex-direction:column; gap:8px;
-  color:#fff; font-size:13px;
-}
-.spin {
-  width:32px; height:32px;
-  border:3px solid rgba(255,255,255,0.2);
-  border-top-color:#4f8ef7;
-  border-radius:50%;
-  animation:spin .7s linear infinite;
-}
-@keyframes spin { to { transform:rotate(360deg); } }
-
-/* success */
-#ok {
-  display:none;
-  background:#122a1a; border:1px solid #2f855a;
-  border-radius:14px; padding:18px 16px;
-  text-align:center;
-}
-#ok-icon { font-size:2rem; }
-#ok-val  { font-size:1.1rem; font-weight:700; color:#68d391; margin:4px 0; direction:ltr; }
-#ok-lbl  { font-size:0.78rem; color:#a0aec0; }
-
-/* error */
-#err {
-  display:none;
-  background:#2d1b1b; border:1px solid #744141;
-  border-radius:14px; padding:14px; text-align:center;
-  color:#fc8181; font-size:13px;
+#hint  { color:#8892a4; font-size:12px; direction:rtl; text-align:center; }
+#msg   { font-size:13px; direction:rtl; text-align:center;
+         min-height:18px; padding:0 12px; }
+.ok    { color:#68d391; font-weight:700; }
+.fail  { color:#fc8181; }
+#live-link {
+  font-size:11px; color:#4f8ef7; cursor:pointer;
+  text-decoration:underline; direction:rtl;
 }
 
-/* retry button */
-#retry-btn {
-  display:none; width:100%; padding:14px;
-  background:#2d3748; border:none; border-radius:12px;
-  color:#e2e8f0; font-size:0.95rem; cursor:pointer;
+/* ── Success screen ─────────────────────────────────── */
+#ok-screen {
+  display:none; flex-direction:column; align-items:center;
+  justify-content:center; gap:8px; padding:20px; min-height:150px;
 }
-#retry-btn:active { opacity:.8; }
+#bc-val { font-size:1.4rem; font-weight:800; color:#68d391; direction:ltr; }
+#rescan-btn {
+  margin-top:4px; padding:10px 28px;
+  background:#1e3a5f; border:1px solid #2b6cb0; border-radius:10px;
+  cursor:pointer; color:#63b3ed; font-size:.9rem; font-weight:600;
+}
+
+/* ── Hide ZXing result canvas (drawing only, not needed) */
+#live-screen canvas { display:none !important; }
+
+/* ── Live camera screen ─────────────────────────────── */
+#live-screen { display:none; flex-direction:column; position:relative; width:100%; }
+#video  { width:100%; height:240px; object-fit:cover; display:block; background:#111; border-radius:12px; }
+#frame  { position:absolute; top:0; left:0; right:0; height:240px; pointer-events:none; }
+.corner { position:absolute; width:24px; height:24px;
+          border-color:#4f8ef7; border-style:solid; }
+.tl{top:12px;left:12px;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
+.tr{top:12px;right:12px;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
+.bl{bottom:12px;left:12px;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
+.br{bottom:12px;right:12px;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
+#sweep {
+  position:absolute; left:10%; width:80%; height:2px;
+  background:linear-gradient(90deg,transparent,#4f8ef7,transparent);
+  animation:sw 2s ease-in-out infinite;
+}
+@keyframes sw{0%,100%{top:14%}50%{top:78%}}
+#live-hint {
+  position:absolute; bottom:6px; left:0; right:0;
+  text-align:center; color:rgba(255,255,255,.75);
+  font-size:12px; direction:rtl;
+}
+/* stop button removed — camera stops automatically after scan */
 </style>
 </head>
 <body>
 
-<!-- hidden file input — capture="environment" opens rear camera on mobile -->
-<input id="cam-input" type="file" accept="image/*" capture="environment">
+<!-- hidden file input — works on mobile over HTTP (no getUserMedia needed) -->
+<input id="fileIn" type="file" accept="image/*" capture="environment"
+       style="display:none" onchange="onFile(this)">
 
-<div style="display:flex; flex-direction:column; gap:12px; padding:8px;">
-  <button id="scan-btn">
-    <span style="font-size:1.5rem">📷</span>
-    צלם ברקוד
+<!-- Screen 1: Scan button -->
+<div id="scan-screen">
+  <button id="scan-btn" onclick="document.getElementById('fileIn').click()">
+    <span style="font-size:1.4rem">📷</span> צלם תמונה (גיבוי)
   </button>
-
-  <div id="preview-wrap">
-    <img id="preview" src="" alt="">
-    <div id="scanning-overlay">
-      <div class="spin"></div>
-      <span>מפענח…</span>
-    </div>
-  </div>
-
-  <div id="ok">
-    <div id="ok-icon">✅</div>
-    <div id="ok-val"></div>
-    <div id="ok-lbl">ברקוד זוהה — מחפש מוצר…</div>
-  </div>
-
-  <div id="err"></div>
-
-  <button id="retry-btn">🔄 נסה שוב</button>
+  <div id="hint">מצלמה נטענת...</div>
+  <div id="msg"></div>
 </div>
 
-<!-- Streamlit component lib -->
-<script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
+<!-- Screen 2: Success -->
+<div id="ok-screen">
+  <div style="font-size:2.2rem">✅</div>
+  <div id="bc-val"></div>
+  <div style="font-size:.8rem;color:#a0aec0;direction:rtl">ברקוד זוהה — מחפש מוצר…</div>
+  <button id="rescan-btn" onclick="resetAll()">סרוק מוצר אחר</button>
+</div>
+
+<!-- Screen 3: Live camera -->
+<div id="live-screen">
+  <video id="video" autoplay muted playsinline></video>
+  <div id="frame">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div id="sweep"></div>
+    <div id="live-hint">כוון את הברקוד אל המסגרת</div>
+  </div>
+</div>
 
 <script>
-// ── Streamlit init ──────────────────────────────────────────────────────────
-function tryInitStreamlit() {
-  if (typeof Streamlit !== "undefined") {
-    try {
-      Streamlit.setFrameHeight(120);
-      Streamlit.setComponentReady();
-    } catch(e) {}
-  }
-}
+// ── Streamlit bridge ─────────────────────────────────────────────────────
+(function(){
+  var _ls={};
+  window.Streamlit={
+    RENDER_EVENT:"streamlit:render",
+    events:{addEventListener:function(ev,fn){_ls[ev]=_ls[ev]||[];_ls[ev].push(fn);}},
+    setComponentReady:function(){window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:componentReady",apiVersion:1},"*");},
+    setFrameHeight:function(h){window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:setFrameHeight",height:h},"*");},
+    setComponentValue:function(v){window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:setComponentValue",value:v,dataType:"json"},"*");}
+  };
+  window.addEventListener("message",function(e){if(!e.data||!e.data.type)return;(_ls[e.data.type]||[]).forEach(function(f){f(e);});});
+})();
 
-window.addEventListener("load", function() {
-  tryInitStreamlit();
-  // Give Streamlit time to render, then set proper height
-  setTimeout(function() {
-    try { Streamlit.setFrameHeight(120); } catch(e) {}
-  }, 300);
+Streamlit.setFrameHeight(150);
+Streamlit.setComponentReady();
+
+var _stream=null, _liveTimer=null, _zxingR=null, _zxingLoaded=false, _lastBC=null;
+var _autoStarted=false, _accepted=false;
+
+// On Streamlit rerun: restore correct screen state
+Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function(){
+  if (_stream) return;  // live camera active — don't touch UI
+
+  if (_accepted && _lastBC) {
+    // Barcode was scanned — keep showing ok-screen with rescan button
+    document.getElementById("bc-val").textContent = _lastBC;
+    show("ok-screen");
+    Streamlit.setFrameHeight(170);
+    return;
+  }
+
+  // No barcode yet — show scan screen and auto-start camera once
+  show("scan-screen");
+  Streamlit.setFrameHeight(150);
+  if (!_autoStarted) {
+    _autoStarted = true;
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      document.getElementById("hint").textContent = "פותח מצלמה...";
+      startLive();
+    } else {
+      document.getElementById("hint").textContent = "לחץ לצילום ברקוד";
+    }
+  }
 });
 
-// ── UI elements ─────────────────────────────────────────────────────────────
-var input    = document.getElementById("cam-input");
-var scanBtn  = document.getElementById("scan-btn");
-var prevWrap = document.getElementById("preview-wrap");
-var prevImg  = document.getElementById("preview");
-var overlay  = document.getElementById("scanning-overlay");
-var okDiv    = document.getElementById("ok");
-var errDiv   = document.getElementById("err");
-var retryBtn = document.getElementById("retry-btn");
-
-// Tap button → trigger file input (opens native camera)
-scanBtn.addEventListener("click", function() { input.click(); });
-
-// Retry → reset UI
-retryBtn.addEventListener("click", reset);
-
-function reset() {
-  input.value = "";
-  prevWrap.style.display = "none";
-  overlay.style.display  = "none";
-  okDiv.style.display    = "none";
-  errDiv.style.display   = "none";
-  retryBtn.style.display = "none";
-  scanBtn.style.display  = "flex";
-  try { Streamlit.setFrameHeight(120); } catch(e) {}
-}
-
-// ── When user picks photo ───────────────────────────────────────────────────
-input.addEventListener("change", function() {
-  var file = input.files[0];
+// ─────────────────────────────────────────────────────────────────────────
+// FILE INPUT PATH (works on all mobile, even HTTP)
+// ─────────────────────────────────────────────────────────────────────────
+function onFile(input) {
+  var file = input.files && input.files[0];
   if (!file) return;
+  input.value = "";            // allow re-selecting same file
+  setMsg("מפענח ברקוד...", "");
 
-  // Show preview + spinner
-  var objectUrl = URL.createObjectURL(file);
-  prevImg.src = objectUrl;
-  prevWrap.style.display  = "block";
-  overlay.style.display   = "flex";
-  scanBtn.style.display   = "none";
-  try { Streamlit.setFrameHeight(320); } catch(e) {}
+  var fr = new FileReader();
+  fr.onload = function(e){ decodeDataUrl(e.target.result); };
+  fr.readAsDataURL(file);
+}
 
-  // Load ZXing if not already loaded
-  if (typeof ZXing === "undefined") {
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
-    s.onload  = function() { decodeImage(objectUrl); };
-    s.onerror = function() { showErr("שגיאת טעינת ספריית סריקה"); };
-    document.head.appendChild(s);
-  } else {
-    decodeImage(objectUrl);
-  }
-});
-
-function decodeImage(url) {
-  var hints = new Map();
-  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-    ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
-    ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
-    ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.QR_CODE,
-  ]);
-  hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-
+function decodeDataUrl(dataUrl) {
   var img = new Image();
   img.onload = function() {
-    var reader = new ZXing.BrowserMultiFormatReader(hints);
-    reader.decodeFromImageElement(img)
-      .then(function(result) {
-        overlay.style.display = "none";
-        URL.revokeObjectURL(url);
-        var bc = result.getText();
-        showSuccess(bc);
-        sendToStreamlit(bc);
-      })
-      .catch(function() {
-        overlay.style.display = "none";
-        URL.revokeObjectURL(url);
-        showErr("לא זוהה ברקוד — נסה שוב, ודא שהברקוד נראה ברור");
-      });
+    if (typeof BarcodeDetector !== "undefined") {
+      // Strategy 1: native BarcodeDetector (Chrome Android, iOS 17.4+) — no CDN needed
+      createImageBitmap(img).then(function(bm) {
+        var det;
+        try {
+          det = new BarcodeDetector({
+            formats:["ean_13","ean_8","code_128","upc_a","upc_e","code_39","qr_code","data_matrix"]
+          });
+        } catch(e) { zxingFallback(img); return; }
+        det.detect(bm).then(function(codes){
+          if (codes && codes.length) {
+            codes.sort(function(a,b){return b.rawValue.length-a.rawValue.length;});
+            if (codes[0].rawValue) { accept(codes[0].rawValue); return; }
+          }
+          zxingFallback(img);
+        }).catch(function(){ zxingFallback(img); });
+      }).catch(function(){ zxingFallback(img); });
+    } else {
+      // Strategy 2: ZXing via CDN
+      zxingFallback(img);
+    }
   };
-  img.onerror = function() { showErr("שגיאה בטעינת התמונה"); };
-  img.src = url;
+  img.onerror = function(){ setMsg("שגיאה בטעינת תמונה", "fail"); };
+  img.src = dataUrl;
 }
 
-function showSuccess(bc) {
-  document.getElementById("ok-val").textContent = bc;
-  okDiv.style.display    = "block";
-  prevWrap.style.display = "none";
-  retryBtn.style.display = "block";
-  try { Streamlit.setFrameHeight(160); } catch(e) {}
+// ─────────────────────────────────────────────────────────────────────────
+// ZXING FALLBACK
+// ─────────────────────────────────────────────────────────────────────────
+function zxingFallback(imgEl) {
+  setMsg("טוען ZXing...", "");
+  loadZXing(function(){
+    var canvas = document.createElement("canvas");
+    canvas.width = imgEl.naturalWidth; canvas.height = imgEl.naturalHeight;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(imgEl, 0, 0);
+
+    var hints = new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[
+      ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,
+      ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.UPC_A,
+      ZXing.BarcodeFormat.UPC_E,ZXing.BarcodeFormat.CODE_39,
+      ZXing.BarcodeFormat.QR_CODE,
+    ]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+    var reader = new ZXing.BrowserMultiFormatReader(hints);
+
+    // Pass 1 — original colours
+    try {
+      var r1 = reader.decodeFromCanvas(canvas);
+      if (r1 && r1.getText()) { accept(r1.getText()); return; }
+    } catch(e1){}
+
+    // Pass 2 — binarise (improves low-contrast / dark photos)
+    try {
+      var id=ctx.getImageData(0,0,canvas.width,canvas.height), d=id.data;
+      for(var i=0;i<d.length;i+=4){
+        var g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+        d[i]=d[i+1]=d[i+2]=(g<128?0:255);
+      }
+      ctx.putImageData(id,0,0);
+      var r2 = reader.decodeFromCanvas(canvas);
+      if (r2 && r2.getText()) { accept(r2.getText()); return; }
+    } catch(e2){}
+
+    setMsg("לא ניתן לקרוא ברקוד — נסה שוב קרוב יותר ובאור טוב", "fail");
+  });
 }
 
-function showErr(msg) {
-  errDiv.textContent     = "❌ " + msg;
-  errDiv.style.display   = "block";
-  retryBtn.style.display = "block";
-  prevWrap.style.display = "none";
-  try { Streamlit.setFrameHeight(180); } catch(e) {}
+function loadZXing(cb) {
+  if (_zxingLoaded && typeof ZXing !== "undefined") { cb(); return; }
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+  s.onload  = function(){ _zxingLoaded=true; cb(); };
+  s.onerror = function(){ setMsg("שגיאת טעינה — בדוק חיבור", "fail"); };
+  document.head.appendChild(s);
 }
 
-function sendToStreamlit(bc) {
-  // Primary: component lib
-  try { Streamlit.setComponentValue(bc); return; } catch(e) {}
-  // Fallback: raw postMessage
-  try {
-    window.parent.postMessage(
-      { isStreamlitMessage:true, type:"streamlit:setComponentValue", value:bc }, "*"
-    );
-  } catch(e) {}
+// ─────────────────────────────────────────────────────────────────────────
+// LIVE CAMERA (bonus — needs getUserMedia / HTTPS or localhost)
+// ─────────────────────────────────────────────────────────────────────────
+function startLive() {
+  if (typeof BarcodeDetector !== "undefined") {
+    _startLiveNative();
+  } else {
+    loadZXing(_startLiveZXing);
+  }
+}
+
+function _startLiveNative() {
+  navigator.mediaDevices.getUserMedia({
+    video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}
+  }).then(function(stream){
+    _stream=stream;
+    var v=document.getElementById("video");
+    v.srcObject=stream; v.play();
+    show("live-screen"); Streamlit.setFrameHeight(250);
+
+    var det=new BarcodeDetector({formats:["ean_13","ean_8","code_128","upc_a","upc_e","code_39","qr_code"]});
+    var cand=null, hits=0;
+    function tick(){
+      if(!_stream) return;
+      if(v.readyState<2){ _liveTimer=setTimeout(tick,100); return; }
+      det.detect(v).then(function(codes){
+        if(!codes.length){ _liveTimer=setTimeout(tick,80); return; }
+        codes.sort(function(a,b){return b.rawValue.length-a.rawValue.length;});
+        var bc=codes[0].rawValue;
+        if(bc===cand){ if(++hits>=2){ stopLive(); accept(bc); return; }}
+        else{ cand=bc; hits=1; }
+        _liveTimer=setTimeout(tick,80);
+      }).catch(function(){ _liveTimer=setTimeout(tick,200); });
+    }
+    _liveTimer=setTimeout(tick,400);
+  }).catch(function(e){
+    show("scan-screen"); Streamlit.setFrameHeight(150);
+    setMsg((e&&e.name==="NotAllowedError")
+      ?"אין הרשאת מצלמה — לחץ לצלם תמונה":"לחץ לסרוק ברקוד","fail");
+  });
+}
+
+function _startLiveZXing() {
+  var hints=new Map();
+  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[
+    ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,
+    ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.UPC_A,
+    ZXing.BarcodeFormat.UPC_E,ZXing.BarcodeFormat.CODE_39,
+  ]);
+  hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+  _zxingR=new ZXing.BrowserMultiFormatReader(hints,300);
+  _zxingR.decodeFromConstraints(
+    {video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}},
+    document.getElementById("video"),
+    function(result){
+      if(!_stream||!result) return;
+      var bc=result.getText();
+      if(bc&&bc!==_lastBC){ stopLive(); accept(bc); }
+    }
+  ).then(function(){
+    _stream=document.getElementById("video").srcObject;
+    show("live-screen"); Streamlit.setFrameHeight(250);
+  }).catch(function(e){
+    show("scan-screen"); Streamlit.setFrameHeight(150);
+    setMsg((e&&e.name==="NotAllowedError")
+      ?"אין הרשאת מצלמה — לחץ לצלם תמונה":"לחץ לסרוק ברקוד","fail");
+  });
+}
+
+function stopLive(){
+  if(_liveTimer){ clearTimeout(_liveTimer); _liveTimer=null; }
+  if(_zxingR){ try{_zxingR.reset();}catch(e){} _zxingR=null; }
+  if(_stream){ _stream.getTracks().forEach(function(t){t.stop();}); _stream=null; }
+  var v=document.getElementById("video"); if(v) v.srcObject=null;
+  show("scan-screen"); Streamlit.setFrameHeight(150);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// ACCEPT / RESET
+// ─────────────────────────────────────────────────────────────────────────
+function accept(bc) {
+  if (!bc) return;
+  _lastBC = bc;
+  _accepted = true;
+  document.getElementById("bc-val").textContent = bc;
+  show("ok-screen");
+  Streamlit.setFrameHeight(170);
+  Streamlit.setComponentValue(bc);
+}
+
+function resetAll() {
+  _lastBC = null;
+  _accepted = false;
+  _autoStarted = false;  // allow camera to re-open on next render
+  setMsg("","");
+  show("scan-screen");
+  Streamlit.setFrameHeight(150);
+  Streamlit.setComponentValue("");   // "" = reset signal
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────
+function show(id) {
+  ["scan-screen","ok-screen","live-screen"].forEach(function(s){
+    var el=document.getElementById(s);
+    if(el) el.style.display=(s===id)?"flex":"none";
+  });
+}
+function setMsg(txt, cls){
+  var el=document.getElementById("msg");
+  el.textContent=txt; el.className=cls;
 }
 </script>
 </body>

@@ -7367,5 +7367,1430 @@
       "lamb ribs",
       "lamb cutlets"
     ]
+  },
+  {
+    "name_he": "שניצל תירס",
+    "name_en": "Corn Schnitzel",
+    "category": "protein",
+    "calories_kcal": 220,
+    "protein_g": 5.0,
+    "carbs_g": 22.0,
+    "fat_g": 12.0,
+    "fiber_g": 2.0,
+    "default_unit": "unit",
+    "default_serving_g": 80,
+    "aliases_he": [
+      "שניצל תירס מטוגן",
+      "קציצת תירס"
+    ],
+    "aliases_en": [
+      "corn schnitzel"
+    ],
+    "source": "json",
+    "food_id": "json_corn_schnitzel",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "שניצל כרובית",
+    "name_en": "Cauliflower Schnitzel",
+    "category": "vegetable",
+    "calories_kcal": 180,
+    "protein_g": 5.5,
+    "carbs_g": 18.0,
+    "fat_g": 9.0,
+    "fiber_g": 3.0,
+    "default_unit": "unit",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "שניצל כרוביות"
+    ],
+    "aliases_en": [
+      "cauliflower schnitzel"
+    ],
+    "source": "json",
+    "food_id": "json_cauliflower_schnitzel",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "שניצל הודו",
+    "name_en": "Turkey Schnitzel",
+    "category": "protein",
+    "calories_kcal": 195,
+    "protein_g": 24.0,
+    "carbs_g": 10.0,
+    "fat_g": 7.0,
+    "default_unit": "unit",
+    "default_serving_g": 130,
+    "aliases_he": [
+      "שניצל טורקי"
+    ],
+    "aliases_en": [
+      "turkey schnitzel"
+    ],
+    "source": "json",
+    "food_id": "json_turkey_schnitzel",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "שניצל בקר",
+    "name_en": "Beef Schnitzel",
+    "category": "protein",
+    "calories_kcal": 250,
+    "protein_g": 22.0,
+    "carbs_g": 12.0,
+    "fat_g": 13.0,
+    "default_unit": "unit",
+    "default_serving_g": 130,
+    "aliases_he": [],
+    "aliases_en": [
+      "beef schnitzel"
+    ],
+    "source": "json",
+    "food_id": "json_beef_schnitzel",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "נאגטס עוף",
+    "name_en": "Chicken Nuggets",
+    "category": "protein",
+    "calories_kcal": 260,
+    "protein_g": 16.0,
+    "carbs_g": 16.0,
+    "fat_g": 14.0,
+    "default_unit": "unit",
+    "default_serving_g": 20,
+    "aliases_he": [
+      "נאגטס",
+      "קראנצ'י עוף"
+    ],
+    "aliases_en": [
+      "nuggets",
+      "chicken nuggets"
+    ],
+    "source": "json",
+    "food_id": "json_chicken_nuggets",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "לביבות תפוחי אדמה",
+    "name_en": "Potato Latkes",
+    "category": "grain",
+    "calories_kcal": 200,
+    "protein_g": 3.5,
+    "carbs_g": 22.0,
+    "fat_g": 10.0,
+    "fiber_g": 2.0,
+    "default_unit": "unit",
+    "default_serving_g": 80,
+    "aliases_he": [
+      "לביבה",
+      "לביבות",
+      "לאטקע"
+    ],
+    "aliases_en": [
+      "latkes",
+      "potato pancakes",
+      "potato latkes"
+    ],
+    "source": "json",
+    "food_id": "json_potato_latkes",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "לביבות גבינה",
+    "name_en": "Cheese Pancakes",
+    "category": "dairy",
+    "calories_kcal": 210,
+    "protein_g": 9.0,
+    "carbs_g": 20.0,
+    "fat_g": 10.0,
+    "default_unit": "unit",
+    "default_serving_g": 70,
+    "aliases_he": [
+      "לביבות קוטג"
+    ],
+    "aliases_en": [
+      "cheese latkes",
+      "cottage pancakes"
+    ],
+    "source": "json",
+    "food_id": "json_cheese_pancakes",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מרק עוף",
+    "name_en": "Chicken Soup",
+    "category": "protein",
+    "calories_kcal": 45,
+    "protein_g": 4.5,
+    "carbs_g": 3.0,
+    "fat_g": 1.5,
+    "default_unit": "cup",
+    "default_serving_g": 250,
+    "aliases_he": [
+      "מרק עוף צח",
+      "ציר עוף",
+      "מרק"
+    ],
+    "aliases_en": [
+      "chicken broth",
+      "chicken soup"
+    ],
+    "source": "json",
+    "food_id": "json_chicken_soup",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מרק עגבניות",
+    "name_en": "Tomato Soup",
+    "category": "vegetable",
+    "calories_kcal": 65,
+    "protein_g": 2.0,
+    "carbs_g": 10.0,
+    "fat_g": 2.0,
+    "default_unit": "cup",
+    "default_serving_g": 250,
+    "aliases_he": [],
+    "aliases_en": [
+      "tomato soup"
+    ],
+    "source": "json",
+    "food_id": "json_tomato_soup",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מרק ירקות",
+    "name_en": "Vegetable Soup",
+    "category": "vegetable",
+    "calories_kcal": 55,
+    "protein_g": 2.5,
+    "carbs_g": 9.0,
+    "fat_g": 1.0,
+    "fiber_g": 2.5,
+    "default_unit": "cup",
+    "default_serving_g": 250,
+    "aliases_he": [],
+    "aliases_en": [
+      "vegetable soup"
+    ],
+    "source": "json",
+    "food_id": "json_vegetable_soup",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מרק עדשים",
+    "name_en": "Lentil Soup",
+    "category": "legume",
+    "calories_kcal": 115,
+    "protein_g": 7.5,
+    "carbs_g": 17.0,
+    "fat_g": 2.0,
+    "fiber_g": 4.0,
+    "default_unit": "cup",
+    "default_serving_g": 250,
+    "aliases_he": [],
+    "aliases_en": [
+      "lentil soup"
+    ],
+    "source": "json",
+    "food_id": "json_lentil_soup",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מרק אפונה",
+    "name_en": "Pea Soup",
+    "category": "legume",
+    "calories_kcal": 110,
+    "protein_g": 6.5,
+    "carbs_g": 16.0,
+    "fat_g": 2.0,
+    "fiber_g": 4.0,
+    "default_unit": "cup",
+    "default_serving_g": 250,
+    "aliases_he": [],
+    "aliases_en": [
+      "pea soup"
+    ],
+    "source": "json",
+    "food_id": "json_pea_soup",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מג'דרה",
+    "name_en": "Mujaddara",
+    "category": "grain",
+    "calories_kcal": 150,
+    "protein_g": 6.0,
+    "carbs_g": 25.0,
+    "fat_g": 3.5,
+    "fiber_g": 4.5,
+    "default_unit": "gram",
+    "default_serving_g": 200,
+    "aliases_he": [
+      "מג'דרה",
+      "מגדרה",
+      "עדשים עם אורז"
+    ],
+    "aliases_en": [
+      "mujaddara",
+      "mujadara"
+    ],
+    "source": "json",
+    "food_id": "json_mujaddara",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "חמין",
+    "name_en": "Cholent",
+    "category": "protein",
+    "calories_kcal": 280,
+    "protein_g": 16.0,
+    "carbs_g": 25.0,
+    "fat_g": 10.0,
+    "fiber_g": 6.0,
+    "default_unit": "gram",
+    "default_serving_g": 300,
+    "aliases_he": [
+      "צ'ולנט",
+      "שולנט"
+    ],
+    "aliases_en": [
+      "cholent",
+      "chamin"
+    ],
+    "source": "json",
+    "food_id": "json_cholent",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "קובה",
+    "name_en": "Kubbeh",
+    "category": "protein",
+    "calories_kcal": 185,
+    "protein_g": 9.0,
+    "carbs_g": 20.0,
+    "fat_g": 7.5,
+    "default_unit": "unit",
+    "default_serving_g": 80,
+    "aliases_he": [
+      "כובה",
+      "קובה סולת"
+    ],
+    "aliases_en": [
+      "kubbeh",
+      "kibbeh"
+    ],
+    "source": "json",
+    "food_id": "json_kubbeh",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "סביח",
+    "name_en": "Sabich",
+    "category": "grain",
+    "calories_kcal": 420,
+    "protein_g": 14.0,
+    "carbs_g": 45.0,
+    "fat_g": 20.0,
+    "fiber_g": 5.0,
+    "default_unit": "unit",
+    "default_serving_g": 280,
+    "aliases_he": [
+      "סביח בפיתה"
+    ],
+    "aliases_en": [
+      "sabich"
+    ],
+    "source": "json",
+    "food_id": "json_sabich",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "ממולאים",
+    "name_en": "Stuffed Vegetables",
+    "category": "protein",
+    "calories_kcal": 160,
+    "protein_g": 8.0,
+    "carbs_g": 18.0,
+    "fat_g": 5.5,
+    "default_unit": "unit",
+    "default_serving_g": 150,
+    "aliases_he": [
+      "ירק ממולא",
+      "עגבניה ממולאת",
+      "פלפל ממולא"
+    ],
+    "aliases_en": [
+      "stuffed peppers",
+      "stuffed vegetables"
+    ],
+    "source": "json",
+    "food_id": "json_stuffed_vegetables",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "כרוב ממולא",
+    "name_en": "Stuffed Cabbage",
+    "category": "protein",
+    "calories_kcal": 155,
+    "protein_g": 9.0,
+    "carbs_g": 14.0,
+    "fat_g": 6.0,
+    "default_unit": "unit",
+    "default_serving_g": 130,
+    "aliases_he": [
+      "גולובצי",
+      "כרוב ממולא בשר"
+    ],
+    "aliases_en": [
+      "stuffed cabbage",
+      "golabki"
+    ],
+    "source": "json",
+    "food_id": "json_stuffed_cabbage",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "כנפיים עוף",
+    "name_en": "Chicken Wings",
+    "category": "protein",
+    "calories_kcal": 220,
+    "protein_g": 18.0,
+    "carbs_g": 0.0,
+    "fat_g": 15.0,
+    "default_unit": "unit",
+    "default_serving_g": 50,
+    "aliases_he": [
+      "כנף עוף",
+      "כנפיים"
+    ],
+    "aliases_en": [
+      "wings",
+      "chicken wings"
+    ],
+    "source": "json",
+    "food_id": "json_chicken_wings",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פרגית",
+    "name_en": "Chicken Thigh",
+    "category": "protein",
+    "calories_kcal": 210,
+    "protein_g": 20.0,
+    "carbs_g": 0.0,
+    "fat_g": 14.0,
+    "default_unit": "unit",
+    "default_serving_g": 150,
+    "aliases_he": [
+      "ירך עוף",
+      "פרגיות"
+    ],
+    "aliases_en": [
+      "chicken thigh",
+      "dark meat chicken"
+    ],
+    "source": "json",
+    "food_id": "json_chicken_thigh",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "כבד עוף מטוגן",
+    "name_en": "Fried Chicken Liver",
+    "category": "protein",
+    "calories_kcal": 195,
+    "protein_g": 22.0,
+    "carbs_g": 4.0,
+    "fat_g": 9.0,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "כבד מטוגן"
+    ],
+    "aliases_en": [
+      "fried chicken liver"
+    ],
+    "source": "json",
+    "food_id": "json_fried_chicken_liver",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "דג בתנור",
+    "name_en": "Baked Fish",
+    "category": "protein",
+    "calories_kcal": 130,
+    "protein_g": 22.0,
+    "carbs_g": 0.0,
+    "fat_g": 4.5,
+    "default_unit": "gram",
+    "default_serving_g": 150,
+    "aliases_he": [
+      "פילה דג בתנור",
+      "דג אפוי"
+    ],
+    "aliases_en": [
+      "baked fish",
+      "fish fillet"
+    ],
+    "source": "json",
+    "food_id": "json_baked_fish",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "דג מטוגן",
+    "name_en": "Fried Fish",
+    "category": "protein",
+    "calories_kcal": 220,
+    "protein_g": 20.0,
+    "carbs_g": 8.0,
+    "fat_g": 11.0,
+    "default_unit": "gram",
+    "default_serving_g": 150,
+    "aliases_he": [
+      "דג בציפוי"
+    ],
+    "aliases_en": [
+      "fried fish"
+    ],
+    "source": "json",
+    "food_id": "json_fried_fish",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "טונה עם מיונז",
+    "name_en": "Tuna with Mayo",
+    "category": "protein",
+    "calories_kcal": 185,
+    "protein_g": 14.0,
+    "carbs_g": 1.0,
+    "fat_g": 14.0,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "סלט טונה"
+    ],
+    "aliases_en": [
+      "tuna salad",
+      "tuna mayo"
+    ],
+    "source": "json",
+    "food_id": "json_tuna_with_mayo",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "גפילטע פיש",
+    "name_en": "Gefilte Fish",
+    "category": "protein",
+    "calories_kcal": 95,
+    "protein_g": 11.5,
+    "carbs_g": 4.5,
+    "fat_g": 3.0,
+    "default_unit": "unit",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "דג ממולא",
+      "גפילטע"
+    ],
+    "aliases_en": [
+      "gefilte fish"
+    ],
+    "source": "json",
+    "food_id": "json_gefilte_fish",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "בגל ירושלמי",
+    "name_en": "Jerusalem Bagel",
+    "category": "grain",
+    "calories_kcal": 280,
+    "protein_g": 9.0,
+    "carbs_g": 52.0,
+    "fat_g": 4.0,
+    "default_unit": "unit",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "בייגל",
+      "בגל עם שומשום"
+    ],
+    "aliases_en": [
+      "jerusalem bagel",
+      "sesame bagel"
+    ],
+    "source": "json",
+    "food_id": "json_jerusalem_bagel",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פוקצ'ה",
+    "name_en": "Focaccia",
+    "category": "grain",
+    "calories_kcal": 250,
+    "protein_g": 7.0,
+    "carbs_g": 38.0,
+    "fat_g": 8.0,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [],
+    "aliases_en": [
+      "focaccia"
+    ],
+    "source": "json",
+    "food_id": "json_focaccia",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "צ'יאבטה",
+    "name_en": "Ciabatta",
+    "category": "grain",
+    "calories_kcal": 265,
+    "protein_g": 9.0,
+    "carbs_g": 50.0,
+    "fat_g": 3.5,
+    "default_unit": "gram",
+    "default_serving_g": 80,
+    "aliases_he": [
+      "צ'יאבאטה"
+    ],
+    "aliases_en": [
+      "ciabatta"
+    ],
+    "source": "json",
+    "food_id": "json_ciabatta",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פרוסת לחם אחידה",
+    "name_en": "White Bread Slice",
+    "category": "grain",
+    "calories_kcal": 80,
+    "protein_g": 2.5,
+    "carbs_g": 15.0,
+    "fat_g": 1.0,
+    "default_unit": "slice",
+    "default_serving_g": 30,
+    "aliases_he": [
+      "לחם אחיד",
+      "לחם לבן פרוסה"
+    ],
+    "aliases_en": [
+      "white bread slice"
+    ],
+    "source": "json",
+    "food_id": "json_white_bread_slice",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "בורקס תפוח אדמה",
+    "name_en": "Potato Bourekas",
+    "category": "grain",
+    "calories_kcal": 265,
+    "protein_g": 5.5,
+    "carbs_g": 32.0,
+    "fat_g": 13.0,
+    "default_unit": "unit",
+    "default_serving_g": 80,
+    "aliases_he": [
+      "בורקס עם תפוח אדמה"
+    ],
+    "aliases_en": [
+      "potato bourekas"
+    ],
+    "source": "json",
+    "food_id": "json_potato_bourekas",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "בורקס פטריות",
+    "name_en": "Mushroom Bourekas",
+    "category": "grain",
+    "calories_kcal": 245,
+    "protein_g": 5.0,
+    "carbs_g": 28.0,
+    "fat_g": 12.5,
+    "default_unit": "unit",
+    "default_serving_g": 80,
+    "aliases_he": [],
+    "aliases_en": [
+      "mushroom bourekas"
+    ],
+    "source": "json",
+    "food_id": "json_mushroom_bourekas",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "בורקס תרד",
+    "name_en": "Spinach Bourekas",
+    "category": "grain",
+    "calories_kcal": 235,
+    "protein_g": 6.0,
+    "carbs_g": 26.0,
+    "fat_g": 11.5,
+    "default_unit": "unit",
+    "default_serving_g": 80,
+    "aliases_he": [
+      "בורקס עלים"
+    ],
+    "aliases_en": [
+      "spinach bourekas"
+    ],
+    "source": "json",
+    "food_id": "json_spinach_bourekas",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "ביצה קשה",
+    "name_en": "Hard Boiled Egg",
+    "category": "protein",
+    "calories_kcal": 78,
+    "protein_g": 6.3,
+    "carbs_g": 0.6,
+    "fat_g": 5.3,
+    "default_unit": "unit",
+    "default_serving_g": 50,
+    "aliases_he": [
+      "ביצה מקושקשת",
+      "ביצה עין"
+    ],
+    "aliases_en": [
+      "hard boiled egg",
+      "boiled egg"
+    ],
+    "source": "json",
+    "food_id": "json_hard_boiled_egg",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פסטה ברוטב עגבניות",
+    "name_en": "Pasta with Tomato Sauce",
+    "category": "grain",
+    "calories_kcal": 165,
+    "protein_g": 5.5,
+    "carbs_g": 30.0,
+    "fat_g": 3.5,
+    "default_unit": "gram",
+    "default_serving_g": 250,
+    "aliases_he": [
+      "פסטה ברוטב",
+      "פסטה עם רוטב"
+    ],
+    "aliases_en": [
+      "pasta tomato",
+      "spaghetti bolognese"
+    ],
+    "source": "json",
+    "food_id": "json_pasta_with_tomato_sauce",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פסטה ברוטב שמנת",
+    "name_en": "Pasta with Cream Sauce",
+    "category": "grain",
+    "calories_kcal": 285,
+    "protein_g": 8.0,
+    "carbs_g": 35.0,
+    "fat_g": 12.0,
+    "default_unit": "gram",
+    "default_serving_g": 250,
+    "aliases_he": [
+      "פסטה אלפרדו",
+      "פסטה שמנת"
+    ],
+    "aliases_en": [
+      "pasta cream",
+      "alfredo"
+    ],
+    "source": "json",
+    "food_id": "json_pasta_with_cream_sauce",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פסטה בולונז",
+    "name_en": "Pasta Bolognese",
+    "category": "grain",
+    "calories_kcal": 210,
+    "protein_g": 12.0,
+    "carbs_g": 28.0,
+    "fat_g": 6.0,
+    "default_unit": "gram",
+    "default_serving_g": 300,
+    "aliases_he": [
+      "בולונז",
+      "ספגטי בולונז"
+    ],
+    "aliases_en": [
+      "bolognese",
+      "spaghetti bolognese"
+    ],
+    "source": "json",
+    "food_id": "json_pasta_bolognese",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פיצה",
+    "name_en": "Pizza",
+    "category": "grain",
+    "calories_kcal": 265,
+    "protein_g": 11.0,
+    "carbs_g": 33.0,
+    "fat_g": 9.5,
+    "default_unit": "slice",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "פיצה גבינה",
+      "פיצה מרגריטה"
+    ],
+    "aliases_en": [
+      "pizza",
+      "pizza slice"
+    ],
+    "source": "json",
+    "food_id": "json_pizza",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "סלט ישראלי",
+    "name_en": "Israeli Salad",
+    "category": "vegetable",
+    "calories_kcal": 45,
+    "protein_g": 1.5,
+    "carbs_g": 7.0,
+    "fat_g": 2.0,
+    "fiber_g": 2.0,
+    "default_unit": "gram",
+    "default_serving_g": 150,
+    "aliases_he": [
+      "סלט ירושלמי",
+      "סלט ערבי"
+    ],
+    "aliases_en": [
+      "israeli salad",
+      "arabic salad"
+    ],
+    "source": "json",
+    "food_id": "json_israeli_salad",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "חצילים מרוקאים",
+    "name_en": "Moroccan Eggplant",
+    "category": "vegetable",
+    "calories_kcal": 85,
+    "protein_g": 1.5,
+    "carbs_g": 8.0,
+    "fat_g": 5.5,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "חציל מרוקאי",
+      "שקשוקת חצילים"
+    ],
+    "aliases_en": [
+      "moroccan eggplant",
+      "eggplant salad"
+    ],
+    "source": "json",
+    "food_id": "json_moroccan_eggplant",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "חצילים שרופים",
+    "name_en": "Burnt Eggplant Salad",
+    "category": "vegetable",
+    "calories_kcal": 60,
+    "protein_g": 1.5,
+    "carbs_g": 7.0,
+    "fat_g": 3.0,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "סלט חצילים",
+      "בבא גנוש"
+    ],
+    "aliases_en": [
+      "baba ganoush",
+      "eggplant dip"
+    ],
+    "source": "json",
+    "food_id": "json_burnt_eggplant_salad",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "סלט כרוב",
+    "name_en": "Coleslaw",
+    "category": "vegetable",
+    "calories_kcal": 70,
+    "protein_g": 1.5,
+    "carbs_g": 9.0,
+    "fat_g": 3.0,
+    "fiber_g": 2.5,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "כרוב קצוץ",
+      "קולסלאו"
+    ],
+    "aliases_en": [
+      "coleslaw",
+      "cabbage salad"
+    ],
+    "source": "json",
+    "food_id": "json_coleslaw",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "סלט קיסר",
+    "name_en": "Caesar Salad",
+    "category": "vegetable",
+    "calories_kcal": 150,
+    "protein_g": 5.0,
+    "carbs_g": 8.0,
+    "fat_g": 11.0,
+    "default_unit": "gram",
+    "default_serving_g": 200,
+    "aliases_he": [],
+    "aliases_en": [
+      "caesar salad"
+    ],
+    "source": "json",
+    "food_id": "json_caesar_salad",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "טאבולה",
+    "name_en": "Tabbouleh",
+    "category": "grain",
+    "calories_kcal": 130,
+    "protein_g": 3.5,
+    "carbs_g": 18.0,
+    "fat_g": 5.5,
+    "fiber_g": 3.0,
+    "default_unit": "gram",
+    "default_serving_g": 150,
+    "aliases_he": [
+      "טבולה"
+    ],
+    "aliases_en": [
+      "tabbouleh",
+      "tabouleh"
+    ],
+    "source": "json",
+    "food_id": "json_tabbouleh",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "קרקרים",
+    "name_en": "Crackers",
+    "category": "grain",
+    "calories_kcal": 420,
+    "protein_g": 9.0,
+    "carbs_g": 68.0,
+    "fat_g": 12.0,
+    "default_unit": "unit",
+    "default_serving_g": 10,
+    "aliases_he": [
+      "קרקר",
+      "ביסקוויטים"
+    ],
+    "aliases_en": [
+      "crackers",
+      "biscuit"
+    ],
+    "source": "json",
+    "food_id": "json_crackers",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "חטיף אנרגיה",
+    "name_en": "Energy Bar",
+    "category": "snack",
+    "calories_kcal": 380,
+    "protein_g": 10.0,
+    "carbs_g": 55.0,
+    "fat_g": 12.0,
+    "default_unit": "unit",
+    "default_serving_g": 40,
+    "aliases_he": [
+      "בר אנרגיה",
+      "גרנולה בר"
+    ],
+    "aliases_en": [
+      "energy bar",
+      "granola bar"
+    ],
+    "source": "json",
+    "food_id": "json_energy_bar",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פופקורן",
+    "name_en": "Popcorn",
+    "category": "snack",
+    "calories_kcal": 375,
+    "protein_g": 11.0,
+    "carbs_g": 74.0,
+    "fat_g": 4.5,
+    "default_unit": "gram",
+    "default_serving_g": 30,
+    "aliases_he": [],
+    "aliases_en": [
+      "popcorn"
+    ],
+    "source": "json",
+    "food_id": "json_popcorn",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "חטיף שוקולד",
+    "name_en": "Chocolate Bar",
+    "category": "snack",
+    "calories_kcal": 535,
+    "protein_g": 6.0,
+    "carbs_g": 59.0,
+    "fat_g": 30.0,
+    "default_unit": "unit",
+    "default_serving_g": 50,
+    "aliases_he": [
+      "שוקולד חלב",
+      "טבלת שוקולד"
+    ],
+    "aliases_en": [
+      "chocolate bar",
+      "milk chocolate"
+    ],
+    "source": "json",
+    "food_id": "json_chocolate_bar",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "עוגת גבינה",
+    "name_en": "Cheesecake",
+    "category": "snack",
+    "calories_kcal": 320,
+    "protein_g": 7.0,
+    "carbs_g": 28.0,
+    "fat_g": 20.0,
+    "default_unit": "slice",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "קייק גבינה"
+    ],
+    "aliases_en": [
+      "cheesecake"
+    ],
+    "source": "json",
+    "food_id": "json_cheesecake",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "עוגת שוקולד",
+    "name_en": "Chocolate Cake",
+    "category": "snack",
+    "calories_kcal": 380,
+    "protein_g": 5.0,
+    "carbs_g": 48.0,
+    "fat_g": 19.0,
+    "default_unit": "slice",
+    "default_serving_g": 80,
+    "aliases_he": [],
+    "aliases_en": [
+      "chocolate cake"
+    ],
+    "source": "json",
+    "food_id": "json_chocolate_cake",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "עוגיות",
+    "name_en": "Cookies",
+    "category": "snack",
+    "calories_kcal": 450,
+    "protein_g": 6.0,
+    "carbs_g": 65.0,
+    "fat_g": 18.0,
+    "default_unit": "unit",
+    "default_serving_g": 15,
+    "aliases_he": [
+      "עוגייה",
+      "ביסקוויט"
+    ],
+    "aliases_en": [
+      "cookies",
+      "biscuits"
+    ],
+    "source": "json",
+    "food_id": "json_cookies",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "גלידה",
+    "name_en": "Ice Cream",
+    "category": "snack",
+    "calories_kcal": 200,
+    "protein_g": 3.5,
+    "carbs_g": 24.0,
+    "fat_g": 10.0,
+    "default_unit": "scoop",
+    "default_serving_g": 80,
+    "aliases_he": [
+      "גלידת וניל",
+      "גביע גלידה"
+    ],
+    "aliases_en": [
+      "ice cream",
+      "gelato"
+    ],
+    "source": "json",
+    "food_id": "json_ice_cream",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מקרון",
+    "name_en": "Macaron",
+    "category": "snack",
+    "calories_kcal": 380,
+    "protein_g": 6.0,
+    "carbs_g": 50.0,
+    "fat_g": 17.0,
+    "default_unit": "unit",
+    "default_serving_g": 20,
+    "aliases_he": [],
+    "aliases_en": [
+      "macaron",
+      "macaroon"
+    ],
+    "source": "json",
+    "food_id": "json_macaron",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "קפה הפוך",
+    "name_en": "Latte",
+    "category": "dairy",
+    "calories_kcal": 95,
+    "protein_g": 5.0,
+    "carbs_g": 10.0,
+    "fat_g": 4.0,
+    "default_unit": "cup",
+    "default_serving_g": 250,
+    "aliases_he": [
+      "לאטה",
+      "קפה עם חלב"
+    ],
+    "aliases_en": [
+      "latte",
+      "cafe latte"
+    ],
+    "source": "json",
+    "food_id": "json_latte",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "מיץ תפוחים",
+    "name_en": "Apple Juice",
+    "category": "fruit",
+    "calories_kcal": 46,
+    "protein_g": 0.1,
+    "carbs_g": 11.3,
+    "fat_g": 0.1,
+    "default_unit": "cup",
+    "default_serving_g": 240,
+    "aliases_he": [],
+    "aliases_en": [
+      "apple juice"
+    ],
+    "source": "json",
+    "food_id": "json_apple_juice",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "שייק פירות",
+    "name_en": "Fruit Smoothie",
+    "category": "fruit",
+    "calories_kcal": 140,
+    "protein_g": 2.5,
+    "carbs_g": 30.0,
+    "fat_g": 1.0,
+    "default_unit": "cup",
+    "default_serving_g": 300,
+    "aliases_he": [
+      "שייק",
+      "סמוזי פירות"
+    ],
+    "aliases_en": [
+      "smoothie",
+      "fruit shake"
+    ],
+    "source": "json",
+    "food_id": "json_fruit_smoothie",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "שייק חלבון",
+    "name_en": "Protein Shake",
+    "category": "protein",
+    "calories_kcal": 180,
+    "protein_g": 28.0,
+    "carbs_g": 10.0,
+    "fat_g": 3.0,
+    "default_unit": "cup",
+    "default_serving_g": 300,
+    "aliases_he": [
+      "שייק חלבון",
+      "פרוטאין שייק"
+    ],
+    "aliases_en": [
+      "protein shake",
+      "whey shake"
+    ],
+    "source": "json",
+    "food_id": "json_protein_shake",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "לימונדה",
+    "name_en": "Lemonade",
+    "category": "other",
+    "calories_kcal": 40,
+    "protein_g": 0.1,
+    "carbs_g": 10.5,
+    "fat_g": 0.0,
+    "default_unit": "cup",
+    "default_serving_g": 250,
+    "aliases_he": [],
+    "aliases_en": [
+      "lemonade"
+    ],
+    "source": "json",
+    "food_id": "json_lemonade",
+    "fiber_g": 0.0,
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "פולים ירוקים",
+    "name_en": "Edamame",
+    "category": "legume",
+    "calories_kcal": 121,
+    "protein_g": 11.9,
+    "carbs_g": 8.9,
+    "fat_g": 5.2,
+    "fiber_g": 5.2,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "אדמאמה"
+    ],
+    "aliases_en": [
+      "edamame",
+      "green soybeans"
+    ],
+    "source": "json",
+    "food_id": "json_edamame",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "ברוקולי מבושל",
+    "name_en": "Cooked Broccoli",
+    "category": "vegetable",
+    "calories_kcal": 35,
+    "protein_g": 2.4,
+    "carbs_g": 6.6,
+    "fat_g": 0.4,
+    "fiber_g": 2.6,
+    "default_unit": "gram",
+    "default_serving_g": 150,
+    "aliases_he": [],
+    "aliases_en": [
+      "cooked broccoli",
+      "steamed broccoli"
+    ],
+    "source": "json",
+    "food_id": "json_cooked_broccoli",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
+  },
+  {
+    "name_he": "סלרי",
+    "name_en": "Celery",
+    "category": "vegetable",
+    "calories_kcal": 16,
+    "protein_g": 0.7,
+    "carbs_g": 3.0,
+    "fat_g": 0.2,
+    "fiber_g": 1.6,
+    "default_unit": "gram",
+    "default_serving_g": 100,
+    "aliases_he": [
+      "סלרי",
+      "כרפס"
+    ],
+    "aliases_en": [
+      "celery"
+    ],
+    "source": "json",
+    "food_id": "json_celery",
+    "sugar_g": 0.0,
+    "sodium_mg": 0.0,
+    "is_custom": false
   }
 ]

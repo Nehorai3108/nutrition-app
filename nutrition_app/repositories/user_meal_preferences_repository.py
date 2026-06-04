@@ -79,11 +79,6 @@ class UserMealPreferencesRepository:
             "show_streaks": bool(row.get("show_streaks", False)),
             "daily_notifications": bool(row.get("daily_notifications", False)),
             "weekly_summary": bool(row.get("weekly_summary", False)),
-            "daily_reminders_enabled": bool(row.get("daily_reminders_enabled", False)),
-            "weekly_summary_email": bool(row.get("weekly_summary_email", False)),
-            # Legacy rows pre-FF_PROTEIN_FIRST_WIDGET lack this column —
-            # default 'calories' so the home dashboard keeps its prior layout.
-            "primary_metric": row.get("primary_metric") or "calories",
         }
 
     def _sb_save(self, prefs: UserMealPreferences) -> bool:
@@ -100,9 +95,6 @@ class UserMealPreferencesRepository:
             "show_streaks": prefs.show_streaks,
             "daily_notifications": prefs.daily_notifications,
             "weekly_summary": prefs.weekly_summary,
-            "daily_reminders_enabled": prefs.daily_reminders_enabled,
-            "weekly_summary_email": prefs.weekly_summary_email,
-            "primary_metric": prefs.primary_metric,
         }
         # Drift-tolerant: strip unknown columns and retry, up to 8 times.
         # Same pattern ProfileRepository uses for schema drift.

@@ -21,11 +21,11 @@ from ui.components import (
 from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-# ── Page config ──────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="BiteFit · מתכון",
-    page_icon="🍽",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -43,7 +43,7 @@ with st.sidebar:
     st.divider()
     render_chatbot_sidebar()
 
-# ── Load recipe ──────────────────────────────────────────────────────────────
+#  Load recipe 
 
 @st.cache_resource
 def get_recipe_manager():
@@ -57,7 +57,7 @@ nav_menu(active="מתכונים")
 
 if not recipe_id:
     st.error("לא צוין מזהה מתכון.")
-    st.page_link("pages/2_recipes.py", label="⬅ חזור לרשימת המתכונים")
+    st.page_link("pages/2_recipes.py", label=" חזור לרשימת המתכונים")
     st.stop()
 
 manager = get_recipe_manager()
@@ -65,10 +65,10 @@ recipe = manager.get_recipe(recipe_id)
 
 if not recipe:
     st.error(f"מתכון עם מזהה '{recipe_id}' לא נמצא.")
-    st.page_link("pages/2_recipes.py", label="⬅ חזור לרשימת המתכונים")
+    st.page_link("pages/2_recipes.py", label=" חזור לרשימת המתכונים")
     st.stop()
 
-# ── Header ───────────────────────────────────────────────────────────────────
+#  Header 
 
 name_he = recipe.get("name_he", "")
 name_en = recipe.get("name_en", "")
@@ -82,7 +82,7 @@ nutrition = recipe.get("total_nutrition", {})
 page_header(name_he, icon_name="recipe", subtitle=name_en)
 st.markdown(kashrut_badge_html(kashrut_raw), unsafe_allow_html=True)
 
-# ── Recipe image ─────────────────────────────────────────────────────────────
+#  Recipe image 
 _image_path = recipe.get("image_path")
 if _image_path:
     _abs_img = _image_path if os.path.isabs(_image_path) else os.path.join(
@@ -93,17 +93,17 @@ if _image_path:
         img_col.image(_abs_img, caption=name_he, use_container_width=True)
         _credit = recipe.get("image_credit")
         if _credit:
-            img_col.caption(f"📷 {_credit}")
+            img_col.caption(f" {_credit}")
 
-# ── Info row ─────────────────────────────────────────────────────────────────
+#  Info row 
 
 info_cols = st.columns(2)
 info_cols[0].metric("⏱ זמן הכנה", f"{prep_time} דקות")
-info_cols[1].metric("🍽 מנות", str(portions))
+info_cols[1].metric(" מנות", str(portions))
 
 st.divider()
 
-# ── Nutritional breakdown per portion ────────────────────────────────────────
+#  Nutritional breakdown per portion 
 
 st.markdown("### ערכים תזונתיים למנה")
 
@@ -113,14 +113,14 @@ carbs = round(nutrition.get("carbs", 0) / portions)
 fat = round(nutrition.get("fat", 0) / portions)
 
 macro_cols = st.columns(4)
-macro_cols[0].metric("🔥 קלוריות", f"{cal} קק״ל")
-macro_cols[1].metric("💪 חלבון", f"{protein} ג׳")
-macro_cols[2].metric("🌾 פחמימות", f"{carbs} ג׳")
-macro_cols[3].metric("🫒 שומן", f"{fat} ג׳")
+macro_cols[0].metric(" קלוריות", f"{cal} קק״ל")
+macro_cols[1].metric(" חלבון", f"{protein} ג׳")
+macro_cols[2].metric(" פחמימות", f"{carbs} ג׳")
+macro_cols[3].metric(" שומן", f"{fat} ג׳")
 
 st.divider()
 
-# ── Ingredients ──────────────────────────────────────────────────────────────
+#  Ingredients 
 
 section_header("מרכיבים", "recipe")
 
@@ -128,7 +128,7 @@ for ing in ingredients:
     display = format_ingredient_display(ing)
     st.markdown(f"• {display}")
 
-# ── Preparation Instructions ────────────────────────────────────────────────
+#  Preparation Instructions 
 
 steps = get_instructions(recipe_id)
 if steps:
@@ -139,7 +139,7 @@ if steps:
 
 st.divider()
 
-# ── Tags ─────────────────────────────────────────────────────────────────────
+#  Tags 
 
 if tags:
     section_header("תגיות", "menu")

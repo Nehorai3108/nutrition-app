@@ -13858,5 +13858,1366 @@
       "high_protein"
     ],
     "kashrut": "meat"
+  },
+  {
+    "name_he": "ביצים מטוגנות עם פטרוזיליה",
+    "name_en": "Fried Eggs with Parsley",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 10,
+    "portions": 1,
+    "kashrut": "meat",
+    "tags": [
+      "ביצים",
+      "פטרוזיליה"
+    ],
+    "ingredients": [
+      {
+        "food_name": "ביצים",
+        "food_name_en": "eggs",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן",
+        "food_name_en": "oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 180,
+      "protein": 12,
+      "carbs": 2,
+      "fat": 14,
+      "fiber": 2
+    },
+    "recipe_id": "recipe_271",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "דייסה טבעונית",
+    "name_en": "Vegan Omelette",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 15,
+    "portions": 1,
+    "kashrut": "parve",
+    "tags": [
+      "טבעוני",
+      "דייסה"
+    ],
+    "ingredients": [
+      {
+        "food_name": "תירס",
+        "food_name_en": "corn",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "סויה",
+        "food_name_en": "soy",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן",
+        "food_name_en": "oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 200,
+      "protein": 10,
+      "carbs": 20,
+      "fat": 10,
+      "fiber": 4
+    },
+    "recipe_id": "recipe_272",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "פנקייק עם תותים",
+    "name_en": "Pancakes with Strawberries",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 1,
+    "kashrut": "dairy",
+    "tags": [
+      "פנקייק",
+      "תותים"
+    ],
+    "ingredients": [
+      {
+        "food_name": "קמח",
+        "food_name_en": "flour",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב",
+        "food_name_en": "milk",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תותים",
+        "food_name_en": "strawberries",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 300,
+      "protein": 10,
+      "carbs": 40,
+      "fat": 15,
+      "fiber": 4
+    },
+    "recipe_id": "recipe_273",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "שייק טבעוני",
+    "name_en": "Vegan Smoothie",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 5,
+    "portions": 1,
+    "kashrut": "parve",
+    "tags": [
+      "טבעוני",
+      "שייק"
+    ],
+    "ingredients": [
+      {
+        "food_name": "בננה",
+        "food_name_en": "banana",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "אבוקדו",
+        "food_name_en": "avocado",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מים",
+        "food_name_en": "water",
+        "quantity": 200,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 200,
+      "protein": 4,
+      "carbs": 30,
+      "fat": 10,
+      "fiber": 6
+    },
+    "recipe_id": "recipe_274",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "דייסה עם גבינה",
+    "name_en": "Cheese Omelette",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 15,
+    "portions": 1,
+    "kashrut": "dairy",
+    "tags": [
+      "דייסה",
+      "גבינה"
+    ],
+    "ingredients": [
+      {
+        "food_name": "ביצים",
+        "food_name_en": "eggs",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינה",
+        "food_name_en": "cheese",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן",
+        "food_name_en": "oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 250,
+      "protein": 15,
+      "carbs": 2,
+      "fat": 18,
+      "fiber": 2
+    },
+    "recipe_id": "recipe_275",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "טוסט עם זיתים",
+    "name_en": "Olive Toast",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 5,
+    "portions": 1,
+    "kashrut": "parve",
+    "tags": [
+      "טוסט",
+      "זיתים"
+    ],
+    "ingredients": [
+      {
+        "food_name": "לחם",
+        "food_name_en": "bread",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זיתים",
+        "food_name_en": "olives",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלח",
+        "food_name_en": "salt",
+        "quantity": 5,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 200,
+      "protein": 4,
+      "carbs": 20,
+      "fat": 10,
+      "fiber": 4
+    },
+    "recipe_id": "recipe_276",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "פנקייק טבעוני",
+    "name_en": "Vegan Pancake",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 1,
+    "kashrut": "parve",
+    "tags": [
+      "פנקייק",
+      "טבעוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "קמח",
+        "food_name_en": "flour",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מים",
+        "food_name_en": "water",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן",
+        "food_name_en": "oil",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 250,
+      "protein": 6,
+      "carbs": 40,
+      "fat": 10,
+      "fiber": 4
+    },
+    "recipe_id": "recipe_277",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "גרנולה עם פירות",
+    "name_en": "Granola with Fruits",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 10,
+    "portions": 1,
+    "kashrut": "parve",
+    "tags": [
+      "טבעוני",
+      "בריא"
+    ],
+    "ingredients": [
+      {
+        "food_name": "גרנולה",
+        "food_name_en": "Granola",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פירות יבשים",
+        "food_name_en": "Dried Fruits",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב אלמונד",
+        "food_name_en": "Almond Milk",
+        "quantity": 200,
+        "unit": "milliliters"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 350,
+      "protein": 10,
+      "carbs": 50,
+      "fat": 15,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_278",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "וופלים עם דבש",
+    "name_en": "Waffles with Honey",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 1,
+    "kashrut": "dairy",
+    "tags": [
+      "מתוק",
+      "ישראלי"
+    ],
+    "ingredients": [
+      {
+        "food_name": "וופלים",
+        "food_name_en": "Waffles",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "דבש",
+        "food_name_en": "Honey",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חמאה",
+        "food_name_en": "Butter",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 400,
+      "protein": 5,
+      "carbs": 60,
+      "fat": 20,
+      "fiber": 2
+    },
+    "recipe_id": "recipe_279",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "חביתות עם תירס",
+    "name_en": "Corn Pancakes",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 2,
+    "kashrut": "parve",
+    "tags": [
+      "טבעוני",
+      "אמריקאי"
+    ],
+    "ingredients": [
+      {
+        "food_name": "קמח",
+        "food_name_en": "Flour",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תירס",
+        "food_name_en": "Corn",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב סויה",
+        "food_name_en": "Soy Milk",
+        "quantity": 250,
+        "unit": "milliliters"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 500,
+      "protein": 15,
+      "carbs": 70,
+      "fat": 10,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_280",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "וופלים עם בננה",
+    "name_en": "Waffles with Banana",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 1,
+    "kashrut": "dairy",
+    "tags": [
+      "מתוק",
+      "ישראלי"
+    ],
+    "ingredients": [
+      {
+        "food_name": "וופלים",
+        "food_name_en": "Waffles",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בננה",
+        "food_name_en": "Banana",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חמאה",
+        "food_name_en": "Butter",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 400,
+      "protein": 5,
+      "carbs": 60,
+      "fat": 20,
+      "fiber": 2
+    },
+    "recipe_id": "recipe_281",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "גרנולה עם קוואקר",
+    "name_en": "Granola with Oatmeal",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 15,
+    "portions": 1,
+    "kashrut": "parve",
+    "tags": [
+      "טבעוני",
+      "בריא"
+    ],
+    "ingredients": [
+      {
+        "food_name": "גרנולה",
+        "food_name_en": "Granola",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "קוואקר",
+        "food_name_en": "Oatmeal",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב אלמונד",
+        "food_name_en": "Almond Milk",
+        "quantity": 200,
+        "unit": "milliliters"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 350,
+      "protein": 10,
+      "carbs": 50,
+      "fat": 15,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_282",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "חביתות עם תמרים",
+    "name_en": "Date Pancakes",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 2,
+    "kashrut": "parve",
+    "tags": [
+      "טבעוני",
+      "ים-תיכוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "קמח",
+        "food_name_en": "Flour",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "תמרים",
+        "food_name_en": "Dates",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב סויה",
+        "food_name_en": "Soy Milk",
+        "quantity": 250,
+        "unit": "milliliters"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 500,
+      "protein": 15,
+      "carbs": 70,
+      "fat": 10,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_283",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "שאקשוקה תוניסאית",
+    "name_en": "Tunisian Shakshuka",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 2,
+    "kashrut": "dairy|parve",
+    "tags": [
+      "ים-תיכוני",
+      "צמחוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "ביצים",
+        "food_name_en": "eggs",
+        "quantity": 240,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבניות",
+        "food_name_en": "tomatoes",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפלים",
+        "food_name_en": "peppers",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פפריקה",
+        "food_name_en": "paprika",
+        "quantity": 10,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 400,
+      "protein": 20,
+      "carbs": 30,
+      "fat": 20,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_284",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "לחם עם גבינה וירקות",
+    "name_en": "Bread with Cheese and Vegetables",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 10,
+    "portions": 1,
+    "kashrut": "dairy",
+    "tags": [
+      "ים-תיכוני",
+      "צמחוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "לחם",
+        "food_name_en": "bread",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינה",
+        "food_name_en": "cheese",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבניות",
+        "food_name_en": "tomatoes",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל",
+        "food_name_en": "pepper",
+        "quantity": 25,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 300,
+      "protein": 15,
+      "carbs": 40,
+      "fat": 10,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_285",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "מנקיקה עם זיתים וגבינה",
+    "name_en": "Manaqish with Olives and Cheese",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 15,
+    "portions": 2,
+    "kashrut": "dairy",
+    "tags": [
+      "ים-תיכוני",
+      "צמחוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "מנקיקה",
+        "food_name_en": "manaqish",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "זיתים",
+        "food_name_en": "olives",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינה",
+        "food_name_en": "cheese",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 400,
+      "protein": 15,
+      "carbs": 40,
+      "fat": 20,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_286",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "קוסה עם חומוס",
+    "name_en": "Kousa with Hummus",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 15,
+    "portions": 2,
+    "kashrut": "parve",
+    "tags": [
+      "ים-תיכוני",
+      "טבעוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "קוסה",
+        "food_name_en": "kousa",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חומוס",
+        "food_name_en": "hummus",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 300,
+      "protein": 10,
+      "carbs": 40,
+      "fat": 15,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_287",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "מקדושה עם ביצים",
+    "name_en": "Makdoush with Eggs",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 2,
+    "kashrut": "dairy",
+    "tags": [
+      "ים-תיכוני",
+      "צמחוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "מקדושה",
+        "food_name_en": "makdoush",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצים",
+        "food_name_en": "eggs",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 350,
+      "protein": 20,
+      "carbs": 30,
+      "fat": 15,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_288",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "פלאפל עם חומוס",
+    "name_en": "Falafel with Hummus",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 15,
+    "portions": 2,
+    "kashrut": "parve",
+    "tags": [
+      "ים-תיכוני",
+      "טבעוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "פלאפל",
+        "food_name_en": "falafel",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חומוס",
+        "food_name_en": "hummus",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 400,
+      "protein": 15,
+      "carbs": 40,
+      "fat": 20,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_289",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "ג'חנון עם ביצים",
+    "name_en": "Jachnun with Eggs",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 2,
+    "kashrut": "dairy",
+    "tags": [
+      "ים-תיכוני",
+      "צמחוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "ג'חנון",
+        "food_name_en": "jachnun",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצים",
+        "food_name_en": "eggs",
+        "quantity": 120,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 350,
+      "protein": 20,
+      "carbs": 30,
+      "fat": 15,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_290",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "קנאפה עם גבינה ופיסטוק",
+    "name_en": "Knafeh with Cheese and Pistachio",
+    "meal_types": [
+      "BREAKFAST"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 2,
+    "kashrut": "dairy",
+    "tags": [
+      "ים-תיכוני",
+      "צמחוני"
+    ],
+    "ingredients": [
+      {
+        "food_name": "קנאפה",
+        "food_name_en": "knafeh",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינה",
+        "food_name_en": "cheese",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פיסטוק",
+        "food_name_en": "pistachio",
+        "quantity": 25,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 400,
+      "protein": 15,
+      "carbs": 40,
+      "fat": 20,
+      "fiber": 5
+    },
+    "recipe_id": "recipe_291",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "עוף בתנור עם תבלינים",
+    "name_en": "Baked Chicken with Spices",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 4,
+    "kashrut": "meat",
+    "tags": [
+      "chicken",
+      "baked",
+      "spices"
+    ],
+    "ingredients": [
+      {
+        "food_name": "בשר עוף",
+        "food_name_en": "chicken",
+        "quantity": 800,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל שחור",
+        "food_name_en": "black pepper",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מלח",
+        "food_name_en": "salt",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 20,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 1200,
+      "protein": 80,
+      "carbs": 0,
+      "fat": 40,
+      "fiber": 0
+    },
+    "recipe_id": "recipe_292",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "קציצות עוף עם ירקות",
+    "name_en": "Chicken Meatballs with Vegetables",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 6,
+    "kashrut": "meat",
+    "tags": [
+      "meatballs",
+      "chicken",
+      "vegetables"
+    ],
+    "ingredients": [
+      {
+        "food_name": "בשר עוף טחון",
+        "food_name_en": "ground chicken",
+        "quantity": 600,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל",
+        "food_name_en": "bell pepper",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 1500,
+      "protein": 100,
+      "carbs": 20,
+      "fat": 60,
+      "fiber": 10
+    },
+    "recipe_id": "recipe_293",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "שניצל עוף עם סלט",
+    "name_en": "Chicken Schnitzel with Salad",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 4,
+    "kashrut": "meat",
+    "tags": [
+      "schnitzel",
+      "chicken",
+      "salad"
+    ],
+    "ingredients": [
+      {
+        "food_name": "בשר עוף",
+        "food_name_en": "chicken",
+        "quantity": 800,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לחמניות",
+        "food_name_en": "breadcrumbs",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חסה",
+        "food_name_en": "lettuce",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "טומאט",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 1400,
+      "protein": 80,
+      "carbs": 40,
+      "fat": 60,
+      "fiber": 10
+    },
+    "recipe_id": "recipe_294",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "בשר טחון עם ירקות",
+    "name_en": "Ground Meat with Vegetables",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 6,
+    "kashrut": "meat",
+    "tags": [
+      "ground meat",
+      "vegetables"
+    ],
+    "ingredients": [
+      {
+        "food_name": "בשר טחון",
+        "food_name_en": "ground meat",
+        "quantity": 600,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל",
+        "food_name_en": "bell pepper",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 1600,
+      "protein": 100,
+      "carbs": 20,
+      "fat": 80,
+      "fiber": 10
+    },
+    "recipe_id": "recipe_295",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "קציצות טופו עם ירקות",
+    "name_en": "Tofu Meatballs with Vegetables",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 6,
+    "kashrut": "parve",
+    "tags": [
+      "tofu",
+      "meatballs",
+      "vegetables"
+    ],
+    "ingredients": [
+      {
+        "food_name": "טופו",
+        "food_name_en": "tofu",
+        "quantity": 600,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל",
+        "food_name_en": "bell pepper",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 1000,
+      "protein": 40,
+      "carbs": 20,
+      "fat": 20,
+      "fiber": 10
+    },
+    "recipe_id": "recipe_296",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "שניצל פולקרית עם סלט",
+    "name_en": "Vegetable Schnitzel with Salad",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 20,
+    "portions": 4,
+    "kashrut": "parve",
+    "tags": [
+      "schnitzel",
+      "vegetable",
+      "salad"
+    ],
+    "ingredients": [
+      {
+        "food_name": "פולקרית",
+        "food_name_en": "portobello mushroom",
+        "quantity": 400,
+        "unit": "grams"
+      },
+      {
+        "food_name": "לחמניות",
+        "food_name_en": "breadcrumbs",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חסה",
+        "food_name_en": "lettuce",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "טומאט",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 800,
+      "protein": 20,
+      "carbs": 40,
+      "fat": 20,
+      "fiber": 10
+    },
+    "recipe_id": "recipe_297",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "בשר טחון צמחוני עם ירקות",
+    "name_en": "Vegetarian Ground Meat with Vegetables",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 6,
+    "kashrut": "parve",
+    "tags": [
+      "vegetarian",
+      "ground meat",
+      "vegetables"
+    ],
+    "ingredients": [
+      {
+        "food_name": "בשר טחון צמחוני",
+        "food_name_en": "vegetarian ground meat",
+        "quantity": 600,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל",
+        "food_name_en": "bell pepper",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 1200,
+      "protein": 40,
+      "carbs": 20,
+      "fat": 40,
+      "fiber": 10
+    },
+    "recipe_id": "recipe_298",
+    "image_path": "",
+    "image_credit": ""
+  },
+  {
+    "name_he": "קציצות טבעוניות עם ירקות",
+    "name_en": "Vegan Meatballs with Vegetables",
+    "meal_types": [
+      "LUNCH"
+    ],
+    "prep_time_minutes": 25,
+    "portions": 6,
+    "kashrut": "parve",
+    "tags": [
+      "vegan",
+      "meatballs",
+      "vegetables"
+    ],
+    "ingredients": [
+      {
+        "food_name": "קציצות טבעוניות",
+        "food_name_en": "vegan meatballs",
+        "quantity": 600,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל",
+        "food_name_en": "bell pepper",
+        "quantity": 100,
+        "unit": "grams"
+      }
+    ],
+    "total_nutrition": {
+      "calories": 1000,
+      "protein": 20,
+      "carbs": 20,
+      "fat": 20,
+      "fiber": 10
+    },
+    "recipe_id": "recipe_299",
+    "image_path": "",
+    "image_credit": ""
   }
 ]

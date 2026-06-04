@@ -478,6 +478,23 @@ class RecipeManager:
                     return True
         return False
 
+    def _recipe_contains_disliked(self, recipe: dict, disliked: List[str]) -> bool:
+        """Return True if the recipe name or ingredients contain any disliked food."""
+        if not disliked:
+            return False
+        # Build searchable text: Hebrew name + all ingredient names
+        name_he = recipe.get("name_he", "").lower()
+        name_en = recipe.get("name_en", "").lower()
+        ing_text = " ".join(
+            (ing.get("food_name_he", "") + " " + ing.get("food_name_en", "")).lower()
+            for ing in recipe.get("ingredients", [])
+        )
+        full_text = f"{name_he} {name_en} {ing_text}"
+        for food in disliked:
+            if food.strip().lower() in full_text:
+                return True
+        return False
+
     def recommend_meal(
         self,
         meal_type: str,
@@ -485,6 +502,7 @@ class RecipeManager:
         kashrut: Optional[str] = None,
         inventory_names: Optional[Set[str]] = None,
         allergens: Optional[List[str]] = None,
+        disliked_foods: Optional[List[str]] = None,
     ) -> List[dict]:
         """Find top 5 recipes for a specific meal slot.
 
@@ -493,6 +511,7 @@ class RecipeManager:
             target_calories: calorie target for this slot
             kashrut: optional kashrut filter ("dairy", "meat", "parve")
             allergens: list of Hebrew allergy names to exclude (e.g. ["לקטוז", "גלוטן"])
+            disliked_foods: list of Hebrew food names to avoid (e.g. ["אורז", "עוף"])
 
         Returns:
             Up to 5 best-matching recipes sorted by fit score.
@@ -511,6 +530,13 @@ class RecipeManager:
             candidates = [
                 r for r in candidates
                 if not self._recipe_contains_allergen(r, allergens)
+            ]
+
+        # Filter out recipes containing disliked foods
+        if disliked_foods:
+            candidates = [
+                r for r in candidates
+                if not self._recipe_contains_disliked(r, disliked_foods)
             ]
 
         # Estimate macro targets from calorie target using typical ratios

@@ -9,7 +9,7 @@ from datetime import datetime, date
 from typing import Optional
 
 _DEFAULTS = {
-    "user_id": "",
+    "user_id": "",  # never default to a real user id — caller must supply
     "name": "",
     "gender": "male",
     "date_of_birth": "",
@@ -76,6 +76,8 @@ class ProfileRepository:
         if not rows:
             return None
         row = rows[0]
+        # meal_preferences is JSONB — Supabase Python client returns it as a
+        # parsed dict already, but tolerate string-form for legacy rows.
         prefs_raw = row.get("meal_preferences")
         if isinstance(prefs_raw, str):
             try:
@@ -119,7 +121,7 @@ class ProfileRepository:
             "weekly_change_kg": profile.get("weekly_change_kg"),
             "target_weight_kg": profile.get("target_weight_kg"),
             "weeks_to_goal":    profile.get("weeks_to_goal"),
-            "meal_preferences": profile.get("meal_preferences", {}),
+            "meal_preferences": profile.get("meal_preferences", {}),  # JSONB
             "glp1_medication_in_use": profile.get("glp1_medication_in_use"),
             "updated_at":       datetime.now().isoformat(),
         }
@@ -171,12 +173,18 @@ class ProfileRepository:
 
     def load(self, user_id: str) -> dict:
         if self._use_supabase(user_id):
-            return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
+            try:
+                return self._sb_load(user_id) or {**_DEFAULTS, "user_id": user_id}
+            except Exception:
+                # RLS / network error — fall back to local JSON silently
+                pass
         return self._local_load(user_id)
 
     def save(self, profile: dict) -> None:
         if self._use_supabase(profile.get("user_id", "")):
-            self._sb_save(profile)
-        else:
-            self._local_save(profile)
-
+            try:
+                self._sb_save(profile)
+                return
+            except Exception:
+                pass  # fall through to local save
+        self._local_save(profile)

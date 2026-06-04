@@ -56,6 +56,8 @@ class FoodCategory(str, Enum):
     NUT_SEED = "nut_seed"
     CONDIMENT = "condiment"
     BEVERAGE = "beverage"
+    SNACK = "snack"
+    SWEET = "sweet"
     OTHER = "other"
 
 

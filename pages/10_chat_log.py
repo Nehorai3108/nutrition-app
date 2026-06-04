@@ -51,14 +51,26 @@ def _get_recipe_mgr():
     return RecipeManager()
 
 @st.cache_resource
-def _build_food_list(_v=4) -> str:
+def _build_food_list(_v=5) -> str:
     """Build food + recipe catalog string for the AI system prompt.
-    Capped at ~2500 chars to stay well under Groq's 6000 TPM limit.
+    Sends Hebrew-first names, capped at ~3000 chars.
     """
     cat = FoodCatalog(db_path=_DB_PATH)
-    foods = cat.search_foods("", limit=500)
-    # Names only — serving-size data lives in the system prompt guide
-    lines = [f.name_he for f in foods if f.name_he]
+    # Get all foods sorted: Hebrew DB first, then by name
+    all_foods = cat.get_all_foods()
+    all_foods.sort(key=lambda f: (
+        0 if f.source == "json" else 1,
+        f.name_he or f.name_en or "",
+    ))
+    # Only foods with calorie data
+    all_foods = [f for f in all_foods if f.nutrition_per_100g.calories_kcal]
+
+    # Send up to 600 food names (Hebrew preferred)
+    lines = []
+    for f in all_foods[:600]:
+        name = f.name_he or f.name_en
+        if name:
+            lines.append(name)
 
     # Add recipe names so AI recognises complex dishes
     try:
@@ -71,10 +83,9 @@ def _build_food_list(_v=4) -> str:
     except Exception:
         pass
 
-    # Cap total length to avoid TPM limit (each Hebrew char ~1.5 tokens)
     result = ", ".join(lines)
-    if len(result) > 2500:
-        result = result[:2500]
+    if len(result) > 3000:
+        result = result[:3000]
     return result
 
 catalog       = _get_catalog()
@@ -99,37 +110,192 @@ MEAL_HEB = {
     "snack":           "🍫 נשנוש",
 }
 
-def _build_system_prompt(food_list: str) -> str:
-    return f"""You are "Biti" — a warm Israeli nutrition assistant inside BiteFit. Reply in Hebrew only.
+def _build_system_prompt(food_list: str, profile_ctx: str = "") -> str:
+    return f"""You are "Biti" — a precise Israeli nutrition assistant inside BiteFit.
+Always reply in Hebrew. Be warm, brief, accurate. Your job: identify food correctly and log it.
 
-FOODS IN DATABASE (use exact names in JSON):
+{profile_ctx}
+=== FOODS IN DATABASE (use exact Hebrew names in JSON) ===
 {food_list}
 
-PORTION DEFAULTS: ביצה=55g, שניצל/קציצה=130g, חזה עוף=150g, ירך=120g, פרוסת לחם=30g, פיתה=60g, כוס אורז/פסטה=180g, גביע יוגורט=125g, כף שמן/טחינה=15g, תפוח=150g, בננה=120g, פחית שתייה/קולה=330g, טונה (השתמש ב-unit=קופסה → 100g), סרדינים (unit=קופסה → 100g), קוביית שוקולד=10g, חטיף=30g, עגבנייה=100g, מלפפון=80g, גזר=80g, לימון=50g
+=== STANDARD PORTIONS — use exactly when user does not specify a quantity ===
+עוף ובשר:
+  חזה עוף    = 1 יחידה (150g)
+  שניצל עוף  = 1 יחידה (130g) — ONLY for "שניצל"
+  קציצות עוף = 3 יחידות (75g each) — for "קציצות/קציצה/קציצה אחת/קציצת עוף"
+  ירך עוף    = 1 יחידה (120g)
+  המבורגר    = 1 יחידה (150g)
+  קבב        = 2 יחידות (80g each)
+  שווארמה    = 1 מנה (200g עוף/טלה + פיתה + סלט + טחינה) ← אין גבינה! ~500 קל'
+  פלאפל      = 3 כדורים (75g) + פיתה אחת
+  שאורמה     = שווארמה (שם נרדף)
 
-WHEN FOOD IS LOGGED — return ONLY this JSON block:
+ביצים:
+  ביצה = 1 יחידה (55g) [חביתה / שקשוקה / ביצת עין / מקושקשת = 2 ביצים]
+
+דגים ופירות ים:
+  טונה    = 1 קופסה (100g)  ← reply: "קופסת טונה"
+  סלמון   = 1 מנה (150g)
+  סרדינים = 1 קופסה (100g)
+
+לחם ופחמימות:
+  פרוסת לחם  = 1 פרוסה (30g) [כריך = 2 פרוסות]
+  פיתה        = 1 יחידה (60g)
+  אורז לבן    = 4 כפות מבושל (80g)
+  פסטה        = 4 כפות מבושל (100g)
+  קוסקוס      = 4 כפות (80g)
+  קינואה      = 4 כפות (80g)
+  תפוח אדמה  = 1 יחידה בינונית (150g)
+  בטטה        = 1 יחידה בינונית (130g)
+  שיבולת שועל = 4 כפות יבש (40g)
+
+חלב ומוצריו:
+  יוגורט         = 1 גביע (125g)
+  גבינה בולגרית  = 1 כף (20g)
+  גבינה צהובה    = 1 פרוסה (20g)
+  קוטג'          = 1 גביע (150g)
+  חלב             = 1 כוס (200ml)
+  שמנת חמוצה     = 1 כף (20g)
+
+ירקות — ALWAYS use יחידה, NEVER כוסות:
+  עגבנייה = 1 יחידה (100g)
+  מלפפון  = 1 יחידה (80g) ← completely different from תפוח
+  גזר     = 1 יחידה (80g)
+  פלפל    = 1 יחידה (100g)
+  אבוקדו  = חצי יחידה (80g)
+  חציל    = 1 יחידה (200g)
+  קישוא   = 1 יחידה (150g)
+
+פירות — completely different from ירקות:
+  תפוח עץ = 1 יחידה (150g) ← NOT מלפפון, NOT קישוא
+  בננה    = 1 יחידה (120g)
+  תפוז    = 1 יחידה (130g)
+  אגס     = 1 יחידה (150g)
+  ענבים   = 1 אשכול קטן (100g)
+
+שמנים וממרחים:
+  שמן זית = 1 כף (15g)
+  טחינה   = 1 כף (15g)
+  חמאה    = 1 כף (10g)
+  חומוס   = 2 כפות (30g)
+  ריבה    = 1 כף (20g)
+  דבש     = 1 כף (20g)
+
+שונות:
+  ביסלי/במבה/חטיף = 1 אריזה (30g)
+  שוקולד מריר     = 1 קוביה (10g)
+  קפה שחור        = 1 כוס (0 קל')
+  קולה/שתייה      = 1 פחית (330ml)
+
+=== WHEN FOOD IS LOGGED — return ONLY this JSON ===
 ```json
 {{
   "meal_type": "breakfast|morning_snack|lunch|afternoon_snack|dinner|evening_snack",
   "foods": [{{"name": "שם מהמאגר", "quantity": 1, "unit": "יחידה|גרם|פרוסה|כוס|כף|כפית|גביע|קופסה"}}],
-  "reply": "תגובה קצרה בעברית"
+  "reply": "תגובה טבעית קצרה בעברית"
 }}
 ```
 
-IF NO FOOD — reply in plain Hebrew only (no JSON).
+=== HOW TO WRITE THE REPLY ===
+Write naturally, like a dietitian would speak. Examples:
+  "קופסת טונה — כ-90 קל', 20 גר' חלבון. תוספת מצוינת לצהריים."
+  "נרשמה ביצה (55 קל'). בוקר טוב!"
+  "2 מלפפונים — ירק מצוין, כמעט ללא קלוריות."
+  "חזה עוף — 165 קל', 31 גר' חלבון. מקור חלבון מעולה."
+Do NOT say "X גרם" as the main description — say the food name naturally.
+Add calorie info in parentheses, naturally.
+Be brief — 1-2 sentences max.
 
-RULES:
-- חביתה/שקשוקה/ביצת עין → name:"ביצה"
-- כריך/טוסט → name:"לחם לבן"
-- שניצל → name:"שניצל עוף", חזה → name:"חזה עוף"
-- Complex dish in list as [מתכון] → use that exact name
-- Unknown dish → split into individual ingredients from the DB list
-- Corrections: return full updated JSON with ALL items"""
+=== CRITICAL FOOD RULES ===
+- קציצות/קציצה/קציצת עוף → name:"קציצות עוף" (unit=יחידה, default qty=3)
+  QUANTITY OVERRIDE: "קציצה אחת"=qty=1, "שתי קציצות"=qty=2, "5 קציצות"=qty=5
+  NEVER confuse with שניצל
+- שניצל/שניצל עוף → name:"שניצל עוף" (unit=יחידה, qty=1) ← NEVER קציצות
+- חביתה / ביצת עין / מקושקשת / שקשוקה = SINGLE food item name:"ביצה"
+  • "חביתה" alone → qty=2; "חביתה עם X ביצים" → qty=X (ONE item only)
+  • NEVER return both "חביתה" AND "ביצה" — they are the same thing
+- כריך → name:"לחם לבן" qty=2 פרוסות + filling
+- מלפפון ≠ תפוח ≠ קישוא — COMPLETELY different foods, never compare or confuse
+- ירקות ≠ פירות — never mix them up
+- Dish marked [מתכון] → use exact recipe name
+- שווארמה / שאורמה → foods: [עוף (200g), פיתה (1), טחינה (1כף), עגבנייה(1), מלפפון(1)]
+  ← אין גבינה בשווארמה! בשר + סלט + טחינה בלבד
+- פלאפל → foods: [פלאפל (3 כדורים), פיתה (1), טחינה (1כף)]
+- Unknown dish → split into individual ingredients
+- Corrections → return FULL updated JSON with ALL items
+- QUANTITY WORDS: אחד/אחת=1, שניים/שתיים=2, שלוש/שלושה=3, ארבע=4, חמש=5
+
+=== ALWAYS LOG THESE — always return JSON, never just describe ===
+- קפה / קפה שחור / אספרסו / מקפה / אמריקנו → name:"קפה שחור" unit=כוס qty=1
+- קפוצינו / לאטה / קפה הפוך / קפה עם חלב → name:"קפה הפוך" unit=כוס qty=1
+- חלב → name:"חלב" unit=כוס qty=1
+- מים (even "שתיתי מים") → name:"מים" unit=כוס qty=1
+- סלמון / דג סלמון → name:"דג סלמון" unit=יחידה qty=1
+- טונה → name:"טונה בשמן" unit=קופסה qty=1
+- סרדינים → name:"סרדינים" unit=קופסה qty=1
+- קוואקר / שיבולת שועל / פתיתי שיבולת → name:"שיבולת שועל" unit=כפות qty=4
+- קוסקוס → name:"קוסקוס" unit=כפות qty=4
+- אורז / אורז לבן → name:"אורז לבן" unit=כפות qty=4
+- ספגטי / פסטה → name:"פסטה ספגטי" unit=כפות qty=4
+- קוטג' / קוטג → name:"גבינת קוטג'" unit=גביע qty=1
+- חומוס (as food) → name:"חומוס מוכן" unit=כפות qty=2
+- שניצל / שניצל עוף → name:"שניצל עוף" unit=יחידה qty=1
+- שניצל תירס → name:"שניצל תירס" unit=יחידה qty=1
+- שניצל כרובית → name:"שניצל כרובית" unit=יחידה qty=1
+- נאגטס / נגטס → name:"נאגטס עוף" unit=יחידה qty=3
+- לביבות / לביבה → name:"לביבות תפוחי אדמה" unit=יחידה qty=3
+- שקשוקה → name:"שקשוקה" unit=גרם qty=300
+- מג'דרה / מגדרה → name:"מג'דרה" unit=גרם qty=200
+- סביח → name:"סביח" unit=יחידה qty=1
+- חסה → name:"חסה" unit=יחידה qty=1
+- חציל → name:"חציל" unit=יחידה qty=1
+- ריבה → name:"ריבה" unit=כף qty=1
+- קרקר / קרקרים → name:"קרקרים" unit=יחידה qty=5
+- לאפה / לאפות → name:"פיתה" unit=יחידה qty=1
+- תפוח אדמה (FULL NAME, not "תפוח") → name:"תפוח אדמה" unit=יחידה qty=1
+- שמן זית → name:"שמן זית" unit=כף qty=1
+- לבן / גבינת לבן → name:"גבינה לבנה" unit=כף qty=2
+- גבינה בולגרית / גבינה מלוחה → name:"גבינה בולגרית" unit=גרם qty=30
+- ביסלי → name:"ביסלי" unit=גרם qty=30
+- במבה → name:"במבה" unit=גרם qty=30
+- מרק עוף → name:"מרק עוף" unit=כוס qty=1
+- "שתיתי X" → log X as drink
+- "ארוחת X: Y" → set meal_type=X, log food Y
+- "בבוקר..." → meal_type=breakfast
+- "לצהריים..." / "בצהריים..." → meal_type=lunch
+- "בערב..." / "בלילה..." → meal_type=dinner
+- "אחה''צ..." / "חטיף..." → meal_type=afternoon_snack
+
+=== CRITICAL CONFUSION PREVENTION — these mistakes are FORBIDDEN ===
+- אספרסו = COFFEE (קפה שחור) ← NOT אספרגוס (vegetable!)
+- סטייק = בשר בקר ← NOT עוף! Never map סטייק to chicken.
+- תפוז = orange fruit ← NOT תפוח (apple)!
+- חציל = eggplant ← NOT חזה עוף!
+- מקושקשת = scrambled eggs (ביצה) ← NOT שניצל!
+- המבורגר = בשר בקר (name:"בשר בקר טחון") ← never return name:"המבורגר"
+- קבב = grilled meat → name:"קבב בקר" unit=יחידה (NEVER לחם or טונה!)
+- שניצל תירס ≠ שניצל עוף — COMPLETELY DIFFERENT! תירס=corn schnitzel
+- כריך טונה → foods=[לחם x2 פרוסות, טונה x1 קופסה]
+- "N ביצים" → qty=N, name="ביצה" (one item)
+- "חביתה עם N ביצים" → qty=N, name="ביצה" (ONE item only)
+- "ארוחת צהריים שניצל" → meal_type=lunch, log שניצל עוף
+- לביבות ≠ פנקייק ← לביבות = potato pancakes, פנקייק = sweet pancakes
+- פרגית / ירך עוף → name:"פרגית" unit=יחידה qty=1 (NOT חזה עוף!)
+- מרק = soup → name:"מרק עוף" or "מרק ירקות" by context
+- "X, Y, Z" or "X עם Y ועם Z" → log ALL foods as separate items in foods array
+- If foods array would be EMPTY → do NOT return JSON at all
+
+=== IF NO FOOD AT ALL (pure question, greeting, or vague) — plain Hebrew only (no JSON) ===
+Examples of NO-JSON inputs:
+  "תודה", "כן", "לא", "בסדר", "אוקיי" → just reply warmly, NO JSON
+  "מה כדאי לאכול?" / "מה אני יכול לאכול?" → give advice, NO JSON
+  "אכלתי קצת" / "אכלתי הרבה" (no specific food) → ask "מה בדיוק אכלת?", NO JSON
+  "שאלה..." / "יש לי שאלה..." → answer the question, NO JSON"""
 
 
 # ── Food aliases: common Israeli names → searchable DB terms ──────────────────
 FOOD_ALIASES = {
-    "טוסט":          "toast",
+    "טוסט":          "לחם",
     "לחם לבן":       "לחם",
     "לחם מלא":       "לחם",
     "לחם שחור":      "לחם",
@@ -148,6 +314,9 @@ FOOD_ALIASES = {
     "צהובה":         "גבינה צהובה",
     "לבנה":          "גבינה לבנה",
     "שמנת":          "שמנת",
+    "לבן":           "גבינה לבנה",
+    "גבינת לבן":     "גבינה לבנה",
+    "קציצה":         "קציצות עוף",   # singular → canonical plural name
     "חזה":           "חזה עוף",
     "שניצל":         "שניצל עוף",
     "כנפיים":        "כנפי עוף",
@@ -156,6 +325,9 @@ FOOD_ALIASES = {
     "קבב":           "בשר בקר",
     "המבורגר":       "בשר בקר טחון",
     "סטייק":         "סטייק בקר",
+    "שווארמה":       "שווארמה עוף",
+    "שאורמה":        "שווארמה עוף",
+    "פלאפל":         "פלאפל",
     "טונה":          "טונה בשמן",
     "סלמון":         "דג סלמון",
     "לוקוס":         "דג לוקוס",
@@ -186,6 +358,7 @@ FOOD_ALIASES = {
     "תרד":           "תרד",
     "תפוח אדמה":     "תפוח אדמה",
     "בטטה":          "בטטה",
+    "חציל":          "חציל",
     "חצילים":        "חציל",
     "קישוא":         "קישוא",
     "שמן זית":       "שמן זית",
@@ -199,8 +372,11 @@ FOOD_ALIASES = {
     "גלידה":         "גלידה",
     "קפה":           "קפה שחור",
     "אספרסו":        "קפה שחור",
+    "מקפה":          "קפה שחור",
+    "אמריקנו":       "קפה שחור",
     "לאטה":          "קפה עם חלב",
     "קפוצינו":       "קפה עם חלב",
+    "קפה נס":        "קפה שחור",
     "שוקו":          "משקה שוקולד",
     "מיץ תפוזים":    "מיץ תפוזים",
     "פיתה":          "פיתה",
@@ -336,9 +512,157 @@ def _match_food(name: str, quantity: float, unit: str):
     return None
 
 
+@st.cache_data(ttl=300)
+def _build_profile_context(user_id: str) -> str:
+    """Load user profile and build a short context string for the AI."""
+    try:
+        from nutrition_app.repositories.profile_repository import ProfileRepository
+        profile = ProfileRepository().load(user_id)
+        if not profile:
+            return ""
+        name   = profile.get("name", "")
+        goal   = profile.get("goal", "")
+        allergs = profile.get("meal_preferences", {}).get("allergies", [])
+        # Estimate TDEE (simplified)
+        weight = float(profile.get("weight_kg", 0) or 0)
+        height = float(profile.get("height_cm", 0) or 0)
+        gender = profile.get("gender", "male")
+        dob    = profile.get("date_of_birth", "")
+        age    = 30
+        try:
+            from datetime import date as _d
+            birth = _d.fromisoformat(dob)
+            age   = (_d.today() - birth).days // 365
+        except Exception:
+            pass
+        if weight > 0 and height > 0:
+            if gender == "female":
+                bmr = 10*weight + 6.25*height - 5*age - 161
+            else:
+                bmr = 10*weight + 6.25*height - 5*age + 5
+            act = {"sedentary":1.2,"lightly_active":1.375,"moderately_active":1.55,
+                   "very_active":1.725,"extremely_active":1.9}
+            mult = act.get(profile.get("activity_level","moderately_active"), 1.55)
+            tdee = round(bmr * mult)
+            goal_adj = {"lose_weight":-300,"gain_weight":+300}.get(goal, 0)
+            target = tdee + goal_adj
+        else:
+            target = 0
+
+        lines = ["=== USER PROFILE ==="]
+        if name:
+            lines.append(f"Name: {name}")
+        if target:
+            lines.append(f"Daily calorie target: {target} kcal")
+        if allergs:
+            lines.append(f"Allergies (NEVER suggest): {', '.join(allergs)}")
+        goal_map = {"lose_weight":"ירידה במשקל","gain_weight":"עלייה במשקל","maintain":"שמירה על משקל"}
+        if goal:
+            lines.append(f"Goal: {goal_map.get(goal, goal)}")
+        lines.append("")
+        return "\n".join(lines)
+    except Exception:
+        return ""
+
+
+# ── Hebrew → router key mappings ──────────────────────────────────────────────
+_HE_CONDITION_MAP = {
+    "דיסליפידמיה / כולסטרול גבוה": "dyslipidemia",
+    "כולסטרול":     "dyslipidemia",
+    "סוכרת סוג 2":  "diabetes",
+    "סוכרת":        "diabetes",
+    "ibs / מעי רגיז": "ibs",
+    "ibs":          "ibs",
+    "מעי רגיז":     "ibs",
+    "gerd / ריפלוקס": "gerd",
+    "gerd":         "gerd",
+    "ריפלוקס":      "gerd",
+    "צליאק":        "celiac",
+    "מחלת לב":      "dyslipidemia",
+    "יתר לחץ דם":   "dyslipidemia",
+    "מחלת כליות":   "gi_disorder",
+}
+_HE_INTOLERANCE_MAP = {
+    "גלוטן":   "gluten",
+    "לקטוז":   "lactose",
+    "בוטנים":  "peanuts",
+    "אגוזים":  "nuts",
+    "ביצים":   "eggs",
+    "דגים":    "fish",
+    "סויה":    "soy",
+    "שומשום":  "sesame",
+}
+_HE_SPORT_MAP = {
+    "gym":          "gym",
+    "running":      "running",
+    "team_sport":   "team_sport",
+    "bodybuilding": "bodybuilding",
+    "martial_arts": "martial_arts",
+    "cycling":      "cycling",
+}
+_HE_DIET_MAP = {
+    "mediterranean": "mediterranean",
+    "keto":          "keto",
+    "if":            "if",
+    "vegetarian":    "vegetarian",
+    "vegan":         "vegan",
+}
+
+
+def _build_knowledge_context(user_id: str) -> str:
+    """Return a compact nutrition hint based on user profile.
+    Maps Hebrew profile values → router English keys → loads correct modules."""
+    try:
+        from nutrition_app.repositories.profile_repository import ProfileRepository as _PR
+        _profile_data = _PR().load(user_id)
+        _prefs = _profile_data.get("meal_preferences", {})
+
+        # Map Hebrew conditions → router keys
+        _conditions = []
+        for c in _prefs.get("medical_conditions", []):
+            key = _HE_CONDITION_MAP.get(c.lower(), _HE_CONDITION_MAP.get(c, c))
+            _conditions.append(key)
+
+        # Map Hebrew intolerances → router keys
+        _intolerances = []
+        for a in _prefs.get("allergies", []):
+            key = _HE_INTOLERANCE_MAP.get(a, a.lower())
+            _intolerances.append(key)
+
+        _kashrut = _prefs.get("kashrut", "none")
+        _diet    = _prefs.get("diet_type", "")
+        _sport   = _prefs.get("sport_type", "")
+
+        hints = []
+        raw_conditions = _prefs.get("medical_conditions", [])
+        raw_allergies  = _prefs.get("allergies", [])
+        if raw_conditions:
+            hints.append(f"מצבים רפואיים: {', '.join(raw_conditions)}")
+        if raw_allergies:
+            hints.append(f"אלרגיות/אי-סבילות: {', '.join(raw_allergies)} — אל תציע מזונות אלה")
+        if _kashrut and _kashrut != "none":
+            hints.append(f"כשרות: {_kashrut} — שמור על הפרדת בשר/חלב")
+        if _diet:
+            hints.append(f"סגנון תזונה: {_diet}")
+        if _sport:
+            hints.append(f"ספורט: {_sport}")
+
+        return ("=== הגבלות תזונתיות למשתמש זה ===\n" + "\n".join(hints)) if hints else ""
+    except Exception:
+        return ""
+
+
 def _ask_groq(history: list, user_msg: str, pending: list = None):
     """Send to Groq, return (reply_text, food_data_or_None)."""
-    messages = [{"role": "system", "content": _build_system_prompt(FOOD_LIST)}]
+    profile_ctx   = _build_profile_context(USER_ID)
+    knowledge_ctx = _build_knowledge_context(USER_ID)
+    # Combine: food-log system prompt + knowledge router context
+    base_prompt   = _build_system_prompt(FOOD_LIST, profile_ctx)
+    if knowledge_ctx:
+        full_prompt = base_prompt + "\n\n" + knowledge_ctx
+    else:
+        full_prompt = base_prompt
+    messages = [{"role": "system", "content": full_prompt}]
     messages += history
 
     # If there are pending entries, inject them as context so the AI can correct them
@@ -356,12 +680,21 @@ def _ask_groq(history: list, user_msg: str, pending: list = None):
 
     messages.append({"role": "user", "content": user_msg})
 
-    resp = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=messages,
-        max_tokens=600,
-        temperature=0.4,
-    )
+    import time as _time
+    for _attempt in range(3):
+        try:
+            resp = groq_client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=messages,
+                max_tokens=700,
+                temperature=0.2,
+            )
+            break
+        except Exception as _ex:
+            if "429" in str(_ex) and _attempt < 2:
+                _time.sleep(15 * (_attempt + 1))   # wait 15s, then 30s
+                continue
+            raise
     raw = resp.choices[0].message.content.strip()
 
     # 1. Try ```json ... ``` block
@@ -392,6 +725,8 @@ if "chat_messages"    not in st.session_state: st.session_state.chat_messages   
 if "groq_history"     not in st.session_state: st.session_state.groq_history     = []
 if "pending_entries"  not in st.session_state: st.session_state.pending_entries  = []
 if "detected_meal"    not in st.session_state: st.session_state.detected_meal    = "lunch"
+if "_ai_processing"   not in st.session_state: st.session_state._ai_processing   = False
+if "_pending_user_msg" not in st.session_state: st.session_state._pending_user_msg = None
 
 # ── Get user first name ────────────────────────────────────────────────────────
 def _get_user_name() -> str:
@@ -409,6 +744,66 @@ def _get_user_name() -> str:
 
 _USER_NAME = _get_user_name()
 
+# ── AI processing — runs BEFORE any render to avoid double-render ───────────────
+# Pattern: form submit → add user msg + "_thinking" msg → set flag → rerun
+#          next run  → this block fires, calls API, replaces thinking → rerun
+#          final run → clean render, no spinner, no duplicate
+if st.session_state._ai_processing and st.session_state._pending_user_msg:
+    _user_msg = st.session_state._pending_user_msg
+    try:
+        _reply_text, _food_data = _ask_groq(
+            st.session_state.groq_history,
+            _user_msg,
+            pending=st.session_state.pending_entries or None,
+        )
+    except Exception as _e:
+        import traceback as _tb
+        st.session_state["_last_chat_error"] = _tb.format_exc()
+        if "429" in str(_e) or "rate_limit" in str(_e).lower():
+            _reply_text = "יש עומס על השרת כרגע — נסה שוב בעוד כמה שניות 🙏"
+        elif "timeout" in str(_e).lower() or "connection" in str(_e).lower():
+            _reply_text = "⚠️ בעיית חיבור — בדוק אינטרנט ונסה שוב"
+        else:
+            _reply_text = "⚠️ תקלה זמנית — נסה שוב"
+        _food_data = None
+
+    # Remove temporary "thinking" bubble
+    if st.session_state.chat_messages and st.session_state.chat_messages[-1].get("_thinking"):
+        st.session_state.chat_messages.pop()
+
+    st.session_state.groq_history.append({"role": "user", "content": _user_msg})
+    if _reply_text:
+        st.session_state.groq_history.append({"role": "assistant", "content": _reply_text})
+
+    if _food_data:
+        try:
+            _meal_type = _food_data.get("meal_type", "lunch")
+            st.session_state.detected_meal = _meal_type
+            _matched, _not_found = [], []
+            for _f in _food_data.get("foods", []):
+                _entry = _match_food(_f["name"], float(_f.get("quantity", 1)), _f.get("unit", "יחידה"))
+                if _entry:
+                    _matched.append(_entry)
+                else:
+                    _not_found.append(_f["name"])
+            if _matched:
+                st.session_state.pending_entries = _matched
+                if _not_found:
+                    _reply_text += f"\n\n⚠️ לא מצאתי במאגר: *{', '.join(_not_found)}*"
+            else:
+                _reply_text = "לא מצאתי את המזונות במאגר. נסה לנסח אחרת."
+        except Exception as _e2:
+            import traceback as _tb2
+            st.session_state["_last_chat_error"] = _tb2.format_exc()
+            _reply_text += f"\n\n⚠️ שגיאה בעיבוד: `{type(_e2).__name__}: {_e2}`"
+
+    if _reply_text:
+        st.session_state.chat_messages.append({"role": "assistant", "text": _reply_text})
+
+    st.session_state._ai_processing    = False
+    st.session_state._pending_user_msg = None
+    st.rerun()
+
 # ── Build all chat HTML as one block + scroll JS ───────────────────────────────
 def _render_chat():
     msgs = st.session_state.chat_messages
@@ -417,10 +812,7 @@ def _render_chat():
     bubbles = ""
     if not msgs:
         bubbles = (
-            f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
-            f'<div style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
-            f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
-            f'border:1px solid #252d3d">&#x1F957;</div>'
+            f'<div dir="rtl" style="display:flex;margin-bottom:10px;align-items:flex-start">'
             f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
             f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
             f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
@@ -430,24 +822,34 @@ def _render_chat():
         for msg in msgs:
             txt = msg["text"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")
             if msg["role"] == "assistant":
+                # "thinking" bubble gets a pulsing dots style
+                if msg.get("_thinking"):
+                    bubble_content = (
+                        '<span style="display:inline-flex;gap:4px;align-items:center">'
+                        '<span style="width:6px;height:6px;border-radius:50%;background:#8892a4;'
+                        'animation:blink 1.2s infinite 0s"></span>'
+                        '<span style="width:6px;height:6px;border-radius:50%;background:#8892a4;'
+                        'animation:blink 1.2s infinite 0.4s"></span>'
+                        '<span style="width:6px;height:6px;border-radius:50%;background:#8892a4;'
+                        'animation:blink 1.2s infinite 0.8s"></span>'
+                        '</span>'
+                        '<style>@keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}</style>'
+                    )
+                else:
+                    bubble_content = txt
                 bubbles += (
-                    f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">'
-                    f'<div style="width:30px;height:30px;border-radius:50%;background:#1a2540;'
-                    f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;'
-                    f'border:1px solid #252d3d">&#x1F957;</div>'
+                    f'<div dir="rtl" style="display:flex;margin-bottom:10px;align-items:flex-start">'
                     f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
                     f'border-radius:4px 16px 16px 16px;padding:10px 14px;max-width:88%;'
                     f'font-size:0.86rem;color:#f4f6fb;line-height:1.55;direction:rtl">'
-                    f'{txt}</div></div>'
+                    f'{bubble_content}</div></div>'
                 )
             else:
                 bubbles += (
-                    f'<div dir="rtl" style="display:flex;gap:10px;margin-bottom:10px;'
-                    f'align-items:flex-start;flex-direction:row-reverse">'
-                    f'<div style="width:30px;height:30px;border-radius:50%;background:#4f8ef7;'
-                    f'display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">&#x1F464;</div>'
+                    f'<div dir="rtl" style="display:flex;margin-bottom:10px;'
+                    f'align-items:flex-start;justify-content:flex-end">'
                     f'<div dir="rtl" style="background:#1a3a6b;border:1px solid #2d5096;'
-                    f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:88%;'
+                    f'border-radius:16px 4px 16px 16px;padding:10px 14px;max-width:80%;'
                     f'font-size:0.86rem;color:#e8f0ff;line-height:1.55;direction:rtl">'
                     f'{txt}</div></div>'
                 )
@@ -482,51 +884,13 @@ with st.form("chat_form", clear_on_submit=True):
     submitted = col_btn.form_submit_button("שלח ➤", use_container_width=True, type="primary")
 
 if submitted and user_text.strip():
+    # Add user message immediately
     st.session_state.chat_messages.append({"role": "user", "text": user_text})
-
-    with st.spinner("ביטי חושב..."):
-        try:
-            reply_text, food_data = _ask_groq(
-                st.session_state.groq_history, user_text,
-                pending=st.session_state.pending_entries or None
-            )
-        except Exception as e:
-            import traceback
-            err_detail = traceback.format_exc()
-            # Store error for debug display
-            st.session_state["_last_chat_error"] = err_detail
-            reply_text = f"אופס, תקלה טכנית. נסה שוב 🙏\n\n`{type(e).__name__}: {e}`"
-            food_data = None
-
-    st.session_state.groq_history.append({"role": "user", "content": user_text})
-    if reply_text:
-        st.session_state.groq_history.append({"role": "assistant", "content": reply_text})
-
-    if food_data:
-        try:
-            meal_type = food_data.get("meal_type", "lunch")
-            st.session_state.detected_meal = meal_type
-            matched, not_found = [], []
-            for f in food_data.get("foods", []):
-                entry = _match_food(f["name"], float(f.get("quantity", 1)), f.get("unit", "יחידה"))
-                if entry:
-                    matched.append(entry)
-                else:
-                    not_found.append(f["name"])
-            if matched:
-                st.session_state.pending_entries = matched
-                if not_found:
-                    reply_text += f"\n\n⚠️ לא מצאתי במאגר: *{', '.join(not_found)}*"
-            else:
-                reply_text = "לא מצאתי את המזונות במאגר. נסה לנסח אחרת."
-        except Exception as e2:
-            import traceback
-            st.session_state["_last_chat_error"] = traceback.format_exc()
-            reply_text += f"\n\n⚠️ שגיאה בעיבוד: `{type(e2).__name__}: {e2}`"
-
-    if reply_text:
-        st.session_state.chat_messages.append({"role": "assistant", "text": reply_text})
-
+    # Add a temporary "thinking" bubble — will be replaced by the AI response
+    st.session_state.chat_messages.append({"role": "assistant", "text": "", "_thinking": True})
+    # Store what to process and trigger processing on next run
+    st.session_state._pending_user_msg = user_text
+    st.session_state._ai_processing    = True
     st.rerun()
 
 # ── Pending confirmation card — BELOW input ───────────────────────────────────

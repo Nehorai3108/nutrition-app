@@ -67,34 +67,60 @@ def _get_cookies():
     return mgr
 
 
+_COOKIES_CHECKED = "_sb_cookies_checked"
+_COOKIES_WAIT_COUNT = "_sb_cookie_wait"
+_MAX_COOKIE_WAIT = 4   # max extra renders to wait for CookieManager to deliver
+
+
 def install_cookie_session() -> bool:
     """
     Hydrate session_state from cookies when needed.
 
-    Call this at the top of every page (inside require_auth). On the very
-    first script run extra_streamlit_components.CookieManager has no
-    cookies yet — get_all() returns {} and the component triggers a rerun
-    asynchronously when ready. We never call st.stop() here because the
-    user-visible login screen is fine to show in the worst case; cookies
-    will hydrate on the next rerun and require_auth() will see the user.
+    Returns True  — cookies are definitively loaded (or unavailable).
+    Returns False — CookieManager hasn't delivered cookies yet; caller
+                    should show a silent loading screen and st.stop() so
+                    the component can fire its rerun.
+
+    extra_streamlit_components.CookieManager fires an async rerun once
+    it has read the browser cookies.  We wait up to _MAX_COOKIE_WAIT
+    extra renders for that to happen before giving up (so fresh-session
+    loads and F5 refreshes still restore the session reliably).
     """
     mgr = _get_cookies()
     if mgr is None:
         return True  # No cookie support — fall back to session-only auth.
+
+    # If we already have the user in session_state, nothing to do.
+    if st.session_state.get(_KEY_USER_ID):
+        return True
+
     try:
         all_cookies = mgr.get_all() or {}
     except Exception:
         return True
-    if not st.session_state.get(_KEY_USER_ID):
-        uid = all_cookies.get(_COOKIE_PREFIX + _COOKIE_USER_ID)
-        access = all_cookies.get(_COOKIE_PREFIX + _COOKIE_ACCESS)
+
+    # If cookies came back non-empty, restore session immediately.
+    uid    = all_cookies.get(_COOKIE_PREFIX + _COOKIE_USER_ID)
+    access = all_cookies.get(_COOKIE_PREFIX + _COOKIE_ACCESS)
+    if uid and access:
+        st.session_state[_KEY_USER_ID]       = uid
+        st.session_state[_KEY_USER_EMAIL]    = all_cookies.get(_COOKIE_PREFIX + _COOKIE_USER_EMAIL) or ""
+        st.session_state[_KEY_ACCESS_TOKEN]  = access
         refresh = all_cookies.get(_COOKIE_PREFIX + _COOKIE_REFRESH)
-        if uid and access:
-            st.session_state[_KEY_USER_ID] = uid
-            st.session_state[_KEY_USER_EMAIL] = all_cookies.get(_COOKIE_PREFIX + _COOKIE_USER_EMAIL) or ""
-            st.session_state[_KEY_ACCESS_TOKEN] = access
-            if refresh:
-                st.session_state[_KEY_REFRESH_TOKEN] = refresh
+        if refresh:
+            st.session_state[_KEY_REFRESH_TOKEN] = refresh
+        st.session_state.pop(_COOKIES_WAIT_COUNT, None)
+        return True
+
+    # Cookies are empty — either not logged in, or CookieManager not ready yet.
+    # Wait up to _MAX_COOKIE_WAIT extra renders before declaring "no user".
+    wait_count = st.session_state.get(_COOKIES_WAIT_COUNT, 0)
+    if wait_count < _MAX_COOKIE_WAIT:
+        st.session_state[_COOKIES_WAIT_COUNT] = wait_count + 1
+        return False  # still loading — caller should show dark screen
+
+    # Waited long enough; no cookies → user is not logged in.
+    st.session_state.pop(_COOKIES_WAIT_COUNT, None)
     return True
 
 

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d0f14; font-family:sans-serif; }
+#status {
+  font-size:13px; color:#8892a4; text-align:center; direction:rtl;
+  padding:8px 12px; min-height:40px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ok  { color:#68d391 !important; font-weight:700; }
+.err { color:#fc8181 !important; }
+</style>
+</head>
+<body>
+<div id="status">ממתין לתמונה...</div>
+<canvas id="c" style="display:none"></canvas>
+
+<script>
+// ── Streamlit bridge ──────────────────────────────────────────────────────
+(function(){
+  var _ls={};
+  window.Streamlit={
+    RENDER_EVENT:"streamlit:render",
+    events:{addEventListener:function(ev,fn){_ls[ev]=_ls[ev]||[];_ls[ev].push(fn);}},
+    setComponentReady:function(){window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:componentReady",apiVersion:1},"*");},
+    setFrameHeight:function(h){window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:setFrameHeight",height:h},"*");},
+    setComponentValue:function(v){window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:setComponentValue",value:v,dataType:"json"},"*");}
+  };
+  window.addEventListener("message",function(e){if(!e.data||!e.data.type)return;(_ls[e.data.type]||[]).forEach(function(f){f(e);});});
+})();
+
+Streamlit.setFrameHeight(40);
+Streamlit.setComponentReady();
+
+var _lastHash    = null;
+var _zxingLoaded = false;
+
+function setStatus(msg, cls) {
+  var el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = cls || "";
+}
+
+function done(val) {
+  // val = barcode string, or "" = nothing found
+  Streamlit.setComponentValue(val || "");
+}
+
+// ── Main entry ───────────────────────────────────────────────────────────
+function decodeImage(b64, mimeType) {
+  setStatus("מפענח ברקוד...");
+
+  // Strategy 1 ── native BarcodeDetector (Chrome 83+ Android, iOS 17.4+)
+  // No CDN required. Fast and accurate for product barcodes.
+  if (typeof BarcodeDetector !== "undefined") {
+    tryNative(b64, mimeType);
+  } else {
+    tryZXing(b64, mimeType);
+  }
+}
+
+// ── Strategy 1: BarcodeDetector ──────────────────────────────────────────
+function tryNative(b64, mimeType) {
+  var img = new Image();
+  img.onload = function() {
+    createImageBitmap(img).then(function(bitmap) {
+      var detector;
+      try {
+        detector = new BarcodeDetector({
+          formats: ["ean_13","ean_8","code_128","upc_a","upc_e","code_39","qr_code","data_matrix"]
+        });
+      } catch(e) {
+        // BarcodeDetector exists but constructor failed
+        tryZXing(b64, mimeType); return;
+      }
+      detector.detect(bitmap).then(function(codes) {
+        if (codes && codes.length > 0) {
+          // Prefer longer barcode (EAN-13 over EAN-8)
+          codes.sort(function(a,b){ return b.rawValue.length - a.rawValue.length; });
+          var bc = codes[0].rawValue;
+          if (bc) { setStatus("ברקוד זוהה ✓", "ok"); done(bc); return; }
+        }
+        // BarcodeDetector found nothing — try ZXing
+        tryZXing(b64, mimeType);
+      }).catch(function() {
+        tryZXing(b64, mimeType);
+      });
+    }).catch(function() {
+      tryZXing(b64, mimeType);
+    });
+  };
+  img.onerror = function() { setStatus("שגיאה בטעינת תמונה", "err"); done(""); };
+  img.src = "data:" + mimeType + ";base64," + b64;
+}
+
+// ── Strategy 2: ZXing via CDN ────────────────────────────────────────────
+function tryZXing(b64, mimeType) {
+  if (_zxingLoaded && typeof ZXing !== "undefined") {
+    _runZXing(b64, mimeType); return;
+  }
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+  s.onload  = function() { _zxingLoaded = true; _runZXing(b64, mimeType); };
+  s.onerror = function() { setStatus("לא ניתן לפענח ברקוד", "err"); done(""); };
+  document.head.appendChild(s);
+}
+
+function _runZXing(b64, mimeType) {
+  var img = new Image();
+  img.onload = function() {
+    var canvas = document.getElementById("c");
+    canvas.width  = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+
+    var hints = new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+      ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+      ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.UPC_A,
+      ZXing.BarcodeFormat.UPC_E, ZXing.BarcodeFormat.CODE_39,
+      ZXing.BarcodeFormat.QR_CODE,
+    ]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+    var reader = new ZXing.BrowserMultiFormatReader(hints);
+
+    // Pass 1 — original colours
+    try {
+      var r1 = reader.decodeFromCanvas(canvas);
+      if (r1 && r1.getText()) { setStatus("ברקוד זוהה ✓", "ok"); done(r1.getText()); return; }
+    } catch(e1) {}
+
+    // Pass 2 — binarise (improves low-contrast photos)
+    try {
+      var id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var d  = id.data;
+      for (var i = 0; i < d.length; i += 4) {
+        var g = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+        d[i] = d[i+1] = d[i+2] = (g < 128 ? 0 : 255);
+      }
+      ctx.putImageData(id, 0, 0);
+      var r2 = reader.decodeFromCanvas(canvas);
+      if (r2 && r2.getText()) { setStatus("ברקוד זוהה ✓", "ok"); done(r2.getText()); return; }
+    } catch(e2) {}
+
+    setStatus("לא נמצא ברקוד", "err");
+    done("");
+  };
+  img.onerror = function() { setStatus("שגיאה בטעינת תמונה", "err"); done(""); };
+  img.src = "data:" + mimeType + ";base64," + b64;
+}
+
+// ── RENDER_EVENT ─────────────────────────────────────────────────────────
+Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function(e) {
+  var args = (e.data && e.data.args) || {};
+  var b64  = args.img_b64  || null;
+  var mime = args.mime     || "image/jpeg";
+  var hash = args.img_hash || null;
+
+  if (!b64 || hash === _lastHash) return;
+  _lastHash = hash;
+  decodeImage(b64, mime);
+});
+</script>
+</body>
+</html>

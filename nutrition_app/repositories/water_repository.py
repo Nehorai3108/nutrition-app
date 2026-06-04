@@ -2,24 +2,35 @@
 # -*- coding: utf-8 -*-
 """
 water_repository.py — ניהול נתוני צריכת מים למשתמש
+
+Supports two backends:
+  • Supabase (cloud)  — when SUPABASE_URL / SUPABASE_ANON_KEY are in secrets
+                        AND user_id is a real UUID (per-user isolation).
+  • Local JSON files  — fallback for local development.
+                        storage_agents/water/{user_id}.json
 """
 
 import os
 import json
+import re
 from typing import Optional, List
 from datetime import datetime, timedelta
 
 from nutrition_app.models.water import WaterIntake, WaterGoal, UserWaterData
 
 
+_UUID_RE = re.compile(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+)
+
+
 class WaterRepository:
     """
     Repository for managing user water intake data.
 
-    Stores per-user water data in JSON files:
-    `storage_agents/water/{user_id}.json`
-
-    Follows the same pattern as WorkoutRepository.
+    Auto-selects backend:
+      - Supabase when credentials present in st.secrets AND user_id is a UUID
+      - Local JSON (storage_agents/water/{user_id}.json) otherwise
     """
 
     def __init__(self, base_dir: Optional[str] = None):
@@ -40,7 +51,10 @@ class WaterRepository:
 
     # ── Backend selector ──────────────────────────────────────────────────────
 
-    def _use_supabase(self) -> bool:
+    def _use_supabase(self, user_id: str = "") -> bool:
+        # Per-user isolation: only route to Supabase for real UUID user_ids.
+        if not _UUID_RE.match((user_id or "").lower()):
+            return False
         try:
             from nutrition_app.db.supabase_client import is_supabase_configured
             return is_supabase_configured()
@@ -51,26 +65,22 @@ class WaterRepository:
         from nutrition_app.db.supabase_client import get_supabase
         return get_supabase()
 
-    # ── Supabase backend (blob) ───────────────────────────────────────────────
+    # ── Supabase backend ──────────────────────────────────────────────────────
 
     def _sb_load(self, user_id: str) -> Optional[dict]:
         rows = (
-            self._sb().table("user_water_data")
-            .select("blob").eq("user_id", user_id).limit(1).execute()
+            self._sb().table("water_data")
+            .select("data").eq("user_id", user_id).limit(1).execute()
         ).data
-        if not rows:
-            return None
-        blob = rows[0].get("blob")
-        if isinstance(blob, str):
-            blob = json.loads(blob)
-        return blob
+        if rows:
+            return rows[0]["data"]
+        return None
 
     def _sb_save(self, user_id: str, data: dict) -> None:
-        self._sb().table("user_water_data").upsert({
-            "user_id":    user_id,
-            "blob":       data,
-            "updated_at": datetime.now().isoformat(),
-        }, on_conflict="user_id").execute()
+        self._sb().table("water_data").upsert(
+            {"user_id": user_id, "data": data, "updated_at": datetime.now().isoformat()},
+            on_conflict="user_id"
+        ).execute()
 
     # ── Local JSON backend ────────────────────────────────────────────────────
 
@@ -99,26 +109,32 @@ class WaterRepository:
 
     def get_water_data(self, user_id: str) -> UserWaterData:
         """Get complete water data for a user; defaults to 2L goal."""
-        if self._use_supabase():
-            data = self._sb_load(user_id)
+        if self._use_supabase(user_id):
+            try:
+                raw = self._sb_load(user_id)
+            except Exception:
+                raw = self._load_file(user_id)
         else:
-            data = self._load_file(user_id)
+            raw = self._load_file(user_id)
 
-        if data is None:
+        if raw is None:
             return UserWaterData(
                 user_id=user_id,
                 daily_log={},
                 goal=WaterGoal(user_id=user_id, daily_goal_ml=2000.0),
             )
-
-        return UserWaterData.from_dict(data)
+        return UserWaterData.from_dict(raw)
 
     def save_water_data(self, water_data: UserWaterData) -> None:
         """Save complete water data for a user."""
-        if self._use_supabase():
-            self._sb_save(water_data.user_id, water_data.to_dict())
-        else:
-            self._save_file(water_data.user_id, water_data.to_dict())
+        data_dict = water_data.to_dict()
+        if self._use_supabase(water_data.user_id):
+            try:
+                self._sb_save(water_data.user_id, data_dict)
+                return
+            except Exception:
+                pass  # fall through to local save
+        self._save_file(water_data.user_id, data_dict)
 
     def save_water_goal(self, user_id: str, daily_goal_ml: float) -> WaterGoal:
         """

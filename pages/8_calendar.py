@@ -17,15 +17,15 @@ from auth.login_ui import require_auth, logout_button
 from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository
 
-# ── Page config ───────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="BiteFit · יומן",
-    page_icon="📅",
+    page_icon="",
     layout="wide",
 )
 
-# ── Design system ─────────────────────────────────────────────────────────
+#  Design system 
 inject_global_css()
 
 with st.sidebar:
@@ -34,19 +34,19 @@ with st.sidebar:
 
 USER_ID = require_auth()
 
-# ── Page header ───────────────────────────────────────────────────────────
+#  Page header 
 page_header(
     "לוח שנה",
     icon_name="calendar",
     subtitle="עקוב אחר מזון, מים ואימונים",
 )
 
-# ── Initialize repositories ──────────────────────────────────────────────────
+#  Initialize repositories 
 
 workout_repo = WorkoutRepository()
 water_repo = WaterRepository()
 
-# ── Month/Year selection ─────────────────────────────────────────────────────
+#  Month/Year selection 
 
 col1, col2, col3 = st.columns([1, 2, 1])
 
@@ -69,7 +69,7 @@ with col3:
 
 st.divider()
 
-# ── Helper functions ─────────────────────────────────────────────────────────
+#  Helper functions 
 
 def get_day_data(d):
     """Get activity data for a specific day."""
@@ -87,7 +87,7 @@ def get_day_data(d):
     }
 
 
-# ── Calendar Grid ────────────────────────────────────────────────────────────
+#  Calendar Grid 
 
 section_header(f"{cal.month_name[month]} {year}", icon_name="calendar")
 
@@ -120,18 +120,18 @@ for week in calendar_matrix:
             # Water indicator
             water_pct = day_data["water_pct"]
             if water_pct >= 100:
-                water_emoji = "💧💧"
+                water_emoji = ""
             elif water_pct >= 50:
-                water_emoji = "💧"
+                water_emoji = ""
             else:
-                water_emoji = "🌧️"
+                water_emoji = ""
 
             card_content += f"{water_emoji} {day_data['water_total']:.0f}ml\n\n"
 
             # Workout indicator
             if day_data["workouts"]:
                 workout_count = len(day_data["workouts"])
-                card_content += f"🏋️ {workout_count} אימון(ים)\n\n"
+                card_content += f" {workout_count} אימון(ים)\n\n"
 
             # Button to view details
             if col.button(
@@ -144,7 +144,7 @@ for week in calendar_matrix:
 
 st.divider()
 
-# ── Day Details Panel ────────────────────────────────────────────────────────
+#  Day Details Panel 
 
 selected_date_str = st.session_state.get("selected_date")
 
@@ -152,12 +152,12 @@ if selected_date_str:
     selected_date = datetime.fromisoformat(selected_date_str).date()
     day_data = get_day_data(selected_date)
 
-    st.markdown(f"### 📋 פרטים - {selected_date.strftime('%d/%m/%Y')}")
+    st.markdown(f"###  פרטים - {selected_date.strftime('%d/%m/%Y')}")
 
     # Create tabs for different views
-    tab_water, tab_workouts, tab_summary = st.tabs(["💧 מים", "🏋️ אימונים", "📊 סיכום"])
+    tab_water, tab_workouts, tab_summary = st.tabs([" מים", " אימונים", " סיכום"])
 
-    # ── Water Tab ────────────────────────────────────────────────────────
+    #  Water Tab 
     with tab_water:
         st.markdown("#### צריכת מים")
 
@@ -182,13 +182,13 @@ if selected_date_str:
             for intake in day_data["water_intakes"]:
                 time_str = intake.timestamp[11:16]  # HH:MM
                 st.markdown(
-                    f"🕐 **{time_str}** — {intake.amount_ml:.0f}ml "
+                    f" **{time_str}** — {intake.amount_ml:.0f}ml "
                     f"({intake.source}){f' — {intake.notes}' if intake.notes else ''}"
                 )
         else:
             st.info("אין צריכות מים רשומות ליום זה")
 
-    # ── Workouts Tab ─────────────────────────────────────────────────────
+    #  Workouts Tab 
     with tab_workouts:
         st.markdown("#### אימונים")
 
@@ -213,7 +213,7 @@ if selected_date_str:
         else:
             st.info("אין אימונים רשומים ליום זה")
 
-    # ── Summary Tab ──────────────────────────────────────────────────────
+    #  Summary Tab 
     with tab_summary:
         st.markdown("#### סיכום היום")
 
@@ -240,14 +240,14 @@ if selected_date_str:
 
         if len(day_data["workouts"]) > 0:
             summary_parts.append(
-                f"🏋️ **{len(day_data['workouts'])} אימון(ים)** בסך ~{sum(w.duration_minutes for w in day_data['workouts'])} דקות"
+                f" **{len(day_data['workouts'])} אימון(ים)** בסך ~{sum(w.duration_minutes for w in day_data['workouts'])} דקות"
             )
 
         if day_data["water_pct"] >= 100:
-            summary_parts.append(f"💧 **הגעת ליעד המים** ({day_data['water_pct']:.0f}%)")
+            summary_parts.append(f" **הגעת ליעד המים** ({day_data['water_pct']:.0f}%)")
         else:
             summary_parts.append(
-                f"💧 **עוד {max(0, day_data['water_goal'] - day_data['water_total']):.0f}ml מים** להשלמת היעד"
+                f" **עוד {max(0, day_data['water_goal'] - day_data['water_total']):.0f}ml מים** להשלמת היעד"
             )
 
         if summary_parts:
@@ -256,23 +256,23 @@ if selected_date_str:
 else:
     st.info("בחר יום בלוח השנה לצפייה בפרטים")
 
-# ── Legend ───────────────────────────────────────────────────────────────────
+#  Legend 
 
 st.divider()
-st.markdown("### 📖 מקרא")
+st.markdown("###  מקרא")
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.markdown("**💧 מים:**")
-    st.markdown("- 💧💧 יעד הושג")
-    st.markdown("- 💧 חלק מהיעד")
-    st.markdown("- 🌧️ פחות מחצי יעד")
+    st.markdown("** מים:**")
+    st.markdown("-  יעד הושג")
+    st.markdown("-  חלק מהיעד")
+    st.markdown("-  פחות מחצי יעד")
 
 with col2:
-    st.markdown("**🏋️ אימונים:**")
+    st.markdown("** אימונים:**")
     st.markdown("- מספר האימונים לאותו יום")
 
 with col3:
-    st.markdown("**📊 סטטוס:**")
+    st.markdown("** סטטוס:**")
     st.markdown("- צבע תא = פעילות")
     st.markdown("- בחר יום לפרטים מלאים")

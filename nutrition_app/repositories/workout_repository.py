@@ -1,18 +1,20 @@
 """
-Workout Repository — per-user workout persistence.
+workout_repository.py — per-user workout persistence.
 
 Backends:
-  • Supabase (cloud)  — when SUPABASE_URL / SUPABASE_ANON_KEY are configured.
-                        Stores UserWorkoutData as a JSONB blob in
-                        the `user_workout_data` table, keyed by user_id.
+  • Supabase (cloud)  — when SUPABASE_URL / SUPABASE_ANON_KEY are configured
+                        AND user_id is a real UUID (per-user isolation).
+                        Stores UserWorkoutData as a JSONB blob in the
+                        `workout_data` table, keyed by user_id.
   • Local JSON files  — fallback for local development.
                         Path: storage_agents/workouts/{user_id}.json
 """
 
 import json
 import os
+import re
 from datetime import date as date_cls, datetime
-from typing import List
+from typing import List, Optional
 
 from nutrition_app.models.workout import (
     UserWorkoutData,
@@ -22,27 +24,26 @@ from nutrition_app.models.workout import (
 
 _WEEKDAY_NAMES = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
+from nutrition_app.storage_paths import user_workouts_file  # noqa: E402
 
-def _storage_dir() -> str:
-    folder = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-        "storage_agents",
-        "workouts",
-    )
-    os.makedirs(folder, exist_ok=True)
-    return folder
+_UUID_RE = re.compile(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+)
 
 
 def _path(user_id: str) -> str:
-    return os.path.join(_storage_dir(), f"{user_id}.json")
+    return str(user_workouts_file(user_id))
 
 
 class WorkoutRepository:
-    """CRUD for workout data. Dual backend (Supabase or local JSON)."""
+    """CRUD for workout data. Auto-selects Supabase or local JSON backend."""
 
     # ── Backend selector ──────────────────────────────────────────────────────
 
-    def _use_supabase(self) -> bool:
+    def _use_supabase(self, user_id: str = "") -> bool:
+        # Per-user isolation: only route to Supabase for real UUID user_ids.
+        if not _UUID_RE.match((user_id or "").lower()):
+            return False
         try:
             from nutrition_app.db.supabase_client import is_supabase_configured
             return is_supabase_configured()
@@ -55,35 +56,37 @@ class WorkoutRepository:
 
     # ── Supabase backend ──────────────────────────────────────────────────────
 
-    def _sb_load(self, user_id: str) -> UserWorkoutData:
+    def _sb_load(self, user_id: str) -> Optional[dict]:
         rows = (
-            self._sb().table("user_workout_data")
-            .select("blob").eq("user_id", user_id).limit(1).execute()
+            self._sb().table("workout_data")
+            .select("data").eq("user_id", user_id).limit(1).execute()
         ).data
-        if not rows:
-            return UserWorkoutData(user_id=user_id)
-        blob = rows[0].get("blob") or {}
-        if isinstance(blob, str):
-            blob = json.loads(blob)
-        # Ensure user_id is set in the blob for from_dict
-        blob.setdefault("user_id", user_id)
-        return UserWorkoutData.from_dict(blob)
+        if rows:
+            blob = rows[0]["data"] or {}
+            if isinstance(blob, str):
+                blob = json.loads(blob)
+            # Ensure user_id is set in the blob for from_dict
+            blob.setdefault("user_id", user_id)
+            return blob
+        return None
 
-    def _sb_save(self, data: UserWorkoutData) -> None:
-        self._sb().table("user_workout_data").upsert({
-            "user_id":    data.user_id,
-            "blob":       data.to_dict(),
-            "updated_at": datetime.now().isoformat(),
-        }, on_conflict="user_id").execute()
+    def _sb_save(self, user_id: str, data: dict) -> None:
+        self._sb().table("workout_data").upsert(
+            {"user_id": user_id, "data": data, "updated_at": datetime.now().isoformat()},
+            on_conflict="user_id"
+        ).execute()
 
     # ── Local JSON backend ────────────────────────────────────────────────────
 
-    def _local_load(self, user_id: str) -> UserWorkoutData:
-        path = _path(user_id)
-        if not os.path.exists(path):
-            return UserWorkoutData(user_id=user_id)
-        with open(path, "r", encoding="utf-8") as f:
-            return UserWorkoutData.from_dict(json.load(f))
+    def _local_load(self, user_id: str) -> Optional[dict]:
+        p = _path(user_id)
+        if not os.path.exists(p):
+            return None
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError):
+            return None
 
     def _local_save(self, data: UserWorkoutData) -> None:
         with open(_path(data.user_id), "w", encoding="utf-8") as f:
@@ -92,15 +95,26 @@ class WorkoutRepository:
     # ── Public API ────────────────────────────────────────────────────────────
 
     def get_workout_data(self, user_id: str) -> UserWorkoutData:
-        if self._use_supabase():
-            return self._sb_load(user_id)
-        return self._local_load(user_id)
+        if self._use_supabase(user_id):
+            try:
+                raw = self._sb_load(user_id)
+            except Exception:
+                raw = self._local_load(user_id)
+        else:
+            raw = self._local_load(user_id)
+        if raw is None:
+            return UserWorkoutData(user_id=user_id)
+        raw.setdefault("user_id", user_id)
+        return UserWorkoutData.from_dict(raw)
 
     def _save(self, data: UserWorkoutData) -> None:
-        if self._use_supabase():
-            self._sb_save(data)
-        else:
-            self._local_save(data)
+        if self._use_supabase(data.user_id):
+            try:
+                self._sb_save(data.user_id, data.to_dict())
+                return
+            except Exception:
+                pass  # fall through to local save
+        self._local_save(data)
 
     def save_weekly_plan(self, user_id: str, plan: WeeklyWorkoutPlan) -> None:
         current = self.get_workout_data(user_id)

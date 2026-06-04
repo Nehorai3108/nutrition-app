@@ -45,19 +45,35 @@ def require_auth() -> str:
 
     Cookie session is hydrated first so that raw <a href> navigation (which
     drops Streamlit's in-memory session_state) doesn't force a re-login.
+    On the very first render of a fresh session we show a dark loading screen
+    (instead of the login form) while the CookieManager iframe loads the
+    stored JWT — this prevents a false login prompt on every navigation.
     """
     if not is_supabase_configured():
         st.error("Server misconfigured: Supabase credentials missing.")
         st.caption("Please contact support.")
         st.stop()
-    # Restore JWT from browser cookie before deciding "logged in or not".
-    # If cookies are loaded async, this is a no-op the first run; the cookie
-    # component then triggers a Streamlit rerun and session_state hydrates.
-    install_cookie_session()
+
+    cookies_ready = install_cookie_session()
     user = get_current_user()
+
     if user is None:
+        if not cookies_ready:
+            # First render of a fresh session — CookieManager hasn't sent
+            # cookies yet.  Show a silent dark screen and stop; the component
+            # will trigger a rerun in milliseconds and cookies will hydrate.
+            st.markdown(
+                "<style>html,body,[data-testid='stApp']"
+                "{background:#0d0f14!important}</style>",
+                unsafe_allow_html=True,
+            )
+            st.stop()
         render_login_ui()
         st.stop()
+
+    # Successful auth — reset the cookie-wait counter so the next
+    # fresh navigation (F5 / direct URL) gets a clean grace period.
+    st.session_state.pop("_sb_cookie_wait", None)
     return user["id"]
 
 
