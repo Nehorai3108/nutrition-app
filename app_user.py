@@ -883,99 +883,83 @@ if not run_btn and "last_plan" not in st.session_state:
             st.rerun()
 
     if _food_log_v:
-        for _fe in reversed(_food_log_v):
-            _fe_color = MEAL_COLOR.get(_fe.meal_type, "#545e70")
-            _fe_icon  = MEAL_ICON.get(_fe.meal_type, "")
-            _fe_time  = datetime.fromisoformat(_fe.timestamp).strftime("%H:%M") if _fe.timestamp else ""
-            _fe_macros = (
-                f'{int(_fe.protein)}g חל׳&nbsp;·&nbsp;'
-                f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
-                f'{int(_fe.fat)}g שומן'
-            )
-            if _fe.food_id.startswith("recipe_"):
-                _rid = "recipe_" + _fe.food_id.split("recipe_")[-1]
-                _img_src_fe = _RECIPE_IMAGES.get(_rid, "")
-            else:
-                _fe_food_obj_icon = _catalog.get_food_by_id(_fe.food_id)
-                _ing_name_fe = (_fe_food_obj_icon.name_en if _fe_food_obj_icon else "").replace(" ", "%20")
-                _img_src_fe = f"https://www.themealdb.com/images/ingredients/{_ing_name_fe}-Small.png" if _ing_name_fe else ""
-            _img_block_fe = (
+        # Group entries by meal_type, preserving order of first appearance
+        _MEAL_ORDER = ["breakfast","morning_snack","lunch","afternoon_snack","dinner","evening_snack","snack"]
+        _MEAL_HEB_NAMES = {
+            "breakfast": "ארוחת בוקר", "morning_snack": "חטיף בוקר",
+            "lunch": "ארוחת צהריים", "afternoon_snack": "חטיף צהריים",
+            "dinner": "ארוחת ערב", "evening_snack": "חטיף ערב", "snack": "נשנוש",
+        }
+        from collections import defaultdict as _defaultdict
+        _meals_grouped = _defaultdict(list)
+        for _fe in _food_log_v:
+            _meals_grouped[_fe.meal_type].append(_fe)
+
+        for _mtype in _MEAL_ORDER:
+            if _mtype not in _meals_grouped:
+                continue
+            _entries = _meals_grouped[_mtype]
+            _m_color  = MEAL_COLOR.get(_mtype, "#545e70")
+            _m_name   = _MEAL_HEB_NAMES.get(_mtype, _mtype)
+            _m_cal    = sum(e.calories for e in _entries)
+            _m_prot   = sum(e.protein  for e in _entries)
+            _m_carbs  = sum(e.carbs    for e in _entries)
+            _m_fat    = sum(e.fat      for e in _entries)
+            _m_time   = datetime.fromisoformat(_entries[-1].timestamp).strftime("%H:%M") if _entries[-1].timestamp else ""
+
+            # Pick best image: first recipe entry, else first ingredient
+            _m_img = ""
+            for _e in _entries:
+                if _e.food_id.startswith("recipe_"):
+                    _r = "recipe_" + _e.food_id.split("recipe_")[-1]
+                    _m_img = _RECIPE_IMAGES.get(_r, "")
+                    if _m_img:
+                        break
+            if not _m_img:
+                for _e in _entries:
+                    _fo = _catalog.get_food_by_id(_e.food_id)
+                    _ing = (_fo.name_en if _fo else "").replace(" ", "%20")
+                    if _ing:
+                        _m_img = f"https://www.themealdb.com/images/ingredients/{_ing}-Small.png"
+                        break
+
+            _img_block = (
                 f'<div style="width:100%;height:180px;'
-                f'background:#0d1117 url(\'{_img_src_fe}\') center/cover no-repeat;'
+                f'background:#0d1117 url(\'{_m_img}\') center/cover no-repeat;'
                 f'border-radius:16px 16px 0 0"></div>'
-            ) if _img_src_fe else ""
-            _meal_label_fe = MEAL_COLOR.get(_fe.meal_type, "#545e70")
+            ) if _m_img else ""
+
+            # Items list
+            _items_html = "".join(
+                f'<div style="font-size:.72rem;color:#8892a4;padding:2px 0;border-bottom:1px solid #1e2535">'
+                f'{e.food_name} · {int(e.calories)} קק״ל</div>'
+                for e in _entries
+            )
+
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border-radius:18px;'
-                f'margin-bottom:8px;overflow:hidden;border:1px solid #252d3d">'
-                + _img_block_fe +
+                f'margin-bottom:12px;overflow:hidden;border:1px solid #252d3d">'
+                + _img_block +
                 f'<div style="padding:14px 16px">'
-                f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
-                f'<div style="font-size:.9rem;font-weight:700;color:#f4f6fb">{_fe.food_name}</div>'
-                f'<div style="font-size:.68rem;color:#6b7a95">{_fe_time}</div>'
+                f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'
+                f'<div style="font-size:1rem;font-weight:800;color:#f4f6fb">{_m_name}</div>'
+                f'<div style="font-size:.68rem;color:#6b7a95">{_m_time}</div>'
                 f'</div>'
-                f'<div style="font-size:.75rem;font-weight:800;color:#f87171;margin-bottom:6px">{int(_fe.calories)} קק״ל</div>'
+                f'<div style="font-size:.78rem;font-weight:800;color:{_m_color};margin-bottom:8px">{int(_m_cal)} קק״ל</div>'
+                f'<div style="margin-bottom:10px">{_items_html}</div>'
                 f'<div style="display:flex;gap:8px">'
                 f'<div style="flex:1;background:#0d1117;border-radius:10px;padding:8px;text-align:center">'
-                f'<div style="font-size:.8rem;font-weight:700;color:#4f8ef7">{int(_fe.protein)}g</div>'
+                f'<div style="font-size:.8rem;font-weight:700;color:#4f8ef7">{int(_m_prot)}g</div>'
                 f'<div style="font-size:.6rem;color:#545e70">חלבון</div></div>'
                 f'<div style="flex:1;background:#0d1117;border-radius:10px;padding:8px;text-align:center">'
-                f'<div style="font-size:.8rem;font-weight:700;color:#f59e0b">{int(_fe.carbs)}g</div>'
+                f'<div style="font-size:.8rem;font-weight:700;color:#f59e0b">{int(_m_carbs)}g</div>'
                 f'<div style="font-size:.6rem;color:#545e70">פחמימות</div></div>'
                 f'<div style="flex:1;background:#0d1117;border-radius:10px;padding:8px;text-align:center">'
-                f'<div style="font-size:.8rem;font-weight:700;color:#f472b6">{int(_fe.fat)}g</div>'
+                f'<div style="font-size:.8rem;font-weight:700;color:#f472b6">{int(_m_fat)}g</div>'
                 f'<div style="font-size:.6rem;color:#545e70">שומן</div></div>'
                 f'</div></div></div>',
                 unsafe_allow_html=True,
             )
-            with st.expander("ערוך / מחק"):
-                _fe_is_recipe_v = _fe.food_id.startswith("recipe_")
-                _fe_food_obj_v  = _catalog.get_food_by_id(_fe.food_id) if not _fe_is_recipe_v else None
-                with st.form(f"home_edit_food_v_{_fe.entry_id}", clear_on_submit=True):
-                    _fe_grams_v = st.number_input(
-                        "גרם" if not _fe_is_recipe_v else "מנות × 100ג",
-                        min_value=1, max_value=3000,
-                        value=max(1, int(_fe.grams)), step=10 if not _fe_is_recipe_v else 100,
-                    )
-                    _fe_meal_v = st.selectbox(
-                        "ארוחה", options=list(MEAL_HEB.keys()),
-                        format_func=lambda k: MEAL_HEB[k],
-                        index=list(MEAL_HEB.keys()).index(_fe.meal_type)
-                              if _fe.meal_type in MEAL_HEB else 0,
-                        key=f"meal_sel_v_{_fe.entry_id}",
-                    )
-                    _ffv1, _ffv2 = st.columns(2)
-                    if _ffv1.form_submit_button("שמור", use_container_width=True, type="primary"):
-                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
-                        if _fe_food_obj_v:
-                            _ratio_v = _fe_grams_v / 100.0
-                            _nn_v = _fe_food_obj_v.nutrition_per_100g
-                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
-                                food_id=_fe_food_obj_v.food_id,
-                                food_name=_fe_food_obj_v.name_he,
-                                grams=float(_fe_grams_v),
-                                calories=round(_nn_v.calories_kcal * _ratio_v, 1),
-                                protein=round(_nn_v.protein_g * _ratio_v, 1),
-                                carbs=round(_nn_v.carbs_g * _ratio_v, 1),
-                                fat=round(_nn_v.fat_g * _ratio_v, 1),
-                                meal_type=_fe_meal_v,
-                                timestamp=_fe.timestamp,
-                            ))
-                        else:
-                            _scale_v = _fe_grams_v / max(_fe.grams, 1)
-                            _food_log_repo.add_entry(_DASH_USER, today, _FoodLogEntry(
-                                food_id=_fe.food_id, food_name=_fe.food_name,
-                                grams=float(_fe_grams_v),
-                                calories=round(_fe.calories * _scale_v, 1),
-                                protein=round(_fe.protein * _scale_v, 1),
-                                carbs=round(_fe.carbs * _scale_v, 1),
-                                fat=round(_fe.fat * _scale_v, 1),
-                                meal_type=_fe_meal_v, timestamp=_fe.timestamp,
-                            ))
-                        st.rerun()
-                    if _ffv2.form_submit_button("מחק", use_container_width=True):
-                        _food_log_repo.remove_entry(_DASH_USER, today, _fe.entry_id)
-                        st.rerun()
     else:
         st.markdown(
             '<div style="background:#161b26;border-radius:18px;padding:24px;'
