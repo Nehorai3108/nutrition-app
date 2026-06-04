@@ -9,6 +9,8 @@ from datetime import date, datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
+import altair as alt
+import pandas as pd
 from ui.components import inject_global_css, page_header, section_header
 from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
@@ -16,6 +18,7 @@ from nutrition_app.models.enums import Gender, ActivityLevel, Goal
 from nutrition_app.agents.agent_2_nutrition import NutritionEngine
 from nutrition_app.models.user import UserProfile
 from nutrition_app.repositories.profile_repository import ProfileRepository
+from nutrition_app.repositories.weight_repository import WeightRepository
 
 st.set_page_config(page_title="BiteFit · פרופיל", page_icon="", layout="wide")
 inject_global_css()
@@ -499,3 +502,84 @@ with tab_targets:
 
     st.divider()
     st.info(" שנה משקל / פעילות / מטרה / קצב בלשונית **פרטים אישיים** — החישוב מתעדכן מיידית")
+
+# ── Weight tracking section ──────────────────────────────────────────────────
+st.divider()
+st.markdown("## מעקב משקל")
+
+_w_repo = WeightRepository()
+_w_log  = _w_repo.get_log(USER_ID)
+_profile_data = ProfileRepository().load(USER_ID)
+_target_w = float(_profile_data.get("target_weight_kg") or 0)
+_current_w = float(_profile_data.get("weight_kg") or 0)
+
+# Log today's weight
+with st.form("weight_log_form"):
+    col1, col2, col3 = st.columns([2, 2, 1])
+    _new_w = col1.number_input("משקל היום (ק״ג)", min_value=30.0, max_value=250.0,
+                                value=_current_w, step=0.1, format="%.1f")
+    _w_note = col2.text_input("הערה (אופציונלי)", placeholder="שינה טובה, אחרי אימון...")
+    col3.markdown("<div style='margin-top:28px'></div>", unsafe_allow_html=True)
+    if col3.form_submit_button("שמור", type="primary", use_container_width=True):
+        _w_repo.add_entry(USER_ID, _new_w, _w_note)
+        # Also update profile weight
+        _profile_data["weight_kg"] = _new_w
+        ProfileRepository().save(USER_ID, _profile_data)
+        st.success(f"נשמר — {_new_w} ק״ג")
+        st.rerun()
+
+if _w_log:
+    # Stats
+    _first_w = _w_log[0].weight_kg
+    _last_w  = _w_log[-1].weight_kg
+    _change  = _last_w - _first_w
+    _change_color = "#4ade80" if ((_target_w > _current_w and _change > 0) or
+                                   (_target_w < _current_w and _change < 0)) else "#f87171"
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("משקל התחלתי", f"{_first_w:.1f} ק״ג")
+    c2.metric("משקל נוכחי",  f"{_last_w:.1f} ק״ג")
+    c3.metric("שינוי כולל",  f"{_change:+.1f} ק״ג")
+    if _target_w:
+        _remain = abs(_target_w - _last_w)
+        c4.metric("נשאר ליעד", f"{_remain:.1f} ק״ג")
+
+    # Chart
+    df = pd.DataFrame([{"תאריך": e.date, "משקל": e.weight_kg} for e in _w_log])
+    df["תאריך"] = pd.to_datetime(df["תאריך"])
+
+    base = alt.Chart(df).encode(
+        x=alt.X("תאריך:T", title="תאריך", axis=alt.Axis(format="%d/%m")),
+        y=alt.Y("משקל:Q", title="ק״ג",
+                scale=alt.Scale(domain=[df["משקל"].min() - 1, df["משקל"].max() + 1])),
+    )
+    line = base.mark_line(color="#4f8ef7", strokeWidth=2.5)
+    points = base.mark_circle(color="#4f8ef7", size=60)
+
+    chart = (line + points).properties(height=280, title="התקדמות משקל")
+
+    if _target_w:
+        target_line = alt.Chart(pd.DataFrame({"y": [_target_w]})).mark_rule(
+            color="#4ade80", strokeDash=[6, 3], strokeWidth=1.5
+        ).encode(y="y:Q")
+        chart = (chart + target_line)
+
+    st.altair_chart(chart.configure_view(strokeWidth=0)
+                        .configure_axis(labelColor="#8892a4", titleColor="#8892a4")
+                        .configure_title(color="#f4f6fb"),
+                    use_container_width=True)
+
+    # History table
+    with st.expander("היסטוריה מלאה"):
+        for e in reversed(_w_log):
+            st.markdown(
+                f'<div style="display:flex;justify-content:space-between;padding:6px 0;'
+                f'border-bottom:1px solid #1e2535;font-size:0.82rem">'
+                f'<span style="color:#8892a4">{e.date}</span>'
+                f'<span style="color:#f4f6fb;font-weight:700">{e.weight_kg} ק״ג</span>'
+                f'{"<span style=color:#545e70>" + e.note + "</span>" if e.note else ""}'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+else:
+    st.info("עוד לא נרשם משקל — הזן את המשקל שלך היום להתחלת המעקב")
