@@ -52,6 +52,9 @@ def _load_recipe_images() -> dict:
         return {}
 
 
+_RECIPE_IMAGES_DM = _load_recipe_images()
+
+
 def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
     """Return a div with the recipe image as CSS background-image.
 
@@ -1239,14 +1242,18 @@ with tabs[-2]:
             _meta = f'{_meal_label} · {entry.grams:.0f}ג׳'
             if _time_str:
                 _meta += f' · {_time_str}'
-            # Build food image URL from TheMealDB ingredients
-            _food_obj_img = _catalog.get_food_by_id(entry.food_id)
-            _img_name = (_food_obj_img.name_en if _food_obj_img else "").replace(" ", "%20")
+            # Build food image URL
+            if entry.food_id.startswith("recipe_"):
+                _img_url_entry = _RECIPE_IMAGES_DM.get(entry.food_id, "")
+            else:
+                _food_obj_img = _catalog.get_food_by_id(entry.food_id)
+                _ing_name = (_food_obj_img.name_en if _food_obj_img else "").replace(" ", "%20")
+                _img_url_entry = f"https://www.themealdb.com/images/ingredients/{_ing_name}-Small.png" if _ing_name else ""
             _img_html = (
-                f'<img src="https://www.themealdb.com/images/ingredients/{_img_name}-Small.png" '
+                f'<img src="{_img_url_entry}" '
                 f'style="width:44px;height:44px;object-fit:cover;border-radius:10px;flex-shrink:0;" '
                 f'onerror="this.style.display=\'none\'" />'
-            ) if _img_name else ""
+            ) if _img_url_entry else ""
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:14px;'
                 f'padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'

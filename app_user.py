@@ -113,6 +113,18 @@ if not _DEFAULT_FOOD_NAMES:
 #  Sidebar — Slim Dashboard 
 from nutrition_app.repositories.profile_repository import ProfileRepository as _ProfileRepo
 from nutrition_app.user_manager import load_inventory as _load_inv
+import json as _json
+
+@st.cache_data
+def _load_recipe_images() -> dict:
+    _p = os.path.join(os.path.dirname(__file__), "data", "recipe_images.json")
+    try:
+        with open(_p, encoding="utf-8") as _f:
+            return _json.load(_f)
+    except Exception:
+        return {}
+
+_RECIPE_IMAGES = _load_recipe_images()
 
 _profile_repo = _ProfileRepo()
 _profile = _profile_repo.load(_USER_ID)
@@ -880,14 +892,17 @@ if not run_btn and "last_plan" not in st.session_state:
                 f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
                 f'{int(_fe.fat)}g שומן'
             )
-            _fe_food_obj_icon = _catalog.get_food_by_id(_fe.food_id) if not _fe.food_id.startswith("recipe_") else None
-            _img_name_fe = (_fe_food_obj_icon.name_en if _fe_food_obj_icon else _fe.food_name).replace(" ", "%20")
-            _img_url_fe = f"https://www.themealdb.com/images/ingredients/{_img_name_fe}-Small.png"
+            if _fe.food_id.startswith("recipe_"):
+                _img_url_fe = _RECIPE_IMAGES.get(_fe.food_id, "")
+            else:
+                _fe_food_obj_icon = _catalog.get_food_by_id(_fe.food_id)
+                _img_name_fe = (_fe_food_obj_icon.name_en if _fe_food_obj_icon else "").replace(" ", "%20")
+                _img_url_fe = f"https://www.themealdb.com/images/ingredients/{_img_name_fe}-Small.png" if _img_name_fe else ""
             _icon_html = (
                 f'<img src="{_img_url_fe}" '
                 f'style="width:50px;height:50px;object-fit:cover;border-radius:14px;flex-shrink:0;" '
                 f'onerror="this.style.display=\'none\'" />'
-            )
+            ) if _img_url_fe else ""
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border-radius:18px;'
                 f'padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px">'
