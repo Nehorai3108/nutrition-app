@@ -18,7 +18,7 @@ from ui.components import inject_global_css
 
 st.set_page_config(
     page_title="דאשבורד ניהול",
-    page_icon="",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -44,35 +44,40 @@ pg = st.navigation(
             st.Page(
                 "pages_admin/1_agents_dashboard.py",
                 title="סוכנים",
-                icon="",
+                icon=None,
                 default=True,
             ),
             st.Page(
                 "pages_admin/2_photo_manager.py",
                 title="מנהל תמונות",
-                icon="",
+                icon=None,
             ),
             st.Page(
                 "pages_admin/3_audit_logs.py",
                 title="ביקורת לוג",
-                icon="",
+                icon=None,
             ),
             st.Page(
                 "pages_admin/4_settings.py",
                 title="הגדרות",
-                icon="",
+                icon=None,
+            ),
+            st.Page(
+                "pages_admin/5_food_images.py",
+                title="תמונות מזון",
+                icon=None,
             ),
         ],
         "מערכת": [
             st.Page(
                 "pages/2_recipes.py",
                 title="מתכונים",
-                icon="",
+                icon=None,
             ),
             st.Page(
                 "pages/7_weekly_workout_plan.py",
                 title="אימונים",
-                icon="",
+                icon=None,
             ),
         ],
     }
