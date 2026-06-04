@@ -38,6 +38,15 @@ if not is_admin():
     # this block only runs after a successful login + rerun
 
 #  Navigation — explicitly register admin pages 
+# Admin nav bar
+with st.sidebar:
+    st.markdown("### ניהול מערכת")
+    st.page_link("pages_admin/1_agents_dashboard.py", label="סוכנים")
+    st.page_link("pages_admin/2_photo_manager.py",    label="מנהל תמונות")
+    st.page_link("pages_admin/3_audit_logs.py",       label="ביקורת לוג")
+    st.page_link("pages_admin/4_settings.py",         label="הגדרות")
+    st.page_link("pages_admin/5_food_images.py",      label="תמונות מזון")
+
 pg = st.navigation(
     {
         "ניהול מערכת": [
