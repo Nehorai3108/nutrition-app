@@ -103,8 +103,16 @@ def _save_image(recipe_id: str, url: str):
 def _push_to_git():
     try:
         subprocess.Popen(
-            'git add data/recipe_images.json && git commit -m "img update" && git push origin main',
-            cwd=_ROOT, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            ["git", "add", "data/recipe_images.json"],
+            cwd=_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        ).wait()
+        subprocess.Popen(
+            ["git", "commit", "-m", "img: recipe image update"],
+            cwd=_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        ).wait()
+        subprocess.Popen(
+            ["git", "push", "origin", "main"],
+            cwd=_ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
     except: pass
 
