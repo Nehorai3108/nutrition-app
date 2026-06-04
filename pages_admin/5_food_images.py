@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-5_food_images.py — בחירת תמונות למאכלים ומתכונים
-מביא 3 אפשרויות מ-Pexels לכל מאכל — אתה בוחר, זה נשמר.
+5_food_images.py — בחירת תמונה לכל מתכון (3 אפשרויות מ-Pexels)
 """
 import os, sys, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-from ui.components import inject_global_css
 from ui.auth import require_admin, admin_logout_button
+from ui.components import inject_global_css
 
 st.set_page_config(page_title="תמונות מזון", layout="wide")
 inject_global_css()
@@ -17,160 +16,102 @@ require_admin(page_title="תמונות מזון", icon_name="images")
 admin_logout_button()
 
 # ── Paths ──────────────────────────────────────────────────────────────────
-_ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_MANUAL_IMG = os.path.join(_ROOT, "data", "food_images_manual.json")
-_FOODS_FILE = os.path.join(_ROOT, "nutrition_app", "data", "foods_extended.json")
+_ROOT         = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _RECIPES_FILE = os.path.join(_ROOT, "storage_agents", "recipes", "recipes.json")
+_IMAGES_FILE  = os.path.join(_ROOT, "data", "recipe_images.json")
 _API_KEY_FILE = os.path.join(_ROOT, "storage_agents", "recipe_images", ".pexels_api_key")
-
-PEXELS_URL = "https://api.pexels.com/v1/search"
-_BROWSER_UA = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
-)
+PEXELS_URL    = "https://api.pexels.com/v1/search"
+_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
 # ── Helpers ────────────────────────────────────────────────────────────────
-def _get_api_key():
-    key = os.environ.get("PEXELS_API_KEY", "").strip()
-    if key:
-        return key
-    try:
-        return open(_API_KEY_FILE, encoding="utf-8").read().strip() or None
-    except Exception:
-        return None
+def _api_key():
+    k = os.environ.get("PEXELS_API_KEY", "").strip()
+    if k: return k
+    try: return open(_API_KEY_FILE, encoding="utf-8").read().strip() or None
+    except: return None
 
-def _pexels_search(query: str, n: int = 3) -> list[str]:
-    import urllib.request, urllib.parse, urllib.error
-    key = _get_api_key()
-    if not key:
-        return []
-    params = urllib.parse.urlencode({"query": query, "per_page": n, "orientation": "landscape"})
+def _search(query: str) -> list:
+    import urllib.request, urllib.parse
+    key = _api_key()
+    if not key: return []
+    params = urllib.parse.urlencode({"query": query, "per_page": 3, "orientation": "landscape"})
     req = urllib.request.Request(
         f"{PEXELS_URL}?{params}",
-        headers={"Authorization": key, "User-Agent": _BROWSER_UA, "Accept": "application/json"},
+        headers={"Authorization": key, "User-Agent": _UA, "Accept": "application/json"},
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return [p["src"]["medium"] for p in data.get("photos", [])]
-    except Exception:
-        return []
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return [p["src"]["large"] for p in json.loads(r.read())["photos"]]
+    except: return []
 
-@st.cache_data(ttl=60)
-def _load_manual() -> dict:
-    try:
-        d = json.load(open(_MANUAL_IMG, encoding="utf-8"))
-        return {**d.get("recipes", {}), **d.get("ingredients", {})}
-    except Exception:
-        return {}
-
-def _save_manual(flat: dict):
-    """Save flat dict back into the structured JSON file."""
-    try:
-        d = json.load(open(_MANUAL_IMG, encoding="utf-8"))
-    except Exception:
-        d = {"recipes": {}, "ingredients": {}}
-    # Split back: recipes keys contain meal/dish names, ingredients the rest
-    # We just merge everything into ingredients for simplicity
-    d["ingredients"].update(flat)
-    with open(_MANUAL_IMG, "w", encoding="utf-8") as f:
-        json.dump(d, f, ensure_ascii=False, indent=2)
-
-@st.cache_data(ttl=300)
-def _load_foods():
-    try:
-        return json.load(open(_FOODS_FILE, encoding="utf-8"))
-    except Exception:
-        return []
-
-@st.cache_data(ttl=300)
 def _load_recipes():
-    try:
-        return json.load(open(_RECIPES_FILE, encoding="utf-8"))
-    except Exception:
-        return []
+    try: return json.load(open(_RECIPES_FILE, encoding="utf-8"))
+    except: return []
+
+def _load_images() -> dict:
+    try: return json.load(open(_IMAGES_FILE, encoding="utf-8"))
+    except: return {}
+
+def _save_image(recipe_id: str, url: str):
+    imgs = _load_images()
+    imgs[recipe_id] = url
+    with open(_IMAGES_FILE, "w", encoding="utf-8") as f:
+        json.dump(imgs, f, ensure_ascii=False, indent=2)
+
+# ── State ──────────────────────────────────────────────────────────────────
+if "img_cache" not in st.session_state:
+    st.session_state.img_cache = {}   # recipe_id → [url1, url2, url3]
+
+# ── Data ───────────────────────────────────────────────────────────────────
+recipes = _load_recipes()
+saved   = _load_images()
 
 # ── UI ─────────────────────────────────────────────────────────────────────
-st.markdown("## בחירת תמונות למזון")
-st.markdown("בחר מאכל — קבל 3 אפשרויות מ-Pexels — לחץ על אחת לאישור.")
+st.markdown("## תמונות מתכונים")
 
-_manual = _load_manual()
-_foods   = _load_foods()
-_recipes = _load_recipes()
+# Pagination
+PAGE_SIZE = 10
+total     = len(recipes)
+n_pages   = (total + PAGE_SIZE - 1) // PAGE_SIZE
+page      = st.number_input("עמוד", min_value=1, max_value=n_pages, value=1, step=1) - 1
+page_recipes = recipes[page * PAGE_SIZE : (page + 1) * PAGE_SIZE]
 
-# Build item list
-_all_items = []
-for r in _recipes:
-    _all_items.append({
-        "id": r.get("recipe_id", ""),
-        "name_he": r.get("name_he", ""),
-        "name_en": r.get("name_en", ""),
-        "type": "מתכון",
-        "query": r.get("name_en", r.get("name_he", "")),
-        "key": r.get("name_en", "").lower(),
-    })
-for f in _foods:
-    _all_items.append({
-        "id": f.get("food_id", ""),
-        "name_he": f.get("name_he", ""),
-        "name_en": f.get("name_en", ""),
-        "type": "רכיב",
-        "query": f.get("name_en", f.get("name_he", "")),
-        "key": f.get("name_en", "").lower(),
-    })
+st.markdown(f"מציג {page*PAGE_SIZE+1}–{min((page+1)*PAGE_SIZE, total)} מתוך {total} מתכונים")
+st.divider()
 
-# Filter
-col_search, col_type = st.columns([3, 1])
-_search = col_search.text_input("חיפוש מאכל", placeholder="הקלד שם בעברית או אנגלית...")
-_type_filter = col_type.selectbox("סוג", ["הכל", "מתכון", "רכיב"])
+for recipe in page_recipes:
+    rid      = recipe.get("recipe_id", "")
+    name_he  = recipe.get("name_he", "")
+    name_en  = recipe.get("name_en", "")
+    current  = saved.get(rid, "")
 
-_filtered = [
-    i for i in _all_items
-    if (_search.lower() in i["name_he"].lower() or _search.lower() in i["name_en"].lower())
-    and (_type_filter == "הכל" or i["type"] == _type_filter)
-][:30]
+    col_title, col_status = st.columns([4, 1])
+    col_title.markdown(f"### {name_he}")
+    if current:
+        col_status.success("יש תמונה")
+    else:
+        col_status.warning("אין תמונה")
 
-if not _search:
-    st.info("הקלד שם מאכל לחיפוש")
-    st.stop()
+    # Show current image small
+    if current:
+        st.image(current, width=200)
 
-if not _filtered:
-    st.warning("לא נמצאו תוצאות")
-    st.stop()
+    # Fetch button
+    if st.button(f"הבא 3 תמונות", key=f"fetch_{rid}"):
+        with st.spinner("מחפש..."):
+            opts = _search(name_en or name_he)
+        st.session_state.img_cache[rid] = opts
 
-for item in _filtered:
-    with st.expander(f"{item['name_he']} ({item['name_en']}) — {item['type']}", expanded=False):
-        _current = _manual.get(item["key"], "")
-        if _current:
-            st.markdown(f"**תמונה נוכחית:**")
-            st.image(_current, width=300)
-
-        if st.button(f"הבא 3 אפשרויות מ-Pexels", key=f"fetch_{item['id']}"):
-            st.session_state[f"opts_{item['id']}"] = _pexels_search(item["query"], 3)
-
-        _opts = st.session_state.get(f"opts_{item['id']}", [])
-        if _opts:
-            st.markdown("**בחר תמונה:**")
-            cols = st.columns(len(_opts))
-            for idx, (col, url) in enumerate(zip(cols, _opts)):
-                with col:
-                    st.image(url, use_container_width=True)
-                    if st.button("בחר", key=f"pick_{item['id']}_{idx}"):
-                        _manual_updated = dict(_manual)
-                        _manual_updated[item["key"]] = url
-                        _save_manual(_manual_updated)
-                        _load_manual.clear()
-                        st.success("נשמר!")
-                        st.session_state.pop(f"opts_{item['id']}", None)
-                        st.rerun()
-
-        # Manual URL input
-        with st.form(key=f"manual_url_{item['id']}"):
-            _url_input = st.text_input("או הדבק URL ישירות:", value=_current)
-            if st.form_submit_button("שמור URL"):
-                _manual_updated = dict(_manual)
-                _manual_updated[item["key"]] = _url_input
-                _save_manual(_manual_updated)
-                _load_manual.clear()
-                st.success("נשמר!")
+    # Show 3 options
+    opts = st.session_state.img_cache.get(rid, [])
+    if opts:
+        cols = st.columns(3)
+        for i, (col, url) in enumerate(zip(cols, opts)):
+            col.image(url, use_container_width=True)
+            if col.button("בחר תמונה זו", key=f"pick_{rid}_{i}", use_container_width=True, type="primary"):
+                _save_image(rid, url)
+                st.session_state.img_cache.pop(rid, None)
+                st.success(f"נשמר עבור {name_he}")
                 st.rerun()
+
+    st.divider()
