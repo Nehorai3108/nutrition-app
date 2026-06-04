@@ -109,8 +109,9 @@ def _push_to_git():
     except: pass
 
 # ── Session state ───────────────────────────────────────────────────────────
-if "img_opts"   not in st.session_state: st.session_state.img_opts   = {}  # rid → [urls]
-if "img_offset" not in st.session_state: st.session_state.img_offset = {}  # rid → offset
+if "img_opts"   not in st.session_state: st.session_state.img_opts   = {}
+if "img_offset" not in st.session_state: st.session_state.img_offset = {}
+if "done_rids"  not in st.session_state: st.session_state.done_rids  = set()
 
 recipes = _load_recipes()
 saved   = _load_images()
@@ -119,7 +120,9 @@ saved   = _load_images()
 st.markdown("## תמונות מתכונים")
 
 show_filter = st.radio("הצג:", ["הכל", "רק ללא תמונה"], index=1, horizontal=True)
-filtered    = [r for r in recipes if show_filter == "הכל" or not saved.get(r.get("recipe_id",""))]
+filtered    = [r for r in recipes
+               if r.get("recipe_id","") not in st.session_state.done_rids
+               and (show_filter == "הכל" or not saved.get(r.get("recipe_id","")))]
 
 PAGE_SIZE = 8
 n_pages   = max(1, (len(filtered) + PAGE_SIZE - 1) // PAGE_SIZE)
@@ -161,6 +164,7 @@ for recipe in page_recs:
                 _push_to_git()
                 st.session_state.img_opts.pop(rid, None)
                 st.session_state.img_offset.pop(rid, None)
+                st.session_state.done_rids.add(rid)
                 st.rerun()
 
         if st.button("3 תמונות אחרות", key=f"more_{rid}"):
