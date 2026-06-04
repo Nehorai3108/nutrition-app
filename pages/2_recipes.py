@@ -20,11 +20,11 @@ from ui.components import (
 from ui.images import image_data_uri
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-# ── Page config ──────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="BiteFit · מתכונים",
-    page_icon="📖",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -34,7 +34,7 @@ nav_menu(active="מתכונים")
 page_header("מתכונים", icon_name="recipe",
             subtitle="חיפוש וצפייה במתכונים")
 
-# ── Load recipe manager ──────────────────────────────────────────────────────
+#  Load recipe manager 
 
 @st.cache_resource
 def get_recipe_manager():
@@ -43,7 +43,7 @@ def get_recipe_manager():
 manager = get_recipe_manager()
 stats = manager.get_stats()
 
-# ── Stats bar ────────────────────────────────────────────────────────────────
+#  Stats bar 
 
 st.markdown("---")
 stat_cols = st.columns(5)
@@ -56,7 +56,7 @@ meal_type_counts = stats.get("by_meal_type", {})
 total_meal_slots = sum(meal_type_counts.values())
 stat_cols[4].metric("ארוחות", total_meal_slots)
 
-# ── Sidebar filters ──────────────────────────────────────────────────────────
+#  Sidebar filters 
 
 with st.sidebar:
     section_header("סינון מתכונים", "search")
@@ -98,7 +98,7 @@ with st.sidebar:
     st.divider()
     render_chatbot_sidebar()
 
-# ── Build filter and search ──────────────────────────────────────────────────
+#  Build filter and search 
 
 recipe_filter = RecipeFilter(
     calorie_min=calorie_min if calorie_min > 0 else None,
@@ -113,7 +113,7 @@ recipe_filter = RecipeFilter(
 
 results = manager.search_recipes(recipe_filter)
 
-# ── Display results ──────────────────────────────────────────────────────────
+#  Display results 
 
 st.markdown(f"### נמצאו {len(results)} מתכונים")
 st.markdown("---")

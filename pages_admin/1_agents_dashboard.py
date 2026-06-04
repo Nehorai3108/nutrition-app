@@ -21,7 +21,7 @@ from ui.components import (
 from ui.auth import require_admin, admin_logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-# ── Autonomy imports ──────────────────────────────────────────────────────────
+#  Autonomy imports 
 from nutrition_app.models.enums import ActivityLevel, Gender, Goal
 from nutrition_app.models.user import UserProfile
 from nutrition_app.agents.agent_2_nutrition import NutritionEngine
@@ -44,20 +44,20 @@ from nutrition_app.autonomy.feedback.feedback_manager import FeedbackManager
 from nutrition_app.autonomy.orchestrator.autonomy_orchestrator import AutonomyOrchestrator
 from nutrition_app.autonomy.dashboard.active_dashboard import ActiveDashboard
 
-# ── Page config ───────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="דאשבורד סוכנים",
-    page_icon="🤖",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# ── Design system ─────────────────────────────────────────────────────────
+#  Design system 
 # Admin authentication is handled at the app level (app_admin.py)
 inject_global_css()
 
-# ── Top nav + page header (admin only past this point) ───────────────────────
+#  Top nav + page header (admin only past this point) 
 nav_menu(active="סוכנים")
 page_header(
     "דאשבורד סוכנים",
@@ -66,11 +66,11 @@ page_header(
 )
 admin_logout_button()
 
-# ── Storage dir ───────────────────────────────────────────────────────────────
+#  Storage dir 
 STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage_agents")
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
-# ── Live-data helpers ─────────────────────────────────────────────────────────
+#  Live-data helpers 
 
 def _load_json(path: str, fallback):
     """Load JSON from path; return fallback on any error."""
@@ -90,7 +90,7 @@ _TASKS_DIR = os.path.join(STORAGE_DIR, "tasks")
 _REPORTS_DIR = os.path.join(STORAGE_DIR, "audit", "director_reports")
 _LOGS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "agents", "logs")
 
-# ── Simple run_state mock (no WorkflowEngine needed) ─────────────────────────
+#  Simple run_state mock (no WorkflowEngine needed) 
 
 class _RunResult:
     """Minimal object to satisfy orchestrator._record_run()"""
@@ -102,7 +102,7 @@ class _RunResult:
         def pending_decisions(): return []
         self.pending_decisions = pending_decisions
 
-# ── Initialize orchestrator (once, persisted in session) ─────────────────────
+#  Initialize orchestrator (once, persisted in session) 
 
 def _init_orchestrator() -> AutonomyOrchestrator:
     audit = AuditLog(f"{STORAGE_DIR}/audit")
@@ -137,7 +137,7 @@ if "orc" not in st.session_state:
 orc: AutonomyOrchestrator = st.session_state["orc"]
 dashboard = ActiveDashboard(orchestrator=orc)
 
-# ── Pipeline runner ───────────────────────────────────────────────────────────
+#  Pipeline runner 
 
 def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
     """Run one full pipeline cycle using agents directly, feed results into orchestrator."""
@@ -154,7 +154,7 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
     try:
         # Agent 1: User Profile
         user = UserProfile(**user_cfg)
-        log.append({"step": "פרופיל משתמש", "status": "✓", "detail": f"{user.name}, {user.age} שנים"})
+        log.append({"step": "פרופיל משתמש", "status": "", "detail": f"{user.name}, {user.age} שנים"})
 
         # Agent 2: Nutrition targets
         engine = NutritionEngine()
@@ -163,9 +163,9 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
         if errs:
             success = False
             escalations.append({"what_happened": f"שגיאת ולידציה: {errs}", "what_we_tried": [], "why_it_failed": str(errs), "options": ["בדוק נתוני משתמש"], "impact_on_goal": "חישוב יעדים נכשל"})
-            log.append({"step": "חישוב יעדים", "status": "✗", "detail": str(errs)})
+            log.append({"step": "חישוב יעדים", "status": "", "detail": str(errs)})
         else:
-            log.append({"step": "חישוב יעדים", "status": "✓", "detail": f"יעד: {targets.target_calories_kcal:.0f} קק\"ל"})
+            log.append({"step": "חישוב יעדים", "status": "", "detail": f"יעד: {targets.target_calories_kcal:.0f} קק\"ל"})
 
         # Agent 3: Food matching
         catalog = FoodCatalog()
@@ -182,12 +182,12 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
             auth = orc._authority.check_authority(fix.get("action_category"))
             if orc.self_healer.should_auto_fix(fix, auth):
                 auto_fixes.append({"stage": "resolve_foods", "fix": fix.get("strategy"), "confidence": fix.get("confidence")})
-                log.append({"step": "זיהוי מזונות", "status": "⚡", "detail": f"תוקן אוטומטית: {fix.get('strategy')}"})
+                log.append({"step": "זיהוי מזונות", "status": "", "detail": f"תוקן אוטומטית: {fix.get('strategy')}"})
             else:
                 escalations.append({"what_happened": f"מזונות לא זוהו: {match_result.unmatched}", "what_we_tried": [{"attempt": 1, "action": "auto_fix", "result": "confidence_too_low"}], "why_it_failed": "ביטחון נמוך", "options": ["הוסף מזון ידנית", "בחר מחליף"], "impact_on_goal": "תפריט חלקי"})
-                log.append({"step": "זיהוי מזונות", "status": "⚠", "detail": f"לא זוהה: {match_result.unmatched}"})
+                log.append({"step": "זיהוי מזונות", "status": "", "detail": f"לא זוהה: {match_result.unmatched}"})
         else:
-            log.append({"step": "זיהוי מזונות", "status": "✓", "detail": f"{len(match_result.matches)} מזונות זוהו"})
+            log.append({"step": "זיהוי מזונות", "status": "", "detail": f"{len(match_result.matches)} מזונות זוהו"})
 
         # Agent 4: Inventory
         inv_mgr = InventoryManager()
@@ -195,7 +195,7 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
             if qty > 0:
                 inv_mgr.add_item(user_cfg["user_id"], food_id, qty, "gram")
         inv_state = inv_mgr.get_state(user_cfg["user_id"])
-        log.append({"step": "מלאי", "status": "✓", "detail": f"{len(inv_state.items)} פריטים"})
+        log.append({"step": "מלאי", "status": "", "detail": f"{len(inv_state.items)} פריטים"})
 
         # Agent 5: Meal planner
         planner = MealPlanner()
@@ -206,7 +206,7 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
 
         if plan_errors:
             success = False
-            log.append({"step": "תפריט יומי", "status": "✗", "detail": str(plan_errors)})
+            log.append({"step": "תפריט יומי", "status": "", "detail": str(plan_errors)})
             # Self-healer attempt
             record = orc.self_healer.detect(str(plan_errors), "generate_meal_plan", run_id)
             record = orc.self_healer.diagnose(record)
@@ -215,7 +215,7 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
             if orc.self_healer.should_auto_fix(fix, auth):
                 auto_fixes.append({"stage": "generate_meal_plan", "fix": fix.get("strategy"), "confidence": fix.get("confidence")})
                 success = True
-                log.append({"step": "תפריט יומי (תיקון)", "status": "⚡", "detail": f"תוקן: {fix.get('strategy')}"})
+                log.append({"step": "תפריט יומי (תיקון)", "status": "", "detail": f"תוקן: {fix.get('strategy')}"})
         else:
             if abs(deviation) > 10:
                 # Calorie deviation — healer kicks in
@@ -226,19 +226,19 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
                 auth = orc._authority.check_authority(fix.get("action_category"))
                 if orc.self_healer.should_auto_fix(fix, auth):
                     auto_fixes.append({"stage": "generate_meal_plan", "fix": fix.get("strategy"), "confidence": fix.get("confidence")})
-                    log.append({"step": "תפריט יומי", "status": "⚡", "detail": f"{plan.total_calories:.0f} קק\"ל | סטייה {deviation:+.1f}% | תוקן: {fix.get('strategy')}"})
+                    log.append({"step": "תפריט יומי", "status": "", "detail": f"{plan.total_calories:.0f} קק\"ל | סטייה {deviation:+.1f}% | תוקן: {fix.get('strategy')}"})
                 else:
-                    log.append({"step": "תפריט יומי", "status": "⚠", "detail": f"{plan.total_calories:.0f} קק\"ל | סטייה {deviation:+.1f}%"})
+                    log.append({"step": "תפריט יומי", "status": "", "detail": f"{plan.total_calories:.0f} קק\"ל | סטייה {deviation:+.1f}%"})
             else:
-                log.append({"step": "תפריט יומי", "status": "✓", "detail": f"{plan.total_calories:.0f} קק\"ל | סטייה {deviation:+.1f}%"})
+                log.append({"step": "תפריט יומי", "status": "", "detail": f"{plan.total_calories:.0f} קק\"ל | סטייה {deviation:+.1f}%"})
 
         # Inventory deduction
         inv_mgr.deduct_for_plan(user_cfg["user_id"], plan, plan.run_id)
-        log.append({"step": "ניכוי מלאי", "status": "✓", "detail": "עודכן"})
+        log.append({"step": "ניכוי מלאי", "status": "", "detail": "עודכן"})
 
     except Exception as e:
         success = False
-        log.append({"step": "שגיאה בלתי צפויה", "status": "✗", "detail": str(e)})
+        log.append({"step": "שגיאה בלתי צפויה", "status": "", "detail": str(e)})
         escalations.append({"what_happened": f"Exception: {e}", "what_we_tried": [], "why_it_failed": str(e), "options": ["בדוק לוגים", "צור קשר עם מפתח"], "impact_on_goal": "מחזור נכשל"})
 
     elapsed = time.time() - cycle_start
@@ -281,13 +281,13 @@ def run_pipeline_cycle(user_cfg: Dict, inventory_cfg: Dict) -> Dict:
     return cycle_result
 
 
-# ── Sidebar — Control panel ───────────────────────────────────────────────────
+#  Sidebar — Control panel 
 
 with st.sidebar:
-    st.markdown("## 🤖 לוח בקרה — סוכנים")
+    st.markdown("##  לוח בקרה — סוכנים")
     st.divider()
 
-    st.markdown("### ⚙️ הגדרות ריצה")
+    st.markdown("###  הגדרות ריצה")
     user_id = st.text_input("מזהה משתמש", value="agent_user_001")
     goal_sel = st.selectbox("מטרה", options=[g.value for g in Goal],
                              format_func=lambda v: {"lose_weight": "ירידה במשקל", "maintain": "שמירה", "gain_weight": "עלייה"}.get(v, v))
@@ -298,7 +298,7 @@ with st.sidebar:
     height_s = st.slider("גובה (ס\"מ)", 140, 210, 178)
 
     st.divider()
-    st.markdown("### 🛒 מלאי לריצה")
+    st.markdown("###  מלאי לריצה")
     inv_chicken = st.number_input("חזה עוף (ג)", 0, 2000, 600, step=100)
     inv_rice    = st.number_input("אורז (ג)", 0, 2000, 1000, step=100)
     inv_egg     = st.number_input("ביצה (ג)", 0, 2000, 400, step=50)
@@ -315,7 +315,7 @@ with st.sidebar:
                 del st.session_state[key]
         st.rerun()
 
-# ── Build user/inventory config ───────────────────────────────────────────────
+#  Build user/inventory config 
 
 user_cfg = dict(
     user_id=user_id,
@@ -337,13 +337,13 @@ inventory_cfg = {
     }
 }
 
-# ── Run cycle if requested ────────────────────────────────────────────────────
+#  Run cycle if requested 
 
 if run_cycle_btn:
     with st.spinner("מריץ מחזור אוטונומי..."):
         result = run_pipeline_cycle(user_cfg, inventory_cfg)
 
-# ── Header ────────────────────────────────────────────────────────────────────
+#  Header 
 
 st.markdown("---")
 
@@ -356,41 +356,41 @@ ready = dash_state.get("ready", False)
 col_status, col_bar = st.columns([1, 3])
 with col_status:
     if ready:
-        st.success("✅ מוכן להדגמה")
+        st.success(" מוכן להדגמה")
     else:
-        st.warning(f"⏳ בתהליך — {goal_pct:.0f}%")
+        st.warning(f"בתהליך — {goal_pct:.0f}%")
 with col_bar:
     st.progress(int(goal_pct) if goal_pct else 0, text=f"התקדמות לעמידה ביעדים: {goal_pct:.0f}%")
 
 st.divider()
 
-# ── Top metrics ───────────────────────────────────────────────────────────────
+#  Top metrics 
 
 c1, c2, c3, c4, c5, c6 = st.columns(6)
-c1.metric("🔄 מחזורים", metrics.total_runs)
-c2.metric("✅ שיעור הצלחה", f"{metrics.success_rate:.0f}%")
-c3.metric("📊 סטייה ממוצעת", f"{metrics.average_deviation:.1f}%")
-c4.metric("⚡ תיקונים אוטו", f"{metrics.auto_fix_rate:.0f}%")
-c5.metric("🚨 הסלמות", metrics.escalation_count)
-c6.metric("📋 משימות פתוחות", metrics.open_failures + metrics.stuck_tasks)
+c1.metric(" מחזורים", metrics.total_runs)
+c2.metric(" שיעור הצלחה", f"{metrics.success_rate:.0f}%")
+c3.metric(" סטייה ממוצעת", f"{metrics.average_deviation:.1f}%")
+c4.metric(" תיקונים אוטו", f"{metrics.auto_fix_rate:.0f}%")
+c5.metric(" הסלמות", metrics.escalation_count)
+c6.metric(" משימות פתוחות", metrics.open_failures + metrics.stuck_tasks)
 
 st.divider()
 
-# ── Tabs ──────────────────────────────────────────────────────────────────────
+#  Tabs 
 
 tab_cycles, tab_tasks, tab_healer, tab_escalations, tab_recipe_images, tab_feedback, tab_improvements, tab_audit, tab_live_state = st.tabs([
-    "🔄 מחזורים",
-    "📋 משימות",
-    "🩺 ריפוי עצמי",
-    "🚨 הסלמות",
-    "🖼️ תמונות מתכונים",
-    "💬 משוב",
-    "📈 שיפורים",
-    "📝 ביקורת",
-    "🗂️ מצב מערכת חי",
+    " מחזורים",
+    " משימות",
+    " ריפוי עצמי",
+    " הסלמות",
+    " תמונות מתכונים",
+    " משוב",
+    " שיפורים",
+    " ביקורת",
+    " מצב מערכת חי",
 ])
 
-# ── Tab: Cycles ───────────────────────────────────────────────────────────────
+#  Tab: Cycles 
 
 with tab_cycles:
     st.markdown("### היסטוריית מחזורים")
@@ -401,14 +401,14 @@ with tab_cycles:
     else:
         # Last cycle expanded
         last = cycles[-1]
-        status_icon = "✅" if last["success"] else "❌"
+        status_icon = "" if last["success"] else ""
         with st.expander(f"{status_icon} מחזור אחרון — {last['timestamp']} ({last['elapsed_sec']}שנ')", expanded=True):
             for step in last["log"]:
                 icon = step["status"]
-                color = "green" if icon == "✓" else ("orange" if icon in ("⚠", "⚡") else "red")
+                color = "green" if icon == "" else ("orange" if icon in ("", "") else "red")
                 st.markdown(f"**{icon} {step['step']}** — {step['detail']}")
             if last["auto_fixes"]:
-                st.markdown("**⚡ תיקונים אוטומטיים:**")
+                st.markdown("** תיקונים אוטומטיים:**")
                 for fix in last["auto_fixes"]:
                     st.markdown(f"&nbsp;&nbsp;• {fix['stage']}: `{fix['fix']}` (ביטחון: {fix['confidence']})")
 
@@ -416,7 +416,7 @@ with tab_cycles:
         if len(cycles) > 1:
             st.markdown("**מחזורים קודמים:**")
             for c in reversed(cycles[:-1]):
-                icon = "✅" if c["success"] else "❌"
+                icon = "" if c["success"] else ""
                 fixes = len(c.get("auto_fixes", []))
                 st.markdown(
                     f"{icon} `{c['run_id'][-12:]}` — {c['timestamp']} | "
@@ -424,7 +424,7 @@ with tab_cycles:
                     f"הסלמות: {c['escalations_count']}"
                 )
 
-# ── Tab: Tasks ────────────────────────────────────────────────────────────────
+#  Tab: Tasks 
 
 with tab_tasks:
     st.markdown("### תור משימות")
@@ -434,15 +434,15 @@ with tab_tasks:
         st.info("אין משימות בתור.")
     else:
         STATUS_ICON = {
-            "created": "🔵",
+            "created": "",
             "in_progress": "🟡",
             "fixed": "🟣",
             "verified": "🟢",
-            "closed": "✅",
-            "failed": "🔴",
-            "stuck": "⛔",
-            "escalated": "🚨",
-            "needs_info": "❓",
+            "closed": "",
+            "failed": "",
+            "stuck": "",
+            "escalated": "",
+            "needs_info": "",
         }
         STATUS_HE = {
             "created": "ממתין", "in_progress": "בביצוע", "fixed": "תוקן",
@@ -456,7 +456,7 @@ with tab_tasks:
         st.markdown(f"**פתוחות: {len(open_tasks)} | סגורות: {len(closed_tasks)}**")
 
         for task in sorted(open_tasks, key=lambda t: t.priority.value):
-            icon = STATUS_ICON.get(task.status.value, "⬜")
+            icon = STATUS_ICON.get(task.status.value, "")
             status_he = STATUS_HE.get(task.status.value, task.status.value)
             with st.expander(f"{icon} [{task.priority.value.upper()}] {task.description[:70]}", expanded=False):
                 col_a, col_b, col_c = st.columns(3)
@@ -465,7 +465,7 @@ with tab_tasks:
                 col_c.metric("בעלים", task.owner.value)
                 st.caption(f"מקור: {task.source} | עדכון: {task.updated_at.strftime('%H:%M:%S')}")
 
-# ── Tab: Self-Healer ──────────────────────────────────────────────────────────
+#  Tab: Self-Healer 
 
 with tab_healer:
     st.markdown("### ריפוי עצמי — היסטוריה")
@@ -482,7 +482,7 @@ with tab_healer:
     else:
         for rec in reversed(heal_history[-10:]):
             status = rec.get("status", "")
-            icon = "✅" if status == "verified" else ("⚡" if status in ("auto_fixed", "applied") else "🔍")
+            icon = "" if status == "verified" else ("" if status in ("auto_fixed", "applied") else "")
             with st.expander(f"{icon} {rec.get('issue_type', 'לא ידוע')} — {rec.get('detected_in_stage', '')}", expanded=False):
                 st.markdown(f"**שגיאה:** {rec.get('issue_description', '')}")
                 st.markdown(f"**סיבת שורש:** {rec.get('root_cause', 'לא זוהתה')}")
@@ -492,17 +492,17 @@ with tab_healer:
                     st.markdown(f"**ביטחון:** {conf:.0%}")
                 st.caption(f"סטטוס: {status}")
 
-# ── Tab: Escalations ──────────────────────────────────────────────────────────
+#  Tab: Escalations 
 
 with tab_escalations:
     st.markdown("### הסלמות ממתינות")
     escalations = dashboard.get_pending_escalations()
 
     if not escalations:
-        st.success("✅ אין הסלמות ממתינות.")
+        st.success(" אין הסלמות ממתינות.")
     else:
         for i, esc in enumerate(escalations):
-            with st.expander(f"🚨 הסלמה #{i+1} — {esc.get('what_happened', '')[:60]}", expanded=True):
+            with st.expander(f" הסלמה #{i+1} — {esc.get('what_happened', '')[:60]}", expanded=True):
                 st.markdown(f"**מה קרה:** {esc.get('what_happened', '')}")
                 tried = esc.get("what_we_tried", [])
                 if tried:
@@ -517,24 +517,24 @@ with tab_escalations:
 
                 col_approve, col_reject, col_notes = st.columns([1, 1, 3])
                 notes_val = col_notes.text_input("הערות", key=f"esc_notes_{i}")
-                if col_approve.button("✅ אשר", key=f"esc_approve_{i}"):
+                if col_approve.button(" אשר", key=f"esc_approve_{i}"):
                     orc.resolve_escalation(i, approved=True, notes=notes_val)
                     st.success("אושר")
                     st.rerun()
-                if col_reject.button("❌ דחה", key=f"esc_reject_{i}"):
+                if col_reject.button(" דחה", key=f"esc_reject_{i}"):
                     orc.resolve_escalation(i, approved=False, notes=notes_val)
                     st.warning("נדחה")
                     st.rerun()
 
-# ── Tab: Recipe Images ────────────────────────────────────────────────────────
+#  Tab: Recipe Images 
 
 with tab_recipe_images:
-    st.markdown("### 🖼️ תמונות מתכונים")
+    st.markdown("###  תמונות מתכונים")
     st.info("ניהול אישור / דחיית תמונות הועבר לדף **מנהל תמונות** הייעודי.")
-    if st.button("🔗 עבור למנהל תמונות", type="primary"):
+    if st.button(" עבור למנהל תמונות", type="primary"):
         st.switch_page("pages_admin/2_photo_manager.py")
 
-# ── Tab: Feedback ─────────────────────────────────────────────────────────────
+#  Tab: Feedback 
 
 with tab_feedback:
     st.markdown("### הגשת משוב")
@@ -550,7 +550,7 @@ with tab_feedback:
                                                            "performance": "ביצועים", "other": "אחר", "אוטומטי": "אוטומטי"}.get(v, v))
         fb_agent = col_f2.selectbox("סוכן יעד (אופציונלי)",
                                      options=["אוטומטי"] + [a.value for a in AgentId])
-        fb_submit = st.form_submit_button("📤 שלח משוב", type="primary")
+        fb_submit = st.form_submit_button(" שלח משוב", type="primary")
 
     if fb_submit and fb_text.strip():
         kwargs = dict(description=fb_text.strip())
@@ -559,7 +559,7 @@ with tab_feedback:
         if fb_agent != "אוטומטי":
             kwargs["target_agent"] = AgentId(fb_agent)
         result = orc.submit_feedback(**kwargs)
-        st.success(f"✅ משוב התקבל | סוג: {result.get('type')} | מוקצה ל: {result.get('assigned_to', 'אוטומטי')} | משימה: {result.get('task_id', '')[:8]}")
+        st.success(f" משוב התקבל | סוג: {result.get('type')} | מוקצה ל: {result.get('assigned_to', 'אוטומטי')} | משימה: {result.get('task_id', '')[:8]}")
 
     st.divider()
     st.markdown("### היסטוריית משוב")
@@ -571,7 +571,7 @@ with tab_feedback:
         for fb in reversed(all_fb[-10:]):
             st.markdown(f"• [{fb.get('feedback_type', '?')}] {fb.get('description', '')[:80]}")
 
-# ── Tab: Improvements ─────────────────────────────────────────────────────────
+#  Tab: Improvements 
 
 with tab_improvements:
     st.markdown("### בקלוג שיפורים")
@@ -581,7 +581,7 @@ with tab_improvements:
         st.info("אין שיפורים ממתינים.")
     else:
         for imp in improvements:
-            priority_icon = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢"}.get(imp.get("priority", ""), "⬜")
+            priority_icon = {"critical": "", "high": "🟠", "medium": "🟡", "low": "🟢"}.get(imp.get("priority", ""), "")
             with st.expander(f"{priority_icon} [{imp.get('improvement_type', '')}] {imp.get('description', '')[:70]}"):
                 st.markdown(f"**פעולה:** {imp.get('proposed_action', '')}")
                 st.markdown(f"**סוכן יעד:** {imp.get('target_agent', '')}")
@@ -590,7 +590,7 @@ with tab_improvements:
                     st.markdown(f"**פער:** צפוי {gap_info.get('expected', '')} | בפועל {gap_info.get('actual', '')}")
                 st.caption(f"מזהה: {imp.get('improvement_id', '')[:8]}")
 
-# ── Tab: Audit ────────────────────────────────────────────────────────────────
+#  Tab: Audit 
 
 with tab_audit:
     st.markdown("### יומן ביקורת")
@@ -609,37 +609,37 @@ with tab_audit:
             actor = entry.get("actor", "")
             desc = entry.get("description", "")
             result = entry.get("result", "")
-            icon = "✅" if result == "success" else ("🚨" if result == "escalated" else "❌")
+            icon = "" if result == "success" else ("" if result == "escalated" else "")
             st.markdown(f"{icon} `{ts}` **{actor}** — {desc[:80]}")
 
-# ── Goal gap (sidebar bottom) ─────────────────────────────────────────────────
+#  Goal gap (sidebar bottom) 
 
 with st.sidebar:
     st.divider()
-    st.markdown("### 🎯 מצב יעדים")
+    st.markdown("###  מצב יעדים")
     gap = dashboard.get_goal_progress()
     achieved = gap.get("achieved", [])
     not_achieved = gap.get("not_achieved", [])
     for a in achieved:
-        st.markdown(f"✅ {a.get('metric', '')} — {a.get('current', '')}")
+        st.markdown(f" {a.get('metric', '')} — {a.get('current', '')}")
     for na in not_achieved:
-        st.markdown(f"❌ {na.get('metric', '')} — {na.get('current', '')} (יעד: {na.get('target', '')})")
+        st.markdown(f" {na.get('metric', '')} — {na.get('current', '')} (יעד: {na.get('target', '')})")
     st.divider()
     render_chatbot_sidebar()
 
-# ── Section: Director & Critic ────────────────────────────────────────────────
+#  Section: Director & Critic 
 
 st.divider()
-st.markdown("## 🤖 אוטונומי — Director & Critic")
+st.markdown("##  אוטונומי — Director & Critic")
 
 from nutrition_app.agents.agent_8_director.director_agent import DirectorAgent, DirectorReport
 from nutrition_app.agents.agent_9_critic.critic_agent import CriticAgent
 
 col_dir, col_crit = st.columns(2)
 
-# ── Director Panel ────────────────────────────────────────────────────────────
+#  Director Panel 
 with col_dir:
-    st.markdown("### 🎯 Director Agent")
+    st.markdown("###  Director Agent")
     if st.button("הרץ ניתוח", key="btn_director", type="primary", use_container_width=True):
         with st.spinner("מנתח מערכת..."):
             director = DirectorAgent()
@@ -667,7 +667,7 @@ with col_dir:
             st.markdown(f"**משימות ממתינות ({len(tasks_list)}):**")
             for t in tasks_list:
                 pri = t.get("priority", "medium")
-                badge = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(pri, "⬜")
+                badge = {"high": "", "medium": "🟡", "low": "🟢"}.get(pri, "")
                 st.markdown(f"{badge} **[{pri.upper()}]** {t.get('details', '')[:80]}")
         else:
             st.success("אין משימות ממתינות.")
@@ -678,9 +678,9 @@ with col_dir:
     else:
         st.caption("לחץ 'הרץ ניתוח' לסריקת המערכת.")
 
-# ── Critic Panel ──────────────────────────────────────────────────────────────
+#  Critic Panel 
 with col_crit:
-    st.markdown("### 🔍 Critic Agent")
+    st.markdown("###  Critic Agent")
     if st.button("בקר תוצאות", key="btn_critic", type="primary", use_container_width=True):
         with st.spinner("בודק משימות שהושלמו..."):
             critic = CriticAgent()
@@ -696,12 +696,12 @@ with col_crit:
             rejected = [v for v in verdicts_data if v.get("verdict") == "REJECTED"]
 
             c_a, c_r = st.columns(2)
-            c_a.metric("✅ אושרו", len(approved))
-            c_r.metric("❌ נדחו (הוחזרו לתור)", len(rejected))
+            c_a.metric(" אושרו", len(approved))
+            c_r.metric(" נדחו (הוחזרו לתור)", len(rejected))
 
             for v in verdicts_data:
                 is_ok = v.get("verdict") == "APPROVED"
-                icon = "✅" if is_ok else "❌"
+                icon = "" if is_ok else ""
                 st.markdown(
                     f"{icon} `{v.get('task_id', '')[:8]}` — "
                     f"{v.get('reason', '')[:80]}"
@@ -709,7 +709,7 @@ with col_crit:
     else:
         st.caption("לחץ 'בקר תוצאות' לביקורת משימות שהושלמו.")
 
-# ── Tab: Live System State ────────────────────────────────────────────────────
+#  Tab: Live System State 
 
 with tab_live_state:
     st.markdown("### מצב מערכת חי — נתונים מ-storage_agents/")
@@ -720,9 +720,9 @@ with tab_live_state:
     verdicts  = _load_json(os.path.join(_TASKS_DIR, "verdicts.json"),        [])
 
     col_ls1, col_ls2, col_ls3 = st.columns(3)
-    col_ls1.metric("📋 משימות ממתינות", len(pending))
-    col_ls2.metric("✅ משימות שהושלמו", len(completed))
-    col_ls3.metric("🔍 פסיקות Critic", len(verdicts))
+    col_ls1.metric(" משימות ממתינות", len(pending))
+    col_ls2.metric(" משימות שהושלמו", len(completed))
+    col_ls3.metric(" פסיקות Critic", len(verdicts))
 
     st.divider()
 
@@ -746,7 +746,7 @@ with tab_live_state:
         if report_tasks:
             st.markdown(f"**משימות בדוח ({len(report_tasks)}):**")
             for t in report_tasks:
-                badge = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(t.get("priority", ""), "⬜")
+                badge = {"high": "", "medium": "🟡", "low": "🟢"}.get(t.get("priority", ""), "")
                 st.markdown(f"{badge} {t.get('details', '')[:90]}")
     else:
         st.info("אין דוח Director — לחץ 'הרץ ניתוח' בחלק Director & Critic.")
@@ -755,9 +755,9 @@ with tab_live_state:
 
     # Pending tasks list
     if pending:
-        with st.expander(f"📋 משימות ממתינות ({len(pending)})", expanded=False):
+        with st.expander(f" משימות ממתינות ({len(pending)})", expanded=False):
             for t in pending:
-                badge = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(t.get("priority", ""), "⬜")
+                badge = {"high": "", "medium": "🟡", "low": "🟢"}.get(t.get("priority", ""), "")
                 st.markdown(
                     f"{badge} **[{t.get('type','')}]** {t.get('details','')[:80]} "
                     f"<span style='color:gray;font-size:11px;'>→ {t.get('agent','')}</span>",
@@ -768,10 +768,10 @@ with tab_live_state:
     if verdicts:
         approved_v = sum(1 for v in verdicts if v.get("verdict") == "APPROVED")
         rejected_v = len(verdicts) - approved_v
-        with st.expander(f"🔍 פסיקות Critic — ✅ {approved_v} אושרו | ❌ {rejected_v} נדחו", expanded=False):
+        with st.expander(f" פסיקות Critic —  {approved_v} אושרו |  {rejected_v} נדחו", expanded=False):
             for v in verdicts:
                 is_ok = v.get("verdict") == "APPROVED"
-                icon = "✅" if is_ok else "❌"
+                icon = "" if is_ok else ""
                 st.markdown(f"{icon} `{v.get('task_id','')[:8]}` — {v.get('reason','')[:80]}")
 
     # Food coverage (agents/logs/daily_*.json)
@@ -784,12 +784,12 @@ with tab_live_state:
         cache_size = log_data.get("cache_size", log_data.get("cached_count", "—"))
         log_date = os.path.basename(latest_log_path).replace("daily_", "").replace(".json", "")
         col_c1, col_c2, col_c3 = st.columns(3)
-        col_c1.metric("📅 תאריך דוח", log_date)
-        col_c2.metric("📊 כיסוי", f"{coverage}%" if isinstance(coverage, (int, float)) else str(coverage))
-        col_c3.metric("🗄️ מטמון", str(cache_size))
+        col_c1.metric(" תאריך דוח", log_date)
+        col_c2.metric(" כיסוי", f"{coverage}%" if isinstance(coverage, (int, float)) else str(coverage))
+        col_c3.metric(" מטמון", str(cache_size))
 
 
-# ── Auto-refresh ──────────────────────────────────────────────────────────────
+#  Auto-refresh 
 
 if auto_refresh:
     time.sleep(5)

@@ -271,7 +271,7 @@ def _render_pending_confirmation_screen(email: str) -> None:
             except Exception as e:
                 st.error(f"שגיאה בשליחה חוזרת: {e}")
     with col_back:
-        if st.button("⬅ חזרה להתחברות",
+        if st.button(" חזרה להתחברות",
                      use_container_width=True, key="auth_back_to_login"):
             st.session_state.pop(_KEY_PENDING_CONFIRMATION, None)
             st.rerun()
@@ -304,7 +304,7 @@ def render_login_ui() -> None:
         return
 
     tab_in, tab_up = st.tabs(["\U0001f511  התחברות",
-                              "✨  הרשמה"])
+                              "  הרשמה"])
 
     with tab_in:
         with st.form("auth_login_form", clear_on_submit=False):
@@ -313,7 +313,7 @@ def render_login_ui() -> None:
             password = st.text_input("סיסמה", type="password",
                                      placeholder="••••••",
                                      key="auth_login_pw")
-            ok = st.form_submit_button("התחבר ➛",
+            ok = st.form_submit_button("התחבר ",
                                        use_container_width=True, type="primary")
         if ok:
             if not email or not password:
@@ -334,7 +334,7 @@ def render_login_ui() -> None:
                                    type="password", key="auth_signup_pw")
             s_confirm = st.text_input("אשר סיסמה",
                                       type="password", key="auth_signup_pw_confirm")
-            ok2 = st.form_submit_button("הירשם ➛",
+            ok2 = st.form_submit_button("הירשם ",
                                         use_container_width=True, type="primary")
         if ok2:
             if not s_email or not s_pass:

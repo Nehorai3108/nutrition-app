@@ -15,7 +15,7 @@ _MAX_TOOL_ROUNDS = 5
 def render_chatbot_sidebar():
     """Render the chatbot widget inside the Streamlit sidebar."""
 
-    st.markdown("### 💬 צ'אט עם העוזר")
+    st.markdown("###  צ'אט עם העוזר")
 
     if not os.environ.get("XAI_API_KEY"):
         st.info("להפעלת הצ'אט, הגדר משתנה סביבה XAI_API_KEY")

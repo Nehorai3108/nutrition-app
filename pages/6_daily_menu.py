@@ -28,7 +28,7 @@ setup_persistent_auth()
 USER_ID = require_auth()
 _food_log_repo = FoodLogRepository()
 
-# ── Recipe image helpers ───────────────────────────────────────────────────────
+#  Recipe image helpers 
 _RECIPE_IMG_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "storage_agents", "recipe_images", "approved",
@@ -83,12 +83,12 @@ _profile = _profile_repo.load(USER_ID)
 _user_allergens: list  = _profile.get("meal_preferences", {}).get("allergies", [])
 _user_disliked: list   = _profile.get("meal_preferences", {}).get("disliked_foods", [])
 
-st.set_page_config(page_title="BiteFit · תפריט", page_icon="🍽️", layout="wide",
+st.set_page_config(page_title="BiteFit · תפריט", page_icon="", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px"> {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -112,14 +112,14 @@ def load_catalog():
 recipe_mgr = get_mgr()
 CATALOG = load_catalog()
 
-# ── Groq client (shared with chat page) ──────────────────────────────────────
+#  Groq client (shared with chat page) 
 @st.cache_resource
 def _get_groq_planner():
     from groq import Groq
     return Groq(api_key=st.secrets["groq_api_key"])
 
 
-# ── Daily calorie target (Mifflin-St Jeor + activity + goal) ─────────────────
+#  Daily calorie target (Mifflin-St Jeor + activity + goal) 
 def _calc_tdee(profile: dict) -> int:
     w   = float(profile.get("weight_kg")  or 70)
     h   = float(profile.get("height_cm")  or 170)
@@ -144,13 +144,13 @@ def _calc_tdee(profile: dict) -> int:
     return max(1200, int(tdee))
 
 
-# ── AI menu generation ────────────────────────────────────────────────────────
+#  AI menu generation 
 _MENU_SYSTEM = """You are an expert Israeli nutritionist. Generate a realistic daily meal plan for an Israeli adult.
 Return ONLY valid JSON — no text before or after.
 
-════════════════════════════════════════
+
 MEAL STRUCTURE RULES (CRITICAL):
-════════════════════════════════════════
+
 Every MAIN meal (breakfast, lunch, dinner) MUST contain:
   1. PROTEIN source (chicken / egg / fish / beef / cheese / cottage / tuna)
   2. CARB source (bread / rice / pasta / potato / pita) — MAX ONE carb per meal
@@ -160,13 +160,13 @@ Snacks (morning_snack, afternoon_snack, evening_snack) are small:
   - 1-2 items only: fruit + yogurt, or cottage + fruit, or handful of nuts
 
 FORBIDDEN COMBINATIONS:
-  ✗ Two carbs in the same meal (e.g., rice AND couscous — pick ONE)
-  ✗ Only carbs with no protein in a main meal
-  ✗ Salad or vegetables measured in "כוס" — use individual pieces (יחידה/כף)
+   Two carbs in the same meal (e.g., rice AND couscous — pick ONE)
+   Only carbs with no protein in a main meal
+   Salad or vegetables measured in "כוס" — use individual pieces (יחידה/כף)
 
-════════════════════════════════════════
+
 CORRECT MEASUREMENT UNITS PER FOOD TYPE:
-════════════════════════════════════════
+
 PROTEINS:
   חזה עוף → 1 יחידה (150g, 165 kcal)
   שניצל עוף → 1 יחידה (130g, 220 kcal)
@@ -210,9 +210,9 @@ DAIRY / SNACKS:
   תפוח עץ → יחידה (1 = 150g = 80 kcal)
   אגוזי מלך → כף (1 כף = 15g = 100 kcal)
 
-════════════════════════════════════════
+
 CALORIE SCALING GUIDE — adjust quantities to hit the target:
-════════════════════════════════════════
+
 To reach a HIGH calorie target (e.g. 2800+ kcal/day), you MUST use larger portions:
 
 BREAKFAST example scaled to ~700 kcal:
@@ -239,9 +239,9 @@ IMPORTANT: The examples above are just STRUCTURE guides.
 You MUST scale portions up or down to match the EXACT calorie target given in the user prompt.
 DO NOT copy these examples blindly — calculate calories for each food and verify the total.
 
-════════════════════════════════════════
+
 JSON FORMAT:
-════════════════════════════════════════
+
 {
   "meals": [
     {
@@ -294,7 +294,7 @@ def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
     goal_he  = {"lose": "הורדת משקל", "gain": "עלייה במסה",
                 "maintain": "שמירה"}.get(profile.get("goal", "maintain"), "שמירה")
 
-    # ── Calculate per-meal calorie targets ──────────────────────────────────
+    #  Calculate per-meal calorie targets 
     # Main meals get 30-35% each, snacks get 10-12% each
     has_morning_snack   = meals_n >= 4
     has_afternoon_snack = meals_n >= 5
@@ -321,9 +321,9 @@ def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
         f"צור תפריט יומי ל-{meals_n} ארוחות. יעד קלורי יומי: {target_cal} קק״ל.",
         f"מטרה: {goal_he}. כשרות: {kashrut}.",
         "",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "",
         "יעדי קלוריות לכל ארוחה — חובה לעמוד בהם:",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "",
         f"  ארוחת בוקר:   {cal_breakfast} קק״ל",
     ]
     if has_morning_snack:
@@ -359,13 +359,13 @@ def _build_menu_prompt(profile: dict, target_cal: int, extra: str = "") -> str:
         lines.append(extra)
     lines += [
         "",
-        f"⚠ חשוב: סכום כל הקלוריות בתפריט חייב להיות {target_cal} ± 30 קק״ל.",
+        f" חשוב: סכום כל הקלוריות בתפריט חייב להיות {target_cal} ± 30 קק״ל.",
         "לפני החזרת ה-JSON — חשב את הסכום ווודא שהוא נכון.",
     ]
     return "\n".join(lines)
 
 
-# ── Natural Hebrew food description ──────────────────────────────────────────
+#  Natural Hebrew food description 
 def _natural_food_text(f: dict) -> str:
     """Convert {quantity, unit, name} → natural Hebrew string.
 
@@ -438,7 +438,7 @@ def _natural_food_text(f: dict) -> str:
     return f"{qty_int} {unit} {name}"
 
 
-# ── Render one AI meal card ───────────────────────────────────────────────────
+#  Render one AI meal card 
 def _render_ai_meal(meal: dict, idx: int, target_cal: int) -> None:
     m_color = {
         "breakfast": "#f59e0b", "morning_snack": "#a78bfa",
@@ -524,7 +524,7 @@ MEAL_DESC = {
     "EVENING_SNACK":   "משהו קל לפני השינה",
 }
 
-# ── Calorie targets ───────────────────────────────────────────────────────────
+#  Calorie targets 
 has_plan = "last_plan" in st.session_state
 if has_plan:
     plan    = st.session_state["last_plan"]["plan"]
@@ -536,10 +536,10 @@ else:
         "AFTERNOON_SNACK": 200, "DINNER": 500, "EVENING_SNACK": 150,
     }
 
-# ── Inventory ─────────────────────────────────────────────────────────────────
+#  Inventory 
 inventory_names: set = set()
 
-# ── Header ────────────────────────────────────────────────────────────────────
+#  Header 
 st.markdown(
     f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;'
     f'padding:4px 2px 16px">'
@@ -549,16 +549,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# 
 # AI DAILY MENU PLANNER
-# ═══════════════════════════════════════════════════════════════════════════════
+# 
 _groq_planner = _get_groq_planner()
 _target_cal   = _calc_tdee(_profile)
 _profile_ok   = bool(_profile.get("weight_kg") and _profile.get("height_cm"))
 
 st.markdown(
     '<div dir="rtl" style="font-size:1rem;font-weight:800;color:#f4f6fb;'
-    'margin-bottom:4px">✨ תפריט יומי מותאם אישית</div>'
+    'margin-bottom:4px"> תפריט יומי מותאם אישית</div>'
     f'<div dir="rtl" style="font-size:0.75rem;color:#8892a4;margin-bottom:14px">'
     f'{"יעד: " + str(_target_cal) + " קק״ל ליום" if _profile_ok else "מלא פרופיל כדי לקבל יעד מדויק"}'
     f'</div>',
@@ -568,22 +568,22 @@ st.markdown(
 if not _profile_ok:
     st.info("מלא את הגובה והמשקל בפרופיל כדי לקבל תפריט מותאם אישית.")
 
-# ── State keys ────────────────────────────────────────────────────────────────
+#  State keys 
 _AI_MENU_KEY   = f"ai_menu_{USER_ID}"
 _AI_TARGET_KEY = f"ai_menu_target_{USER_ID}"
 
-# ── Generate button ───────────────────────────────────────────────────────────
+#  Generate button 
 _c1, _c2 = st.columns([3, 1])
 with _c1:
     _gen_btn = st.button(
-        "🤖 הכן לי תפריט להיום" if _AI_MENU_KEY not in st.session_state
-        else "🔄 צור תפריט חדש",
+        " הכן לי תפריט להיום" if _AI_MENU_KEY not in st.session_state
+        else " צור תפריט חדש",
         key="ai_gen_btn",
         use_container_width=True,
         type="primary" if _AI_MENU_KEY not in st.session_state else "secondary",
     )
 with _c2:
-    _clear_btn = st.button("✕ נקה", key="ai_clear_btn",
+    _clear_btn = st.button(" נקה", key="ai_clear_btn",
                            use_container_width=True,
                            disabled=_AI_MENU_KEY not in st.session_state)
 
@@ -598,7 +598,7 @@ if _gen_btn:
     for _k in list(st.session_state.keys()):
         if _k.startswith(f"ai_menu_{USER_ID}") or _k.startswith(f"swap_opts_{USER_ID}"):
             st.session_state.pop(_k, None)
-    with st.spinner("מכין תפריט מותאם אישית... ⏳"):
+    with st.spinner("מכין תפריט מותאם אישית..."):
         try:
             _prompt  = _build_menu_prompt(_profile, _target_cal)
             _meals   = _groq_menu_call(_prompt, _groq_planner)
@@ -609,7 +609,7 @@ if _gen_btn:
             st.error(f"שגיאה ביצירת התפריט: {_e}")
     st.rerun()
 
-# ── Render generated menu ─────────────────────────────────────────────────────
+#  Render generated menu 
 if _AI_MENU_KEY in st.session_state:
     _ai_meals   = st.session_state[_AI_MENU_KEY]
     _ai_target  = st.session_state.get(_AI_TARGET_KEY, _target_cal)
@@ -641,7 +641,7 @@ if _AI_MENU_KEY in st.session_state:
         # Swap / log buttons
         _sb1, _sb2 = st.columns(2)
         with _sb1:
-            if st.button("🔄 החלף ארוחה", key=f"swap_btn_{_i}",
+            if st.button(" החלף ארוחה", key=f"swap_btn_{_i}",
                          use_container_width=True):
                 _meal_type = _meal.get("meal_type", "meal")
                 _meal_cal  = _meal.get("total_calories", 400)
@@ -720,7 +720,7 @@ if _AI_MENU_KEY in st.session_state:
                         for f in _alt.get("foods", [])[:3]
                     )
                     if st.button(
-                        f"✓ {_alt_name} — {_alt_cal} קק״ל\n{_alt_foods_str}",
+                        f" {_alt_name} — {_alt_cal} קק״ל\n{_alt_foods_str}",
                         key=f"pick_alt_{_i}_{_j}",
                         use_container_width=True,
                     ):
@@ -774,14 +774,14 @@ if _AI_MENU_KEY in st.session_state:
             '<div dir="rtl" style="background:#0d2b1a;border:1px solid #1a4d2e;'
             'border-radius:14px;padding:12px;font-size:0.85rem;color:#4ade80;'
             'text-align:center;margin-bottom:8px">'
-            '✅ כל התפריט נרשם להיום!</div>',
+            ' כל התפריט נרשם להיום!</div>',
             unsafe_allow_html=True,
         )
 
 st.divider()
 
-# ── Meal tab selector ─────────────────────────────────────────────────────────
-tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", "✏️ ידני", "🍫 נשנוש"]
+#  Meal tab selector 
+tab_labels = [label for _, label, _ in MEAL_SECTIONS] + ["חיפוש", " ידני", " נשנוש"]
 tabs = st.tabs(tab_labels)
 
 _catalog = get_catalog()
@@ -802,7 +802,7 @@ MEAL_TYPE_HEB = {
     "snack": "נשנוש",
 }
 
-# ── Nutrition fallback for ingredients not in catalog (kcal/100g) ─────────────
+#  Nutrition fallback for ingredients not in catalog (kcal/100g) 
 _INGREDIENT_FALLBACK = {
     "breadcrumbs":   {"kcal": 395, "prot": 13.0, "carbs": 73.0, "fat": 5.0},
     "ground turkey": {"kcal": 149, "prot": 19.0, "carbs":  0.0, "fat": 7.5},
@@ -817,7 +817,7 @@ _INGREDIENT_FALLBACK = {
 }
 
 
-# ── helper: scale recipe to calorie target ───────────────────────────────────
+#  helper: scale recipe to calorie target 
 def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
     """
     Scale a recipe's ingredients to hit target_cal.
@@ -827,7 +827,7 @@ def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
     """
     ingredients = recipe.get("ingredients", [])
 
-    # ── Step 1: calculate REAL calories from catalog ──────────────────
+    #  Step 1: calculate REAL calories from catalog 
     base_cal = base_prot = base_carbs = base_fat = 0.0
     for ing in ingredients:
         qty_g   = ing.get("quantity", 0)
@@ -863,11 +863,11 @@ def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
         base_carbs = nut.get("carbs",    0) / portions
         base_fat   = nut.get("fat",      0) / portions
 
-    # ── Step 2: scale to target (nearest 0.5, min 0.5) ───────────────
+    #  Step 2: scale to target (nearest 0.5, min 0.5) 
     raw_scale = target_cal / max(base_cal, 1)
     scale     = max(0.5, round(raw_scale * 2) / 2)
 
-    # ── Step 3: scale ingredient quantities ───────────────────────────
+    #  Step 3: scale ingredient quantities 
     scaled_ings = [
         {**ing, "quantity": ing.get("quantity", 0) * scale}
         for ing in ingredients
@@ -883,7 +883,7 @@ def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
     )
 
 
-# ── helper: ingredient chips ─────────────────────────────────────────────────
+#  helper: ingredient chips 
 def _ingredient_chips_html(ingredients: list, max_show: int = 6) -> str:
     """Render ingredient list as compact inline chips (like a recipe card)."""
     chips = []
@@ -905,7 +905,7 @@ def _ingredient_chips_html(ingredients: list, max_show: int = 6) -> str:
     )
 
 
-# ── helper: render a nutrition result card + add button ───────────────────────
+#  helper: render a nutrition result card + add button 
 def _render_search_result(
     name: str, food_id: str, meal_key: str, target_cal: int,
     cal_out: float, prot_out: float, carbs_out: float, fat_out: float,
@@ -998,7 +998,7 @@ def _render_search_result(
 
 # Smart search tab
 with tabs[-3]:
-    # ── Mode toggle ───────────────────────────────────────────────────────────
+    #  Mode toggle 
     _search_mode = st.radio(
         "",
         options=["recipe", "ingredient"],
@@ -1011,7 +1011,7 @@ with tabs[-3]:
 
     st.markdown('<div dir="rtl" style="height:6px"></div>', unsafe_allow_html=True)
 
-    # ── Meal selector (shared) ────────────────────────────────────────────────
+    #  Meal selector (shared) 
     search_meal = st.selectbox(
         "ארוחה",
         options=list(MEAL_TYPE_HEB.keys()),
@@ -1020,9 +1020,9 @@ with tabs[-3]:
     )
     _search_target = meal_calories.get(search_meal.upper(), 400)
 
-    # ═══════════════════════════════════════════════════════════════════════════
+    # 
     if _search_mode == "recipe":
-    # ═══════════════════════════════════════════════════════════════════════════
+    # 
         _recipe_query = st.text_input(
             "",
             placeholder="חפש מנה: שקשוקה, חביתה, עוף, אורז...",
@@ -1099,9 +1099,9 @@ with tabs[-3]:
                                 st.markdown(f"**{_si}.** {_step}")
                     st.markdown('<div dir="rtl" style="height:4px"></div>', unsafe_allow_html=True)
 
-    # ═══════════════════════════════════════════════════════════════════════════
+    # 
     else:  # ingredient mode
-    # ═══════════════════════════════════════════════════════════════════════════
+    # 
         _ing_q = st.text_input(
             "",
             placeholder="חפש מוצר: עוף, אורז, בננה, יוגורט...",
@@ -1215,7 +1215,7 @@ with tabs[-2]:
                     meal_type=man_meal,
                     timestamp=datetime.now().isoformat(),
                 ))
-                st.success(f"✅ {food_obj.name_he} נוסף!")
+                st.success(f" {food_obj.name_he} נוסף!")
                 st.rerun()
 
     # Show today's log with edit/delete
@@ -1239,10 +1239,21 @@ with tabs[-2]:
             _meta = f'{_meal_label} · {entry.grams:.0f}ג׳'
             if _time_str:
                 _meta += f' · {_time_str}'
+            # Build food image URL from TheMealDB ingredients
+            _food_obj_img = _catalog.get_food_by_id(entry.food_id)
+            _img_name = (_food_obj_img.name_en if _food_obj_img else entry.food_name).replace(" ", "%20")
+            _img_url = f"https://www.themealdb.com/images/ingredients/{_img_name}-Small.png"
+            _img_html = (
+                f'<img src="{_img_url}" '
+                f'style="width:44px;height:44px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#252d3d;" '
+                f'onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" />'
+                f'<div style="display:none;width:44px;height:44px;border-radius:10px;background:{m_color}22;'
+                f'flex-shrink:0;align-items:center;justify-content:center;font-size:1.4rem"></div>'
+            )
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:14px;'
                 f'padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
-                f'<div dir="rtl" style="width:3px;height:32px;border-radius:99px;background:{m_color};flex-shrink:0"></div>'
+                f'{_img_html}'
                 f'<div dir="rtl" style="flex:1">'
                 f'<div dir="rtl" style="font-size:0.84rem;font-weight:600;color:#f4f6fb">{entry.food_name}</div>'
                 f'<div dir="rtl" style="font-size:0.68rem;color:#545e70;margin-top:2px">'
@@ -1334,11 +1345,11 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 unsafe_allow_html=True,
             )
 
-            # ── Scaled ingredient chips ───────────────────────────────
+            #  Scaled ingredient chips 
             if s_ings:
                 st.markdown(_ingredient_chips_html(s_ings), unsafe_allow_html=True)
 
-            # ── Add to food log ───────────────────────────────────────────
+            #  Add to food log 
             btn_key   = f"add_{meal_key}_{recipe_id}_{idx}"
             added_key = f"added_{meal_key}_{recipe_id}_{idx}"
 
@@ -1383,22 +1394,22 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                     for i, step in enumerate(steps, 1):
                         st.markdown(f"**{i}.** {step}")
 
-        # ── In-meal food search ───────────────────────────────────────────────
+        #  In-meal food search 
         st.markdown('<div dir="rtl" style="height:10px"></div>', unsafe_allow_html=True)
-        with st.expander("🔍 לא מצאת מה שרצית? חפש כאן"):
+        with st.expander(" לא מצאת מה שרצית? חפש כאן"):
             _ms_mode = st.radio(
                 "",
                 options=["ingredient", "recipe"],
                 format_func=lambda m: {
-                    "ingredient": "🥚 רכיב / מוצר",
-                    "recipe":     "🍳 מנה מוכנה",
+                    "ingredient": " רכיב / מוצר",
+                    "recipe":     " מנה מוכנה",
                 }[m],
                 horizontal=True,
                 key=f"ms_mode_{meal_key}",
                 label_visibility="collapsed",
             )
 
-            # ── Ingredient search ─────────────────────────────────────────────
+            #  Ingredient search 
             if _ms_mode == "ingredient":
                 _ms_query = st.text_input(
                     "",
@@ -1470,7 +1481,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                         unsafe_allow_html=True,
                     )
 
-            # ── Recipe search ─────────────────────────────────────────────────
+            #  Recipe search 
             else:
                 _msr_query = st.text_input(
                     "",
@@ -1533,7 +1544,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                         unsafe_allow_html=True,
                     )
 
-# ── Snack tab (last tab) ─────────────────────────────────────────────────────
+#  Snack tab (last tab) 
 with tabs[-1]:
     st.markdown(
         '<div dir="rtl" style="font-size:0.9rem;font-weight:700;color:#f4f6fb;margin-bottom:4px">הוסף נשנוש חופשי</div>'

@@ -14,7 +14,7 @@ from . import theme as t
 from .icons import icon as _icon, has_icon
 from .labels import KASHRUT_LABELS, KASHRUT_ICON, MEAL_LABELS, MEAL_ICON
 
-# ── Global CSS injection ────────────────────────────────────────────────────
+#  Global CSS injection 
 
 _CSS_FLAG = "_nut_ui_css_injected"
 
@@ -30,12 +30,12 @@ def inject_global_css() -> None:
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-        /* ─── Global & RTL ────────────────────────────────────────────── */
+        /*  Global & RTL  */
         html, body, [class*="css"] {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }}
 
-        /* ── RTL for all text-bearing Streamlit containers ────────────── */
+        /*  RTL for all text-bearing Streamlit containers  */
         [data-testid="stMarkdownContainer"],
         [data-testid="stMarkdownContainer"] p,
         [data-testid="stMarkdownContainer"] div,
@@ -104,7 +104,7 @@ def inject_global_css() -> None:
             direction: rtl !important;
             text-align: right !important;
         }}
-        /* ─── Hide Streamlit chrome completely ───────────────────────── */
+        /*  Hide Streamlit chrome completely  */
         header[data-testid="stHeader"] {{ display: none !important; height: 0 !important; }}
         footer {{ display: none !important; }}
         #MainMenu {{ display: none !important; }}
@@ -112,7 +112,7 @@ def inject_global_css() -> None:
         [data-testid="stDecoration"] {{ display: none !important; }}
         [data-testid="collapsedControl"] {{ display: none !important; }}
         section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
-        /* ─── Hide ALL Streamlit bottom-right floating buttons ──────── */
+        /*  Hide ALL Streamlit bottom-right floating buttons  */
         [data-testid="stDeployButton"],
         [data-testid="stStatusWidget"],
         [data-testid="manage-app-button"],
@@ -136,7 +136,7 @@ def inject_global_css() -> None:
         .stApp footer,
         footer[class*="streamlit"] {{ display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }}
 
-        /* ─── Nuclear top-padding removal ────────────────────────────── */
+        /*  Nuclear top-padding removal  */
         .stApp {{
             margin-top: 0 !important;
             padding-top: 0 !important;
@@ -195,7 +195,7 @@ def inject_global_css() -> None:
             text-align: right;
         }}
 
-        /* ─── Buttons ─────────────────────────────────────────────────── */
+        /*  Buttons  */
         .stButton > button,
         .stDownloadButton > button {{
             min-height: {t.HIT_TARGET};
@@ -225,7 +225,7 @@ def inject_global_css() -> None:
         }}
         .stButton > button:active {{ transform: translateY(0) scale(0.98); }}
 
-        /* ─── Secondary buttons — compact, minimal ───────────────────── */
+        /*  Secondary buttons — compact, minimal  */
         button[data-testid="baseButton-secondary"] {{
             background: transparent !important;
             border: 1px solid {t.BORDER} !important;
@@ -250,7 +250,7 @@ def inject_global_css() -> None:
             border-radius: {t.RADIUS_SM};
         }}
 
-        /* ─── Metrics ─────────────────────────────────────────────────── */
+        /*  Metrics  */
         [data-testid="metric-container"] {{
             background: {t.SURFACE_2};
             border: 1px solid {t.BORDER};
@@ -264,7 +264,7 @@ def inject_global_css() -> None:
             transform: translateY(-1px);
         }}
 
-        /* ─── Expanders ───────────────────────────────────────────────── */
+        /*  Expanders  */
         [data-testid="stExpander"] {{
             background: {t.SURFACE} !important;
             border: 1px solid {t.BORDER} !important;
@@ -275,7 +275,7 @@ def inject_global_css() -> None:
             border-color: {t.BORDER_2} !important;
         }}
 
-        /* ─── Cards ───────────────────────────────────────────────────── */
+        /*  Cards  */
         .nut-card {{
             background: {t.SURFACE};
             border: 1px solid {t.BORDER};
@@ -303,7 +303,7 @@ def inject_global_css() -> None:
         }}
         .nut-card-clickable:hover::before {{ opacity: 1; }}
 
-        /* ─── Page header ─────────────────────────────────────────────── */
+        /*  Page header  */
         .nut-pageheader {{
             display: flex;
             align-items: center;
@@ -348,7 +348,7 @@ def inject_global_css() -> None:
             margin-top: 3px;
         }}
 
-        /* ─── Section header ──────────────────────────────────────────── */
+        /*  Section header  */
         .nut-section {{
             display: flex;
             align-items: center;
@@ -370,7 +370,7 @@ def inject_global_css() -> None:
             border-radius: 2px;
         }}
 
-        /* ─── Chips & badges ──────────────────────────────────────────── */
+        /*  Chips & badges  */
         .nut-chip {{
             display: inline-flex;
             align-items: center;
@@ -389,12 +389,12 @@ def inject_global_css() -> None:
         .nut-chip-dairy {{ background:{t.KASHRUT_BG['dairy']}; color:{t.KASHRUT_COLORS['dairy']}; border-color:{t.KASHRUT_COLORS['dairy']}33; }}
         .nut-chip-parve {{ background:{t.KASHRUT_BG['parve']}; color:{t.KASHRUT_COLORS['parve']}; border-color:{t.KASHRUT_COLORS['parve']}33; }}
 
-        /* ─── Status text ─────────────────────────────────────────────── */
+        /*  Status text  */
         .nut-status-ok   {{ color: {t.SUCCESS}; font-weight: 700; }}
         .nut-status-warn {{ color: {t.WARNING}; font-weight: 700; }}
         .nut-status-fail {{ color: {t.DANGER};  font-weight: 700; }}
 
-        /* ─── Macro tiles ─────────────────────────────────────────────── */
+        /*  Macro tiles  */
         .nut-macro-grid {{
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -430,7 +430,7 @@ def inject_global_css() -> None:
         .nut-mt-carbs   .nut-macro-val {{ color: {t.CARBS_COLOR}; }}
         .nut-mt-fat     .nut-macro-val {{ color: {t.FAT_COLOR}; }}
 
-        /* ─── Welcome cards ───────────────────────────────────────────── */
+        /*  Welcome cards  */
         .nut-welcome-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -479,7 +479,7 @@ def inject_global_css() -> None:
         .nut-welcome-title {{ font-weight: 700; font-size: 1.05rem; color: {t.TEXT}; letter-spacing: -0.01em; }}
         .nut-welcome-sub {{ font-size: 0.82rem; color: {t.TEXT_MUTED}; margin-top: 6px; line-height: 1.5; }}
 
-        /* ─── Login form ──────────────────────────────────────────────── */
+        /*  Login form  */
         .nut-login-card {{
             max-width: 420px;
             margin: 60px auto;
@@ -490,7 +490,7 @@ def inject_global_css() -> None:
             box-shadow: {t.SHADOW_LG}, 0 0 0 1px rgba(124,92,255,0.08);
         }}
 
-        /* ─── Recipe images ───────────────────────────────────────────── */
+        /*  Recipe images  */
         .nut-recipe-image {{
             width: 100%;
             height: 220px;
@@ -500,30 +500,30 @@ def inject_global_css() -> None:
             display: block;
         }}
 
-        /* ─── Divider ─────────────────────────────────────────────────── */
+        /*  Divider  */
         hr {{
             border: none !important;
             border-top: 1px solid {t.BORDER} !important;
             margin: 18px 0 !important;
         }}
 
-        /* ─── Dataframes ──────────────────────────────────────────────── */
+        /*  Dataframes  */
         [data-testid="stDataFrame"] {{
             border-radius: {t.RADIUS_LG} !important;
             overflow: hidden;
             border: 1px solid {t.BORDER} !important;
         }}
 
-        /* ─── Alerts / info boxes ─────────────────────────────────────── */
+        /*  Alerts / info boxes  */
         [data-testid="stAlert"] {{
             border-radius: {t.RADIUS_LG} !important;
             border-left-width: 4px !important;
         }}
 
-        /* ─── Hide auto-generated Streamlit nav ───────────────────────── */
+        /*  Hide auto-generated Streamlit nav  */
         [data-testid="stSidebarNav"] {{ display: none !important; }}
 
-        /* ─── Custom Hebrew nav links ─────────────────────────────────── */
+        /*  Custom Hebrew nav links  */
         [data-testid="stPageLink"] a {{
             border-radius: {t.RADIUS} !important;
             padding: 8px 12px !important;
@@ -542,7 +542,7 @@ def inject_global_css() -> None:
             font-weight: 600 !important;
         }}
 
-        /* ─── Mobile responsive ───────────────────────────────────────── */
+        /*  Mobile responsive  */
         .nut-rings-grid {{
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -585,7 +585,7 @@ def inject_global_css() -> None:
             .nut-macro-tile .nut-macro-lbl {{ font-size: 0.6rem !important; }}
         }}
 
-        /* ─── Bottom nav bar ──────────────────────────────────────────── */
+        /*  Bottom nav bar  */
         .nut-bottom-nav {{
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -617,7 +617,7 @@ def inject_global_css() -> None:
         .nut-nav-item.active {{ color: {t.PRIMARY}; }}
         .nut-nav-item .nav-icon {{ font-size: 1.4rem; line-height: 1; }}
 
-        /* ─── Premium ring card ───────────────────────────────────────── */
+        /*  Premium ring card  */
         .nut-ring-card {{
             background: {t.SURFACE};
             border: 1px solid {t.BORDER_2};
@@ -681,7 +681,7 @@ def inject_global_css() -> None:
     """
     st.markdown(css, unsafe_allow_html=True)
 
-    # ── PWA: manifest + service-worker registration ───────────────────────────
+    #  PWA: manifest + service-worker registration 
     st.markdown(
         '<link rel="manifest" href="/app/static/manifest.json">'
         '<meta name="mobile-web-app-capable" content="yes">'
@@ -705,7 +705,7 @@ def bottom_nav(active: str = "home") -> None:
     navigation.  The active page is highlighted automatically via
     aria-current="page" set by Streamlit on the current page's link.
     """
-    # ── Page map: key → (file_path, material_icon, label) ───────────────────
+    #  Page map: key → (file_path, material_icon, label) 
     items = [
         ("home",    "app_user.py",                ":material/home:",             "בית"),
         ("food",    "pages/6_daily_menu.py",      ":material/restaurant:",       "תזונה"),
@@ -715,7 +715,7 @@ def bottom_nav(active: str = "home") -> None:
         ("profile", "pages/0_profile.py",         ":material/person:",           "פרופיל"),
     ]
 
-    # ── CSS ───────────────────────────────────────────────────────────────────
+    #  CSS 
     st.markdown(
         """
         <style>
@@ -807,7 +807,7 @@ def bottom_nav(active: str = "home") -> None:
         unsafe_allow_html=True,
     )
 
-    # ── Render nav items as columns of page-links ─────────────────────────────
+    #  Render nav items as columns of page-links 
     cols = st.columns(len(items))
     for col, (key, page, icon, label) in zip(cols, items):
         with col:
@@ -822,7 +822,7 @@ def reset_css_flag() -> None:
     st.session_state.pop(_CSS_FLAG, None)
 
 
-# ── Page header ────────────────────────────────────────────────────────────
+#  Page header 
 
 def page_header(title: str, icon_name: str = "plate",
                 subtitle: Optional[str] = None) -> None:
@@ -841,7 +841,7 @@ def page_header(title: str, icon_name: str = "plate",
     )
 
 
-# ── Section header ─────────────────────────────────────────────────────────
+#  Section header 
 
 def section_header(title: str, icon_name: str = "menu") -> None:
     """Render a smaller in-page section header with an icon."""
@@ -853,7 +853,7 @@ def section_header(title: str, icon_name: str = "menu") -> None:
     )
 
 
-# ── Icon button ────────────────────────────────────────────────────────────
+#  Icon button 
 
 def icon_button(label: str, icon_name: str = "confirm", *,
                 key: Optional[str] = None,
@@ -888,49 +888,49 @@ def icon_button(label: str, icon_name: str = "confirm", *,
 # These are picked for clarity and good RTL behavior. SVG icons remain the
 # primary visual language in cards/headers; buttons use these for compactness.
 _GLYPHS = {
-    "home": "🏠",
+    "home": "",
     "back": "←",
-    "menu": "☰",
-    "search": "🔎",
-    "add": "＋",
-    "delete": "🗑",
-    "edit": "✎",
-    "confirm": "✓",
-    "close": "✕",
-    "clear": "🧹",
-    "save": "💾",
-    "play": "▶",
+    "menu": "",
+    "search": "",
+    "add": "",
+    "delete": "",
+    "edit": "",
+    "confirm": "",
+    "close": "",
+    "clear": "",
+    "save": "",
+    "play": "",
     "refresh": "↻",
-    "info": "ⓘ",
-    "warning": "⚠",
-    "calendar": "📅",
-    "settings": "⚙",
-    "login": "🔓",
+    "info": "",
+    "warning": "",
+    "calendar": "",
+    "settings": "",
+    "login": "",
     "logout": "⎋",
-    "lock": "🔒",
-    "recipe": "🍳",
-    "plate": "🍽",
-    "utensils": "🍴",
-    "breakfast": "🌅",
-    "lunch": "🍽",
-    "dinner": "🌙",
-    "snack": "🍎",
-    "flame": "🔥",
-    "protein": "💪",
-    "carbs": "🌾",
-    "fat": "🫒",
-    "training": "🏋",
-    "dumbbell": "🏋",
-    "running": "🏃",
-    "inventory": "📦",
-    "package": "📦",
-    "scan": "🔍",
-    "receipt": "🧾",
-    "agent": "🤖",
-    "user": "👤",
-    "star": "⭐",
-    "target": "🎯",
-    "trophy": "🏆",
+    "lock": "",
+    "recipe": "",
+    "plate": "",
+    "utensils": "",
+    "breakfast": "",
+    "lunch": "",
+    "dinner": "",
+    "snack": "",
+    "flame": "",
+    "protein": "",
+    "carbs": "",
+    "fat": "",
+    "training": "",
+    "dumbbell": "",
+    "running": "",
+    "inventory": "",
+    "package": "",
+    "scan": "",
+    "receipt": "",
+    "agent": "",
+    "user": "",
+    "star": "",
+    "target": "",
+    "trophy": "",
 }
 
 
@@ -938,7 +938,7 @@ def _unicode_glyph(name: str) -> str:
     return _GLYPHS.get(name, "•")
 
 
-# ── Kashrut & meal badges ───────────────────────────────────────────────────
+#  Kashrut & meal badges 
 
 def kashrut_badge_html(kashrut: str) -> str:
     """HTML chip for a kashrut category — icon + Hebrew text + color."""
@@ -963,7 +963,7 @@ def meal_badge_html(meal_key: str) -> str:
     )
 
 
-# ── Macro grid ──────────────────────────────────────────────────────────────
+#  Macro grid 
 
 def macro_grid_html(cal: int, protein: int, carbs: int, fat: int) -> str:
     """Render a 4-column macro tile grid as HTML — Cal AI style."""
@@ -1045,7 +1045,7 @@ def calorie_ring_html(consumed: int, target: int,
     """
 
 
-# ── Recipe card ─────────────────────────────────────────────────────────────
+#  Recipe card 
 
 def recipe_card_html(recipe: dict, image_uri: str = "",
                      match_pct: Optional[int] = None,
@@ -1120,7 +1120,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
     )
 
 
-# ── Welcome card ────────────────────────────────────────────────────────────
+#  Welcome card 
 
 def welcome_card_html(href: str, icon_name: str, title: str, subtitle: str) -> str:
     return (
@@ -1132,7 +1132,7 @@ def welcome_card_html(href: str, icon_name: str, title: str, subtitle: str) -> s
     )
 
 
-# ── Top navigation menu ─────────────────────────────────────────────────────
+#  Top navigation menu 
 
 # Maps display label → page file path. Order matters.
 _NAV_ITEMS = [
@@ -1262,7 +1262,7 @@ def nav_menu(active: Optional[str] = None) -> None:
     st.markdown("<div style='margin-bottom:10px'></div>", unsafe_allow_html=True)
 
 
-# ── Section context manager (sugar) ─────────────────────────────────────────
+#  Section context manager (sugar) 
 
 @contextmanager
 def section(title: str, icon_name: str = "menu"):

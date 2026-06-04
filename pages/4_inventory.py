@@ -18,11 +18,11 @@ from ui.components import (
 )
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-st.set_page_config(page_title="BiteFit · מלאי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="BiteFit · מלאי", page_icon="", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
 
-# ── טעינת קטלוג מזון ─────────────────────────────────────────────────────────
+#  טעינת קטלוג מזון 
 @st.cache_data
 def load_catalog():
     path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -33,7 +33,7 @@ def load_catalog():
 CATALOG = load_catalog()
 CATALOG_BY_ID = {f["food_id"]: f for f in CATALOG}
 
-# ── Sidebar — בחירת משתמש ────────────────────────────────────────────────────
+#  Sidebar — בחירת משתמש 
 with st.sidebar:
     section_header("לקוחות", "user")
 
@@ -72,7 +72,7 @@ with st.sidebar:
     st.divider()
     render_chatbot_sidebar()
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+#  Main 
 nav_menu(active="מלאי")
 page_header("מלאי אישי", icon_name="inventory",
             subtitle="ניהול מוצרים לכל לקוח")
@@ -85,13 +85,13 @@ user = next((u for u in users if u["user_id"] == selected_id), None)
 if not user:
     st.stop()
 
-st.markdown(f"### 👤 {user['name']}")
+st.markdown(f"###  {user['name']}")
 st.divider()
 
 items = load_inventory(selected_id)
 
-# ── הוספת מוצר ──────────────────────────────────────────────────────────────
-with st.expander("➕ הוסף מוצר ידנית", expanded=False):
+#  הוספת מוצר 
+with st.expander(" הוסף מוצר ידנית", expanded=False):
     col_search, col_qty, col_btn = st.columns([3, 1, 1])
 
     with col_search:
@@ -129,7 +129,7 @@ with st.expander("➕ הוסף מוצר ידנית", expanded=False):
         st.warning("לא נמצאו תוצאות. נסה מילה אחרת.")
 
     # הוספה מותאמת (מחוץ לקטלוג)
-    with st.expander("➕ מוצר שאינו ברשימה"):
+    with st.expander(" מוצר שאינו ברשימה"):
         c1, c2, c3 = st.columns([3, 1, 1])
         custom_name = c1.text_input("שם המוצר", key="custom_name")
         custom_qty = c2.number_input("כמות (גרם)", min_value=1, value=100, key="custom_qty")
@@ -146,7 +146,7 @@ with st.expander("➕ הוסף מוצר ידנית", expanded=False):
 
 st.divider()
 
-# ── רשימת מלאי ───────────────────────────────────────────────────────────────
+#  רשימת מלאי 
 if not items:
     st.info("המלאי ריק. הוסף מוצרים למעלה או סרוק קבלה.")
 else:
@@ -165,10 +165,10 @@ else:
 
         food_info = CATALOG_BY_ID.get(fid)
         category_icon = {
-            "protein": "🥩", "carbohydrate": "🍞", "vegetable": "🥦",
-            "fruit": "🍎", "dairy": "🧀", "fat_oil": "🫒",
-            "snack": "🥜", "condiment": "🫙",
-        }.get(food_info["category"] if food_info else "", "📦")
+            "protein": "", "carbohydrate": "", "vegetable": "",
+            "fruit": "", "dairy": "", "fat_oil": "",
+            "snack": "", "condiment": "",
+        }.get(food_info["category"] if food_info else "", "")
 
         c1.write(f"{category_icon} {item['name_he']}")
 
@@ -194,4 +194,4 @@ else:
 
 st.divider()
 col_scan = st.columns(1)[0]
-col_scan.page_link("pages/5_scanner.py", label="📷 סרוק קבלה / רשימת סופר", use_container_width=True)
+col_scan.page_link("pages/5_scanner.py", label=" סרוק קבלה / רשימת סופר", use_container_width=True)

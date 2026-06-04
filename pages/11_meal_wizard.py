@@ -17,7 +17,7 @@ USER_ID = require_auth()
 
 st.set_page_config(
     page_title="אשף תפריט – BiteFit",
-    page_icon="🍽️",
+    page_icon="",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
@@ -43,52 +43,60 @@ try:
 except ImportError:
     _helpers_ok = False
 
-# ── Load user profile ────────────────────────────────────────────────────────
+#  Load user profile 
 _profile_repo = ProfileRepository()
 _profile = _profile_repo.load(USER_ID)
 
-# ── Food catalog (cached) ────────────────────────────────────────────────────
+#  Food catalog (cached) 
+_DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "storage", "nutrition.db")
+
 @st.cache_resource
 def _load_catalog():
-    cat = FoodCatalog()
+    cat = FoodCatalog(db_path=_DB_PATH)
     foods = cat.get_all_foods()
+    # Only keep foods with calorie data for display
+    foods = [f for f in foods if f.nutrition_per_100g.calories_kcal]
     by_cat = {}
     for f in foods:
         by_cat.setdefault(f.category, []).append(f)
     for c in by_cat:
-        by_cat[c].sort(key=lambda x: x.name_he)
+        by_cat[c].sort(key=lambda x: (
+            0 if x.source == "json" else 1,   # Hebrew-DB foods first
+            x.name_he or x.name_en or ""
+        ))
     return {f.food_id: f for f in foods}, by_cat
 
 FOOD_LOOKUP, FOODS_BY_CATEGORY = _load_catalog()
 
-# ── Labels ────────────────────────────────────────────────────────────────────
+#  Labels 
 MEAL_LABELS = {
-    MealType.BREAKFAST:       "🌅 ארוחת בוקר",
-    MealType.MORNING_SNACK:   "☕ חטיף בוקר",
-    MealType.LUNCH:           "🍽️ ארוחת צהריים",
-    MealType.AFTERNOON_SNACK: "🍎 חטיף אחה\"צ",
-    MealType.DINNER:          "🌙 ארוחת ערב",
+    MealType.BREAKFAST:       " ארוחת בוקר",
+    MealType.MORNING_SNACK:   " חטיף בוקר",
+    MealType.LUNCH:           " ארוחת צהריים",
+    MealType.AFTERNOON_SNACK: " חטיף אחה\"צ",
+    MealType.DINNER:          " ארוחת ערב",
 }
 CAT_LABELS = {
-    FoodCategory.PROTEIN:      "🥩 חלבון",
-    FoodCategory.CARBOHYDRATE: "🍚 פחמימות",
-    FoodCategory.FAT:          "🫒 שומן",
-    FoodCategory.VEGETABLE:    "🥬 ירקות",
-    FoodCategory.FRUIT:        "🍎 פירות",
-    FoodCategory.DAIRY:        "🧀 חלבי",
-    FoodCategory.GRAIN:        "🌾 דגנים",
-    FoodCategory.LEGUME:       "🫘 קטניות",
-    FoodCategory.NUT_SEED:     "🥜 אגוזים",
-    FoodCategory.CONDIMENT:    "🧂 תבלינים",
-    FoodCategory.BEVERAGE:     "☕ משקאות",
-    FoodCategory.OTHER:        "📦 אחר",
+    FoodCategory.PROTEIN:      " חלבון",
+    FoodCategory.CARBOHYDRATE: " פחמימות",
+    FoodCategory.FAT:          " שומן",
+    FoodCategory.VEGETABLE:    " ירקות",
+    FoodCategory.FRUIT:        " פירות",
+    FoodCategory.DAIRY:        " חלבי",
+    FoodCategory.GRAIN:        " דגנים",
+    FoodCategory.LEGUME:       " קטניות",
+    FoodCategory.NUT_SEED:     " אגוזים",
+    FoodCategory.CONDIMENT:    " תבלינים",
+    FoodCategory.BEVERAGE:     " משקאות",
+    FoodCategory.OTHER:        " אחר",
 }
 WIZARD_MEALS = [
     MealType.BREAKFAST, MealType.MORNING_SNACK,
     MealType.LUNCH, MealType.AFTERNOON_SNACK, MealType.DINNER,
 ]
 
-# ── Wizard helpers ────────────────────────────────────────────────────────────
+#  Wizard helpers 
 def _init_wizard():
     st.session_state.update({
         "wiz_active": True, "wiz_meal_idx": 0, "wiz_cat_idx": 0,
@@ -179,43 +187,43 @@ def _run_pipeline():
         save_plan_to_disk(plan, suffix="daily")
     return user, targets, plan, changeset
 
-# ── Page header ───────────────────────────────────────────────────────────────
+#  Page header 
 page_header("אשף תפריט", "plate", subtitle="בניית תפריט יומי מותאם אישית")
 
-# ── State routing ─────────────────────────────────────────────────────────────
+#  State routing 
 has_plan    = "wiz_plan" in st.session_state
 is_active   = st.session_state.get("wiz_active", False)
 is_complete = st.session_state.get("wiz_completed", False)
 
 # Reset button (top)
 if has_plan or is_complete or is_active:
-    if st.button("🔄 התחל מחדש", use_container_width=True):
+    if st.button(" התחל מחדש", use_container_width=True):
         for k in ["wiz_active","wiz_meal_idx","wiz_cat_idx","wiz_selections",
                   "wiz_skipped","wiz_completed","wiz_plan"]:
             st.session_state.pop(k, None)
         st.rerun()
     st.divider()
 
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 # START SCREEN
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 if not is_active and not is_complete and not has_plan:
     st.markdown(
         '<div style="text-align:center;padding:32px 0 20px">'
-        '<div style="font-size:3em">🍽️</div>'
+        '<div style="font-size:3em"></div>'
         '<div style="font-size:1.2em;font-weight:700;margin:12px 0 6px">בוא נבנה לך תפריט מותאם אישית</div>'
         '<div style="color:#888;font-size:0.9em">נעבור יחד על כל ארוחה ותבחר מזונות שאתה אוהב</div>'
         '</div>',
         unsafe_allow_html=True,
     )
-    if st.button("🚀 התחל בבחירת מזון", type="primary", use_container_width=True):
+    if st.button(" התחל בבחירת מזון", type="primary", use_container_width=True):
         _init_wizard()
         st.rerun()
 
     # History
     if _helpers_ok:
         st.divider()
-        st.markdown("### 📋 תפריטים קודמים")
+        st.markdown("###  תפריטים קודמים")
         if "wiz_history" not in st.session_state:
             st.session_state["wiz_history"] = scan_history_plans()
         history = st.session_state["wiz_history"]
@@ -227,7 +235,7 @@ if not is_active and not is_complete and not has_plan:
                     c1, c2, c3 = st.columns([3, 2, 1])
                     c1.markdown(f"**{entry.get('plan_date','?')}**")
                     c2.caption(f"{entry.get('total_calories',0):.0f} קק\"ל")
-                    if c3.button("👁", key=f"hist_{i}"):
+                    if c3.button("", key=f"hist_{i}"):
                         fp = os.path.join(PLANS_DIR, entry["filename"])
                         try:
                             pd = load_plan_from_file(fp)
@@ -254,9 +262,9 @@ if not is_active and not is_complete and not has_plan:
     bottom_nav("home")
     st.stop()
 
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 # ACTIVE WIZARD
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 if is_active:
     mi    = st.session_state["wiz_meal_idx"]
     ci    = st.session_state["wiz_cat_idx"]
@@ -296,11 +304,11 @@ if is_active:
     col_skip, col_next = st.columns(2)
 
     with col_skip:
-        if st.button("⏭️ דלג על ארוחה", use_container_width=True):
+        if st.button("⏭ דלג על ארוחה", use_container_width=True):
             _wiz_skip_meal(); st.rerun()
 
     with col_next:
-        if st.button("סיים ✓" if is_last else "הבא ❯",
+        if st.button("סיים " if is_last else "הבא ",
                      type="primary", use_container_width=True):
             if selected:
                 n2f = {f.name_he: f for f in foods_here}
@@ -317,11 +325,11 @@ if is_active:
     bottom_nav("home")
     st.stop()
 
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 # WIZARD COMPLETE — Summary + Generate
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 if is_complete and not has_plan:
-    st.markdown("## ✅ סיכום הבחירות")
+    st.markdown("##  סיכום הבחירות")
 
     sels   = st.session_state.get("wiz_selections", {})
     skip   = st.session_state.get("wiz_skipped", set())
@@ -365,7 +373,7 @@ if is_complete and not has_plan:
             _init_wizard(); st.rerun()
     else:
         st.divider()
-        if st.button("▶ הפק תפריט יומי", type="primary", use_container_width=True):
+        if st.button(" הפק תפריט יומי", type="primary", use_container_width=True):
             with st.spinner("מחשב תפריט..."):
                 result = _run_pipeline()
             if result:
@@ -379,9 +387,9 @@ if is_complete and not has_plan:
     bottom_nav("home")
     st.stop()
 
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 # PLAN RESULTS
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 if has_plan:
     data     = st.session_state["wiz_plan"]
     plan     = data["plan"]
@@ -389,13 +397,13 @@ if has_plan:
     user_o   = data["user"]
     changeset = data["changeset"]
 
-    st.toast("התפריט נוצר בהצלחה! ✅")
+    st.toast("התפריט נוצר בהצלחה! ")
 
     dev = plan.calorie_deviation_pct
     c1, c2, c3 = st.columns(3)
-    c1.metric("🎯 יעד", f"{targets.target_calories_kcal:.0f}")
-    c2.metric("🍽️ תפריט", f"{plan.total_calories:.0f}")
-    c3.metric("📊 סטייה", f"{dev:+.1f}%")
+    c1.metric(" יעד", f"{targets.target_calories_kcal:.0f}")
+    c2.metric(" תפריט", f"{plan.total_calories:.0f}")
+    c3.metric(" סטייה", f"{dev:+.1f}%")
 
     st.divider()
     st.markdown("### ארוחות היום")
@@ -420,8 +428,8 @@ if has_plan:
 
     st.divider()
     p1, p2, p3 = st.columns(3)
-    p1.metric("🥩 חלבון", f"{plan.total_protein:.0f}g")
-    p2.metric("🍞 פחמימות", f"{plan.total_carbs:.0f}g")
-    p3.metric("🥑 שומן", f"{plan.total_fat:.0f}g")
+    p1.metric(" חלבון", f"{plan.total_protein:.0f}g")
+    p2.metric(" פחמימות", f"{plan.total_carbs:.0f}g")
+    p3.metric(" שומן", f"{plan.total_fat:.0f}g")
 
 bottom_nav("home")

@@ -78,7 +78,7 @@ def require_admin(page_title: str = "אזור מנהל", icon_name: str = "lock"
             placeholder="••••••••",
         )
         submitted = st.form_submit_button(
-            "🔓 התחבר",
+            " התחבר",
             type="primary",
             use_container_width=True,
         )

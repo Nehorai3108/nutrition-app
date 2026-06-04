@@ -23,7 +23,7 @@ page_header(
 )
 admin_logout_button()
 
-# ── Load pipeline modules ─────────────────────────────────────────────────────
+#  Load pipeline modules 
 
 try:
     from nutrition_app.agents.agent_recipe_images import image_fetcher as _fetcher
@@ -34,7 +34,7 @@ except Exception as exc:
     st.stop()
     _pipeline_ok = False
 
-# ── Stats + actions row ───────────────────────────────────────────────────────
+#  Stats + actions row 
 
 stats = _fetcher.get_stats()
 
@@ -46,7 +46,7 @@ c4.metric("ללא תוצאות",        stats["no_results"])
 
 col_fetch, col_retry = st.columns(2)
 
-if col_fetch.button("🔄 אסוף batch חדש מ-Pexels", use_container_width=True, type="primary"):
+if col_fetch.button(" אסוף batch חדש מ-Pexels", use_container_width=True, type="primary"):
     with st.spinner("מחפש תמונות ב-Pexels..."):
         result = _fetcher.run_batch(limit=10)
     msg = []
@@ -59,7 +59,7 @@ if col_fetch.button("🔄 אסוף batch חדש מ-Pexels", use_container_width=
     st.success(" | ".join(msg) if msg else "לא נמצאו מתכונים חדשים לאיסוף")
     st.rerun()
 
-if col_retry.button("♻️ נסה שוב לפריטים ללא תוצאות / נדחו", use_container_width=True):
+if col_retry.button(" נסה שוב לפריטים ללא תוצאות / נדחו", use_container_width=True):
     pending_all = _fetcher.load_pending()
     cleaned = {k: v for k, v in pending_all.items()
                if v.get("status") not in ("no_results", "rejected")}
@@ -69,7 +69,7 @@ if col_retry.button("♻️ נסה שוב לפריטים ללא תוצאות / �
 
 st.divider()
 
-# ── Pending approvals ─────────────────────────────────────────────────────────
+#  Pending approvals 
 
 pending = _fetcher.load_pending()
 pending_items = [
@@ -86,7 +86,7 @@ else:
         name_he = entry.get("name_he", rid)
         name_en = entry.get("name_en", "")
 
-        with st.expander(f"🍽️ {name_he}  ({name_en})", expanded=True):
+        with st.expander(f" {name_he}  ({name_en})", expanded=True):
             candidates = entry.get("candidates", [])
             cols = st.columns(max(len(candidates), 1))
 
@@ -102,9 +102,9 @@ else:
 
                 photographer = cand.get("photographer", "")
                 if photographer:
-                    col.caption(f"📷 {photographer}")
+                    col.caption(f" {photographer}")
 
-                if col.button("✅ אשר", key=f"approve_{rid}_{idx}", use_container_width=True, type="primary"):
+                if col.button(" אשר", key=f"approve_{rid}_{idx}", use_container_width=True, type="primary"):
                     result = _fetcher.approve(rid, idx)
                     if result:
                         rm = _RecipeManager()
@@ -122,13 +122,13 @@ else:
                     st.rerun()
 
             st.markdown("")
-            if st.button("❌ דחה הכל למתכון זה", key=f"reject_{rid}",
+            if st.button(" דחה הכל למתכון זה", key=f"reject_{rid}",
                          use_container_width=False):
                 _fetcher.reject(rid)
                 st.warning(f"נדחה: {name_he}")
                 st.rerun()
 
-# ── Approved gallery ──────────────────────────────────────────────────────────
+#  Approved gallery 
 
 st.divider()
 section_header("תמונות מאושרות", icon_name="grid")

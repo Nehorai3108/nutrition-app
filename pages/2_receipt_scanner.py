@@ -6,7 +6,7 @@ import sys
 
 import streamlit as st
 
-# ── path fix ──────────────────────────────────────────────────────────────────
+#  path fix 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
@@ -20,15 +20,15 @@ from ui.components import (
 )
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-# ── page config ───────────────────────────────────────────────────────────────
-st.set_page_config(page_title="BiteFit · סריקה", page_icon="🧾", layout="wide", initial_sidebar_state="collapsed")
+#  page config 
+st.set_page_config(page_title="BiteFit · סריקה", page_icon="", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
 
 with st.sidebar:
     render_chatbot_sidebar()
 
-# ── catalog (cached) ──────────────────────────────────────────────────────────
+#  catalog (cached) 
 _DB_PATH = os.path.join(_ROOT, "storage", "nutrition.db")
 
 @st.cache_resource
@@ -37,7 +37,7 @@ def _get_catalog() -> FoodCatalog:
 
 catalog = _get_catalog()
 
-# ── helpers ───────────────────────────────────────────────────────────────────
+#  helpers 
 
 def _encode_image(data: bytes, mime: str) -> str:
     return base64.standard_b64encode(data).decode("utf-8")
@@ -170,13 +170,13 @@ def _find_best_match(name_he: str, name_en: str) -> list[tuple[FoodItem, float]]
     return sorted(results, key=lambda x: -x[1])[:5]
 
 
-# ── session state init ────────────────────────────────────────────────────────
+#  session state init 
 if "scan_results" not in st.session_state:
     st.session_state["scan_results"] = []   # list of {name_he, name_en, quantity_g, matches, selected_food_id, confirmed_qty}
 if "scanned_inventory" not in st.session_state:
     st.session_state["scanned_inventory"] = {}  # food_id -> quantity_g
 
-# ── UI ────────────────────────────────────────────────────────────────────────
+#  UI 
 nav_menu(active="סריקת קבלה")
 page_header(
     "סורק קבלה / מסמך",
@@ -184,9 +184,9 @@ page_header(
     subtitle="העלה תמונה של קבלת סופרמרקט או רשימת קניות — המערכת תזהה את המוצרים ותוסיף אותם למלאי",
 )
 
-# ── upload ────────────────────────────────────────────────────────────────────
+#  upload 
 uploaded = st.file_uploader(
-    "📎 בחר קובץ (תמונה או PDF)",
+    " בחר קובץ (תמונה או PDF)",
     type=["jpg", "jpeg", "png", "webp", "pdf"],
     help="תמונה של קבלה, רשימת קניות ידנית, או מסמך PDF",
 )
@@ -205,7 +205,7 @@ if uploaded:
         if mime != "application/pdf":
             st.image(uploaded, caption="קובץ שהועלה", use_container_width=True)
         else:
-            st.info(f"📄 PDF: {uploaded.name}")
+            st.info(f" PDF: {uploaded.name}")
 
     with col_btn:
         st.write("")
@@ -245,12 +245,12 @@ if uploaded:
             except Exception as e:
                 st.error(f"שגיאה בסריקה: {e}")
 
-# ── results table ─────────────────────────────────────────────────────────────
+#  results table 
 results = st.session_state.get("scan_results", [])
 
 if results:
     st.divider()
-    st.markdown("## ✅ מוצרים שזוהו — אשר ועדכן")
+    st.markdown("##  מוצרים שזוהו — אשר ועדכן")
     st.caption("בחר את המוצר המתאים מהקטלוג ועדכן כמות לפי הצורך.")
 
     confirmed_items: list[dict] = []
@@ -280,7 +280,7 @@ if results:
                     selected_food_id = ids[chosen_idx]
                     selected_food = matches[chosen_idx][0]
                     score = matches[chosen_idx][1]
-                    badge = "🟢" if score >= 0.8 else "🟡" if score >= 0.5 else "🔴"
+                    badge = "🟢" if score >= 0.8 else "🟡" if score >= 0.5 else ""
                     st.caption(f"{badge} התאמה: {int(score * 100)}%")
                 else:
                     st.warning("לא נמצאה התאמה בקטלוג")
@@ -300,7 +300,7 @@ if results:
 
             with col_del:
                 st.write("")
-                remove = st.checkbox("❌", key=f"remove_{i}", value=False)
+                remove = st.checkbox("", key=f"remove_{i}", value=False)
 
             if not remove and selected_food_id and qty > 0:
                 confirmed_items.append({
@@ -334,14 +334,14 @@ if results:
             inventory[fid] = inventory.get(fid, 0) + item["quantity_g"]
         st.session_state["scanned_inventory"] = inventory
         st.session_state["scan_results"] = []
-        st.success(f"✅ {len(confirmed_items)} מוצרים נוספו למלאי!")
+        st.success(f" {len(confirmed_items)} מוצרים נוספו למלאי!")
         st.balloons()
 
-# ── current scanned inventory summary ─────────────────────────────────────────
+#  current scanned inventory summary 
 inv = st.session_state.get("scanned_inventory", {})
 if inv:
     st.divider()
-    st.markdown("## 📦 מלאי שנסרק עד כה")
+    st.markdown("##  מלאי שנסרק עד כה")
     all_foods = {f.food_id: f for f in catalog.get_all_foods()}
     rows = []
     for fid, qty in inv.items():
@@ -360,6 +360,6 @@ if inv:
     with col_go:
         st.page_link(
             "app_user.py",
-            label="🥗 עבור לתכנון תפריט עם המלאי שנסרק ←",
+            label=" עבור לתכנון תפריט עם המלאי שנסרק ←",
             use_container_width=True,
         )

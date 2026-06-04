@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-# ── Delegate to new auth system ───────────────────────────────────────────────
+#  Delegate to new auth system 
 from auth.login_ui import (
     require_auth,
     get_user_id,
@@ -23,7 +23,7 @@ from auth.supabase_client import (
 )
 
 
-# ── Legacy helpers (keep old callers working) ─────────────────────────────────
+#  Legacy helpers (keep old callers working) 
 
 def get_user() -> dict | None:
     return get_current_user()
@@ -46,6 +46,6 @@ def do_logout():
     st.rerun()
 
 
-def logout_button(label: str = "התנתק 👋", key: str = "_logout_btn"):
+def logout_button(label: str = "התנתק ", key: str = "_logout_btn"):
     if st.button(label, key=key):
         do_logout()

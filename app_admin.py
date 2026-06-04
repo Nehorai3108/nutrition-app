@@ -14,19 +14,19 @@ import streamlit as st
 from ui.auth import require_admin, is_admin
 from ui.components import inject_global_css
 
-# ── Page config ──────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="דאשבורד ניהול",
-    page_icon="⚙️",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ── Design system ────────────────────────────────────────────────────────────
+#  Design system 
 inject_global_css()
 
-# ── Admin Access Gate ────────────────────────────────────────────────────────
+#  Admin Access Gate 
 # If not authenticated, show login form and stop. Sidebar is hidden on login.
 if not is_admin():
     st.markdown(
@@ -37,42 +37,42 @@ if not is_admin():
     # require_admin calls st.stop() when not authenticated — code below
     # this block only runs after a successful login + rerun
 
-# ── Navigation — explicitly register admin pages ─────────────────────────────
+#  Navigation — explicitly register admin pages 
 pg = st.navigation(
     {
         "ניהול מערכת": [
             st.Page(
                 "pages_admin/1_agents_dashboard.py",
                 title="סוכנים",
-                icon="🤖",
+                icon="",
                 default=True,
             ),
             st.Page(
                 "pages_admin/2_photo_manager.py",
                 title="מנהל תמונות",
-                icon="🖼️",
+                icon="",
             ),
             st.Page(
                 "pages_admin/3_audit_logs.py",
                 title="ביקורת לוג",
-                icon="📋",
+                icon="",
             ),
             st.Page(
                 "pages_admin/4_settings.py",
                 title="הגדרות",
-                icon="⚙️",
+                icon="",
             ),
         ],
         "מערכת": [
             st.Page(
                 "pages/2_recipes.py",
                 title="מתכונים",
-                icon="📖",
+                icon="",
             ),
             st.Page(
                 "pages/7_weekly_workout_plan.py",
                 title="אימונים",
-                icon="🏃",
+                icon="",
             ),
         ],
     }

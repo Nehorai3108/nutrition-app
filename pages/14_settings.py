@@ -15,7 +15,7 @@ from nutrition_app.repositories.user_meal_preferences_repository import UserMeal
 
 st.set_page_config(
     page_title="BiteFit · הגדרות",
-    page_icon="⚙️",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -23,7 +23,7 @@ inject_global_css()
 
 with st.sidebar:
     st.markdown(
-        f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("user_email", "")}</div>',
+        f'<div style="font-size:0.75rem;color:#8892a4;padding:4px"> {st.session_state.get("user_email", "")}</div>',
         unsafe_allow_html=True,
     )
     logout_button()
@@ -34,15 +34,15 @@ USER_ID = require_auth()
 _repo = UserMealPreferencesRepository()
 _prefs = _repo.load(USER_ID) or UserMealPreferences.empty(USER_ID)
 
-# ── Page header ───────────────────────────────────────────────────────────────
+#  Page header 
 
 st.markdown(
-    '<h2 style="margin-bottom:2px">⚙️ הגדרות</h2>',
+    '<h2 style="margin-bottom:2px"> הגדרות</h2>',
     unsafe_allow_html=True,
 )
 st.divider()
 
-# ── Calm Mode section ─────────────────────────────────────────────────────────
+#  Calm Mode section 
 
 st.markdown(
     '<h3 style="margin-bottom:2px">מצב שקט</h3>'
@@ -81,8 +81,8 @@ if new_weekly != _prefs.weekly_summary:
 
 if _changed:
     _repo.save(_prefs)
-    st.toast("נשמר ✓")
+    st.toast("נשמר ")
 
-# ── Bottom nav ────────────────────────────────────────────────────────────────
+#  Bottom nav 
 
 bottom_nav(active="settings")

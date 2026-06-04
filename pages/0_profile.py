@@ -17,11 +17,11 @@ from nutrition_app.agents.agent_2_nutrition import NutritionEngine
 from nutrition_app.models.user import UserProfile
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
-st.set_page_config(page_title="BiteFit · פרופיל", page_icon="👤", layout="wide")
+st.set_page_config(page_title="BiteFit · פרופיל", page_icon="", layout="wide")
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px"> {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
 setup_persistent_auth()
@@ -71,9 +71,9 @@ PACE_DESCRIPTIONS = {
     },
 }
 
-tab_personal, tab_prefs, tab_targets = st.tabs(["👤 פרטים אישיים", "🍽️ העדפות תזונה", "🎯 יעדים"])
+tab_personal, tab_prefs, tab_targets = st.tabs([" פרטים אישיים", " העדפות תזונה", " יעדים"])
 
-# ── Tab 1: Personal details ───────────────────────────────────────────────────
+#  Tab 1: Personal details 
 with tab_personal:
     section_header("פרטים אישיים", icon_name="user")
 
@@ -122,7 +122,7 @@ with tab_personal:
                                 format_func=lambda g: GOAL_LABELS[g],
                                 index=goal_opts.index(cur_goal))
 
-    # ── Target weight + weeks slider ─────────────────────────────────────────
+    #  Target weight + weeks slider 
     if new_goal != Goal.MAINTAIN:
         st.divider()
         tw_default = float(profile.get("target_weight_kg") or new_weight)
@@ -174,7 +174,7 @@ with tab_personal:
         new_weeks         = 0
         new_pace          = "moderate"
 
-    # ── Live calculation card ─────────────────────────────────────────────────
+    #  Live calculation card 
     st.divider()
 
     try:
@@ -238,7 +238,7 @@ with tab_personal:
 
             f'<div>'
             f'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
-            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600">🥩 חלבון</span>'
+            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600"> חלבון</span>'
             f'<span style="font-size:0.75rem;color:#4f8ef7;font-weight:700">{int(_t.protein_g)}g &nbsp;·&nbsp; {_p_pct}%</span>'
             f'</div>'
             f'{_bar(_p_pct, "#4f8ef7")}'
@@ -246,7 +246,7 @@ with tab_personal:
 
             f'<div>'
             f'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
-            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600">🍞 פחמימות</span>'
+            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600"> פחמימות</span>'
             f'<span style="font-size:0.75rem;color:#f59e0b;font-weight:700">{int(_t.carbs_g)}g &nbsp;·&nbsp; {_c_pct}%</span>'
             f'</div>'
             f'{_bar(_c_pct, "#f59e0b")}'
@@ -254,7 +254,7 @@ with tab_personal:
 
             f'<div>'
             f'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
-            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600">🥑 שומן</span>'
+            f'<span style="font-size:0.75rem;color:#f4f6fb;font-weight:600"> שומן</span>'
             f'<span style="font-size:0.75rem;color:#f472b6;font-weight:700">{int(_t.fat_g)}g &nbsp;·&nbsp; {_f_pct}%</span>'
             f'</div>'
             f'{_bar(_f_pct, "#f472b6")}'
@@ -284,9 +284,9 @@ with tab_personal:
     except Exception as e:
         st.warning(f"מלא פרטים כדי לראות חישוב ({e})")
 
-    # ── Save ─────────────────────────────────────────────────────────────────
+    #  Save 
     st.divider()
-    if st.button("💾 שמור פרטים אישיים", type="primary", use_container_width=True):
+    if st.button(" שמור פרטים אישיים", type="primary", use_container_width=True):
         profile.update({
             "name":             new_name,
             "gender":           new_gender.value,
@@ -302,10 +302,10 @@ with tab_personal:
             "notes":            profile.get("notes") or None,
         })
         repo.save(profile)
-        st.success("✅ פרטים אישיים נשמרו!")
+        st.success(" פרטים אישיים נשמרו!")
         st.rerun()
 
-# ── Tab 2: Meal preferences ───────────────────────────────────────────────────
+#  Tab 2: Meal preferences 
 with tab_prefs:
     section_header("העדפות תזונה", icon_name="plate")
     prefs = profile.get("meal_preferences", {})
@@ -333,14 +333,14 @@ with tab_prefs:
         if custom_allergy and custom_allergy not in new_allergies:
             new_allergies = new_allergies + [custom_allergy]
 
-        st.markdown("**🏥 מצבים רפואיים:**")
+        st.markdown("** מצבים רפואיים:**")
         medical_opts = ["דיסליפידמיה / כולסטרול גבוה", "סוכרת סוג 2", "IBS / מעי רגיז",
                         "GERD / ריפלוקס", "צליאק", "מחלת לב", "יתר לחץ דם", "מחלת כליות"]
         cur_conditions = prefs.get("medical_conditions", [])
         new_conditions = st.multiselect("בחר מצבים", options=medical_opts,
                                          default=[c for c in cur_conditions if c in medical_opts])
 
-        st.markdown("**🏃 סוג ספורט / פעילות:**")
+        st.markdown("** סוג ספורט / פעילות:**")
         sport_map = {
             "": "לא מגדיר",
             "gym": "חדר כושר / כוח",
@@ -355,7 +355,7 @@ with tab_prefs:
                                   format_func=lambda x: sport_map[x],
                                   index=list(sport_map.keys()).index(cur_sport) if cur_sport in sport_map else 0)
 
-        st.markdown("**🥗 סגנון תזונה:**")
+        st.markdown("** סגנון תזונה:**")
         diet_map = {
             "": "ללא העדפה מיוחדת",
             "mediterranean": "ים-תיכוני",
@@ -370,8 +370,8 @@ with tab_prefs:
                                  index=list(diet_map.keys()).index(cur_diet) if cur_diet in diet_map else 0)
 
     with col2:
-        # ── מזונות מועדפים ────────────────────────────────────────────────
-        st.markdown("**❤️ מזונות מועדפים:**")
+        #  מזונות מועדפים 
+        st.markdown("** מזונות מועדפים:**")
         if "pref_foods" not in st.session_state:
             st.session_state.pref_foods = list(prefs.get("preferred_foods", []))
 
@@ -381,7 +381,7 @@ with tab_prefs:
             cols_p = st.columns(min(len(st.session_state.pref_foods), 3))
             for i, food in enumerate(st.session_state.pref_foods):
                 with cols_p[i % 3]:
-                    if st.button(f"✕ {food}", key=f"rm_pref_{i}", use_container_width=True):
+                    if st.button(f" {food}", key=f"rm_pref_{i}", use_container_width=True):
                         pref_remove = i
         if pref_remove is not None:
             st.session_state.pref_foods.pop(pref_remove)
@@ -389,7 +389,7 @@ with tab_prefs:
 
         col_add_p, col_btn_p = st.columns([3, 1])
         new_pref_item = col_add_p.text_input("הוסף מאכל אהוב", placeholder="לדוגמה: אבוקדו", key="add_pref_input", label_visibility="collapsed")
-        if col_btn_p.button("➕", key="add_pref_btn") and new_pref_item.strip():
+        if col_btn_p.button("", key="add_pref_btn") and new_pref_item.strip():
             if new_pref_item.strip() not in st.session_state.pref_foods:
                 st.session_state.pref_foods.append(new_pref_item.strip())
             st.rerun()
@@ -397,8 +397,8 @@ with tab_prefs:
 
         st.markdown("---")
 
-        # ── מזונות להימנע ─────────────────────────────────────────────────
-        st.markdown("**🚫 מזונות להימנע:**")
+        #  מזונות להימנע 
+        st.markdown("** מזונות להימנע:**")
         if "disliked_foods" not in st.session_state:
             st.session_state.disliked_foods = list(prefs.get("disliked_foods", []))
 
@@ -407,7 +407,7 @@ with tab_prefs:
             cols_d = st.columns(min(len(st.session_state.disliked_foods), 3))
             for i, food in enumerate(st.session_state.disliked_foods):
                 with cols_d[i % 3]:
-                    if st.button(f"✕ {food}", key=f"rm_dis_{i}", use_container_width=True):
+                    if st.button(f" {food}", key=f"rm_dis_{i}", use_container_width=True):
                         dis_remove = i
         if dis_remove is not None:
             st.session_state.disliked_foods.pop(dis_remove)
@@ -415,13 +415,13 @@ with tab_prefs:
 
         col_add_d, col_btn_d = st.columns([3, 1])
         new_dis_item = col_add_d.text_input("הוסף מאכל להימנע", placeholder="לדוגמה: אורז", key="add_dis_input", label_visibility="collapsed")
-        if col_btn_d.button("➕", key="add_dis_btn") and new_dis_item.strip():
+        if col_btn_d.button("", key="add_dis_btn") and new_dis_item.strip():
             if new_dis_item.strip() not in st.session_state.disliked_foods:
                 st.session_state.disliked_foods.append(new_dis_item.strip())
             st.rerun()
         new_disliked = st.session_state.disliked_foods
 
-    if st.button("💾 שמור העדפות תזונה", type="primary", use_container_width=True):
+    if st.button(" שמור העדפות תזונה", type="primary", use_container_width=True):
         profile["meal_preferences"] = {
             "kashrut":            new_kashrut,
             "allergies":          new_allergies,
@@ -436,10 +436,10 @@ with tab_prefs:
         # Reset chip state so it reloads from saved profile
         st.session_state.pop("pref_foods", None)
         st.session_state.pop("disliked_foods", None)
-        st.success("✅ העדפות נשמרו!")
+        st.success(" העדפות נשמרו!")
         st.rerun()
 
-# ── Tab 3: Saved targets breakdown ────────────────────────────────────────────
+#  Tab 3: Saved targets breakdown 
 with tab_targets:
     section_header("יעדים תזונתיים שמורים", icon_name="chart")
 
@@ -466,7 +466,7 @@ with tab_targets:
                   help="קלוריות שהגוף שורף ללא כל פעילות")
         c2.metric("TDEE (פעיל)", f"{_targets.tdee_kcal:.0f} קק״ל",
                   help="סך קלוריות שגופך שורף ביום כולל פעילות")
-        c3.metric("🎯 יעד יומי", f"{_targets.target_calories_kcal:.0f} קק״ל",
+        c3.metric(" יעד יומי", f"{_targets.target_calories_kcal:.0f} קק״ל",
                   delta=f"{_targets.target_calories_kcal - _targets.tdee_kcal:+.0f}")
 
         st.divider()
@@ -476,26 +476,26 @@ with tab_targets:
         total_macro_kcal = _targets.protein_g * 4 + _targets.carbs_g * 4 + _targets.fat_g * 9
         with mc1:
             pct_p = _targets.protein_g * 4 / total_macro_kcal * 100 if total_macro_kcal else 0
-            st.markdown("#### 🥩 חלבון")
+            st.markdown("####  חלבון")
             st.metric("", f"{_targets.protein_g:.0f}g",
                       help=f"{_user.weight_kg:.1f}kg × {_targets.protein_g/_user.weight_kg:.1f}g/kg")
             st.caption(f"{pct_p:.0f}% מהקלוריות")
         with mc2:
             pct_c = _targets.carbs_g * 4 / total_macro_kcal * 100 if total_macro_kcal else 0
-            st.markdown("#### 🍞 פחמימות")
+            st.markdown("####  פחמימות")
             st.metric("", f"{_targets.carbs_g:.0f}g")
             st.caption(f"{pct_c:.0f}% מהקלוריות")
         with mc3:
             pct_f = _targets.fat_g * 9 / total_macro_kcal * 100 if total_macro_kcal else 0
-            st.markdown("#### 🥑 שומן")
+            st.markdown("####  שומן")
             st.metric("", f"{_targets.fat_g:.0f}g")
             st.caption(f"{pct_f:.0f}% מהקלוריות")
 
         if _targets.notes:
-            st.caption(f"⚙️ {_targets.notes} | שיטה: {_targets.calculation_method}")
+            st.caption(f" {_targets.notes} | שיטה: {_targets.calculation_method}")
 
     except Exception as e:
         st.warning(f"לא ניתן לחשב יעדים — וודא שהפרטים האישיים נשמרו. ({e})")
 
     st.divider()
-    st.info("💡 שנה משקל / פעילות / מטרה / קצב בלשונית **פרטים אישיים** — החישוב מתעדכן מיידית")
+    st.info(" שנה משקל / פעילות / מטרה / קצב בלשונית **פרטים אישיים** — החישוב מתעדכן מיידית")

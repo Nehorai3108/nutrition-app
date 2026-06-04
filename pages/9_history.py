@@ -21,10 +21,10 @@ st.set_page_config(page_title="BiteFit · היסטוריה", page_icon=None, lay
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px"> {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
-# ── CSS: transform 7-col grid buttons into calendar cells ─────────────────────
+#  CSS: transform 7-col grid buttons into calendar cells 
 st.markdown("""<style>
 [data-testid="stHorizontalBlock"]:has(>[data-testid="column"]:nth-child(7))
 >[data-testid="column"] { padding-left:2px !important; padding-right:2px !important; }
@@ -93,7 +93,7 @@ def _heat(cal: int) -> str:
     return "נמוך"
 
 
-# ── Session state (no URL params → no browser navigation) ─────────────────────
+#  Session state (no URL params → no browser navigation) 
 if "mode"    not in st.session_state: st.session_state["mode"]    = "history"
 if "woff"    not in st.session_state: st.session_state["woff"]    = 0
 if "sel_day" not in st.session_state: st.session_state["sel_day"] = today.isoformat()
@@ -116,7 +116,7 @@ if not (week_sunday <= sel_date <= week_end):
     st.session_state["sel_day"] = sel_date.isoformat()
     sel_day = sel_date.isoformat()
 
-# ── Fetch week data ────────────────────────────────────────────────────────────
+#  Fetch week data 
 workout_data_all = workout_repo.get_workout_data(USER_ID)
 week_data = {}
 for d in week_days:
@@ -127,7 +127,7 @@ for d in week_days:
 
 plan = _load_plan()
 
-# ── Header ─────────────────────────────────────────────────────────────────────
+#  Header 
 st.markdown(
     f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 10px">'
     f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb">היסטוריה ותכנון</div>'
@@ -135,7 +135,7 @@ st.markdown(
     f'</div>', unsafe_allow_html=True,
 )
 
-# ── Mode toggle ────────────────────────────────────────────────────────────────
+#  Mode toggle 
 m1, m2 = st.columns(2)
 if m1.button("היסטוריה", type="primary" if mode=="history" else "secondary",
              use_container_width=True, key="btn_hist"):
@@ -146,7 +146,7 @@ if m2.button("תכנון שבועי", type="primary" if mode=="plan" else "secon
     st.session_state["mode"] = "plan"
     st.rerun()
 
-# ── Week navigation ────────────────────────────────────────────────────────────
+#  Week navigation 
 n1, n2, n3 = st.columns([1, 4, 1])
 with n1:
     if st.button("< קדימה", key="nav_prev", use_container_width=True):
@@ -169,7 +169,7 @@ with n2:
         unsafe_allow_html=True,
     )
 
-# ── Calendar grid (pure st.button — no <a href>, no new tabs) ─────────────────
+#  Calendar grid (pure st.button — no <a href>, no new tabs) 
 cal_cols = st.columns(7, gap="small")
 for i, col in enumerate(cal_cols):
     d   = week_days[i]
@@ -178,7 +178,7 @@ for i, col in enumerate(cal_cols):
     is_sel = (dk == sel_day)
     is_tod = (d == today)
 
-    today_mark = " ●" if is_tod else ""
+    today_mark = " " if is_tod else ""
 
     if mode == "history":
         heat = _heat(row["cal"])
@@ -201,7 +201,7 @@ for i, col in enumerate(cal_cols):
         st.session_state["sel_day"] = dk
         st.rerun()
 
-# ── Legend ─────────────────────────────────────────────────────────────────────
+#  Legend 
 if mode == "history":
     st.markdown(
         '<div dir="rtl" style="display:flex;gap:14px;justify-content:center;'
@@ -211,13 +211,13 @@ if mode == "history":
         '</div>', unsafe_allow_html=True,
     )
 
-# ── Day label ──────────────────────────────────────────────────────────────────
+#  Day label 
 day_label = "היום" if sel_date == today else \
             f'{HEB_WD.get(sel_date.weekday(),"")} {sel_date.strftime("%d/%m/%Y")}'
 
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 # HISTORY DETAIL
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 if mode == "history":
     st.markdown(
         f'<div dir="rtl" style="margin-bottom:10px;font-size:0.95rem;font-weight:800;'
@@ -302,9 +302,9 @@ if mode == "history":
     else:
         st.markdown('<div dir="rtl" style="color:#545e70;font-size:0.8rem;margin-bottom:8px">אין רישומי אימונים ליום זה</div>', unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 # PLANNER DETAIL
-# ══════════════════════════════════════════════════════════════════════════════
+# 
 else:
     st.markdown(
         f'<div dir="rtl" style="margin-bottom:10px;font-size:0.95rem;font-weight:800;'

@@ -212,7 +212,7 @@ def execute_tool(tool_name: str, arguments: dict) -> str:
         return json.dumps({"error": str(e)})
 
 
-# ── Tool implementations ─────────────────────────────────────────────────────
+#  Tool implementations 
 
 
 def _search_foods(args: dict) -> str:

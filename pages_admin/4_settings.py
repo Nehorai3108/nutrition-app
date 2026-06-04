@@ -13,34 +13,34 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import streamlit as st
 from ui.components import inject_global_css, page_header, section_header
 
-# ── Page config ───────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="הגדרות",
-    page_icon="⚙️",
+    page_icon="",
     layout="wide",
 )
 
-# ── Design system ─────────────────────────────────────────────────────────
+#  Design system 
 inject_global_css()
 
-# ── Page header ───────────────────────────────────────────────────────────
+#  Page header 
 page_header(
     "הגדרות יישום",
     icon_name="settings",
     subtitle="ניהול תצורה וביצועי המערכת",
 )
 
-# ── Constants ─────────────────────────────────────────────────────────────
+#  Constants 
 STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage_agents")
 CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "config.toml")
 SECRETS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "secrets.toml")
 
-# ── Tab navigation ────────────────────────────────────────────────────────
+#  Tab navigation 
 
-tab1, tab2, tab3, tab4 = st.tabs(["⚙️ הגדרות כלליות", "🔐 אבטחה", "💾 אחסון", "🔧 דיאגנוסטיקה"])
+tab1, tab2, tab3, tab4 = st.tabs([" הגדרות כלליות", " אבטחה", " אחסון", " דיאגנוסטיקה"])
 
-# ── Tab 1: General Settings ───────────────────────────────────────────────
+#  Tab 1: General Settings 
 
 with tab1:
     section_header("הגדרות כלליות", icon_name="sliders")
@@ -77,9 +77,9 @@ with tab1:
         value="1.0.0",
         help="גרסת היישום הנוכחית"
     )
-    st.caption("⚠️ שינוי גרסה עשוי להשפיע על תאימות נתונים")
+    st.caption(" שינוי גרסה עשוי להשפיע על תאימות נתונים")
 
-# ── Tab 2: Security ───────────────────────────────────────────────────────
+#  Tab 2: Security 
 
 with tab2:
     section_header("הגדרות אבטחה", icon_name="shield")
@@ -97,9 +97,9 @@ with tab2:
         if st.checkbox("הצג פרטי סיסמה (רק לאישור שהוגדרה)", key="show_security"):
             # Check if secrets file exists
             if os.path.exists(SECRETS_FILE):
-                st.success("✓ קובץ secrets קיים")
+                st.success(" קובץ secrets קיים")
             else:
-                st.warning("⚠️ קובץ secrets לא קיים")
+                st.warning(" קובץ secrets לא קיים")
 
     with col2:
         st.markdown("#### ניהול הרשאות")
@@ -116,7 +116,7 @@ with tab2:
     if security_enabled:
         st.success("בדיקות אבטחה מופעלות")
 
-# ── Tab 3: Storage ────────────────────────────────────────────────────────
+#  Tab 3: Storage 
 
 with tab3:
     section_header("ניהול אחסון", icon_name="database")
@@ -132,24 +132,24 @@ with tab3:
 
     for name, path in storage_locations.items():
         exists = os.path.exists(path)
-        status = "✓ קיים" if exists else "✗ לא קיים"
+        status = " קיים" if exists else " לא קיים"
         st.markdown(f"**{name}:** `{path}` {status}")
 
     st.divider()
 
     st.markdown("### ניקוי נתונים")
     st.warning("""
-    ⚠️ **זהירות!** פעולות אלו לא ניתן לבטל. הכן גיבוי לפני ביצוע.
+     **זהירות!** פעולות אלו לא ניתן לבטל. הכן גיבוי לפני ביצוע.
     """)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("🗑️ מחק דוחות ישנים", help="מחק דוחות שישנן ביותר מ-30 ימים"):
+        if st.button(" מחק דוחות ישנים", help="מחק דוחות שישנן ביותר מ-30 ימים"):
             st.info("תכונה זו לא מיושמת עדיין")
 
     with col2:
-        if st.button("🗑️ מחק לוגים", help="מחק קבצי לוג ישנים"):
+        if st.button(" מחק לוגים", help="מחק קבצי לוג ישנים"):
             st.info("תכונה זו לא מיושמת עדיין")
 
     st.divider()
@@ -170,7 +170,7 @@ with tab3:
     else:
         st.info("תיקיית אחסון לא קיימת")
 
-# ── Tab 4: Diagnostics ────────────────────────────────────────────────────
+#  Tab 4: Diagnostics 
 
 with tab4:
     section_header("דיאגנוסטיקה", icon_name="wrench")
@@ -194,7 +194,7 @@ with tab4:
 
     # Display results
     for check_name, passed in checks:
-        status = "✓" if passed else "✗"
+        status = "" if passed else ""
         color = "green" if passed else "red"
         st.markdown(f"{status} {check_name}")
 
@@ -227,12 +227,12 @@ with tab4:
     else:
         st.warning("תיקיית רישומים לא קיימת")
 
-# ── Footer ────────────────────────────────────────────────────────────────
+#  Footer 
 
 st.divider()
 st.markdown("""
 ### עזרה ותמיכה
-- 📧 דוגלות בעיות: כתוב דוח באפליקציה
-- 📚 תיעוד: קרא את CLAUDE.md להבנת הארכיטקטורה
-- 🔗 אתר: [בדוק את הפרוייקט]
+-  דוגלות בעיות: כתוב דוח באפליקציה
+-  תיעוד: קרא את CLAUDE.md להבנת הארכיטקטורה
+-  אתר: [בדוק את הפרוייקט]
 """)

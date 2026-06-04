@@ -19,12 +19,12 @@ from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 
-st.set_page_config(page_title="BiteFit · הזנה", page_icon="💬", layout="wide",
+st.set_page_config(page_title="BiteFit · הזנה", page_icon="", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
 with st.sidebar:
-    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px">👤 {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px"> {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -95,7 +95,7 @@ USER_ID       = require_auth()
 FOOD_LIST     = _build_food_list()
 
 if groq_client is None:
-    st.error("⚠️ מפתח Groq API חסר. בדוק את הגדרות ה-Secrets ב-Streamlit Cloud.")
+    st.error(" מפתח Groq API חסר. בדוק את הגדרות ה-Secrets ב-Streamlit Cloud.")
     st.stop()
 
 MEAL_HEB = {
@@ -291,7 +291,7 @@ Examples of NO-JSON inputs:
   "שאלה..." / "יש לי שאלה..." → answer the question, NO JSON"""
 
 
-# ── Food aliases: common Israeli names → searchable DB terms ──────────────────
+#  Food aliases: common Israeli names → searchable DB terms 
 FOOD_ALIASES = {
     "טוסט":          "לחם",
     "לחם לבן":       "לחם",
@@ -444,7 +444,7 @@ def _match_food(name: str, quantity: float, unit: str):
             food = results[0]
             break
 
-    # ── Ingredient found in catalog ──────────────────────────────────────
+    #  Ingredient found in catalog 
     if food:
         unit_g = UNIT_TO_GRAMS.get(unit)
         if unit_g:
@@ -471,7 +471,7 @@ def _match_food(name: str, quantity: float, unit: str):
             },
         }
 
-    # ── Fallback: search recipes (complex dishes) ────────────────────────
+    #  Fallback: search recipes (complex dishes) 
     for cand in candidates:
         recipe_results = recipe_mgr.search_recipes(
             RecipeFilter(search_text=cand.strip(), max_results=1)
@@ -563,7 +563,7 @@ def _build_profile_context(user_id: str) -> str:
         return ""
 
 
-## ── Hebrew → router key mappings ────────────────────────────────────────────
+##  Hebrew → router key mappings 
 _HE_CONDITION_MAP = {
     "דיסליפידמיה / כולסטרול גבוה": "dyslipidemia",
     "כולסטרול":     "dyslipidemia",
@@ -718,7 +718,7 @@ def _ask_groq(history: list, user_msg: str, pending: list = None):
     return raw, None
 
 
-# ── Session state ──────────────────────────────────────────────────────────────
+#  Session state 
 if "chat_messages"    not in st.session_state: st.session_state.chat_messages    = []
 if "groq_history"     not in st.session_state: st.session_state.groq_history     = []
 if "pending_entries"  not in st.session_state: st.session_state.pending_entries  = []
@@ -726,7 +726,7 @@ if "detected_meal"    not in st.session_state: st.session_state.detected_meal   
 if "_ai_processing"   not in st.session_state: st.session_state._ai_processing   = False
 if "_pending_user_msg" not in st.session_state: st.session_state._pending_user_msg = None
 
-# ── Get user first name ────────────────────────────────────────────────────────
+#  Get user first name 
 def _get_user_name() -> str:
     try:
         import json as _json
@@ -742,7 +742,7 @@ def _get_user_name() -> str:
 
 _USER_NAME = _get_user_name()
 
-# ── AI processing — runs BEFORE any render to avoid double-render ─────────────
+#  AI processing — runs BEFORE any render to avoid double-render 
 # Pattern: form submit → add user msg + "_thinking" msg → set flag → rerun
 #          next run  → this block fires, calls API, replaces thinking → rerun
 #          final run → clean render, no spinner, no duplicate
@@ -758,11 +758,11 @@ if st.session_state._ai_processing and st.session_state._pending_user_msg:
         import traceback as _tb
         st.session_state["_last_chat_error"] = _tb.format_exc()
         if "429" in str(_e) or "rate_limit" in str(_e).lower():
-            _reply_text = "⏳ יש עומס על השרת כרגע — נסה שוב בעוד כמה שניות"
+            _reply_text = "יש עומס על השרת כרגע — נסה שוב בעוד כמה שניות"
         elif "timeout" in str(_e).lower() or "connection" in str(_e).lower():
-            _reply_text = "🔌 בעיית חיבור — בדוק אינטרנט ונסה שוב"
+            _reply_text = " בעיית חיבור — בדוק אינטרנט ונסה שוב"
         else:
-            _reply_text = "⚠️ תקלה זמנית — נסה שוב"
+            _reply_text = " תקלה זמנית — נסה שוב"
         _food_data = None
 
     # Remove temporary "thinking" bubble
@@ -802,7 +802,7 @@ if st.session_state._ai_processing and st.session_state._pending_user_msg:
     st.session_state._pending_user_msg = None
     st.rerun()
 
-# ── Build all chat HTML as one block + scroll JS ───────────────────────────────
+#  Build all chat HTML as one block + scroll JS 
 def _render_chat():
     msgs = st.session_state.chat_messages
 
@@ -874,12 +874,12 @@ def _render_chat():
 
 _render_chat()
 
-# ── Input — immediately after chat, ABOVE the food card ───────────────────────
+#  Input — immediately after chat, ABOVE the food card 
 with st.form("chat_form", clear_on_submit=True):
     col_in, col_btn = st.columns([5, 1])
     user_text = col_in.text_input("כתוב כאן", placeholder="מה אכלת?",
                                    label_visibility="collapsed", key="chat_input")
-    submitted = col_btn.form_submit_button("שלח ➤", use_container_width=True, type="primary")
+    submitted = col_btn.form_submit_button("שלח ", use_container_width=True, type="primary")
 
 if submitted and user_text.strip():
     # Add user message immediately
@@ -891,7 +891,7 @@ if submitted and user_text.strip():
     st.session_state._ai_processing    = True
     st.rerun()
 
-# ── Pending confirmation card — BELOW input ───────────────────────────────────
+#  Pending confirmation card — BELOW input 
 if st.session_state.pending_entries:
     st.markdown(
         '<div dir="rtl" style="background:#0d1f0d;border:1px solid #1a4d1a;'
@@ -930,7 +930,7 @@ if st.session_state.pending_entries:
         entry["protein"]  = round(n["protein_g"]     * ratio, 1)
         entry["carbs"]    = round(n["carbs_g"]        * ratio, 1)
         entry["fat"]      = round(n["fat_g"]          * ratio, 1)
-        if c_del.button("✕", key=f"del_{i}"):
+        if c_del.button("", key=f"del_{i}"):
             any_removed = True
         else:
             confirmed.append(entry)
@@ -973,9 +973,9 @@ if st.session_state.pending_entries:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ── Debug info (only shown when there is an error) ───────────────────────────
+#  Debug info (only shown when there is an error) 
 if st.session_state.get("_last_chat_error"):
-    with st.expander("🔧 פרטי שגיאה אחרונה (למפתח)"):
+    with st.expander(" פרטי שגיאה אחרונה (למפתח)"):
         st.code(st.session_state["_last_chat_error"], language="python")
         if st.button("נקה שגיאה"):
             del st.session_state["_last_chat_error"]

@@ -20,7 +20,7 @@ from ui.components import (
 from ui.user_auth import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-st.set_page_config(page_title="BiteFit · אימונים", page_icon="🏋️", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="BiteFit · אימונים", page_icon="", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
 
@@ -55,45 +55,45 @@ INTENSITY_OPTIONS = {
 }
 TYPE_OPTIONS = {
     # Cardio
-    WorkoutType.RUNNING:        "🏃 ריצה",
-    WorkoutType.WALKING:        "🚶 הליכה",
-    WorkoutType.HIKING:         "🥾 טיול/הייקינג",
-    WorkoutType.CYCLING:        "🚴 אופניים",
-    WorkoutType.SWIMMING:       "🏊 שחייה",
-    WorkoutType.ROWING:         "🚣 חתירה",
-    WorkoutType.ELLIPTICAL:     "⚙️ אליפטיקל",
-    WorkoutType.STAIR_CLIMBING: "🪜 מדרגות",
-    WorkoutType.JUMPING_ROPE:   "🪢 קפיצה בחבל",
+    WorkoutType.RUNNING:        " ריצה",
+    WorkoutType.WALKING:        " הליכה",
+    WorkoutType.HIKING:         " טיול/הייקינג",
+    WorkoutType.CYCLING:        " אופניים",
+    WorkoutType.SWIMMING:       " שחייה",
+    WorkoutType.ROWING:         " חתירה",
+    WorkoutType.ELLIPTICAL:     " אליפטיקל",
+    WorkoutType.STAIR_CLIMBING: " מדרגות",
+    WorkoutType.JUMPING_ROPE:   " קפיצה בחבל",
     # Strength / studio
-    WorkoutType.STRENGTH:       "🏋️ משקולות",
-    WorkoutType.CROSSFIT:       "💪 קרוספיט",
-    WorkoutType.HIIT:           "🔥 HIIT",
-    WorkoutType.PILATES:        "🧘 פילאטיס",
-    WorkoutType.YOGA:           "🧘 יוגה",
-    WorkoutType.DANCE:          "💃 ריקוד",
+    WorkoutType.STRENGTH:       " משקולות",
+    WorkoutType.CROSSFIT:       " קרוספיט",
+    WorkoutType.HIIT:           " HIIT",
+    WorkoutType.PILATES:        " פילאטיס",
+    WorkoutType.YOGA:           " יוגה",
+    WorkoutType.DANCE:          " ריקוד",
     # Combat
-    WorkoutType.BOXING:         "🥊 איגרוף",
-    WorkoutType.KICKBOXING:     "🥋 קיקבוקסינג",
-    WorkoutType.MARTIAL_ARTS:   "🥋 אומנויות לחימה",
-    WorkoutType.WRESTLING:      "🤼 היאבקות",
+    WorkoutType.BOXING:         " איגרוף",
+    WorkoutType.KICKBOXING:     " קיקבוקסינג",
+    WorkoutType.MARTIAL_ARTS:   " אומנויות לחימה",
+    WorkoutType.WRESTLING:      " היאבקות",
     # Ball sports
-    WorkoutType.SOCCER:         "⚽ כדורגל",
-    WorkoutType.BASKETBALL:     "🏀 כדורסל",
-    WorkoutType.TENNIS:         "🎾 טניס",
-    WorkoutType.TABLE_TENNIS:   "🏓 טניס שולחן",
-    WorkoutType.BADMINTON:      "🏸 בדמינטון",
-    WorkoutType.VOLLEYBALL:     "🏐 כדורעף",
-    WorkoutType.BASEBALL:       "⚾ בייסבול",
-    WorkoutType.HANDBALL:       "🤾 כדוריד",
-    WorkoutType.RUGBY:          "🏉 רוגבי",
-    WorkoutType.HOCKEY:         "🏒 הוקי",
-    WorkoutType.GOLF:           "⛳ גולף",
+    WorkoutType.SOCCER:         " כדורגל",
+    WorkoutType.BASKETBALL:     " כדורסל",
+    WorkoutType.TENNIS:         " טניס",
+    WorkoutType.TABLE_TENNIS:   " טניס שולחן",
+    WorkoutType.BADMINTON:      " בדמינטון",
+    WorkoutType.VOLLEYBALL:     " כדורעף",
+    WorkoutType.BASEBALL:       " בייסבול",
+    WorkoutType.HANDBALL:       " כדוריד",
+    WorkoutType.RUGBY:          " רוגבי",
+    WorkoutType.HOCKEY:         " הוקי",
+    WorkoutType.GOLF:           " גולף",
     # Outdoor
-    WorkoutType.CLIMBING:       "🧗 טיפוס",
-    WorkoutType.SKIING:         "⛷️ סקי",
-    WorkoutType.SNOWBOARDING:   "🏂 סנובורד",
-    WorkoutType.SURFING:        "🏄 גלישה",
-    WorkoutType.SKATING:        "⛸️ החלקה",
+    WorkoutType.CLIMBING:       " טיפוס",
+    WorkoutType.SKIING:         " סקי",
+    WorkoutType.SNOWBOARDING:   " סנובורד",
+    WorkoutType.SURFING:        " גלישה",
+    WorkoutType.SKATING:        " החלקה",
     WorkoutType.OTHER:          "אחר",
 }
 DISTANCE_TYPES = {WorkoutType.RUNNING, WorkoutType.WALKING, WorkoutType.HIKING}
@@ -138,7 +138,7 @@ for day_key, day_label in WEEKDAYS_HE:
     else:
         st.caption("מנוחה (אין אימונים מתוכננים)")
 
-    with st.expander("➕ הוסף אימון", expanded=False):
+    with st.expander(" הוסף אימון", expanded=False):
         mode = st.radio(
             "סוג הזנה",
             options=["intensity", "type"],
@@ -243,4 +243,4 @@ with col_clear:
         st.rerun()
 
 st.divider()
-st.caption("ℹ️ ניתן להוסיף כמה אימונים שתרצה ליום — מתאים למי שמשלב אימון כוח ואירובי באותו יום. השריפה מכל האימונים מתווספת לקלוריות היום וחלוקת המאקרו מותאמת.")
+st.caption("ℹ ניתן להוסיף כמה אימונים שתרצה ליום — מתאים למי שמשלב אימון כוח ואירובי באותו יום. השריפה מכל האימונים מתווספת לקלוריות היום וחלוקת המאקרו מותאמת.")

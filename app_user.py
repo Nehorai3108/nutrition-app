@@ -42,30 +42,30 @@ from nutrition_app.repositories.food_log_repository import FoodLogRepository as 
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage", "nutrition.db")
 
-# ── Page config ──────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="BiteFit",
-    page_icon="🏠",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# ── Design system ────────────────────────────────────────────────────────────
+#  Design system 
 inject_global_css()
 
-# ── Auth ─────────────────────────────────────────────────────────────────────
+#  Auth 
 _USER_ID: str = require_auth()
 
-# ── Constants ────────────────────────────────────────────────────────────────
+#  Constants 
 
 MEAL_LABELS = {
-    "breakfast":       "🌅 ארוחת בוקר",
-    "morning_snack":   "☕ חטיף בוקר",
-    "lunch":           "🍽 ארוחת צהריים",
-    "afternoon_snack": "🍎 חטיף אחה\"צ",
-    "dinner":          "🌙 ארוחת ערב",
-    "evening_snack":   "🌜 חטיף ערב",
+    "breakfast":       " ארוחת בוקר",
+    "morning_snack":   " חטיף בוקר",
+    "lunch":           " ארוחת צהריים",
+    "afternoon_snack": " חטיף אחה\"צ",
+    "dinner":          " ארוחת ערב",
+    "evening_snack":   " חטיף ערב",
 }
 
 ACTIVITY_LABELS = {
@@ -110,7 +110,7 @@ _DEFAULT_FOOD_NAMES = [n for n in _PREFERRED_DEFAULTS if n in FOOD_NAME_TO_ID]
 if not _DEFAULT_FOOD_NAMES:
     _DEFAULT_FOOD_NAMES = [name for _, name in ALL_FOODS[:5]]
 
-# ── Sidebar — Slim Dashboard ──────────────────────────────────────────────────
+#  Sidebar — Slim Dashboard 
 from nutrition_app.repositories.profile_repository import ProfileRepository as _ProfileRepo
 from nutrition_app.user_manager import load_inventory as _load_inv
 
@@ -162,7 +162,7 @@ GOAL_LABEL_SHORT = {
 }
 
 with st.sidebar:
-    # ── Hebrew navigation ─────────────────────────────────────────────────
+    #  Hebrew navigation 
     st.page_link("app_user.py",                       label="ראשי",              use_container_width=True)
     st.page_link("pages/0_profile.py",                label="פרופיל",            use_container_width=True)
     st.page_link("pages/2_recipes.py",                label="מתכונים",           use_container_width=True)
@@ -174,21 +174,21 @@ with st.sidebar:
     st.page_link("pages/9_history.py",                label="היסטוריה",          use_container_width=True)
     st.divider()
 
-    # ── Profile card ──────────────────────────────────────────────────────
+    #  Profile card 
     st.markdown(f"### {name}")
-    st.caption(f"⚖️ {weight}ק״ג &nbsp;·&nbsp; 🎯 {GOAL_LABEL_SHORT.get(goal_choice, '')}")
+    st.caption(f" {weight}ק״ג &nbsp;·&nbsp;  {GOAL_LABEL_SHORT.get(goal_choice, '')}")
     _user_email_display = st.session_state.get("user_email") or (
         st.session_state.get("bitefit_user", {}) or {}
     ).get("email", "")
     _streamlit_email = getattr(st.experimental_user, "email", "") if hasattr(st, "experimental_user") else ""
     _display_email = _streamlit_email or _user_email_display
     if _display_email:
-        st.caption(f"👤 {_display_email}")
+        st.caption(f" {_display_email}")
     st.page_link("pages/0_profile.py", label="ערוך פרופיל", use_container_width=True)
 
     st.divider()
 
-    # ── Workout input for today ──────────────────────────────────────────
+    #  Workout input for today 
     WORKOUT_INTENSITY_LABELS = {
         WorkoutIntensity.LOW:      "נמוכה (הליכה קלה)",
         WorkoutIntensity.MODERATE: "בינונית (הליכה מהירה)",
@@ -197,51 +197,51 @@ with st.sidebar:
     }
     WORKOUT_TYPE_LABELS = {
         # Cardio
-        WorkoutType.RUNNING:        "🏃 ריצה",
-        WorkoutType.WALKING:        "🚶 הליכה",
-        WorkoutType.HIKING:         "🥾 טיול/הייקינג",
-        WorkoutType.CYCLING:        "🚴 אופניים",
-        WorkoutType.SWIMMING:       "🏊 שחייה",
-        WorkoutType.ROWING:         "🚣 חתירה",
-        WorkoutType.ELLIPTICAL:     "⚙️ אליפטיקל",
-        WorkoutType.STAIR_CLIMBING: "🪜 מדרגות",
-        WorkoutType.JUMPING_ROPE:   "🪢 קפיצה בחבל",
+        WorkoutType.RUNNING:        " ריצה",
+        WorkoutType.WALKING:        " הליכה",
+        WorkoutType.HIKING:         " טיול/הייקינג",
+        WorkoutType.CYCLING:        " אופניים",
+        WorkoutType.SWIMMING:       " שחייה",
+        WorkoutType.ROWING:         " חתירה",
+        WorkoutType.ELLIPTICAL:     " אליפטיקל",
+        WorkoutType.STAIR_CLIMBING: " מדרגות",
+        WorkoutType.JUMPING_ROPE:   " קפיצה בחבל",
         # Strength / studio
-        WorkoutType.STRENGTH:       "🏋️ משקולות",
-        WorkoutType.CROSSFIT:       "💪 קרוספיט",
-        WorkoutType.HIIT:           "🔥 HIIT",
-        WorkoutType.PILATES:        "🧘 פילאטיס",
-        WorkoutType.YOGA:           "🧘 יוגה",
-        WorkoutType.DANCE:          "💃 ריקוד",
+        WorkoutType.STRENGTH:       " משקולות",
+        WorkoutType.CROSSFIT:       " קרוספיט",
+        WorkoutType.HIIT:           " HIIT",
+        WorkoutType.PILATES:        " פילאטיס",
+        WorkoutType.YOGA:           " יוגה",
+        WorkoutType.DANCE:          " ריקוד",
         # Combat
-        WorkoutType.BOXING:         "🥊 איגרוף",
-        WorkoutType.KICKBOXING:     "🥋 קיקבוקסינג",
-        WorkoutType.MARTIAL_ARTS:   "🥋 אומנויות לחימה",
-        WorkoutType.WRESTLING:      "🤼 היאבקות",
+        WorkoutType.BOXING:         " איגרוף",
+        WorkoutType.KICKBOXING:     " קיקבוקסינג",
+        WorkoutType.MARTIAL_ARTS:   " אומנויות לחימה",
+        WorkoutType.WRESTLING:      " היאבקות",
         # Ball sports
-        WorkoutType.SOCCER:         "⚽ כדורגל",
-        WorkoutType.BASKETBALL:     "🏀 כדורסל",
-        WorkoutType.TENNIS:         "🎾 טניס",
-        WorkoutType.TABLE_TENNIS:   "🏓 טניס שולחן",
-        WorkoutType.BADMINTON:      "🏸 בדמינטון",
-        WorkoutType.VOLLEYBALL:     "🏐 כדורעף",
-        WorkoutType.BASEBALL:       "⚾ בייסבול",
-        WorkoutType.HANDBALL:       "🤾 כדוריד",
-        WorkoutType.RUGBY:          "🏉 רוגבי",
-        WorkoutType.HOCKEY:         "🏒 הוקי",
-        WorkoutType.GOLF:           "⛳ גולף",
+        WorkoutType.SOCCER:         " כדורגל",
+        WorkoutType.BASKETBALL:     " כדורסל",
+        WorkoutType.TENNIS:         " טניס",
+        WorkoutType.TABLE_TENNIS:   " טניס שולחן",
+        WorkoutType.BADMINTON:      " בדמינטון",
+        WorkoutType.VOLLEYBALL:     " כדורעף",
+        WorkoutType.BASEBALL:       " בייסבול",
+        WorkoutType.HANDBALL:       " כדוריד",
+        WorkoutType.RUGBY:          " רוגבי",
+        WorkoutType.HOCKEY:         " הוקי",
+        WorkoutType.GOLF:           " גולף",
         # Outdoor
-        WorkoutType.CLIMBING:       "🧗 טיפוס",
-        WorkoutType.SKIING:         "⛷️ סקי",
-        WorkoutType.SNOWBOARDING:   "🏂 סנובורד",
-        WorkoutType.SURFING:        "🏄 גלישה",
-        WorkoutType.SKATING:        "⛸️ החלקה",
-        WorkoutType.OTHER:          "🏋️ אחר",
+        WorkoutType.CLIMBING:       " טיפוס",
+        WorkoutType.SKIING:         " סקי",
+        WorkoutType.SNOWBOARDING:   " סנובורד",
+        WorkoutType.SURFING:        " גלישה",
+        WorkoutType.SKATING:        " החלקה",
+        WorkoutType.OTHER:          " אחר",
     }
 
     DISTANCE_TYPES = {WorkoutType.RUNNING, WorkoutType.WALKING, WorkoutType.HIKING}
 
-    with st.expander("🏋️ אימוני היום", expanded=False):
+    with st.expander(" אימוני היום", expanded=False):
         _workout_repo = WorkoutRepository()
         _today = date.today()
         _raw_data = _workout_repo.get_workout_data(_USER_ID)
@@ -250,10 +250,10 @@ with st.sidebar:
             _today.strftime("%A").lower(), []
         ) if _raw_data.weekly_plan else []
 
-        # ── CONFIRMED workouts (already in daily log) ─────────────────────────
+        #  CONFIRMED workouts (already in daily log) 
         if _has_daily_override:
             _confirmed = _raw_data.daily_log[_today.isoformat()]
-            st.success(f"✅ {len(_confirmed)} אימון(ים) אושר(ו) להיום")
+            st.success(f" {len(_confirmed)} אימון(ים) אושר(ו) להיום")
             for i, w in enumerate(_confirmed):
                 if w.mode == "intensity" and w.intensity:
                     _desc = f"עצימות {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
@@ -266,7 +266,7 @@ with st.sidebar:
                 _metric = f"{w.distance_km} ק\"מ" if w.distance_km else f"{w.duration_minutes} דק׳"
                 col_w, col_del = st.columns([4, 1])
                 _w_kcal = w.estimated_calories_burned if w.estimated_calories_burned > 0 else estimate_calories_burned(w, weight)
-                col_w.markdown(f"✔ **{_desc}** · {_metric} · {_w_kcal:.0f} קק״ל")
+                col_w.markdown(f" **{_desc}** · {_metric} · {_w_kcal:.0f} קק״ל")
                 with col_del:
                     if icon_button("מחק", "delete", key=f"del_w_{i}",
                                    help="הסר אימון מהיום", type="secondary"):
@@ -277,9 +277,9 @@ with st.sidebar:
                 st.rerun()
             st.divider()
 
-        # ── PENDING confirmation (weekly plan, not yet confirmed) ─────────────
+        #  PENDING confirmation (weekly plan, not yet confirmed) 
         elif _plan_workouts:
-            st.warning(f"⏳ {len(_plan_workouts)} אימון(ים) מהתכנית השבועית — האם בוצעו?")
+            st.warning(f"{len(_plan_workouts)} אימון(ים) מהתכנית השבועית — האם בוצעו?")
             for i, w in enumerate(_plan_workouts):
                 if w.mode == "intensity" and w.intensity:
                     _desc = f"עצימות {WORKOUT_INTENSITY_LABELS.get(w.intensity, w.intensity.value)}"
@@ -298,27 +298,27 @@ with st.sidebar:
 
                 if not _is_editing:
                     c1, c2, c3 = st.columns(3)
-                    # ✅ Confirm as-is
-                    if c1.button("✅ בוצע", key=f"confirm_w_{i}", use_container_width=True):
+                    #  Confirm as-is
+                    if c1.button(" בוצע", key=f"confirm_w_{i}", use_container_width=True):
                         w.estimated_calories_burned = estimate_calories_burned(w, weight)
                         _workout_repo.add_daily_workout(_USER_ID, _today, w)
-                        st.success(f"✅ {_desc} אושר!")
+                        st.success(f" {_desc} אושר!")
                         st.rerun()
-                    # ✏️ Edit before confirming
-                    if c2.button("✏️ שנה", key=f"edit_w_{i}", use_container_width=True):
+                    #  Edit before confirming
+                    if c2.button(" שנה", key=f"edit_w_{i}", use_container_width=True):
                         st.session_state[_editing_key] = True
                         st.rerun()
-                    # ❌ Skip
-                    if c3.button("❌ דלג", key=f"skip_w_{i}", use_container_width=True):
+                    #  Skip
+                    if c3.button(" דלג", key=f"skip_w_{i}", use_container_width=True):
                         # Confirm an empty-ish entry won't work; just mark day so plan is bypassed
                         skipped = st.session_state.get("skipped_workouts_today", set())
                         skipped.add(i)
                         st.session_state["skipped_workouts_today"] = skipped
-                        st.info(f"↩️ {_desc} דולג")
+                        st.info(f"↩ {_desc} דולג")
                         st.rerun()
                 else:
-                    # ── Inline edit form ──────────────────────────────────────
-                    st.markdown("##### ✏️ ערוך אימון")
+                    #  Inline edit form 
+                    st.markdown("#####  ערוך אימון")
                     _e_type = st.selectbox(
                         "סוג אימון",
                         options=list(WORKOUT_TYPE_LABELS.keys()),
@@ -346,7 +346,7 @@ with st.sidebar:
                         key=f"edit_int_{i}",
                     )
                     ce1, ce2 = st.columns(2)
-                    if ce1.button("✅ אשר שינוי", key=f"confirm_edit_{i}", use_container_width=True):
+                    if ce1.button(" אשר שינוי", key=f"confirm_edit_{i}", use_container_width=True):
                         _new_w = WorkoutEntry(
                             duration_minutes=int(_e_dur),
                             mode="type",
@@ -357,7 +357,7 @@ with st.sidebar:
                         _new_w.estimated_calories_burned = estimate_calories_burned(_new_w, weight)
                         _workout_repo.add_daily_workout(_USER_ID, _today, _new_w)
                         st.session_state[_editing_key] = False
-                        st.success("✅ אימון מעודכן נשמר!")
+                        st.success(" אימון מעודכן נשמר!")
                         st.rerun()
                     if ce2.button("ביטול", key=f"cancel_edit_{i}", use_container_width=True):
                         st.session_state[_editing_key] = False
@@ -367,8 +367,8 @@ with st.sidebar:
         else:
             st.caption("אין אימונים מתוכננים להיום ואין תכנית שבועית ליום זה.")
 
-        # ── Manual add ────────────────────────────────────────────────────────
-        st.markdown("**➕ הוסף אימון ידנית**")
+        #  Manual add 
+        st.markdown("** הוסף אימון ידנית**")
         workout_mode_choice = st.radio(
             "איך להזין?",
             options=["intensity", "type"],
@@ -441,13 +441,13 @@ with st.sidebar:
 
         st.page_link(
             "pages/7_weekly_workout_plan.py",
-            label="📅 ערוך תכנית אימונים שבועית",
+            label=" ערוך תכנית אימונים שבועית",
             use_container_width=True,
         )
 
     st.divider()
 
-    # ── Water Tracking ───────────────────────────────────────────────────────
+    #  Water Tracking 
     _WATER_USER_ID = _USER_ID
     water_repo = _WaterRepo()
     water_data = water_repo.get_water_data(_WATER_USER_ID)
@@ -455,7 +455,7 @@ with st.sidebar:
     daily_total = sum(w.amount_ml for w in today_water)
     goal_ml = water_data.goal.daily_goal_ml if water_data.goal else 2000
 
-    with st.expander("💧 מים - היום", expanded=False):
+    with st.expander(" מים - היום", expanded=False):
         # Display current progress
         col_metric, col_pct = st.columns([2, 1])
         with col_metric:
@@ -514,7 +514,7 @@ with st.sidebar:
             st.markdown("**צריכות היום:**")
             for intake in today_water[-3:]:  # Last 3 intakes
                 time_str = intake.timestamp[11:16]  # HH:MM
-                st.caption(f"🕐 {time_str} — {intake.amount_ml:.0f}ml ({intake.source})")
+                st.caption(f" {time_str} — {intake.amount_ml:.0f}ml ({intake.source})")
 
         # Water goal setting
         st.divider()
@@ -534,27 +534,27 @@ with st.sidebar:
 
     st.divider()
 
-    # ── Quick links ───────────────────────────────────────────────────────
+    #  Quick links 
     _inv_count = len([i for i in _stored_inv if i.get("quantity_g", 0) > 0])
     _scanned_count = len(_scanned_inv)
-    _inv_label = f"📦 מלאי ({_inv_count} פריטים{f' + {_scanned_count} סרוקים' if _scanned_count else ''})"
+    _inv_label = f" מלאי ({_inv_count} פריטים{f' + {_scanned_count} סרוקים' if _scanned_count else ''})"
     st.page_link("pages/4_inventory.py", label=_inv_label, use_container_width=True)
-    st.page_link("pages/2_receipt_scanner.py", label="🧾 סרוק קבלה", use_container_width=True)
+    st.page_link("pages/2_receipt_scanner.py", label=" סרוק קבלה", use_container_width=True)
 
     st.divider()
     run_btn = icon_button("הפק תפריט יומי", "play",
                           key="run_pipeline_btn", type="primary")
 
-# ── Main Area ─────────────────────────────────────────────────────────────────
+#  Main Area 
 
 if not run_btn and "last_plan" not in st.session_state:
-    # ── Activity Rings dashboard (Apple Watch style) ───────────────────────────
+    #  Activity Rings dashboard (Apple Watch style) 
     import math as _math
 
     _DASH_USER = _USER_ID
     today = date.today()
 
-    # ── Load data ─────────────────────────────────────────────────────────────
+    #  Load data 
     _summary_repo = DailySummaryRepository()
     _water_repo_db = _WaterRepo()
     _workout_repo_db = _WorkoutRepo()
@@ -590,128 +590,128 @@ if not run_btn and "last_plan" not in st.session_state:
     carbs_t = int(_targets.carbs_g)
     fat_t   = int(_targets.fat_g)
 
-    # ── Meal / color / icon maps ──────────────────────────────────────────────
+    #  Meal / color / icon maps 
     MEAL_HEB = {"breakfast":"ארוחת בוקר","morning_snack":"חטיף בוקר",
                 "lunch":"ארוחת צהריים","afternoon_snack":"חטיף אחה״צ",
                 "dinner":"ארוחת ערב","evening_snack":"חטיף ערב"}
     MEAL_COLOR = {"breakfast":"#f59e0b","morning_snack":"#a78bfa",
                   "lunch":"#4f8ef7","afternoon_snack":"#34d399",
                   "dinner":"#f87171","evening_snack":"#818cf8"}
-    MEAL_ICON  = {"breakfast":"🌅","morning_snack":"☕",
-                  "lunch":"🍽","afternoon_snack":"🍎",
-                  "dinner":"🌙","evening_snack":"🌜"}
+    MEAL_ICON  = {"breakfast":"","morning_snack":"",
+                  "lunch":"","afternoon_snack":"",
+                  "dinner":"","evening_snack":""}
 
-    # ── Food category tiles: emoji + gradient ────────────────────────────────
+    #  Food category tiles: emoji + gradient 
     # (emoji, color_start, color_end)  — no external images, 100% reliable
     _C = {
         # proteins
-        "עוף":    ("🍗", "#e55a00", "#ff8c42"),
-        "בשר":    ("🥩", "#b91c1c", "#ef4444"),
-        "דג":     ("🐟", "#0369a1", "#38bdf8"),
-        "סלמון":  ("🐟", "#0e7490", "#22d3ee"),
-        "טונה":   ("🐟", "#1e40af", "#60a5fa"),
-        "ביצה":   ("🥚", "#b45309", "#fbbf24"),
-        "שניצל":  ("🍗", "#c2410c", "#fb923c"),
-        "קציצ":   ("🥩", "#9f1239", "#f43f5e"),
-        "המבורגר":("🍔", "#92400e", "#d97706"),
-        "סטייק":  ("🥩", "#7f1d1d", "#dc2626"),
-        "שרימפס": ("🦐", "#9a3412", "#f97316"),
-        "הודו":   ("🦃", "#854d0e", "#ca8a04"),
+        "עוף":    ("", "#e55a00", "#ff8c42"),
+        "בשר":    ("", "#b91c1c", "#ef4444"),
+        "דג":     ("", "#0369a1", "#38bdf8"),
+        "סלמון":  ("", "#0e7490", "#22d3ee"),
+        "טונה":   ("", "#1e40af", "#60a5fa"),
+        "ביצה":   ("", "#b45309", "#fbbf24"),
+        "שניצל":  ("", "#c2410c", "#fb923c"),
+        "קציצ":   ("", "#9f1239", "#f43f5e"),
+        "המבורגר":("", "#92400e", "#d97706"),
+        "סטייק":  ("", "#7f1d1d", "#dc2626"),
+        "שרימפס": ("", "#9a3412", "#f97316"),
+        "הודו":   ("", "#854d0e", "#ca8a04"),
         # dairy
-        "יוגורט": ("🥣", "#6d28d9", "#a78bfa"),
-        "קוטג":   ("🧀", "#7c3aed", "#c4b5fd"),
-        "גבינ":   ("🧀", "#6d28d9", "#a78bfa"),
-        "חלב":    ("🥛", "#1e3a5f", "#3b82f6"),
-        "חמאה":   ("🧈", "#92400e", "#f59e0b"),
-        "שמנת":   ("🥛", "#312e81", "#818cf8"),
+        "יוגורט": ("", "#6d28d9", "#a78bfa"),
+        "קוטג":   ("", "#7c3aed", "#c4b5fd"),
+        "גבינ":   ("", "#6d28d9", "#a78bfa"),
+        "חלב":    ("", "#1e3a5f", "#3b82f6"),
+        "חמאה":   ("", "#92400e", "#f59e0b"),
+        "שמנת":   ("", "#312e81", "#818cf8"),
         # grains
-        "אורז":   ("🍚", "#78350f", "#d97706"),
-        "פסטה":   ("🍝", "#b45309", "#f59e0b"),
-        "לחם":    ("🍞", "#92400e", "#d97706"),
-        "פיתה":   ("🫓", "#a16207", "#eab308"),
-        "שיבולת": ("🥣", "#065f46", "#34d399"),
-        "גרנולה": ("🥣", "#065f46", "#10b981"),
-        "קינואה": ("🌾", "#4d7c0f", "#84cc16"),
-        "קוסקוס": ("🍚", "#a16207", "#fbbf24"),
-        "בורגול": ("🌾", "#78350f", "#d97706"),
-        "פנקייק": ("🥞", "#b45309", "#f59e0b"),
-        "וופל":   ("🧇", "#92400e", "#d97706"),
+        "אורז":   ("", "#78350f", "#d97706"),
+        "פסטה":   ("", "#b45309", "#f59e0b"),
+        "לחם":    ("", "#92400e", "#d97706"),
+        "פיתה":   ("", "#a16207", "#eab308"),
+        "שיבולת": ("", "#065f46", "#34d399"),
+        "גרנולה": ("", "#065f46", "#10b981"),
+        "קינואה": ("", "#4d7c0f", "#84cc16"),
+        "קוסקוס": ("", "#a16207", "#fbbf24"),
+        "בורגול": ("", "#78350f", "#d97706"),
+        "פנקייק": ("", "#b45309", "#f59e0b"),
+        "וופל":   ("", "#92400e", "#d97706"),
         # vegetables
-        "ברוקולי":("🥦", "#166534", "#22c55e"),
-        "גזר":    ("🥕", "#c2410c", "#f97316"),
-        "עגבני":  ("🍅", "#b91c1c", "#ef4444"),
-        "מלפפון": ("🥒", "#15803d", "#4ade80"),
-        "תרד":    ("🥬", "#14532d", "#16a34a"),
-        "כרובית": ("🥦", "#166534", "#4ade80"),
-        "בטטה":   ("🍠", "#c2410c", "#f97316"),
-        "תפוח אדמה":("🥔","#92400e","#d97706"),
-        "אבוקדו": ("🥑", "#15803d", "#86efac"),
-        "חצילים": ("🍆", "#7e22ce", "#c084fc"),
-        "פלפל":   ("🫑", "#15803d", "#4ade80"),
-        "זוקיני": ("🥒", "#166534", "#22c55e"),
-        "בצל":    ("🧅", "#92400e", "#fbbf24"),
-        "שום":    ("🧄", "#7c3aed", "#c4b5fd"),
-        "תירס":   ("🌽", "#ca8a04", "#fde047"),
+        "ברוקולי":("", "#166534", "#22c55e"),
+        "גזר":    ("", "#c2410c", "#f97316"),
+        "עגבני":  ("", "#b91c1c", "#ef4444"),
+        "מלפפון": ("", "#15803d", "#4ade80"),
+        "תרד":    ("", "#14532d", "#16a34a"),
+        "כרובית": ("", "#166534", "#4ade80"),
+        "בטטה":   ("", "#c2410c", "#f97316"),
+        "תפוח אדמה":("","#92400e","#d97706"),
+        "אבוקדו": ("", "#15803d", "#86efac"),
+        "חצילים": ("", "#7e22ce", "#c084fc"),
+        "פלפל":   ("", "#15803d", "#4ade80"),
+        "זוקיני": ("", "#166534", "#22c55e"),
+        "בצל":    ("", "#92400e", "#fbbf24"),
+        "שום":    ("", "#7c3aed", "#c4b5fd"),
+        "תירס":   ("", "#ca8a04", "#fde047"),
         "אפונה":  ("🟢", "#166534", "#22c55e"),
         # fruits
-        "בננה":   ("🍌", "#ca8a04", "#fde047"),
-        "תפוח":   ("🍎", "#b91c1c", "#f87171"),
-        "תפוז":   ("🍊", "#c2410c", "#fb923c"),
-        "ענבים":  ("🍇", "#6d28d9", "#a78bfa"),
-        "תות":    ("🍓", "#9f1239", "#fb7185"),
-        "אבטיח":  ("🍉", "#15803d", "#4ade80"),
-        "מנגו":   ("🥭", "#b45309", "#fbbf24"),
-        "אוכמניות":("🫐","#3730a3","#818cf8"),
-        "פטל":    ("🍓", "#be185d", "#f472b6"),
+        "בננה":   ("", "#ca8a04", "#fde047"),
+        "תפוח":   ("", "#b91c1c", "#f87171"),
+        "תפוז":   ("", "#c2410c", "#fb923c"),
+        "ענבים":  ("", "#6d28d9", "#a78bfa"),
+        "תות":    ("", "#9f1239", "#fb7185"),
+        "אבטיח":  ("", "#15803d", "#4ade80"),
+        "מנגו":   ("", "#b45309", "#fbbf24"),
+        "אוכמניות":("","#3730a3","#818cf8"),
+        "פטל":    ("", "#be185d", "#f472b6"),
         "תמר":    ("🟤", "#78350f", "#b45309"),
-        "אננס":   ("🍍", "#a16207", "#fde047"),
-        "קיווי":  ("🥝", "#166534", "#86efac"),
+        "אננס":   ("", "#a16207", "#fde047"),
+        "קיווי":  ("", "#166534", "#86efac"),
         # legumes
-        "עדשים":  ("🫘", "#78350f", "#b45309"),
-        "שעועית": ("🫘", "#166534", "#22c55e"),
-        "חומוס":  ("🫘", "#a16207", "#fbbf24"),
-        "פול":    ("🫘", "#166534", "#4ade80"),
-        "טופו":   ("⬜", "#1e3a5f", "#64748b"),
+        "עדשים":  ("", "#78350f", "#b45309"),
+        "שעועית": ("", "#166534", "#22c55e"),
+        "חומוס":  ("", "#a16207", "#fbbf24"),
+        "פול":    ("", "#166534", "#4ade80"),
+        "טופו":   ("", "#1e3a5f", "#64748b"),
         # nuts & fats
-        "אגוזי מלך":("🌰","#78350f","#b45309"),
-        "שקדים":  ("🌰", "#92400e", "#d97706"),
+        "אגוזי מלך":("","#78350f","#b45309"),
+        "שקדים":  ("", "#92400e", "#d97706"),
         "פיסטוק": ("🟢", "#166534", "#22c55e"),
-        "בוטנים": ("🥜", "#78350f", "#d97706"),
-        "קשיו":   ("🌰", "#a16207", "#fbbf24"),
-        "אגוזים": ("🌰", "#78350f", "#b45309"),
-        "אגוז":   ("🌰", "#78350f", "#b45309"),
-        "פקאן":   ("🌰", "#78350f", "#b45309"),
-        "שמן זית":("🫒", "#4d7c0f", "#84cc16"),
-        "טחינה":  ("🫙", "#92400e", "#d97706"),
-        "חמאת בוטנים":("🥜","#78350f","#d97706"),
+        "בוטנים": ("", "#78350f", "#d97706"),
+        "קשיו":   ("", "#a16207", "#fbbf24"),
+        "אגוזים": ("", "#78350f", "#b45309"),
+        "אגוז":   ("", "#78350f", "#b45309"),
+        "פקאן":   ("", "#78350f", "#b45309"),
+        "שמן זית":("", "#4d7c0f", "#84cc16"),
+        "טחינה":  ("", "#92400e", "#d97706"),
+        "חמאת בוטנים":("","#78350f","#d97706"),
         # drinks & smoothies
-        "שייק":   ("🥤", "#7c3aed", "#c084fc"),
-        "סמוזי":  ("🥤", "#7c3aed", "#c084fc"),
-        "מיץ":    ("🍹", "#c2410c", "#fb923c"),
-        "קפה":    ("☕", "#1c1917", "#57534e"),
-        "תה":     ("🍵", "#166534", "#22c55e"),
-        "מים":    ("💧", "#0369a1", "#38bdf8"),
+        "שייק":   ("", "#7c3aed", "#c084fc"),
+        "סמוזי":  ("", "#7c3aed", "#c084fc"),
+        "מיץ":    ("", "#c2410c", "#fb923c"),
+        "קפה":    ("", "#1c1917", "#57534e"),
+        "תה":     ("", "#166534", "#22c55e"),
+        "מים":    ("", "#0369a1", "#38bdf8"),
         # dishes
-        "שקשוקה": ("🍳", "#b45309", "#fbbf24"),
-        "סלט":    ("🥗", "#166534", "#22c55e"),
-        "מרק":    ("🍲", "#92400e", "#d97706"),
-        "חומוס ממרח":("🫘","#a16207","#fbbf24"),
-        "פלאפל":  ("🧆", "#a16207", "#fbbf24"),
-        "פיצה":   ("🍕", "#b91c1c", "#f87171"),
-        "בורגר":  ("🍔", "#92400e", "#d97706"),
-        "פסטה":   ("🍝", "#b45309", "#f59e0b"),
-        "לביבות": ("🥞", "#b45309", "#f59e0b"),
-        "כופתאות":("🥟", "#1e3a5f", "#60a5fa"),
-        "סולת":   ("🥣", "#78350f", "#d97706"),
+        "שקשוקה": ("", "#b45309", "#fbbf24"),
+        "סלט":    ("", "#166534", "#22c55e"),
+        "מרק":    ("", "#92400e", "#d97706"),
+        "חומוס ממרח":("","#a16207","#fbbf24"),
+        "פלאפל":  ("", "#a16207", "#fbbf24"),
+        "פיצה":   ("", "#b91c1c", "#f87171"),
+        "בורגר":  ("", "#92400e", "#d97706"),
+        "פסטה":   ("", "#b45309", "#f59e0b"),
+        "לביבות": ("", "#b45309", "#f59e0b"),
+        "כופתאות":("", "#1e3a5f", "#60a5fa"),
+        "סולת":   ("", "#78350f", "#d97706"),
         # protein supplements
-        "אבקת חלבון":("💪","#7c3aed","#a78bfa"),
-        "חלבון":  ("💪", "#7c3aed", "#a78bfa"),
+        "אבקת חלבון":("","#7c3aed","#a78bfa"),
+        "חלבון":  ("", "#7c3aed", "#a78bfa"),
         # sweets
-        "שוקולד": ("🍫", "#1c1917", "#78350f"),
-        "דבש":    ("🍯", "#a16207", "#fde047"),
-        "ריבה":   ("🍓", "#9f1239", "#f43f5e"),
-        "עוגה":   ("🎂", "#be185d", "#f472b6"),
-        "עוגיה":  ("🍪", "#92400e", "#d97706"),
+        "שוקולד": ("", "#1c1917", "#78350f"),
+        "דבש":    ("", "#a16207", "#fde047"),
+        "ריבה":   ("", "#9f1239", "#f43f5e"),
+        "עוגה":   ("", "#be185d", "#f472b6"),
+        "עוגיה":  ("", "#92400e", "#d97706"),
     }
 
     # Priority order: these keys are checked FIRST (more specific terms)
@@ -724,7 +724,7 @@ if not run_btn and "last_plan" not in st.session_state:
         "קציצות","קציצה","הודו","טורקי","שרימפס","ביצה","ביצים","דג",
         "עוף", "בשר",
     ]
-    _DEFAULT_TILE = ("🍽", "#1e293b", "#334155")
+    _DEFAULT_TILE = ("", "#1e293b", "#334155")
 
     def _get_tile(food_name: str) -> tuple:
         """Return (emoji, color1, color2) for the food name."""
@@ -744,7 +744,7 @@ if not run_btn and "last_plan" not in st.session_state:
     _food_log_v = _food_log
     _is_today   = True   # always show today
 
-    # ── Top bar (Cal AI style) ────────────────────────────────────────────────
+    #  Top bar (Cal AI style) 
     _HEB_MONTHS2   = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני",
                       "יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
     _HEB_DAYS2     = {0:"שני",1:"שלישי",2:"רביעי",3:"חמישי",4:"שישי",5:"שבת",6:"ראשון"}
@@ -762,7 +762,7 @@ if not run_btn and "last_plan" not in st.session_state:
         unsafe_allow_html=True,
     )
 
-    # ── Main calorie card (big number + single ring) ──────────────────────────
+    #  Main calorie card (big number + single ring) 
     _cal_diff  = cal_t - int(cal_eaten)
     _cal_over  = _cal_diff < 0
     _cal_rem   = abs(_cal_diff)
@@ -811,7 +811,7 @@ if not run_btn and "last_plan" not in st.session_state:
         unsafe_allow_html=True,
     )
 
-    # ── Macro row (3 separate mini-ring cards) ────────────────────────────────
+    #  Macro row (3 separate mini-ring cards) 
     def _macro_card(val, target, color, label):
         pct  = min(val / max(target, 1), 1.0)
         over = val > target
@@ -848,7 +848,7 @@ if not run_btn and "last_plan" not in st.session_state:
         unsafe_allow_html=True,
     )
 
-    # ── "Recently uploaded" food feed ─────────────────────────────────────────
+    #  "Recently uploaded" food feed 
     _log_hdr_c1, _log_hdr_c2 = st.columns([3, 1])
     _log_hdr_c1.markdown(
         '<div style="font-size:.95rem;font-weight:800;color:#f4f6fb;margin-bottom:10px">'
@@ -856,7 +856,7 @@ if not run_btn and "last_plan" not in st.session_state:
         unsafe_allow_html=True,
     )
     with _log_hdr_c2:
-        if st.button("🗑", key="clear_food_log_btn2", use_container_width=True):
+        if st.button("", key="clear_food_log_btn2", use_container_width=True):
             st.session_state["_confirm_clear_log"] = True
 
     if st.session_state.get("_confirm_clear_log"):
@@ -873,22 +873,20 @@ if not run_btn and "last_plan" not in st.session_state:
     if _food_log_v:
         for _fe in reversed(_food_log_v):
             _fe_color = MEAL_COLOR.get(_fe.meal_type, "#545e70")
-            _fe_icon  = MEAL_ICON.get(_fe.meal_type, "🍽")
+            _fe_icon  = MEAL_ICON.get(_fe.meal_type, "")
             _fe_time  = datetime.fromisoformat(_fe.timestamp).strftime("%H:%M") if _fe.timestamp else ""
             _fe_macros = (
                 f'{int(_fe.protein)}g חל׳&nbsp;·&nbsp;'
                 f'{int(_fe.carbs)}g פח׳&nbsp;·&nbsp;'
                 f'{int(_fe.fat)}g שומן'
             )
-            # ── Food tile: emoji on gradient background ───────────────────
-            _tile_emoji, _tile_c1, _tile_c2 = _get_tile(_fe.food_name)
+            _fe_food_obj_icon = _catalog.get_food_by_id(_fe.food_id) if not _fe.food_id.startswith("recipe_") else None
+            _img_name_fe = (_fe_food_obj_icon.name_en if _fe_food_obj_icon else _fe.food_name).replace(" ", "%20")
+            _img_url_fe = f"https://www.themealdb.com/images/ingredients/{_img_name_fe}-Small.png"
             _icon_html = (
-                f'<div style="width:50px;height:50px;border-radius:14px;flex-shrink:0;'
-                f'background:linear-gradient(135deg,{_tile_c1},{_tile_c2});'
-                f'display:flex;align-items:center;justify-content:center;font-size:1.5rem;'
-                f'box-shadow:0 2px 8px {_tile_c1}55">'
-                f'{_tile_emoji}'
-                f'</div>'
+                f'<img src="{_img_url_fe}" '
+                f'style="width:50px;height:50px;object-fit:cover;border-radius:14px;flex-shrink:0;" '
+                f'onerror="this.style.display=\'none\'" />'
             )
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border-radius:18px;'
@@ -967,7 +965,7 @@ if not run_btn and "last_plan" not in st.session_state:
     bottom_nav("home")
     st.stop()
 
-# ── Run Pipeline ──────────────────────────────────────────────────────────────
+#  Run Pipeline 
 
 if run_btn:
     if not selected_food_names:
@@ -1049,7 +1047,7 @@ if run_btn:
             "todays_workouts": todays_workouts,
         }
 
-        # ── Persist daily summary for dashboard/history ──────────────────────
+        #  Persist daily summary for dashboard/history 
         _water_today = _WaterRepo().get_daily_total(user.user_id, date.today())
         _burned = sum(w.estimated_calories_burned for w in todays_workouts)
         DailySummaryRepository().save(DailySummary(
@@ -1067,7 +1065,7 @@ if run_btn:
             water_ml=_water_today,
         ))
 
-# ── Display Results ───────────────────────────────────────────────────────────
+#  Display Results 
 
 if "last_plan" not in st.session_state:
     st.stop()
@@ -1100,7 +1098,7 @@ if _total_workout_count := len(todays_workouts):
         metric = f"{w.distance_km}ק\"מ" if w.distance_km else f"{w.duration_minutes}ד׳"
         parts.append(f"{d} {metric} ({int(w.estimated_calories_burned)}קק\"ל)")
     st.info(
-        f"🏋️ יום אימון ({_total_workout_count} אימונים): "
+        f" יום אימון ({_total_workout_count} אימונים): "
         + " · ".join(parts)
         + f" · סה\"כ +{int(_total_burn)} קק\"ל · חלוקת המאקרו הותאמה (יותר פחמימות וחלבון)"
     )
@@ -1117,13 +1115,13 @@ st.divider()
 
 # Tabs
 tab_targets, tab_plan, tab_summary, tab_inventory = st.tabs([
-    "🎯 יעדים תזונתיים",
-    "🍽️ תפריט יומי",
-    "📊 סיכום יומי",
-    "📦 מלאי",
+    " יעדים תזונתיים",
+    " תפריט יומי",
+    " סיכום יומי",
+    " מלאי",
 ])
 
-# ── Tab 1: Targets ────────────────────────────────────────────────────────────
+#  Tab 1: Targets 
 
 with tab_targets:
     st.markdown("### יעדים תזונתיים")
@@ -1137,17 +1135,17 @@ with tab_targets:
 
     c_p, c_c, c_f = st.columns(3)
     with c_p:
-        st.markdown("#### 🥩 חלבון")
+        st.markdown("####  חלבון")
         st.metric("כמות", f"{targets.protein_g:.0f}ג")
         st.progress(int(targets.protein_pct))
         st.caption(f"{targets.protein_pct:.0f}% מהקלוריות")
     with c_c:
-        st.markdown("#### 🍞 פחמימות")
+        st.markdown("####  פחמימות")
         st.metric("כמות", f"{targets.carbs_g:.0f}ג")
         st.progress(int(targets.carbs_pct))
         st.caption(f"{targets.carbs_pct:.0f}% מהקלוריות")
     with c_f:
-        st.markdown("#### 🥑 שומן")
+        st.markdown("####  שומן")
         st.metric("כמות", f"{targets.fat_g:.0f}ג")
         st.progress(int(targets.fat_pct))
         st.caption(f"{targets.fat_pct:.0f}% מהקלוריות")
@@ -1157,7 +1155,7 @@ with tab_targets:
     with st.expander("הסבר מלא"):
         st.text(data["target_expl"])
 
-# ── Tab 2: Meal Plan ──────────────────────────────────────────────────────────
+#  Tab 2: Meal Plan 
 
 with tab_plan:
     st.markdown(f"### תפריט יומי — {plan.plan_date}")
@@ -1170,7 +1168,7 @@ with tab_plan:
         except Exception:
             recipe_mgr = None
 
-        KASHRUT_LABELS = {"meat": "🥩 בשרי", "dairy": "🧀 חלבי", "parve": "🌿 פרווה"}
+        KASHRUT_LABELS = {"meat": " בשרי", "dairy": " חלבי", "parve": " פרווה"}
         KASHRUT_COLORS = {"meat": "#ef5350", "dairy": "#42a5f5", "parve": "#66bb6a"}
 
         for meal in plan.meals:
@@ -1226,7 +1224,7 @@ with tab_plan:
                 else:
                     st.info("אין מתכונים מתאימים לארוחה זו.")
 
-# ── Tab 3: Daily Summary ──────────────────────────────────────────────────────
+#  Tab 3: Daily Summary 
 
 with tab_summary:
     st.markdown("### סיכום יומי")
@@ -1251,14 +1249,14 @@ with tab_summary:
         col_t.write(f"יעד: {target:.0f}{unit}")
         col_bar.progress(min(int(pct), 100))
 
-    macro_row("🥩 חלבון", plan.total_protein, targets.protein_g)
-    macro_row("🍞 פחמימות", plan.total_carbs, targets.carbs_g)
-    macro_row("🥑 שומן", plan.total_fat, targets.fat_g)
+    macro_row(" חלבון", plan.total_protein, targets.protein_g)
+    macro_row(" פחמימות", plan.total_carbs, targets.carbs_g)
+    macro_row(" שומן", plan.total_fat, targets.fat_g)
 
     st.divider()
     st.caption(f"מספר ארוחות: {len(plan.meals)}   |   Run ID: {plan.run_id}")
 
-# ── Tab 4: Inventory ──────────────────────────────────────────────────────────
+#  Tab 4: Inventory 
 
 with tab_inventory:
     st.markdown("### ניכוי מלאי")
@@ -1279,4 +1277,4 @@ with tab_inventory:
             c_delta.write(f"({change.quantity_delta:+.0f}ג)")
 
         st.divider()
-        st.success(f"✓  {len(changeset.changes)} פריטים עודכנו במלאי")
+        st.success(f"  {len(changeset.changes)} פריטים עודכנו במלאי")

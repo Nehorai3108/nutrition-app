@@ -15,32 +15,32 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import streamlit as st
 from ui.components import inject_global_css, page_header, section_header
 
-# ── Page config ───────────────────────────────────────────────────────────────
+#  Page config 
 
 st.set_page_config(
     page_title="לוגים וביקורת",
-    page_icon="📋",
+    page_icon="",
     layout="wide",
 )
 
-# ── Design system ─────────────────────────────────────────────────────────
+#  Design system 
 inject_global_css()
 
-# ── Page header ───────────────────────────────────────────────────────────
+#  Page header 
 page_header(
     "לוגים וביקורת מערכת",
     icon_name="logs",
     subtitle="צפייה בדוחות ביקורת וביומנים של המערכת",
 )
 
-# ── Constants ─────────────────────────────────────────────────────────────
+#  Constants 
 STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage_agents")
 AUDIT_DIR = os.path.join(STORAGE_DIR, "audit")
 REPORTS_DIR = os.path.join(AUDIT_DIR, "director_reports")
 
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
-# ── Helper functions ──────────────────────────────────────────────────────
+#  Helper functions 
 
 def load_json_file(filepath):
     """Load JSON file safely."""
@@ -66,9 +66,9 @@ def get_file_timestamp(filepath):
     except:
         return "Unknown"
 
-# ── Tab: Director Reports ─────────────────────────────────────────────────
+#  Tab: Director Reports 
 
-tab1, tab2, tab3 = st.tabs(["📊 דוחות סוכן מנהל", "📝 ביומנים", "🔍 מדדי מערכת"])
+tab1, tab2, tab3 = st.tabs([" דוחות סוכן מנהל", " ביומנים", " מדדי מערכת"])
 
 with tab1:
     section_header("דוחות סוכן מנהל", icon_name="chart")
@@ -95,9 +95,9 @@ with tab1:
             # Display metadata
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown(f"**📅 תאריך:** {get_file_timestamp(report_path)}")
+                st.markdown(f"** תאריך:** {get_file_timestamp(report_path)}")
             with col2:
-                st.markdown(f"**📄 שם קובץ:** {selected_report}")
+                st.markdown(f"** שם קובץ:** {selected_report}")
 
             st.divider()
 
@@ -121,7 +121,7 @@ with tab1:
                         st.markdown(f"- {task}")
 
                 # Show raw JSON
-                with st.expander("📋 צפה בנתונים גולמיים"):
+                with st.expander(" צפה בנתונים גולמיים"):
                     st.json(report_data)
 
         # Report statistics
@@ -142,7 +142,7 @@ with tab1:
                 age_hours = (datetime.now().timestamp() - timestamp) / 3600
                 st.metric("גיל דוח אחרון", f"{age_hours:.1f} שעות")
 
-# ── Tab: Logs ─────────────────────────────────────────────────────────────
+#  Tab: Logs 
 
 with tab2:
     section_header("ביומנים", icon_name="journal")
@@ -162,8 +162,8 @@ with tab2:
     log_path = next((path for name, path in log_files if name == selected_log), None)
 
     if log_path and os.path.exists(log_path):
-        st.markdown(f"**📅 תאריך עדכון אחרון:** {get_file_timestamp(log_path)}")
-        st.markdown(f"**📊 גודל קובץ:** {os.path.getsize(log_path) / 1024:.1f} KB")
+        st.markdown(f"** תאריך עדכון אחרון:** {get_file_timestamp(log_path)}")
+        st.markdown(f"** גודל קובץ:** {os.path.getsize(log_path) / 1024:.1f} KB")
 
         st.divider()
 
@@ -181,7 +181,7 @@ with tab2:
 
         # Option to download log
         st.download_button(
-            label="📥 הורד ביומן",
+            label=" הורד ביומן",
             data=log_content,
             file_name=f"{selected_log}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
             mime="text/plain",
@@ -190,7 +190,7 @@ with tab2:
     else:
         st.info(f"ביומן '{selected_log}' לא קיים עדיין.")
 
-# ── Tab: System Metrics ───────────────────────────────────────────────────
+#  Tab: System Metrics 
 
 with tab3:
     section_header("מדדי מערכת", icon_name="gauge")
@@ -217,14 +217,14 @@ with tab3:
             st.divider()
 
             # Show all metrics
-            with st.expander("📊 צפה בכל המדדים"):
+            with st.expander(" צפה בכל המדדים"):
                 st.json(metrics)
         else:
             st.error(f"Error loading metrics: {metrics['error']}")
     else:
         st.info("קובץ המדדים לא קיים עדיין.")
 
-# ── Summary section ───────────────────────────────────────────────────────
+#  Summary section 
 
 st.divider()
 st.markdown("### סיכום כללי")
