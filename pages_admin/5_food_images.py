@@ -115,7 +115,7 @@ saved   = _load_images()
 # ── UI ──────────────────────────────────────────────────────────────────────
 st.markdown("## תמונות מתכונים")
 
-show_filter = st.radio("הצג:", ["הכל", "רק ללא תמונה"], horizontal=True)
+show_filter = st.radio("הצג:", ["הכל", "רק ללא תמונה"], index=1, horizontal=True)
 filtered    = [r for r in recipes if show_filter == "הכל" or not saved.get(r.get("recipe_id",""))]
 
 PAGE_SIZE = 8
@@ -156,7 +156,8 @@ for recipe in page_recs:
             if col.button("בחר", key=f"pick_{rid}_{i}", use_container_width=True, type="primary"):
                 _save_and_push(rid, url)
                 st.session_state.img_opts.pop(rid, None)
-                st.success(f"נשמר ועלה!")
+                st.session_state.img_offset.pop(rid, None)
+                st.toast(f"✓ {name_he} נשמר!", icon="✅")
                 st.rerun()
 
         if st.button("3 תמונות אחרות", key=f"more_{rid}"):
