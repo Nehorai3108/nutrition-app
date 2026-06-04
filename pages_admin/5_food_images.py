@@ -57,9 +57,8 @@ for recipe in page_recipes:
     name_en = recipe.get("name_en", "")
     current = saved.get(rid, "")
 
-    c1, c2 = st.columns([5, 1])
-    c1.markdown(f"### {name_he}")
-    c2.success("יש") if current else c2.warning("חסר")
+    status = "✔ יש תמונה" if current else "✖ חסר"
+    st.markdown(f"### {name_he} &nbsp; <small style='color:{'#4ade80' if current else '#f87171'}'>{status}</small>", unsafe_allow_html=True)
 
     # Google Images link
     g_query = urllib.parse.quote(f"{name_he} {name_en} food")
