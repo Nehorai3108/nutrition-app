@@ -899,27 +899,33 @@ if not run_btn and "last_plan" not in st.session_state:
                 _fe_food_obj_icon = _catalog.get_food_by_id(_fe.food_id)
                 _ing_name_fe = (_fe_food_obj_icon.name_en if _fe_food_obj_icon else "").replace(" ", "%20")
                 _img_src_fe = f"https://www.themealdb.com/images/ingredients/{_ing_name_fe}-Small.png" if _ing_name_fe else ""
-            _icon_html = (
-                f'<img src="{_img_src_fe}" '
-                f'style="width:50px;height:50px;object-fit:cover;border-radius:14px;flex-shrink:0;" '
-                f'onerror="this.style.display=\'none\'" />'
+            _img_block_fe = (
+                f'<div style="width:100%;height:180px;'
+                f'background:#0d1117 url(\'{_img_src_fe}\') center/cover no-repeat;'
+                f'border-radius:16px 16px 0 0"></div>'
             ) if _img_src_fe else ""
+            _meal_label_fe = MEAL_COLOR.get(_fe.meal_type, "#545e70")
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border-radius:18px;'
-                f'padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px">'
-                # Food image / icon
-                + _icon_html +
-                # Text
-                f'<div style="flex:1;min-width:0">'
-                f'<div style="font-size:.9rem;font-weight:700;color:#f4f6fb;'
-                f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{_fe.food_name}</div>'
-                f'<div style="font-size:.65rem;color:#6b7a95;margin-top:4px">'
-                f'<span style="color:#f87171;font-weight:700">{int(_fe.calories)} קק״ל</span>'
-                f'&nbsp;·&nbsp;{_fe_macros}</div>'
+                f'margin-bottom:8px;overflow:hidden;border:1px solid #252d3d">'
+                + _img_block_fe +
+                f'<div style="padding:14px 16px">'
+                f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+                f'<div style="font-size:.9rem;font-weight:700;color:#f4f6fb">{_fe.food_name}</div>'
+                f'<div style="font-size:.68rem;color:#6b7a95">{_fe_time}</div>'
                 f'</div>'
-                # Time
-                f'<div style="font-size:.68rem;color:#6b7a95;flex-shrink:0">{_fe_time}</div>'
-                f'</div>',
+                f'<div style="font-size:.75rem;font-weight:800;color:#f87171;margin-bottom:6px">{int(_fe.calories)} קק״ל</div>'
+                f'<div style="display:flex;gap:8px">'
+                f'<div style="flex:1;background:#0d1117;border-radius:10px;padding:8px;text-align:center">'
+                f'<div style="font-size:.8rem;font-weight:700;color:#4f8ef7">{int(_fe.protein)}g</div>'
+                f'<div style="font-size:.6rem;color:#545e70">חלבון</div></div>'
+                f'<div style="flex:1;background:#0d1117;border-radius:10px;padding:8px;text-align:center">'
+                f'<div style="font-size:.8rem;font-weight:700;color:#f59e0b">{int(_fe.carbs)}g</div>'
+                f'<div style="font-size:.6rem;color:#545e70">פחמימות</div></div>'
+                f'<div style="flex:1;background:#0d1117;border-radius:10px;padding:8px;text-align:center">'
+                f'<div style="font-size:.8rem;font-weight:700;color:#f472b6">{int(_fe.fat)}g</div>'
+                f'<div style="font-size:.6rem;color:#545e70">שומן</div></div>'
+                f'</div></div></div>',
                 unsafe_allow_html=True,
             )
             with st.expander("ערוך / מחק"):
