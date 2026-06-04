@@ -24,29 +24,24 @@ def _get(url):
         return json.loads(r.read().decode("utf-8"))
 
 def _fetch_images(query: str, offset: int = 0) -> list:
-    """Search DuckDuckGo images — most relevant results."""
+    """Search Unsplash for high-quality food images."""
     try:
-        from duckduckgo_search import DDGS
-        with DDGS() as ddgs:
-            results = list(ddgs.images(
-                f"{query} food recipe",
-                max_results=offset + 6,
-                safesearch="on",
-            ))
-        urls = [r["image"] for r in results[offset:offset+3] if r.get("image")]
+        key = st.secrets.get("UNSPLASH_ACCESS_KEY", "")
+        if not key:
+            key = os.environ.get("UNSPLASH_ACCESS_KEY", "")
+        params = urllib.parse.urlencode({
+            "query": f"{query} food",
+            "per_page": offset + 6,
+            "orientation": "landscape",
+            "client_id": key,
+        })
+        data = _get(f"https://api.unsplash.com/search/photos?{params}")
+        results = data.get("results", [])
+        urls = [r["urls"]["regular"] for r in results[offset:offset+3] if r.get("urls")]
         return urls
     except Exception:
         pass
-
-    # Fallback: TheMealDB
-    urls = []
-    try:
-        q = urllib.parse.urlencode({"s": query.split()[0]})
-        data = _get(f"https://www.themealdb.com/api/json/v1/1/search.php?{q}")
-        for m in (data.get("meals") or [])[:3]:
-            urls.append(m["strMealThumb"])
-    except: pass
-    return urls
+    return []
 
 # ── Data helpers ────────────────────────────────────────────────────────────
 def _load_recipes():
