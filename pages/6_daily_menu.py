@@ -1241,15 +1241,12 @@ with tabs[-2]:
                 _meta += f' · {_time_str}'
             # Build food image URL from TheMealDB ingredients
             _food_obj_img = _catalog.get_food_by_id(entry.food_id)
-            _img_name = (_food_obj_img.name_en if _food_obj_img else entry.food_name).replace(" ", "%20")
-            _img_url = f"https://www.themealdb.com/images/ingredients/{_img_name}-Small.png"
+            _img_name = (_food_obj_img.name_en if _food_obj_img else "").replace(" ", "%20")
             _img_html = (
-                f'<img src="{_img_url}" '
-                f'style="width:44px;height:44px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#252d3d;" '
-                f'onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'" />'
-                f'<div style="display:none;width:44px;height:44px;border-radius:10px;background:{m_color}22;'
-                f'flex-shrink:0;align-items:center;justify-content:center;font-size:1.4rem"></div>'
-            )
+                f'<img src="https://www.themealdb.com/images/ingredients/{_img_name}-Small.png" '
+                f'style="width:44px;height:44px;object-fit:cover;border-radius:10px;flex-shrink:0;" '
+                f'onerror="this.style.display=\'none\'" />'
+            ) if _img_name else ""
             st.markdown(
                 f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:14px;'
                 f'padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
