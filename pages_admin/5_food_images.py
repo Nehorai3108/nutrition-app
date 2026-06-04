@@ -23,67 +23,30 @@ def _get(url):
     with urllib.request.urlopen(req, timeout=8) as r:
         return json.loads(r.read().decode("utf-8"))
 
-def _fetch_themealdb(query: str) -> list:
+def _fetch_images(query: str, offset: int = 0) -> list:
+    """Search DuckDuckGo images — most relevant results."""
+    try:
+        from duckduckgo_search import DDGS
+        with DDGS() as ddgs:
+            results = list(ddgs.images(
+                f"{query} food recipe",
+                max_results=offset + 6,
+                safesearch="on",
+            ))
+        urls = [r["image"] for r in results[offset:offset+3] if r.get("image")]
+        return urls
+    except Exception:
+        pass
+
+    # Fallback: TheMealDB
     urls = []
     try:
-        q = urllib.parse.urlencode({"s": query})
+        q = urllib.parse.urlencode({"s": query.split()[0]})
         data = _get(f"https://www.themealdb.com/api/json/v1/1/search.php?{q}")
-        for m in (data.get("meals") or []):
+        for m in (data.get("meals") or [])[:3]:
             urls.append(m["strMealThumb"])
     except: pass
     return urls
-
-def _fetch_wikimedia(query: str, offset: int = 0) -> list:
-    """Search Wikimedia Commons for food images."""
-    urls = []
-    try:
-        params = urllib.parse.urlencode({
-            "action": "query",
-            "generator": "search",
-            "gsrsearch": f"{query} food",
-            "gsrnamespace": "6",
-            "gsrlimit": "12",
-            "gsroffset": str(offset),
-            "prop": "imageinfo",
-            "iiprop": "url|mime",
-            "iiurlwidth": "600",
-            "format": "json",
-        })
-        data = _get(f"https://commons.wikimedia.org/w/api.php?{params}")
-        pages = data.get("query", {}).get("pages", {}).values()
-        for p in pages:
-            ii = p.get("imageinfo", [{}])[0]
-            url = ii.get("thumburl") or ii.get("url", "")
-            mime = ii.get("mime", "")
-            if url and "image/jpeg" in mime or "image/png" in mime:
-                urls.append(url)
-    except: pass
-    return urls
-
-def _fetch_images(query: str, offset: int = 0) -> list:
-    """Get 3 images from multiple sources."""
-    imgs = []
-
-    # TheMealDB
-    imgs += _fetch_themealdb(query)
-
-    # Wikimedia Commons — two searches (English + broader)
-    imgs += _fetch_wikimedia(query, offset)
-    if len(imgs) < 6:
-        first_word = query.split()[0]
-        imgs += _fetch_wikimedia(first_word, offset)
-
-    # Deduplicate
-    seen, unique = set(), []
-    for u in imgs:
-        if u not in seen:
-            seen.add(u)
-            unique.append(u)
-
-    # Return 3 starting from offset (for "3 אחרות" button)
-    start = offset % max(len(unique), 1)
-    rotated = unique[start:] + unique[:start]
-    return rotated[:3]
 
 # ── Data helpers ────────────────────────────────────────────────────────────
 def _load_recipes():
