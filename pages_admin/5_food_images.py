@@ -101,10 +101,12 @@ for recipe in page_recipes:
     else:
         c2.warning("חסרה")
 
-    # Fetch button
-    if st.button("הבא 3 תמונות", key=f"fetch_{rid}"):
+    # Search row
+    s_col1, s_col2 = st.columns([3, 1])
+    search_term = s_col1.text_input("חיפוש (אנגלית)", value=name_en, key=f"term_{rid}", label_visibility="collapsed")
+    if s_col2.button("הבא 3 תמונות", key=f"fetch_{rid}", use_container_width=True):
         with st.spinner("מחפש..."):
-            st.session_state.img_cache[rid] = _search_images(name_en or name_he)
+            st.session_state.img_cache[rid] = _search_images(search_term)
 
     opts = st.session_state.img_cache.get(rid, [])
 
