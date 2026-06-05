@@ -524,7 +524,7 @@ with st.form("weight_log_form"):
         _w_repo.add_entry(USER_ID, _new_w, _w_note)
         # Also update profile weight
         _profile_data["weight_kg"] = _new_w
-        ProfileRepository().save(USER_ID, _profile_data)
+        ProfileRepository().save(_profile_data)
         st.success(f"נשמר — {_new_w} ק״ג")
         st.rerun()
 
