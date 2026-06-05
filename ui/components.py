@@ -707,8 +707,9 @@ def bottom_nav(active: str = "home") -> None:
     """
     #  Page map: key → (file_path, material_icon, label) 
     items = [
+        ("home",    "app_user.py",                ":material/home:",             "בית"),
         ("food",    "pages/6_daily_menu.py",      ":material/restaurant:",       "תזונה"),
-        ("diary",   "pages/9_history.py",         ":material/menu_book:",        "יומן"),
+        ("chat",    "pages/10_chat_log.py",       ":material/forum:",            "צאט"),
         ("barcode", "pages/12_barcode.py",        ":material/qr_code_scanner:",  "ברקוד"),
         ("workout", "pages/7_workout_tracker.py", ":material/fitness_center:",   "אימון"),
         ("profile", "pages/0_profile.py",         ":material/person:",           "פרופיל"),

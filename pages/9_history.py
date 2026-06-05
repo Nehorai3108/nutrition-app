@@ -5,7 +5,7 @@
 import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 from pathlib import Path
 import streamlit as st
 
@@ -14,8 +14,7 @@ from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository
-from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
-from nutrition_app.agents.agent_3_food.food_catalog import FoodCatalog
+from nutrition_app.repositories.food_log_repository import FoodLogRepository
 
 st.set_page_config(page_title="BiteFit · היסטוריה", page_icon=None, layout="wide",
                    initial_sidebar_state="collapsed")
@@ -59,10 +58,6 @@ workout_repo = WorkoutRepository()
 water_repo   = WaterRepository()
 food_repo    = FoodLogRepository()
 today        = date.today()
-
-@st.cache_resource
-def _get_catalog():
-    return FoodCatalog()
 
 HEB_WD       = {0:"שני",1:"שלישי",2:"רביעי",3:"חמישי",4:"שישי",5:"שבת",6:"ראשון"}
 HEB_WD_SHORT = {6:"א׳",0:"ב׳",1:"ג׳",2:"ד׳",3:"ה׳",4:"ו׳",5:"ש׳"}
@@ -132,130 +127,13 @@ for d in week_days:
 
 plan = _load_plan()
 
-#  Header
+#  Header 
 st.markdown(
     f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 10px">'
-    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb">יומן תזונה</div>'
+    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#f4f6fb">היסטוריה ותכנון</div>'
     f'<div dir="rtl" style="font-size:0.75rem;color:#545e70">{today.strftime("%d/%m/%Y")}</div>'
     f'</div>', unsafe_allow_html=True,
 )
-
-# ── גרף קלוריות 7 ימים ──────────────────────────────────────────────────────
-_target_cal = int(
-    (lambda p: p.get("tdee") or p.get("calorie_target") or 2000)(
-        __import__("nutrition_app.repositories.profile_repository",
-                   fromlist=["ProfileRepository"]).ProfileRepository().load(USER_ID) or {}
-    )
-)
-
-_graph_days  = [today - timedelta(days=i) for i in range(6, -1, -1)]
-_graph_cals  = [int(food_repo.get_totals(USER_ID, d)["calories"]) for d in _graph_days]
-_graph_labels = ["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"]
-_wd_to_heb   = {6:"א׳",0:"ב׳",1:"ג׳",2:"ד׳",3:"ה׳",4:"ו׳",5:"ש׳"}
-_graph_labels = [_wd_to_heb[d.weekday()] for d in _graph_days]
-
-_max_val = max(max(_graph_cals), _target_cal, 1)
-_bars_html = ""
-for i, (lbl, cal) in enumerate(zip(_graph_labels, _graph_cals)):
-    _is_today = _graph_days[i] == today
-    _pct      = min(cal / _max_val * 100, 100)
-    _target_pct = min(_target_cal / _max_val * 100, 100)
-    _color    = "#4f8ef7" if _is_today else ("#4ade80" if cal >= _target_cal * 0.85 else "#545e70")
-    _border   = "2px solid #4f8ef7" if _is_today else "none"
-    _bars_html += (
-        f'<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">'
-        f'<div style="font-size:0.6rem;color:{_color};font-weight:{"800" if _is_today else "500"}">'
-        f'{"" if cal == 0 else str(cal)}</div>'
-        f'<div style="width:100%;height:80px;background:#1a2235;border-radius:6px;'
-        f'display:flex;align-items:flex-end;overflow:hidden;border:{_border}">'
-        f'<div style="width:100%;height:{_pct:.0f}%;background:{_color};border-radius:4px;'
-        f'transition:height 0.3s"></div></div>'
-        f'<div style="font-size:0.62rem;color:{"#f4f6fb" if _is_today else "#545e70"}">{lbl}</div>'
-        f'</div>'
-    )
-
-st.markdown(
-    f'<div style="background:#161b26;border:1px solid #252d3d;border-radius:16px;'
-    f'padding:14px 16px;margin-bottom:16px">'
-    f'<div style="font-size:0.72rem;color:#8892a4;margin-bottom:10px;direction:rtl">'
-    f'7 ימים אחרונים · יעד {_target_cal} קק"ל</div>'
-    f'<div style="display:flex;gap:4px;align-items:flex-end">{_bars_html}</div>'
-    f'</div>',
-    unsafe_allow_html=True,
-)
-
-# ── הוסף מזון ───────────────────────────────────────────────────────────────
-with st.expander("➕  הוסף מזון ליומן", expanded=False):
-    _catalog = _get_catalog()
-    _add_date = st.date_input("תאריך", value=today, key="add_food_date", format="DD/MM/YYYY")
-    _meal_options = {
-        "breakfast": "ארוחת בוקר",
-        "morning_snack": "חטיף בוקר",
-        "lunch": "ארוחת צהריים",
-        "afternoon_snack": "חטיף אחה״צ",
-        "dinner": "ארוחת ערב",
-        "evening_snack": "חטיף ערב",
-    }
-    _meal_key = st.selectbox(
-        "ארוחה",
-        options=list(_meal_options.keys()),
-        format_func=lambda k: _meal_options[k],
-        key="add_food_meal",
-    )
-    _query = st.text_input("חיפוש מזון", placeholder="עוף, אורז, בננה...", key="add_food_query")
-
-    _selected_food = None
-    if _query.strip():
-        _hits = _catalog.search_foods(_query.strip(), limit=6)
-        if _hits:
-            _food_labels = [f"{h.name_he} ({h.name_en})" for h in _hits]
-            _chosen_idx  = st.selectbox("בחר מוצר", range(len(_food_labels)),
-                                        format_func=lambda i: _food_labels[i],
-                                        key="add_food_select")
-            _selected_food = _hits[_chosen_idx]
-
-            _n100 = _selected_food.nutrition_per_100g
-            _grams = st.number_input(
-                "כמות (גרמים)",
-                min_value=1, max_value=2000, value=100, step=10,
-                key="add_food_grams",
-            )
-            _ratio = _grams / 100.0
-            _pcal  = round(_n100.calories_kcal * _ratio)
-            _pprot = round(_n100.protein_g * _ratio, 1)
-            _pcarb = round(_n100.carbs_g   * _ratio, 1)
-            _pfat  = round(_n100.fat_g     * _ratio, 1)
-
-            st.markdown(
-                f'<div style="background:#0d1117;border-radius:10px;padding:10px 14px;'
-                f'display:flex;gap:16px;font-size:0.82rem;direction:rtl;margin:6px 0">'
-                f'<span style="color:#f4f6fb;font-weight:800">{_pcal} קק"ל</span>'
-                f'<span style="color:#4f8ef7">{_pprot}ג חלבון</span>'
-                f'<span style="color:#f59e0b">{_pcarb}ג פחמ׳</span>'
-                f'<span style="color:#f472b6">{_pfat}ג שומן</span>'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
-
-            if st.button("הוסף ליומן", type="primary", use_container_width=True, key="add_food_btn"):
-                food_repo.add_entry(USER_ID, _add_date, FoodLogEntry(
-                    food_id=_selected_food.food_id,
-                    food_name=_selected_food.name_he,
-                    grams=float(_grams),
-                    calories=float(_pcal),
-                    protein=float(_pprot),
-                    carbs=float(_pcarb),
-                    fat=float(_pfat),
-                    meal_type=_meal_key,
-                    timestamp=datetime.now().isoformat(),
-                ))
-                st.success(f"נוסף: {_selected_food.name_he} · {_pcal} קק\"ל")
-                st.rerun()
-        else:
-            st.markdown(
-                f'<div style="color:#545e70;font-size:0.8rem;padding:8px">לא נמצא מזון עבור "{_query}"</div>',
-                unsafe_allow_html=True,
-            )
 
 #  Mode toggle 
 m1, m2 = st.columns(2)
@@ -368,31 +246,24 @@ if mode == "history":
     st.markdown('<div dir="rtl" style="font-size:0.75rem;color:#a0aec0;margin-bottom:4px;font-weight:700">תזונה</div>', unsafe_allow_html=True)
     if food_entries:
         for fe in food_entries:
-            ml = MEAL_LABELS.get(fe.meal_type.upper(), fe.meal_type)
+            ml = MEAL_LABELS.get(fe.meal_type, fe.meal_type)
             _mc = MEAL_COLORS.get(fe.meal_type.lower(), "#4f8ef7")
             try:
-                _ts_str = datetime.fromisoformat(fe.timestamp).strftime("%H:%M")
+                from datetime import datetime as _dt
+                _ts_str = _dt.fromisoformat(fe.timestamp).strftime("%H:%M")
             except Exception:
                 _ts_str = ""
             _sub = ml + (f" · {_ts_str}" if _ts_str else "")
-            _col1, _col2 = st.columns([10, 1])
-            with _col1:
-                st.markdown(
-                    f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:10px;'
-                    f'padding:8px 12px;display:flex;justify-content:space-between;align-items:center">'
-                    f'<div dir="rtl" style="display:flex;align-items:center;gap:8px">'
-                    f'<div style="width:3px;height:28px;border-radius:99px;background:{_mc};flex-shrink:0"></div>'
-                    f'<div dir="rtl"><div style="font-size:0.82rem;font-weight:700;color:#f4f6fb">{fe.food_name}</div>'
-                    f'<div style="font-size:0.67rem;color:#545e70">{_sub} · {round(fe.grams)}ג׳</div></div></div>'
-                    f'<div style="font-size:0.85rem;font-weight:800;color:{_mc}">{round(fe.calories)} קק״ל</div>'
-                    f'</div>',
-                    unsafe_allow_html=True,
-                )
-            with _col2:
-                if st.button("🗑", key=f"del_{fe.entry_id}", help="מחק"):
-                    food_repo.remove_entry(USER_ID, sel_date, fe.entry_id)
-                    st.rerun()
-            st.markdown('<div style="height:2px"></div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;border-radius:10px;'
+                f'padding:8px 12px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">'
+                f'<div dir="rtl" style="display:flex;align-items:center;gap:8px">'
+                f'<div dir="rtl" style="width:3px;height:28px;border-radius:99px;background:{_mc};flex-shrink:0"></div>'
+                f'<div dir="rtl"><div dir="rtl" style="font-size:0.82rem;font-weight:700;color:#f4f6fb">{fe.food_name}</div>'
+                f'<div dir="rtl" style="font-size:0.67rem;color:#545e70">{_sub}</div></div></div>'
+                f'<div dir="rtl" style="font-size:0.85rem;font-weight:800;color:{_mc}">{round(fe.calories)} קק״ל</div>'
+                f'</div>', unsafe_allow_html=True,
+            )
         st.markdown(
             f'<div dir="rtl" style="font-size:0.72rem;color:#a0aec0;margin-bottom:12px">'
             f'סה״כ: <b style="color:#4f8ef7">{int(totals["calories"])} קק״ל</b> · '
@@ -546,4 +417,4 @@ else:
     )
 
 st.markdown('<div dir="rtl" style="height:80px"></div>', unsafe_allow_html=True)
-bottom_nav("diary")
+bottom_nav("history")
