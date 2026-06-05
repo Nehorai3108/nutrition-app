@@ -31,30 +31,12 @@ st.set_page_config(
 
 inject_global_css()
 nav_menu(active="מתכונים")
-page_header("מתכונים", icon_name="recipe",
-            subtitle="חיפוש וצפייה במתכונים")
-
-#  Load recipe manager 
 
 @st.cache_resource
 def get_recipe_manager():
     return RecipeManager()
 
 manager = get_recipe_manager()
-stats = manager.get_stats()
-
-#  Stats bar 
-
-st.markdown("---")
-stat_cols = st.columns(5)
-stat_cols[0].metric("סה״כ מתכונים", stats.get("total", 0))
-stat_cols[1].metric("בשרי", stats.get("by_kashrut", {}).get("meat", 0))
-stat_cols[2].metric("חלבי", stats.get("by_kashrut", {}).get("dairy", 0))
-stat_cols[3].metric("פרווה", stats.get("by_kashrut", {}).get("parve", 0))
-
-meal_type_counts = stats.get("by_meal_type", {})
-total_meal_slots = sum(meal_type_counts.values())
-stat_cols[4].metric("ארוחות", total_meal_slots)
 
 #  Sidebar filters 
 
