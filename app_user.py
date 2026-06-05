@@ -1241,7 +1241,7 @@ with tab_plan:
                         )
 
                         st.markdown(
-                            f'<a href="/recipe_detail?id={recipe_id}" target="_self" style="text-decoration:none">'
+                            f'<a href="/recipe_detail?id={recipe_id}&from=home" target="_self" style="text-decoration:none">'
                             f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
                             unsafe_allow_html=True
                         )

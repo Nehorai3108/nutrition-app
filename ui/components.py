@@ -1068,7 +1068,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
     carbs     = round(nut.get("carbs", 0) / portions)
     fat       = round(nut.get("fat", 0) / portions)
     recipe_id = recipe.get("recipe_id", "")
-    href      = f"/recipe_detail?id={recipe_id}"
+    href      = f"/recipe_detail?id={recipe_id}&from=recipes"
     alt       = name_he or "מתכון"
 
     # Use CSS background-image so failed loads show nothing (no broken icon)

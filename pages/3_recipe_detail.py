@@ -77,13 +77,19 @@ _k_label  = _k_labels.get(kashrut, kashrut)
 steps = get_instructions(recipe_id)
 
 # ── Back button ──────────────────────────────────────────────────────────────
+_from = st.query_params.get("from", "daily_menu")
+_back_map = {
+    "daily_menu": ("תפריט יומי", "/daily_menu"),
+    "recipes":    ("מתכונים",    "/recipes"),
+    "home":       ("ראשי",       "/"),
+}
+_back_label, _back_url = _back_map.get(_from, ("חזור", "/daily_menu"))
 st.markdown(
-    '<div style="margin-bottom:12px">'
-    '<a onclick="window.history.back(); return false;" href="#" style="text-decoration:none;'
-    'color:#8892a4;font-size:0.82rem">חזור</a>'
-    '</div>',
+    f'<a href="{_back_url}" target="_self" style="text-decoration:none;color:#8892a4;font-size:0.82rem;">'
+    f'חזור ל{_back_label}</a>',
     unsafe_allow_html=True
 )
+st.markdown("<div style='margin-bottom:12px'></div>", unsafe_allow_html=True)
 
 # ── Hero image ───────────────────────────────────────────────────────────────
 if _img_url:
