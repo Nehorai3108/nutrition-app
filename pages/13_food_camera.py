@@ -48,61 +48,95 @@ try {
 </script>
 """, height=0)
 
-# ── מיפוי ידני: שמות אנגליים נפוצים שאולי חסרים ב-DB ────────────────────────
+# ── aliases: Gemini name → חיפוש ב-DB ────────────────────────────────────────
 FOOD_ALIASES: dict[str, list[str]] = {
-    "peach":        ["peach", "אפרסק", "nectarine"],
-    "nectarine":    ["nectarine", "peach", "אפרסק"],
-    "plum":         ["plum", "שזיף"],
-    "cherry":       ["cherry", "דובדבן"],
-    "grape":        ["grape", "ענב", "grapes"],
-    "fig":          ["fig", "תאנה"],
-    "pomegranate":  ["pomegranate", "רימון"],
-    "kiwi":         ["kiwi", "קיווי"],
-    "pineapple":    ["pineapple", "אננס"],
-    "grapefruit":   ["grapefruit", "אשכולית"],
-    "lemon":        ["lemon", "לימון"],
-    "lime":         ["lime", "ליים"],
-    "blueberry":    ["blueberry", "אוכמנית", "blueberries"],
-    "raspberry":    ["raspberry", "פטל"],
-    "blackberry":   ["blackberry", "פטל שחור"],
-    "melon":        ["melon", "מלון", "cantaloupe"],
-    "cantaloupe":   ["cantaloupe", "מלון"],
-    "papaya":       ["papaya", "פפאיה"],
-    "guava":        ["guava", "גויאבה"],
-    "lychee":       ["lychee", "ליצ'י"],
-    "persimmon":    ["persimmon", "אפרסמון"],
-    "broccoli":     ["broccoli", "ברוקולי"],
-    "cauliflower":  ["cauliflower", "כרובית"],
-    "spinach":      ["spinach", "תרד"],
-    "kale":         ["kale", "קייל"],
-    "lettuce":      ["lettuce", "חסה"],
-    "cabbage":      ["cabbage", "כרוב"],
-    "eggplant":     ["eggplant", "חציל"],
-    "zucchini":     ["zucchini", "קישוא"],
-    "pumpkin":      ["pumpkin", "דלעת"],
-    "sweet potato": ["sweet potato", "בטטה"],
-    "potato":       ["potato", "תפוח אדמה"],
-    "carrot":       ["carrot", "גזר"],
-    "beetroot":     ["beetroot", "סלק", "beet"],
-    "beet":         ["beet", "סלק", "beetroot"],
-    "celery":       ["celery", "סלרי"],
-    "onion":        ["onion", "בצל"],
-    "garlic":       ["garlic", "שום"],
-    "tomato":       ["tomato", "עגבנייה"],
-    "cucumber":     ["cucumber", "מלפפון"],
-    "pepper":       ["pepper", "פלפל", "bell pepper"],
-    "bell pepper":  ["bell pepper", "פלפל"],
-    "mushroom":     ["mushroom", "פטריות", "mushrooms"],
-    "corn":         ["corn", "תירס"],
-    "avocado":      ["avocado", "אבוקדו"],
-    "asparagus":    ["asparagus", "אספרגוס"],
-    "artichoke":    ["artichoke", "ארטישוק"],
-    "leek":         ["leek", "כרישה"],
-    "green onion":  ["green onion", "בצל ירוק", "scallion"],
-    "radish":       ["radish", "צנון"],
-    "turnip":       ["turnip", "לפת"],
-    "kohlrabi":     ["kohlrabi", "קולרבי"],
-    "fennel":       ["fennel", "שומר"],
+    # פרות
+    "apple": ["apple","תפוח"], "green apple": ["apple","תפוח"],
+    "banana": ["banana","בננה"], "orange": ["orange","תפוז"],
+    "mango": ["mango","מנגו"], "watermelon": ["watermelon","אבטיח"],
+    "strawberry": ["strawberry","תות"], "pear": ["pear","אגס"],
+    "peach": ["peach","אפרסק"], "nectarine": ["peach","אפרסק"],
+    "plum": ["plum","שזיף"], "cherry": ["cherry","דובדבן"],
+    "grape": ["grape","ענב"], "grapes": ["grape","ענב"],
+    "fig": ["fig","תאנה"], "pomegranate": ["pomegranate","רימון"],
+    "kiwi": ["kiwi","קיווי"], "pineapple": ["pineapple","אננס"],
+    "grapefruit": ["grapefruit","אשכולית"], "lemon": ["lemon","לימון"],
+    "blueberry": ["blueberry","אוכמנית"], "blueberries": ["blueberry","אוכמנית"],
+    "raspberry": ["raspberry","פטל"], "melon": ["melon","מלון"],
+    "cantaloupe": ["melon","מלון"], "papaya": ["papaya","פפאיה"],
+    "persimmon": ["persimmon","אפרסמון"], "lychee": ["lychee","ליצ׳י"],
+    # ירקות
+    "tomato": ["tomato","עגבנייה"], "cucumber": ["cucumber","מלפפון"],
+    "carrot": ["carrot","גזר"], "onion": ["onion","בצל"],
+    "garlic": ["garlic","שום"], "potato": ["potato","תפוח אדמה"],
+    "sweet potato": ["sweet potato","בטטה"], "beet": ["beet","סלק"],
+    "beetroot": ["beet","סלק"], "corn": ["corn","תירס"],
+    "avocado": ["avocado","אבוקדו"], "mushroom": ["mushroom","פטריות"],
+    "mushrooms": ["mushroom","פטריות"], "eggplant": ["eggplant","חציל"],
+    "zucchini": ["zucchini","קישוא"], "pumpkin": ["pumpkin","דלעת"],
+    "broccoli": ["broccoli","ברוקולי"], "cauliflower": ["cauliflower","כרובית"],
+    "spinach": ["spinach","תרד"], "lettuce": ["lettuce","חסה"],
+    "cabbage": ["cabbage","כרוב"], "pepper": ["pepper","פלפל"],
+    "bell pepper": ["pepper","פלפל"], "celery": ["celery","סלרי"],
+    "asparagus": ["asparagus","אספרגוס"], "leek": ["leek","כרישה"],
+    "green onion": ["green onion","בצל ירוק"],
+    # חלבונים
+    "chicken": ["chicken","עוף","חזה עוף"],
+    "chicken breast": ["chicken breast","חזה עוף"],
+    "chicken thigh": ["chicken","עוף"],
+    "beef": ["beef","בשר בקר"],
+    "ground beef": ["ground beef","בשר טחון"],
+    "steak": ["steak","סטייק"],
+    "turkey": ["turkey","הודו"],
+    "tuna": ["tuna","טונה"],
+    "salmon": ["salmon","סלמון"],
+    "egg": ["egg","ביצה"], "eggs": ["egg","ביצה"],
+    "shrimp": ["shrimp","שרימפס"],
+    "fish": ["fish","דג"],
+    "tofu": ["tofu","טופו"],
+    # פחמימות
+    "rice": ["rice","אורז"],
+    "white rice": ["rice","אורז"],
+    "brown rice": ["brown rice","אורז מלא"],
+    "pasta": ["pasta","פסטה"],
+    "spaghetti": ["pasta","פסטה"],
+    "bread": ["bread","לחם"],
+    "pita": ["pita","פיתה"],
+    "oats": ["oats","שיבולת שועל"],
+    "oatmeal": ["oats","שיבולת שועל"],
+    "quinoa": ["quinoa","קינואה"],
+    "bulgur": ["bulgur","בורגול"],
+    "couscous": ["couscous","קוסקוס"],
+    "potato chips": ["potato","תפוח אדמה"],
+    "corn": ["corn","תירס"],
+    # מוצרי חלב
+    "milk": ["milk","חלב"],
+    "yogurt": ["yogurt","יוגורט"],
+    "cheese": ["cheese","גבינה"],
+    "cottage cheese": ["cottage cheese","קוטג׳"],
+    "butter": ["butter","חמאה"],
+    "cream": ["cream","שמנת"],
+    # שמנים / ממרחים
+    "olive oil": ["olive oil","שמן זית"],
+    "hummus": ["hummus","חומוס"],
+    "tahini": ["tahini","טחינה"],
+    "peanut butter": ["peanut butter","חמאת בוטנים"],
+    # קטניות
+    "lentils": ["lentils","עדשים"],
+    "chickpeas": ["chickpeas","חומוס"],
+    "beans": ["beans","שעועית"],
+    # אגוזים / זרעים
+    "almonds": ["almonds","שקדים"],
+    "walnuts": ["walnuts","אגוזי מלך"],
+    "peanuts": ["peanuts","בוטנים"],
+    "sunflower seeds": ["sunflower seeds","גרעיני חמנייה"],
+    # מנות מוכנות
+    "salad": ["salad","סלט"],
+    "soup": ["soup","מרק"],
+    "sandwich": ["bread","לחם"],
+    "pizza": ["pizza","פיצה"],
+    "shakshuka": ["egg","ביצה"],
+    "schnitzel": ["chicken breast","שניצל"],
 }
 
 @st.cache_resource
@@ -124,17 +158,17 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
         mime    = f"image/{fmt.lower()}"
 
         prompt_text = (
-            "You are a food identification expert. Look carefully at this image.\n"
-            "Identify ALL food items, fruits, vegetables, and ingredients visible.\n"
-            "Be very specific — for example:\n"
-            "- A green round fruit = 'apple' or 'green apple'\n"
-            "- A yellow curved fruit = 'banana'\n"
-            "- A fuzzy round fruit = 'peach' or 'nectarine'\n"
-            "- A round red/orange fruit = 'orange' or 'tomato'\n"
-            "Return ONLY a JSON array of English food names in lowercase, nothing else.\n"
-            "Examples: [\"peach\"], [\"apple\", \"banana\"], [\"cucumber\", \"tomato\"]\n"
-            "If absolutely no food is visible, return [].\n"
-            "IMPORTANT: Always try to identify even if unsure — make your best guess."
+            "You are a professional nutritionist and food recognition expert.\n"
+            "Look at this image and identify ALL food items visible — including:\n"
+            "- Raw ingredients: chicken, beef, fish, eggs, rice, pasta, bread, vegetables, fruits\n"
+            "- Cooked dishes: schnitzel, shakshuka, soup, salad, omelette, steak\n"
+            "- Dairy: milk, yogurt, cheese, cottage\n"
+            "- Grains: rice, pasta, bread, oats, quinoa, bulgur\n"
+            "- Snacks, sauces, spreads\n"
+            "Use simple English food names (e.g. 'chicken breast', 'white rice', 'green apple').\n"
+            "Return ONLY a valid JSON array of lowercase English strings. No explanation.\n"
+            "Examples: [\"chicken breast\"], [\"rice\",\"broccoli\"], [\"apple\"], [\"egg\",\"tomato\"]\n"
+            "If no food is visible at all, return []."
         )
         payload = {
             "contents": [{"parts": [
