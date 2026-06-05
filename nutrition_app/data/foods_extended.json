@@ -9066,5 +9066,193 @@
       "pomegranate seeds",
       "pomegranate arils"
     ]
+  },
+  {
+    "food_id": "ext_lime",
+    "name_he": "ליים",
+    "name_en": "Lime",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 30.0,
+      "protein_g": 0.7,
+      "carbs_g": 10.5,
+      "fat_g": 0.2,
+      "fiber_g": 2.8,
+      "sugar_g": 1.7,
+      "sodium_mg": 2.0
+    },
+    "default_serving_g": 50.0,
+    "aliases_he": [
+      "לים"
+    ],
+    "aliases_en": [
+      "lime",
+      "key lime",
+      "persian lime"
+    ]
+  },
+  {
+    "food_id": "ext_papaya",
+    "name_he": "פפאיה",
+    "name_en": "Papaya",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 43.0,
+      "protein_g": 0.5,
+      "carbs_g": 11.0,
+      "fat_g": 0.3,
+      "fiber_g": 1.7,
+      "sugar_g": 7.8,
+      "sodium_mg": 8.0
+    },
+    "default_serving_g": 150.0,
+    "aliases_he": [
+      "פפאיות"
+    ],
+    "aliases_en": [
+      "papaya",
+      "pawpaw"
+    ]
+  },
+  {
+    "food_id": "ext_celery",
+    "name_he": "סלרי",
+    "name_en": "Celery",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 16.0,
+      "protein_g": 0.7,
+      "carbs_g": 3.0,
+      "fat_g": 0.2,
+      "fiber_g": 1.6,
+      "sugar_g": 1.3,
+      "sodium_mg": 80.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "סלרי עלים",
+      "שורש סלרי"
+    ],
+    "aliases_en": [
+      "celery",
+      "celery stalk"
+    ]
+  },
+  {
+    "food_id": "ext_asparagus",
+    "name_he": "אספרגוס",
+    "name_en": "Asparagus",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 20.0,
+      "protein_g": 2.2,
+      "carbs_g": 3.9,
+      "fat_g": 0.1,
+      "fiber_g": 2.1,
+      "sugar_g": 1.9,
+      "sodium_mg": 2.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "אספרגוסים"
+    ],
+    "aliases_en": [
+      "asparagus",
+      "asparagus spears"
+    ]
+  },
+  {
+    "food_id": "ext_leek",
+    "name_he": "כרישה",
+    "name_en": "Leek",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 61.0,
+      "protein_g": 1.5,
+      "carbs_g": 14.2,
+      "fat_g": 0.3,
+      "fiber_g": 1.8,
+      "sugar_g": 3.9,
+      "sodium_mg": 20.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "כרישות"
+    ],
+    "aliases_en": [
+      "leek",
+      "leeks"
+    ]
+  },
+  {
+    "food_id": "ext_radish",
+    "name_he": "צנון",
+    "name_en": "Radish",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 16.0,
+      "protein_g": 0.7,
+      "carbs_g": 3.4,
+      "fat_g": 0.1,
+      "fiber_g": 1.6,
+      "sugar_g": 1.9,
+      "sodium_mg": 39.0
+    },
+    "default_serving_g": 80.0,
+    "aliases_he": [
+      "צנוניות"
+    ],
+    "aliases_en": [
+      "radish",
+      "radishes"
+    ]
+  },
+  {
+    "food_id": "ext_fennel",
+    "name_he": "שומר",
+    "name_en": "Fennel",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 31.0,
+      "protein_g": 1.2,
+      "carbs_g": 7.3,
+      "fat_g": 0.2,
+      "fiber_g": 3.1,
+      "sugar_g": 3.9,
+      "sodium_mg": 52.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "שומר עלים",
+      "ריחן"
+    ],
+    "aliases_en": [
+      "fennel",
+      "fennel bulb",
+      "anise"
+    ]
+  },
+  {
+    "food_id": "ext_artichoke",
+    "name_he": "ארטישוק",
+    "name_en": "Artichoke",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 47.0,
+      "protein_g": 3.3,
+      "carbs_g": 10.5,
+      "fat_g": 0.2,
+      "fiber_g": 5.4,
+      "sugar_g": 1.0,
+      "sodium_mg": 94.0
+    },
+    "default_serving_g": 120.0,
+    "aliases_he": [
+      "ארטישוקים"
+    ],
+    "aliases_en": [
+      "artichoke",
+      "globe artichoke"
+    ]
   }
 ]
