@@ -37,6 +37,7 @@ def get_recipe_manager():
     return RecipeManager()
 
 manager = get_recipe_manager()
+stats = manager.get_stats()
 
 #  Sidebar filters 
 
