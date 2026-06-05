@@ -517,7 +517,7 @@ _current_w = float(_profile_data.get("weight_kg") or 0)
 with st.form("weight_log_form"):
     col1, col2, col3 = st.columns([2, 2, 1])
     _new_w = col1.number_input("משקל היום (ק״ג)", min_value=30.0, max_value=250.0,
-                                value=_current_w, step=0.1, format="%.1f")
+                                value=max(30.0, _current_w), step=0.1, format="%.1f")
     _w_note = col2.text_input("הערה (אופציונלי)", placeholder="שינה טובה, אחרי אימון...")
     col3.markdown("<div style='margin-top:28px'></div>", unsafe_allow_html=True)
     if col3.form_submit_button("שמור", type="primary", use_container_width=True):
