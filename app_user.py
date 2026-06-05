@@ -594,14 +594,19 @@ with st.sidebar:
 #  Main Area 
 
 if not run_btn and "last_plan" not in st.session_state:
-    # ── אייקון מצלמה פינה שמאל עליון ─────────────────────────────────────────
+    # ── אייקון מצלמה אלגנטי ───────────────────────────────────────────────────
     st.markdown(
         '<div style="display:flex;justify-content:flex-end;margin-bottom:8px">'
         '<a href="/food_camera" target="_self" style="text-decoration:none">'
-        '<div style="background:#161b26;border:1px solid #252d3d;border-radius:50%;'
-        'width:42px;height:42px;display:flex;align-items:center;justify-content:center;'
-        'font-size:1.3rem;cursor:pointer">📷</div>'
-        '</a></div>',
+        '<div style="background:rgba(79,142,247,0.12);border:1px solid rgba(79,142,247,0.25);'
+        'border-radius:12px;width:40px;height:40px;display:flex;align-items:center;'
+        'justify-content:center;cursor:pointer;transition:background 0.2s">'
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" '
+        'stroke="#4f8ef7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+        '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>'
+        '<circle cx="12" cy="13" r="4"/>'
+        '</svg>'
+        '</div></a></div>',
         unsafe_allow_html=True,
     )
 
