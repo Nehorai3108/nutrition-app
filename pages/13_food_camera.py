@@ -7,6 +7,7 @@ import sys, os, json, base64, io
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
+import streamlit.components.v1 as components
 from datetime import date, datetime
 from PIL import Image
 import requests
@@ -24,26 +25,27 @@ setup_persistent_auth()
 USER_ID       = require_auth()
 food_log_repo = FoodLogRepository()
 
-# ── CSS: מצלמה אחורית ────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-[data-testid="stCameraInput"] > label { display:none !important; }
-</style>
+# ── מצלמה אחורית — override getUserMedia לפני ש-Streamlit טוען ────────────
+components.html("""
 <script>
-// Force rear camera on mobile
-const _origGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-navigator.mediaDevices.getUserMedia = function(constraints) {
-    if (constraints && constraints.video) {
-        if (typeof constraints.video === 'object') {
-            constraints.video.facingMode = { ideal: 'environment' };
-        } else {
-            constraints.video = { facingMode: { ideal: 'environment' } };
-        }
+(function() {
+  const orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia = function(c) {
+    if (c && c.video) {
+      c.video = (typeof c.video === 'object')
+        ? { ...c.video, facingMode: { ideal: 'environment' } }
+        : { facingMode: { ideal: 'environment' } };
     }
-    return _origGetUserMedia(constraints);
-};
+    return orig(c);
+  };
+})();
 </script>
-""", unsafe_allow_html=True)
+""", height=0)
+
+st.markdown(
+    "<style>[data-testid='stCameraInput']>label{display:none!important}</style>",
+    unsafe_allow_html=True,
+)
 
 # ── מיפוי ידני: שמות אנגליים נפוצים שאולי חסרים ב-DB ────────────────────────
 FOOD_ALIASES: dict[str, list[str]] = {

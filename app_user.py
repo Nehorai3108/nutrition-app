@@ -594,7 +594,20 @@ with st.sidebar:
 #  Main Area 
 
 if not run_btn and "last_plan" not in st.session_state:
-    #  Activity Rings dashboard (Apple Watch style) 
+    # ── כפתור מצלמה מהיר ─────────────────────────────────────────────────────
+    st.markdown(
+        '<a href="/food_camera" target="_self" style="text-decoration:none">'
+        '<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+        'border-radius:14px;padding:12px 16px;display:flex;align-items:center;'
+        'gap:10px;margin-bottom:12px;cursor:pointer">'
+        '<span style="font-size:1.4rem">📷</span>'
+        '<div dir="rtl"><div style="font-size:0.9rem;font-weight:700;color:#f4f6fb">זיהוי מזון מתמונה</div>'
+        '<div style="font-size:0.72rem;color:#545e70">צלם מזון ← זיהוי אוטומטי ← הוסף ליומן</div>'
+        '</div></div></a>',
+        unsafe_allow_html=True,
+    )
+
+    #  Activity Rings dashboard (Apple Watch style)
     import math as _math
 
     _DASH_USER = _USER_ID
