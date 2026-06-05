@@ -594,16 +594,14 @@ with st.sidebar:
 #  Main Area 
 
 if not run_btn and "last_plan" not in st.session_state:
-    # ── כפתור מצלמה מהיר ─────────────────────────────────────────────────────
+    # ── אייקון מצלמה פינה שמאל עליון ─────────────────────────────────────────
     st.markdown(
+        '<div style="display:flex;justify-content:flex-end;margin-bottom:8px">'
         '<a href="/food_camera" target="_self" style="text-decoration:none">'
-        '<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
-        'border-radius:14px;padding:12px 16px;display:flex;align-items:center;'
-        'gap:10px;margin-bottom:12px;cursor:pointer">'
-        '<span style="font-size:1.4rem">📷</span>'
-        '<div dir="rtl"><div style="font-size:0.9rem;font-weight:700;color:#f4f6fb">זיהוי מזון מתמונה</div>'
-        '<div style="font-size:0.72rem;color:#545e70">צלם מזון ← זיהוי אוטומטי ← הוסף ליומן</div>'
-        '</div></div></a>',
+        '<div style="background:#161b26;border:1px solid #252d3d;border-radius:50%;'
+        'width:42px;height:42px;display:flex;align-items:center;justify-content:center;'
+        'font-size:1.3rem;cursor:pointer">📷</div>'
+        '</a></div>',
         unsafe_allow_html=True,
     )
 

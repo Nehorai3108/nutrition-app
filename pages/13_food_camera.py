@@ -7,7 +7,6 @@ import sys, os, json, base64, io
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-import streamlit.components.v1 as components
 from datetime import date, datetime
 from PIL import Image
 import requests
@@ -24,23 +23,6 @@ inject_global_css()
 setup_persistent_auth()
 USER_ID       = require_auth()
 food_log_repo = FoodLogRepository()
-
-# ── מצלמה אחורית — override getUserMedia לפני ש-Streamlit טוען ────────────
-components.html("""
-<script>
-(function() {
-  const orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-  navigator.mediaDevices.getUserMedia = function(c) {
-    if (c && c.video) {
-      c.video = (typeof c.video === 'object')
-        ? { ...c.video, facingMode: { ideal: 'environment' } }
-        : { facingMode: { ideal: 'environment' } };
-    }
-    return orig(c);
-  };
-})();
-</script>
-""", height=0)
 
 st.markdown(
     "<style>[data-testid='stCameraInput']>label{display:none!important}</style>",
@@ -187,10 +169,21 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-img_file = st.camera_input("", label_visibility="collapsed")
+st.markdown(
+    '<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-bottom:6px">'
+    '📱 במובייל: לחץ ← בחר "צלם תמונה" ← המצלמה האחורית תיפתח</div>',
+    unsafe_allow_html=True,
+)
+img_file = st.file_uploader(
+    "העלה תמונה או צלם",
+    type=["jpg", "jpeg", "png", "webp"],
+    label_visibility="collapsed",
+    key="food_img_upload",
+)
 
 if img_file:
     img_bytes = img_file.getvalue()
+    st.image(img_bytes, width=300)
 
     with st.spinner("מזהה מזון..."):
         food_names = _identify_with_gemini(img_bytes)

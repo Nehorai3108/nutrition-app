@@ -711,7 +711,6 @@ def bottom_nav(active: str = "home") -> None:
         ("food",    "pages/6_daily_menu.py",      ":material/restaurant:",       "תזונה"),
         ("chat",    "pages/10_chat_log.py",       ":material/forum:",            "צאט"),
         ("barcode", "pages/12_barcode.py",        ":material/qr_code_scanner:",  "ברקוד"),
-        ("camera",  "pages/13_food_camera.py",   ":material/photo_camera:",     "צילום"),
         ("workout", "pages/7_workout_tracker.py", ":material/fitness_center:",   "אימון"),
         ("profile", "pages/0_profile.py",         ":material/person:",           "פרופיל"),
     ]
