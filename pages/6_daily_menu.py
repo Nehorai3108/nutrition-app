@@ -1465,30 +1465,62 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
             if not _img_uri:
                 _img_uri = _load_recipe_images().get(recipe_id, "")
 
-            # Build image html for the card
-            _img_html = (
-                f'<img src="{_img_uri}" style="width:100%;height:100%;object-fit:cover" alt="{name_he}">'
-                if _img_uri else ""
+            # Build a copy of the recipe with scaled nutrition for display
+            _scaled_recipe = {
+                **recipe,
+                "total_nutrition": {
+                    "calories": round(s_cal),
+                    "protein":  round(s_prot, 1),
+                    "carbs":    round(s_carbs, 1),
+                    "fat":      round(s_fat, 1),
+                },
+                "portions": 1,  # already scaled — show as-is
+            }
+            st.markdown(
+                recipe_card_html(
+                    _scaled_recipe,
+                    image_uri=_img_uri,
+                    match_pct=match_pct,
+                    show_rank=(idx == 0),
+                ),
+                unsafe_allow_html=True,
             )
-            # Chips: scaled ingredients
-            _chips_label = _ingredient_chips_html(s_ings) if s_ings else name_he
 
-            # Render unified card (scaled values = consistent with button)
-            _render_search_result(
-                name=name_he,
-                food_id=f"recipe_{recipe_id}",
-                meal_key=meal_key.lower(),
-                target_cal=target_cal,
-                cal_out=s_cal,
-                prot_out=s_prot,
-                carbs_out=s_carbs,
-                fat_out=s_fat,
-                portion_label=_chips_label,
-                btn_suffix=f"rec_{meal_key}_{recipe_id}_{idx}",
-                grams=float(s_grams),
-                is_recipe=True,
-                img_html=_img_html,
-            )
+            #  Scaled ingredient chips
+            if s_ings:
+                st.markdown(_ingredient_chips_html(s_ings), unsafe_allow_html=True)
+
+            #  Add to food log
+            btn_key   = f"add_{meal_key}_{recipe_id}_{idx}"
+            added_key = f"added_{meal_key}_{recipe_id}_{idx}"
+
+            if st.session_state.get(added_key):
+                st.markdown(
+                    '<div dir="rtl" style="background:#0d2b1a;border:1px solid #1a4d2e;border-radius:12px;'
+                    'padding:8px 14px;margin-bottom:8px;font-size:0.82rem;color:#4ade80;text-align:center">'
+                    'נוסף לתפריט היומי</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                if st.button(
+                    f"הוסף לתפריט היומי · {int(s_cal)} קק״ל",
+                    key=btn_key,
+                    use_container_width=True,
+                    type="primary",
+                ):
+                    _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                        food_id=f"recipe_{recipe_id}",
+                        food_name=name_he,
+                        grams=float(s_grams),
+                        calories=float(s_cal),
+                        protein=float(s_prot),
+                        carbs=float(s_carbs),
+                        fat=float(s_fat),
+                        meal_type=meal_key.lower(),
+                        timestamp=datetime.now().isoformat(),
+                    ))
+                    st.session_state[added_key] = True
+                    st.rerun()
 
             st.markdown(
                 f'<a href="/recipe_detail?id={recipe_id}&from=daily_menu" target="_self" style="text-decoration:none">'
