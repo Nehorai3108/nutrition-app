@@ -29,26 +29,44 @@ def _get_catalog():
     return FoodCatalog()
 
 def _identify_with_gemini(image_bytes: bytes) -> list[str]:
-    """שולח תמונה ל-Gemini, מקבל רשימת שמות מזון באנגלית."""
+    """שולח תמונה ל-Gemini REST API, מקבל רשימת שמות מזון באנגלית."""
+    import requests, base64
+    api_key = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
+    if not api_key:
+        st.error("GEMINI_API_KEY לא מוגדר ב-Secrets")
+        return []
     try:
-        import google.generativeai as genai
-        api_key = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
-        if not api_key:
-            st.error("GEMINI_API_KEY לא מוגדר ב-Secrets")
-            return []
-        genai.configure(api_key=api_key)
-        model  = genai.GenerativeModel("gemini-1.5-flash")
-        image  = Image.open(io.BytesIO(image_bytes))
-        prompt = (
-            "Look at this image and identify all food items visible. "
-            "Return ONLY a JSON array of English food names, nothing else. "
-            "Example: [\"cucumber\", \"tomato\", \"olive oil\"] "
-            "If no food is visible, return []."
+        # זיהוי סוג התמונה
+        img      = Image.open(io.BytesIO(image_bytes))
+        buf      = io.BytesIO()
+        fmt      = img.format or "JPEG"
+        img.save(buf, format=fmt)
+        img_b64  = base64.b64encode(buf.getvalue()).decode()
+        mime     = f"image/{fmt.lower()}"
+
+        url = (
+            "https://generativelanguage.googleapis.com/v1beta/models/"
+            f"gemini-1.5-flash:generateContent?key={api_key}"
         )
-        resp = model.generate_content([prompt, image])
-        text = resp.text.strip()
-        # נקה markdown אם יש
-        if text.startswith("```"):
+        payload = {
+            "contents": [{
+                "parts": [
+                    {"text": (
+                        "Look at this image and identify all food items visible. "
+                        "Return ONLY a JSON array of English food names, nothing else. "
+                        "Example: [\"cucumber\", \"tomato\", \"olive oil\"] "
+                        "If no food is visible, return []."
+                    )},
+                    {"inline_data": {"mime_type": mime, "data": img_b64}},
+                ]
+            }],
+            "generationConfig": {"temperature": 0.1},
+        }
+        resp = requests.post(url, json=payload, timeout=20)
+        resp.raise_for_status()
+        text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+        # נקה markdown
+        if "```" in text:
             text = text.split("```")[1]
             if text.startswith("json"):
                 text = text[4:]
