@@ -144,12 +144,12 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
             "generationConfig": {"temperature": 0.0, "maxOutputTokens": 200},
         }
         headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
-        models  = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"]
-        resp    = None
+        models  = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-2.5-flash", "gemini-1.5-flash-latest"]
+        resp = None
         for model_name in models:
             url  = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
             resp = requests.post(url, json=payload, headers=headers, timeout=30)
-            if resp.status_code != 404:
+            if resp.status_code not in (404, 503, 429):
                 break
         resp.raise_for_status()
         text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
