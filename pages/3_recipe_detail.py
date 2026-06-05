@@ -78,9 +78,10 @@ steps = get_instructions(recipe_id)
 
 # ── Back button ──────────────────────────────────────────────────────────────
 st.markdown(
-    '<a href="/recipes" target="_self" style="text-decoration:none">'
-    '<div style="display:inline-flex;align-items:center;gap:6px;color:#8892a4;'
-    'font-size:0.82rem;margin-bottom:12px">חזור למתכונים</div></a>',
+    '<div style="margin-bottom:12px">'
+    '<a onclick="window.history.back(); return false;" href="#" style="text-decoration:none;'
+    'color:#8892a4;font-size:0.82rem">חזור</a>'
+    '</div>',
     unsafe_allow_html=True
 )
 
