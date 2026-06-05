@@ -1240,18 +1240,11 @@ with tab_plan:
                             unsafe_allow_html=True,
                         )
 
-                        # Ingredients list + preparation instructions inline
-                        with st.expander("מרכיבים והוראות הכנה", expanded=False):
-                            if ingredients:
-                                st.markdown("**מרכיבים:**")
-                                for ing in ingredients:
-                                    st.markdown(f"• {format_ingredient_display(ing)}")
-                            steps = get_instructions(recipe_id)
-                            if steps:
-                                st.markdown("---")
-                                st.markdown("**הוראות הכנה:**")
-                                for step_i, step in enumerate(steps, 1):
-                                    st.markdown(f"**{step_i}.** {step}")
+                        st.markdown(
+                            f'<a href="/recipe_detail?id={recipe_id}" target="_self" style="text-decoration:none">'
+                            f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
+                            unsafe_allow_html=True
+                        )
                 else:
                     st.info("אין מתכונים מתאימים לארוחה זו.")
 

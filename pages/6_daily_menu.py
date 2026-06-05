@@ -1217,11 +1217,11 @@ with tabs[-3]:
                         is_recipe=True,
                         img_html=_get_recipe_img_html(_rec_id, _rec),
                     )
-                    with st.expander("הוראות הכנה"):
-                        _steps = get_instructions(_rec_id)
-                        if _steps:
-                            for _si, _step in enumerate(_steps, 1):
-                                st.markdown(f"**{_si}.** {_step}")
+                    st.markdown(
+                        f'<a href="/recipe_detail?id={_rec_id}" target="_self" style="text-decoration:none">'
+                        f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
+                        unsafe_allow_html=True
+                    )
                     st.markdown('<div dir="rtl" style="height:4px"></div>', unsafe_allow_html=True)
 
     # 
@@ -1503,18 +1503,11 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                     st.session_state[added_key] = True
                     st.rerun()
 
-            with st.expander("מרכיבים והוראות הכנה"):
-                _orig_ings = recipe.get("ingredients", [])
-                if _orig_ings:
-                    st.markdown("**מרכיבים:**")
-                    for ing in _orig_ings:
-                        st.markdown(f"• {format_ingredient_display(ing)}")
-                steps = get_instructions(recipe_id)
-                if steps:
-                    st.markdown("---")
-                    st.markdown("**הוראות הכנה:**")
-                    for i, step in enumerate(steps, 1):
-                        st.markdown(f"**{i}.** {step}")
+            st.markdown(
+                f'<a href="/recipe_detail?id={recipe_id}" target="_self" style="text-decoration:none">'
+                f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
+                unsafe_allow_html=True
+            )
 
         #  In-meal food search 
         st.markdown('<div dir="rtl" style="height:10px"></div>', unsafe_allow_html=True)
@@ -1651,13 +1644,11 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                                 is_recipe=True,
                                 img_html=_get_recipe_img_html(_mrid, _mrec),
                             )
-                            with st.expander("הוראות הכנה"):
-                                _mr_steps = get_instructions(_mrid)
-                                if _mr_steps:
-                                    for _msi, _mstep in enumerate(_mr_steps, 1):
-                                        st.markdown(f"**{_msi}.** {_mstep}")
-                                else:
-                                    st.markdown("אין הוראות הכנה זמינות למתכון זה.")
+                            st.markdown(
+                                f'<a href="/recipe_detail?id={_mrid}" target="_self" style="text-decoration:none">'
+                                f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
+                                unsafe_allow_html=True
+                            )
                 else:
                     st.markdown(
                         '<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
