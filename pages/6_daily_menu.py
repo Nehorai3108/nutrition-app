@@ -1211,17 +1211,14 @@ with tabs[-3]:
                     _rec_id      = _rec.get("recipe_id", "")
                     _rec_name    = _rec.get("name_he", "מנה")
 
-                    _s_ings, _s_cal, _s_prot, _s_carbs, _s_fat, _s_g = \
-                        _scale_recipe(_rec, _search_target)
-                    _ing_chips = _ingredient_chips_html(_s_ings) if _s_ings else _rec_name
                     _render_search_result(
                         name=_rec_name, food_id=f"recipe_{_rec_id}",
                         meal_key=search_meal, target_cal=_search_target,
-                        cal_out=_s_cal, prot_out=_s_prot,
-                        carbs_out=_s_carbs, fat_out=_s_fat,
-                        portion_label=_ing_chips,
+                        cal_out=_cal_per_por, prot_out=_prot_per,
+                        carbs_out=_carbs_per, fat_out=_fat_per,
+                        portion_label=_rec_name,
                         btn_suffix=f"{_rec_id}_s",
-                        grams=float(_s_g),
+                        grams=float(_portions * 100),
                         is_recipe=True,
                         img_html=_get_recipe_img_html(_rec_id, _rec),
                     )
@@ -1636,21 +1633,18 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                             _mfat      = _mnut.get("fat",      0) / _mportions
                             _mrid      = _mrec.get("recipe_id", "")
                             _mrname    = _mrec.get("name_he", "מנה")
-                            _mr_sings, _mr_scal, _mr_sprot, _mr_scarbs, _mr_sfat, _mr_sg = \
-                                _scale_recipe(_mrec, target_cal)
-                            _mr_chips = _ingredient_chips_html(_mr_sings) if _mr_sings else _mrname
                             _render_search_result(
                                 name=_mrname,
                                 food_id=f"recipe_{_mrid}",
                                 meal_key=meal_key.lower(),
                                 target_cal=target_cal,
-                                cal_out=_mr_scal,
-                                prot_out=_mr_sprot,
-                                carbs_out=_mr_scarbs,
-                                fat_out=_mr_sfat,
-                                portion_label=_mr_chips,
+                                cal_out=_mcpp,
+                                prot_out=_mppp,
+                                carbs_out=_mcarb,
+                                fat_out=_mfat,
+                                portion_label=_mrname,
                                 btn_suffix=f"ms_{meal_key}_{_mrid}_s",
-                                grams=float(_mr_sg),
+                                grams=float(_mportions * 100),
                                 is_recipe=True,
                                 img_html=_get_recipe_img_html(_mrid, _mrec),
                             )
