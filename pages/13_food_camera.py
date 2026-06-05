@@ -7,6 +7,7 @@ import sys, os, json, base64, io
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
+import streamlit.components.v1 as components
 from datetime import date, datetime
 from PIL import Image
 import requests
@@ -28,6 +29,24 @@ st.markdown(
     "<style>[data-testid='stCameraInput']>label{display:none!important}</style>",
     unsafe_allow_html=True,
 )
+
+# מצלמה אחורית — override getUserMedia דרך window.parent (same-origin iframe)
+components.html("""
+<script>
+try {
+  var p = window.parent;
+  var orig = p.navigator.mediaDevices.getUserMedia.bind(p.navigator.mediaDevices);
+  p.navigator.mediaDevices.getUserMedia = function(c) {
+    if (c && c.video) {
+      c.video = (typeof c.video === 'object')
+        ? Object.assign({}, c.video, {facingMode:{ideal:'environment'}})
+        : {facingMode:{ideal:'environment'}};
+    }
+    return orig(c);
+  };
+} catch(e) { console.log('rear camera override:', e); }
+</script>
+""", height=0)
 
 # ── מיפוי ידני: שמות אנגליים נפוצים שאולי חסרים ב-DB ────────────────────────
 FOOD_ALIASES: dict[str, list[str]] = {
@@ -169,21 +188,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    '<div dir="rtl" style="font-size:0.78rem;color:#8892a4;margin-bottom:6px">'
-    '📱 במובייל: לחץ ← בחר "צלם תמונה" ← המצלמה האחורית תיפתח</div>',
-    unsafe_allow_html=True,
-)
-img_file = st.file_uploader(
-    "העלה תמונה או צלם",
-    type=["jpg", "jpeg", "png", "webp"],
-    label_visibility="collapsed",
-    key="food_img_upload",
-)
+img_file = st.camera_input("", label_visibility="collapsed")
 
 if img_file:
     img_bytes = img_file.getvalue()
-    st.image(img_bytes, width=300)
 
     with st.spinner("מזהה מזון..."):
         food_names = _identify_with_gemini(img_bytes)
