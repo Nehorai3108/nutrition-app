@@ -44,25 +44,31 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
         img_b64  = base64.b64encode(buf.getvalue()).decode()
         mime     = f"image/{fmt.lower()}"
 
-        url = (
-            "https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-1.5-flash:generateContent?key={api_key}"
+        prompt_text = (
+            "Look at this image and identify all food items visible. "
+            "Return ONLY a JSON array of English food names, nothing else. "
+            "Example: [\"cucumber\", \"tomato\", \"olive oil\"] "
+            "If no food is visible, return []."
         )
         payload = {
             "contents": [{
                 "parts": [
-                    {"text": (
-                        "Look at this image and identify all food items visible. "
-                        "Return ONLY a JSON array of English food names, nothing else. "
-                        "Example: [\"cucumber\", \"tomato\", \"olive oil\"] "
-                        "If no food is visible, return []."
-                    )},
+                    {"text": prompt_text},
                     {"inline_data": {"mime_type": mime, "data": img_b64}},
                 ]
             }],
             "generationConfig": {"temperature": 0.1},
         }
-        resp = requests.post(url, json=payload, timeout=20)
+        headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
+        # נסה קודם עם header, אחרי כן עם query param
+        url_header = (
+            "https://generativelanguage.googleapis.com/v1beta/models/"
+            "gemini-1.5-flash:generateContent"
+        )
+        url_query = url_header + f"?key={api_key}"
+        resp = requests.post(url_header, json=payload, headers=headers, timeout=20)
+        if resp.status_code == 401:
+            resp = requests.post(url_query, json=payload, timeout=20)
         resp.raise_for_status()
         text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
         # נקה markdown
