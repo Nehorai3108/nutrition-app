@@ -8792,5 +8792,275 @@
     "sugar_g": 0.0,
     "sodium_mg": 0.0,
     "is_custom": false
+  },
+  {
+    "food_id": "f_il_301",
+    "name_he": "אפרסק",
+    "name_en": "Peach",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 39.0,
+      "protein_g": 0.9,
+      "carbs_g": 9.5,
+      "fat_g": 0.3,
+      "fiber_g": 1.5,
+      "sugar_g": 8.4,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "פרסיק"
+    ],
+    "aliases_en": [
+      "peaches",
+      "fresh peach",
+      "nectarine",
+      "peach fruit"
+    ]
+  },
+  {
+    "food_id": "f_il_302",
+    "name_he": "שזיף",
+    "name_en": "Plum",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 46.0,
+      "protein_g": 0.7,
+      "carbs_g": 11.4,
+      "fat_g": 0.3,
+      "fiber_g": 1.4,
+      "sugar_g": 9.9,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 80.0,
+    "aliases_he": [
+      "שזיפים"
+    ],
+    "aliases_en": [
+      "plums",
+      "fresh plum"
+    ]
+  },
+  {
+    "food_id": "f_il_303",
+    "name_he": "דובדבן",
+    "name_en": "Cherry",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 63.0,
+      "protein_g": 1.1,
+      "carbs_g": 16.0,
+      "fat_g": 0.2,
+      "fiber_g": 2.1,
+      "sugar_g": 12.8,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 80.0,
+    "aliases_he": [
+      "דובדבנים"
+    ],
+    "aliases_en": [
+      "cherries",
+      "fresh cherry"
+    ]
+  },
+  {
+    "food_id": "f_il_304",
+    "name_he": "ענב",
+    "name_en": "Grape",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 69.0,
+      "protein_g": 0.7,
+      "carbs_g": 18.1,
+      "fat_g": 0.2,
+      "fiber_g": 0.9,
+      "sugar_g": 15.5,
+      "sodium_mg": 2.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "ענבים"
+    ],
+    "aliases_en": [
+      "grapes",
+      "red grape",
+      "green grape",
+      "white grape"
+    ]
+  },
+  {
+    "food_id": "f_il_305",
+    "name_he": "תאנה",
+    "name_en": "Fig",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 74.0,
+      "protein_g": 0.8,
+      "carbs_g": 19.2,
+      "fat_g": 0.3,
+      "fiber_g": 2.9,
+      "sugar_g": 16.3,
+      "sodium_mg": 1.0
+    },
+    "default_serving_g": 60.0,
+    "aliases_he": [
+      "תאנים"
+    ],
+    "aliases_en": [
+      "figs",
+      "fresh fig"
+    ]
+  },
+  {
+    "food_id": "f_il_306",
+    "name_he": "קיווי",
+    "name_en": "Kiwi",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 61.0,
+      "protein_g": 1.1,
+      "carbs_g": 14.7,
+      "fat_g": 0.5,
+      "fiber_g": 3.0,
+      "sugar_g": 8.9,
+      "sodium_mg": 3.0
+    },
+    "default_serving_g": 80.0,
+    "aliases_he": [
+      "קיוי"
+    ],
+    "aliases_en": [
+      "kiwifruit",
+      "kiwi fruit"
+    ]
+  },
+  {
+    "food_id": "f_il_307",
+    "name_he": "אננס",
+    "name_en": "Pineapple",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 50.0,
+      "protein_g": 0.5,
+      "carbs_g": 13.1,
+      "fat_g": 0.1,
+      "fiber_g": 1.4,
+      "sugar_g": 9.9,
+      "sodium_mg": 1.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [],
+    "aliases_en": [
+      "fresh pineapple"
+    ]
+  },
+  {
+    "food_id": "f_il_308",
+    "name_he": "אשכולית",
+    "name_en": "Grapefruit",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 32.0,
+      "protein_g": 0.6,
+      "carbs_g": 8.0,
+      "fat_g": 0.1,
+      "fiber_g": 1.1,
+      "sugar_g": 6.9,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "aliases_he": [],
+    "aliases_en": [
+      "pomelo",
+      "pink grapefruit"
+    ]
+  },
+  {
+    "food_id": "f_il_309",
+    "name_he": "אוכמנית",
+    "name_en": "Blueberry",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 57.0,
+      "protein_g": 0.7,
+      "carbs_g": 14.5,
+      "fat_g": 0.3,
+      "fiber_g": 2.4,
+      "sugar_g": 9.9,
+      "sodium_mg": 1.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [
+      "אוכמניות"
+    ],
+    "aliases_en": [
+      "blueberries"
+    ]
+  },
+  {
+    "food_id": "f_il_310",
+    "name_he": "פטל",
+    "name_en": "Raspberry",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 52.0,
+      "protein_g": 1.2,
+      "carbs_g": 11.9,
+      "fat_g": 0.7,
+      "fiber_g": 6.5,
+      "sugar_g": 4.4,
+      "sodium_mg": 1.0
+    },
+    "default_serving_g": 100.0,
+    "aliases_he": [],
+    "aliases_en": [
+      "raspberries"
+    ]
+  },
+  {
+    "food_id": "f_il_311",
+    "name_he": "מלון",
+    "name_en": "Melon",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 34.0,
+      "protein_g": 0.8,
+      "carbs_g": 8.2,
+      "fat_g": 0.2,
+      "fiber_g": 0.9,
+      "sugar_g": 7.9,
+      "sodium_mg": 16.0
+    },
+    "default_serving_g": 200.0,
+    "aliases_he": [
+      "מלונים"
+    ],
+    "aliases_en": [
+      "cantaloupe",
+      "honeydew",
+      "muskmelon"
+    ]
+  },
+  {
+    "food_id": "f_il_315",
+    "name_he": "רימון",
+    "name_en": "Pomegranate",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 83.0,
+      "protein_g": 1.7,
+      "carbs_g": 18.7,
+      "fat_g": 1.2,
+      "fiber_g": 4.0,
+      "sugar_g": 13.7,
+      "sodium_mg": 3.0
+    },
+    "default_serving_g": 150.0,
+    "aliases_he": [],
+    "aliases_en": [
+      "pomegranate seeds",
+      "pomegranate arils"
+    ]
   }
 ]

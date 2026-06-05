@@ -585,6 +585,7 @@ with st.sidebar:
     _inv_label = f" מלאי ({_inv_count} פריטים{f' + {_scanned_count} סרוקים' if _scanned_count else ''})"
     st.page_link("pages/4_inventory.py", label=_inv_label, use_container_width=True)
     st.page_link("pages/2_receipt_scanner.py", label=" סרוק קבלה", use_container_width=True)
+    st.page_link("pages/13_food_camera.py", label="📷 זהה מזון מתמונה", use_container_width=True)
 
     st.divider()
     run_btn = icon_button("הפק תפריט יומי", "play",
