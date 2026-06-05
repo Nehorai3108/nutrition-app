@@ -62,10 +62,10 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
         headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
         # נסה מודלים בסדר עדיפות
         models = [
+            "gemini-2.5-flash",
             "gemini-2.0-flash",
             "gemini-2.0-flash-lite",
             "gemini-1.5-flash-latest",
-            "gemini-1.5-flash",
         ]
         resp = None
         for model_name in models:
@@ -73,7 +73,7 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
                 "https://generativelanguage.googleapis.com/v1beta/models/"
                 f"{model_name}:generateContent"
             )
-            resp = requests.post(url, json=payload, headers=headers, timeout=20)
+            resp = requests.post(url, json=payload, headers=headers, timeout=30)
             if resp.status_code != 404:
                 break
         resp.raise_for_status()
