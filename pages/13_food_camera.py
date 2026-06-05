@@ -143,6 +143,30 @@ FOOD_ALIASES: dict[str, list[str]] = {
 def _get_catalog():
     return FoodCatalog()
 
+def _call_gemini(api_key: str, payload: dict, headers: dict) -> requests.Response | None:
+    """נסה כל המודלים עם retry."""
+    import time
+    models = [
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-2.5-flash",
+        "gemini-2.0-flash-exp",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-8b",
+    ]
+    for attempt in range(2):  # 2 סבבים
+        for model in models:
+            url  = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+            try:
+                resp = requests.post(url, json=payload, headers=headers, timeout=25)
+                if resp.status_code == 200:
+                    return resp
+            except requests.exceptions.Timeout:
+                continue
+        if attempt == 0:
+            time.sleep(2)  # המתן 2 שניות בין סבבים
+    return None
+
 def _identify_with_gemini(image_bytes: bytes) -> list[str]:
     """שולח תמונה ל-Gemini REST API, מקבל רשימת שמות מזון באנגלית."""
     api_key = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
@@ -178,14 +202,10 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
             "generationConfig": {"temperature": 0.0, "maxOutputTokens": 200},
         }
         headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
-        models  = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-2.5-flash", "gemini-1.5-flash-latest"]
-        resp = None
-        for model_name in models:
-            url  = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
-            resp = requests.post(url, json=payload, headers=headers, timeout=30)
-            if resp.status_code not in (404, 503, 429):
-                break
-        resp.raise_for_status()
+        resp = _call_gemini(api_key, payload, headers)
+        if resp is None:
+            st.warning("שרת Gemini עמוס כרגע — נסה שוב בעוד כמה שניות")
+            return []
         text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
         if "```" in text:
             text = text.split("```")[1]
