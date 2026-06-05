@@ -60,15 +60,22 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
             "generationConfig": {"temperature": 0.1},
         }
         headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
-        # נסה קודם עם header, אחרי כן עם query param
-        url_header = (
-            "https://generativelanguage.googleapis.com/v1beta/models/"
-            "gemini-1.5-flash:generateContent"
-        )
-        url_query = url_header + f"?key={api_key}"
-        resp = requests.post(url_header, json=payload, headers=headers, timeout=20)
-        if resp.status_code == 401:
-            resp = requests.post(url_query, json=payload, timeout=20)
+        # נסה מודלים בסדר עדיפות
+        models = [
+            "gemini-2.0-flash",
+            "gemini-2.0-flash-lite",
+            "gemini-1.5-flash-latest",
+            "gemini-1.5-flash",
+        ]
+        resp = None
+        for model_name in models:
+            url = (
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{model_name}:generateContent"
+            )
+            resp = requests.post(url, json=payload, headers=headers, timeout=20)
+            if resp.status_code != 404:
+                break
         resp.raise_for_status()
         text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
         # נקה markdown
