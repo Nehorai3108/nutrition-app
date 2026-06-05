@@ -144,27 +144,35 @@ def _get_catalog():
     return FoodCatalog()
 
 def _call_gemini(api_key: str, payload: dict, headers: dict) -> requests.Response | None:
-    """נסה כל המודלים עם retry."""
+    """נסה כל המודלים ב-v1 ו-v1beta עם retry."""
     import time
-    models = [
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-lite",
-        "gemini-2.5-flash",
-        "gemini-2.0-flash-exp",
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-8b",
+    combos = [
+        ("v1beta", "gemini-2.0-flash"),
+        ("v1",     "gemini-2.0-flash"),
+        ("v1beta", "gemini-2.0-flash-lite"),
+        ("v1",     "gemini-2.0-flash-lite"),
+        ("v1beta", "gemini-2.5-flash"),
+        ("v1beta", "gemini-2.0-flash-exp"),
+        ("v1beta", "gemini-1.5-flash"),
+        ("v1",     "gemini-1.5-flash"),
+        ("v1beta", "gemini-1.5-flash-8b"),
     ]
-    for attempt in range(2):  # 2 סבבים
-        for model in models:
-            url  = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+    last_status = {}
+    for attempt in range(2):
+        for version, model in combos:
+            url = f"https://generativelanguage.googleapis.com/{ version}/models/{model}:generateContent"
             try:
                 resp = requests.post(url, json=payload, headers=headers, timeout=25)
+                last_status[model] = resp.status_code
                 if resp.status_code == 200:
                     return resp
-            except requests.exceptions.Timeout:
+            except Exception:
                 continue
         if attempt == 0:
-            time.sleep(2)  # המתן 2 שניות בין סבבים
+            time.sleep(3)
+    # הצג דיאגנוסטיקה
+    summary = ", ".join(f"{m}:{s}" for m, s in last_status.items())
+    st.caption(f"ניסיון מודלים: {summary}")
     return None
 
 def _identify_with_gemini(image_bytes: bytes) -> list[str]:
