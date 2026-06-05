@@ -951,8 +951,9 @@ def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
     Returns (scaled_ingredients, cal, prot, carbs, fat, approx_grams).
     """
     ingredients = recipe.get("ingredients", [])
+    portions = max(recipe.get("portions", 1), 1)
 
-    #  Step 1: calculate REAL calories from catalog 
+    #  Step 1: calculate REAL calories from catalog (total for whole recipe)
     base_cal = base_prot = base_carbs = base_fat = 0.0
     for ing in ingredients:
         qty_g   = ing.get("quantity", 0)
@@ -978,6 +979,13 @@ def _scale_recipe(recipe: dict, target_cal: float) -> tuple:
                 base_prot  += fb["prot"]  * r
                 base_carbs += fb["carbs"] * r
                 base_fat   += fb["fat"]   * r
+
+    # Normalize to per-portion BEFORE scaling
+    if base_cal >= 1:
+        base_cal   /= portions
+        base_prot  /= portions
+        base_carbs /= portions
+        base_fat   /= portions
 
     # Fall back to recipe DB if catalog lookup gave nothing
     if base_cal < 1:
