@@ -1456,39 +1456,30 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
             recipe_id  = recipe.get("recipe_id", "")
             name_he    = recipe.get("name_he", "מתכון")
 
-            # Scale ingredients + nutrition to hit this meal's calorie target
-            s_ings, s_cal, s_prot, s_carbs, s_fat, s_grams = _scale_recipe(recipe, target_cal)
+            # Per-portion nutrition — what the user sees = what gets logged
+            _portions  = max(recipe.get("portions", 1), 1)
+            _nut       = recipe.get("total_nutrition", {}) or {}
+            p_cal      = round(_nut.get("calories", 0) / _portions)
+            p_prot     = round(_nut.get("protein",  0) / _portions, 1)
+            p_carbs    = round(_nut.get("carbs",    0) / _portions, 1)
+            p_fat      = round(_nut.get("fat",      0) / _portions, 1)
 
-            match_pct = max(0, round(100 - abs(s_cal - target_cal) / max(target_cal, 1) * 100))
+            match_pct = max(0, round(100 - abs(p_cal - target_cal) / max(target_cal, 1) * 100))
+
             # Image priority: local approved → recipe_images.json (TheMealDB)
             _img_uri = _image_data_uri(recipe.get("image_path", ""))
             if not _img_uri:
                 _img_uri = _load_recipe_images().get(recipe_id, "")
 
-            # Build a copy of the recipe with scaled nutrition for display
-            _scaled_recipe = {
-                **recipe,
-                "total_nutrition": {
-                    "calories": round(s_cal),
-                    "protein":  round(s_prot, 1),
-                    "carbs":    round(s_carbs, 1),
-                    "fat":      round(s_fat, 1),
-                },
-                "portions": 1,  # already scaled — show as-is
-            }
             st.markdown(
                 recipe_card_html(
-                    _scaled_recipe,
+                    recipe,
                     image_uri=_img_uri,
                     match_pct=match_pct,
                     show_rank=(idx == 0),
                 ),
                 unsafe_allow_html=True,
             )
-
-            #  Scaled ingredient chips
-            if s_ings:
-                st.markdown(_ingredient_chips_html(s_ings), unsafe_allow_html=True)
 
             #  Add to food log
             btn_key   = f"add_{meal_key}_{recipe_id}_{idx}"
@@ -1503,7 +1494,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 )
             else:
                 if st.button(
-                    f"הוסף לתפריט היומי · {int(s_cal)} קק״ל",
+                    f"הוסף לתפריט היומי · {p_cal} קק״ל",
                     key=btn_key,
                     use_container_width=True,
                     type="primary",
@@ -1511,11 +1502,11 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                     _food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
                         food_id=f"recipe_{recipe_id}",
                         food_name=name_he,
-                        grams=float(s_grams),
-                        calories=float(s_cal),
-                        protein=float(s_prot),
-                        carbs=float(s_carbs),
-                        fat=float(s_fat),
+                        grams=float(_portions * 100),
+                        calories=float(p_cal),
+                        protein=float(p_prot),
+                        carbs=float(p_carbs),
+                        fat=float(p_fat),
                         meal_type=meal_key.lower(),
                         timestamp=datetime.now().isoformat(),
                     ))
