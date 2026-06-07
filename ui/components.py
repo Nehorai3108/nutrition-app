@@ -1079,37 +1079,9 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
             f'aria-label="{alt}"></div>'
         )
     else:
-        # placeholder gradient + emoji based on recipe name
-        _name_lower = (name_he + name_en).lower()
-        if any(w in _name_lower for w in ["עוף","chicken","שניצל","schnitzel","turkey","הודו"]):
-            _emoji, _grad = "🍗", "linear-gradient(135deg,#7c3c1a,#3d1a08)"
-        elif any(w in _name_lower for w in ["סלמון","דג","fish","tuna","טונה"]):
-            _emoji, _grad = "🐟", "linear-gradient(135deg,#1a4a7c,#0d2240)"
-        elif any(w in _name_lower for w in ["סלט","salad","ירק"]):
-            _emoji, _grad = "🥗", "linear-gradient(135deg,#1a4a1a,#0d2a0d)"
-        elif any(w in _name_lower for w in ["ביצ","egg","אומלט","shakshuka","שקשוקה"]):
-            _emoji, _grad = "🍳", "linear-gradient(135deg,#4a3a00,#2a1f00)"
-        elif any(w in _name_lower for w in ["פסטה","pasta","ספגטי"]):
-            _emoji, _grad = "🍝", "linear-gradient(135deg,#4a2a00,#2a1200)"
-        elif any(w in _name_lower for w in ["אורז","rice","קינואה","quinoa"]):
-            _emoji, _grad = "🍚", "linear-gradient(135deg,#2a2a3a,#14141f)"
-        elif any(w in _name_lower for w in ["לחם","bread","פיתה","pita","פנקייק","pancake"]):
-            _emoji, _grad = "🥞", "linear-gradient(135deg,#4a3000,#2a1800)"
-        elif any(w in _name_lower for w in ["מרק","soup"]):
-            _emoji, _grad = "🍲", "linear-gradient(135deg,#3a1a00,#1a0d00)"
-        elif any(w in _name_lower for w in ["חומוס","hummus","פלאפל","falafel"]):
-            _emoji, _grad = "🧆", "linear-gradient(135deg,#3a2a00,#1f1500)"
-        elif any(w in _name_lower for w in ["שוקולד","chocolate","עוגה","cake","עוגיה"]):
-            _emoji, _grad = "🍫", "linear-gradient(135deg,#2a1a1a,#100a0a)"
-        elif any(w in _name_lower for w in ["smoothie","שייק","shake"]):
-            _emoji, _grad = "🥤", "linear-gradient(135deg,#1a0a3a,#0d0520)"
-        else:
-            _emoji, _grad = "🍽️", "linear-gradient(135deg,#1a1f2e,#0d1117)"
         image_block = (
             f'<div class="nut-recipe-image" aria-label="{alt}" '
-            f'style="background:{_grad};display:flex;align-items:center;'
-            f'justify-content:center;font-size:3rem">'
-            f'{_emoji}</div>'
+            f'style="background:linear-gradient(135deg,#1a1f2e,#0d1117)"></div>'
         )
 
     rank_html = ""
