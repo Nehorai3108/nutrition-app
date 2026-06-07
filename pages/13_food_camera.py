@@ -168,20 +168,29 @@ def _identify_with_groq(image_bytes: bytes) -> list[str]:
             "Examples: [\"chicken breast\"], [\"rice\",\"broccoli\"], [\"apple\"], [\"egg\",\"tomato\"]\n"
             "If no food is visible at all, return []."
         )
-        payload = {
-            "model": "meta-llama/llama-4-scout-17b-16e-instruct",
-            "messages": [{"role": "user", "content": [
-                {"type": "text", "text": prompt_text},
-                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
-            ]}],
-            "temperature": 0.0,
-            "max_tokens": 200,
-        }
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-        resp = requests.post("https://api.groq.com/openai/v1/chat/completions",
-                             json=payload, headers=headers, timeout=30)
-        if resp.status_code != 200:
-            st.warning(f"שגיאת Groq {resp.status_code}: {resp.text[:120]}")
+        models = [
+            "meta-llama/llama-4-scout-17b-16e-instruct",
+            "meta-llama/llama-4-maverick-17b-128e-instruct",
+        ]
+        resp = None
+        for model in models:
+            payload = {
+                "model": model,
+                "messages": [{"role": "user", "content": [
+                    {"type": "text", "text": prompt_text},
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
+                ]}],
+                "temperature": 0.0,
+                "max_tokens": 200,
+            }
+            r = requests.post("https://api.groq.com/openai/v1/chat/completions",
+                              json=payload, headers=headers, timeout=30)
+            if r.status_code == 200:
+                resp = r
+                break
+        if resp is None:
+            st.warning("שירות הזיהוי עמוס — נסה שוב בעוד שנייה")
             return []
         text = resp.json()["choices"][0]["message"]["content"].strip()
         if "```" in text:
