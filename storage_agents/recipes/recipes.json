@@ -5127,7 +5127,7 @@
       "snack",
       "vegetarian"
     ],
-    "kashrut": "dairy"
+    "kashrut": "parve"
   },
   {
     "recipe_id": "recipe_100",
@@ -5577,7 +5577,7 @@
       "quick",
       "sweet"
     ],
-    "kashrut": "dairy"
+    "kashrut": "parve"
   },
   {
     "recipe_id": "recipe_109",
@@ -9307,7 +9307,7 @@
       "no-bake",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "parve"
   },
   {
     "recipe_id": "recipe_178",
@@ -12101,7 +12101,8 @@
       "carbs": 36.4,
       "fat": 38.3
     },
-    "portions": 2
+    "portions": 2,
+    "kashrut": "meat"
   },
   {
     "recipe_id": "recipe_232",
@@ -12273,7 +12274,8 @@
       "carbs": 39.9,
       "fat": 30.8
     },
-    "portions": 1
+    "portions": 1,
+    "kashrut": "dairy"
   },
   {
     "recipe_id": "recipe_235",
@@ -12322,7 +12324,8 @@
       "carbs": 68.5,
       "fat": 7.4
     },
-    "portions": 1
+    "portions": 1,
+    "kashrut": "dairy"
   },
   {
     "recipe_id": "recipe_236",
@@ -12378,7 +12381,8 @@
       "carbs": 119.4,
       "fat": 19.3
     },
-    "portions": 2
+    "portions": 2,
+    "kashrut": "meat"
   },
   {
     "recipe_id": "recipe_237",
@@ -12439,7 +12443,8 @@
       "carbs": 26.1,
       "fat": 28.7
     },
-    "portions": 1
+    "portions": 1,
+    "kashrut": "dairy"
   },
   {
     "recipe_id": "recipe_238",
@@ -12615,7 +12620,8 @@
       "carbs": 29.3,
       "fat": 24.6
     },
-    "portions": 1
+    "portions": 1,
+    "kashrut": "dairy"
   },
   {
     "recipe_id": "recipe_241",
@@ -13021,7 +13027,8 @@
       "quick",
       "vegan",
       "vegetarian"
-    ]
+    ],
+    "kashrut": "dairy"
   },
   {
     "recipe_id": "recipe_248",
@@ -13171,7 +13178,8 @@
       "vegetarian",
       "quick",
       "traditional"
-    ]
+    ],
+    "kashrut": "dairy"
   },
   {
     "recipe_id": "recipe_251",
@@ -14350,7 +14358,7 @@
     ],
     "prep_time_minutes": 10,
     "portions": 1,
-    "kashrut": "meat",
+    "kashrut": "parve",
     "tags": [
       "low_calorie",
       "low_carb",
@@ -14895,7 +14903,7 @@
     ],
     "prep_time_minutes": 20,
     "portions": 2,
-    "kashrut": "dairy|parve",
+    "kashrut": "parve",
     "tags": [],
     "ingredients": [
       {
@@ -15094,7 +15102,7 @@
     ],
     "prep_time_minutes": 20,
     "portions": 2,
-    "kashrut": "dairy",
+    "kashrut": "parve",
     "tags": [
       "low_calorie",
       "low_carb"
@@ -15180,7 +15188,7 @@
     ],
     "prep_time_minutes": 20,
     "portions": 2,
-    "kashrut": "dairy",
+    "kashrut": "parve",
     "tags": [],
     "ingredients": [
       {
@@ -15573,7 +15581,7 @@
     ],
     "prep_time_minutes": 25,
     "portions": 6,
-    "kashrut": "parve",
+    "kashrut": "meat",
     "tags": [
       "ground meat",
       "low_calorie",
