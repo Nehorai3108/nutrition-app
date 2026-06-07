@@ -1472,6 +1472,11 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 ),
                 unsafe_allow_html=True,
             )
+            if st.button("לפרטי המתכון ←", key=f"detail_{meal_key}_{recipe_id}_{idx}",
+                         use_container_width=True):
+                st.query_params["id"] = recipe_id
+                st.query_params["from"] = "daily_menu"
+                st.switch_page("pages/3_recipe_detail.py")
 
             #  Add to food log
             btn_key   = f"add_{meal_key}_{recipe_id}_{idx}"
