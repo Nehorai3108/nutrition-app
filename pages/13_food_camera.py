@@ -145,11 +145,16 @@ def _get_catalog():
 
 def _get_api_keys() -> list[str]:
     """מחזיר את כל ה-Gemini API keys מה-secrets."""
-    keys = st.secrets.get("GEMINI_API_KEYS", [])
-    if keys:
-        return list(keys)
-    single = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
-    return [single] if single else []
+    keys = []
+    for i in range(1, 10):
+        k = st.secrets.get(f"GEMINI_API_KEY_{i}", "")
+        if k:
+            keys.append(k)
+    if not keys:
+        single = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
+        if single:
+            keys.append(single)
+    return keys
 
 def _call_gemini(payload: dict) -> requests.Response | None:
     """מנסה את כל ה-API keys בrotation — עובר לבא אם 429."""
