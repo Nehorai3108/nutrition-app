@@ -16,3 +16,12 @@ storage_agents/recipe_images/candidates/
 .streamlit/secrets.toml
 worktrees/
 test_groq.py
+streamlit_out.txt
+streamlit.log
+*.log
+data/nightly_expand.log
+storage_agents/profiles/router_test_001.json
+storage_agents/profiles/test_user_001.json
+storage_agents/audit/director_reports/
+.DS_Store
+Thumbs.db

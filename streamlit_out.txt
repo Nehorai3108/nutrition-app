@@ -1,1 +1,0 @@
-/usr/bin/bash: line 2: streamlit: command not found
