@@ -30,6 +30,18 @@ st.set_page_config(
 )
 
 inject_global_css()
+
+st.markdown("""
+<script>
+document.addEventListener('click', function(e) {
+    var card = e.target.closest('a[href*="recipe_detail"]');
+    if (card) {
+        e.preventDefault();
+        window.parent.location.href = card.getAttribute('href');
+    }
+});
+</script>
+""", unsafe_allow_html=True)
 nav_menu(active="מתכונים")
 
 @st.cache_resource
@@ -103,6 +115,7 @@ st.markdown("---")
 
 for recipe in results:
     _img_uri = image_data_uri(recipe.get("image_path", ""))
+    _rid = recipe.get("recipe_id", "")
     st.markdown(
         recipe_card_html(recipe, image_uri=_img_uri),
         unsafe_allow_html=True,
