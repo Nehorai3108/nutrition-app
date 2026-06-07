@@ -33,7 +33,7 @@ def _load_images() -> dict:
     except:
         return {}
 
-recipe_id = st.query_params.get("id", "")
+recipe_id = st.query_params.get("id", "") or st.session_state.pop("_nav_recipe_id", "")
 if not recipe_id:
     st.error("לא צוין מזהה מתכון.")
     st.page_link("pages/2_recipes.py", label="חזור לרשימת המתכונים")
