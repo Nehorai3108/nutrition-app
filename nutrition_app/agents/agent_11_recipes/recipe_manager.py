@@ -503,6 +503,7 @@ class RecipeManager:
         inventory_names: Optional[Set[str]] = None,
         allergens: Optional[List[str]] = None,
         disliked_foods: Optional[List[str]] = None,
+        variation_seed: int = 0,
     ) -> List[dict]:
         """Find top 5 recipes for a specific meal slot.
 
@@ -559,7 +560,14 @@ class RecipeManager:
             scored.append((score, recipe))
 
         scored.sort(key=lambda x: x[0], reverse=True)
-        return [r for _, r in scored[:5]]
+        # קח את 15 המתכונים הטובים ביותר, ואז ערבב לפי seed לוריאציה
+        import random as _random
+        top_pool = scored[:15]
+        if variation_seed != 0:
+            _random.seed(variation_seed)
+            _random.shuffle(top_pool)
+            _random.seed()  # reset seed
+        return [r for _, r in top_pool[:5]]
 
     # ------------------------------------------------------------------
     # Statistics

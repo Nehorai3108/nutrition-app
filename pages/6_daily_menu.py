@@ -1429,6 +1429,18 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
             unsafe_allow_html=True,
         )
 
+        _seed_key = f"meal_seed_{meal_key}"
+        if _seed_key not in st.session_state:
+            import datetime as _dt
+            st.session_state[_seed_key] = _dt.date.today().toordinal()
+
+        _col1, _col2 = st.columns([4, 1])
+        with _col2:
+            if st.button("רענן", key=f"refresh_{meal_key}", use_container_width=True):
+                import random as _r
+                st.session_state[_seed_key] = _r.randint(1, 99999)
+                st.rerun()
+
         try:
             suggestions = recipe_mgr.recommend_meal(
                 meal_type=meal_key,
@@ -1436,6 +1448,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 inventory_names=inventory_names if inventory_names else None,
                 allergens=_user_allergens if _user_allergens else None,
                 disliked_foods=_user_disliked if _user_disliked else None,
+                variation_seed=st.session_state[_seed_key],
             )[:3]
         except Exception as _e:
             st.error(f"שגיאה: {_e}")
