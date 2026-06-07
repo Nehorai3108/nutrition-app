@@ -1222,11 +1222,6 @@ with tabs[-3]:
                         is_recipe=True,
                         img_html=_get_recipe_img_html(_rec_id, _rec),
                     )
-                    st.markdown(
-                        f'<a href="/recipe_detail?id={_rec_id}&from=daily_menu" target="_self" style="text-decoration:none">'
-                        f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
-                        unsafe_allow_html=True
-                    )
                     st.markdown('<div dir="rtl" style="height:4px"></div>', unsafe_allow_html=True)
 
     # 
@@ -1510,13 +1505,7 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                     st.session_state[added_key] = True
                     st.rerun()
 
-            st.markdown(
-                f'<a href="/recipe_detail?id={recipe_id}&from=daily_menu" target="_self" style="text-decoration:none">'
-                f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
-                unsafe_allow_html=True
-            )
-
-        #  In-meal food search 
+        #  In-meal food search
         st.markdown('<div dir="rtl" style="height:10px"></div>', unsafe_allow_html=True)
         with st.expander(" לא מצאת מה שרצית? חפש כאן"):
             _ms_mode = st.radio(
@@ -1647,11 +1636,6 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                                 grams=float(_mportions * 100),
                                 is_recipe=True,
                                 img_html=_get_recipe_img_html(_mrid, _mrec),
-                            )
-                            st.markdown(
-                                f'<a href="/recipe_detail?id={_mrid}&from=daily_menu" target="_self" style="text-decoration:none">'
-                                f'<div style="text-align:center;padding:8px;color:#4f8ef7;font-size:0.8rem;font-weight:600">פרטי מתכון מלאים</div></a>',
-                                unsafe_allow_html=True
                             )
                 else:
                     st.markdown(
