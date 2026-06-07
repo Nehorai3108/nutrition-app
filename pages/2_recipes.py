@@ -32,17 +32,28 @@ st.set_page_config(
 
 inject_global_css()
 
-components.html("""
-<script>
-window.parent.document.addEventListener('click', function(e) {
-    var card = e.target.closest('a[href*="recipe_detail"]');
-    if (card) {
-        e.preventDefault();
-        window.parent.location.href = card.getAttribute('href');
-    }
-}, true);
-</script>
-""", height=0)
+st.markdown("""
+<style>
+/* כפתור מתכון — נראה כמו חלק מהכרטיס */
+div[data-testid="stButton"].recipe-nav > button {
+    background: transparent !important;
+    border: none !important;
+    border-top: 1px solid #252d3d !important;
+    border-radius: 0 0 16px 16px !important;
+    color: #4f8ef7 !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    margin-top: -12px !important;
+    padding: 10px 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+}
+div[data-testid="stButton"].recipe-nav > button:hover {
+    background: #161b26 !important;
+    color: #7fb3ff !important;
+}
+</style>
+""", unsafe_allow_html=True)
 nav_menu(active="מתכונים")
 
 @st.cache_resource
@@ -121,6 +132,12 @@ for recipe in results:
         recipe_card_html(recipe, image_uri=_img_uri),
         unsafe_allow_html=True,
     )
+    st.markdown('<div class="recipe-nav">', unsafe_allow_html=True)
+    if st.button("לפרטי המתכון ←", key=f"nav_{_rid}", use_container_width=True):
+        st.query_params["id"] = _rid
+        st.query_params["from"] = "recipes"
+        st.switch_page("pages/3_recipe_detail.py")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if not results:
     st.info("לא נמצאו מתכונים התואמים לסינון. נסה להרחיב את החיפוש.")
