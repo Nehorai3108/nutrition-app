@@ -1442,14 +1442,18 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 st.rerun()
 
         try:
-            suggestions = recipe_mgr.recommend_meal(
+            import inspect as _inspect
+            _rm_params = _inspect.signature(recipe_mgr.recommend_meal).parameters
+            _kwargs = dict(
                 meal_type=meal_key,
                 target_calories=target_cal,
                 inventory_names=inventory_names if inventory_names else None,
                 allergens=_user_allergens if _user_allergens else None,
                 disliked_foods=_user_disliked if _user_disliked else None,
-                variation_seed=st.session_state[_seed_key],
-            )[:3]
+            )
+            if "variation_seed" in _rm_params:
+                _kwargs["variation_seed"] = st.session_state[_seed_key]
+            suggestions = recipe_mgr.recommend_meal(**_kwargs)[:3]
         except Exception as _e:
             st.error(f"שגיאה: {_e}")
             suggestions = []
