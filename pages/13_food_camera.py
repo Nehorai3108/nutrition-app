@@ -143,51 +143,17 @@ FOOD_ALIASES: dict[str, list[str]] = {
 def _get_catalog():
     return FoodCatalog()
 
-def _get_api_keys() -> list[str]:
-    """מחזיר את כל ה-Gemini API keys מה-secrets."""
-    keys = []
-    for i in range(1, 10):
-        k = st.secrets.get(f"GEMINI_API_KEY_{i}", "")
-        if k:
-            keys.append(k)
-    if not keys:
-        single = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
-        if single:
-            keys.append(single)
-    return keys
-
-def _call_gemini(payload: dict) -> requests.Response | None:
-    """מנסה את כל ה-API keys בrotation — עובר לבא אם 429."""
-    models = ["gemini-2.0-flash", "gemini-2.0-flash-lite"]
-    api_keys = _get_api_keys()
-    if not api_keys:
-        st.error("GEMINI_API_KEYS לא מוגדר ב-Secrets")
-        return None
-    for api_key in api_keys:
-        headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
-        for model in models:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-            try:
-                resp = requests.post(url, json=payload, headers=headers, timeout=30)
-                if resp.status_code == 200:
-                    return resp
-                st.caption(f"⚠️ key ...{api_key[-6:]} model {model}: {resp.status_code} — {resp.text[:120]}")
-                if resp.status_code != 429:
-                    break  # שגיאה אחרת — נסה key הבא
-            except Exception as e:
-                st.caption(f"❌ exception: {e}")
-                break
-    return None
-
-def _identify_with_gemini(image_bytes: bytes) -> list[str]:
-    """שולח תמונה ל-Gemini REST API, מקבל רשימת שמות מזון באנגלית."""
+def _identify_with_groq(image_bytes: bytes) -> list[str]:
+    """שולח תמונה ל-Groq Vision API, מקבל רשימת שמות מזון באנגלית."""
+    api_key = st.secrets.get("groq_api_key", os.environ.get("GROQ_API_KEY", ""))
+    if not api_key:
+        st.error("groq_api_key לא מוגדר ב-Secrets")
+        return []
     try:
-        img  = Image.open(io.BytesIO(image_bytes))
-        buf  = io.BytesIO()
-        fmt  = img.format or "JPEG"
-        img.save(buf, format=fmt)
+        img = Image.open(io.BytesIO(image_bytes))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
         img_b64 = base64.b64encode(buf.getvalue()).decode()
-        mime    = f"image/{fmt.lower()}"
 
         prompt_text = (
             "You are a professional nutritionist and food recognition expert.\n"
@@ -203,20 +169,21 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
             "If no food is visible at all, return []."
         )
         payload = {
-            "contents": [{"parts": [
-                {"text": prompt_text},
-                {"inline_data": {"mime_type": mime, "data": img_b64}},
+            "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+            "messages": [{"role": "user", "content": [
+                {"type": "text", "text": prompt_text},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
             ]}],
-            "generationConfig": {"temperature": 0.0, "maxOutputTokens": 200},
+            "temperature": 0.0,
+            "max_tokens": 200,
         }
-        api_keys = _get_api_keys()
-        st.caption(f"🔑 נמצאו {len(api_keys)} API keys")
-        resp = _call_gemini(payload)
-        if resp is None:
-            st.warning("שרת Gemini עמוס כרגע — נסה שוב בעוד כמה שניות")
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        resp = requests.post("https://api.groq.com/openai/v1/chat/completions",
+                             json=payload, headers=headers, timeout=30)
+        if resp.status_code != 200:
+            st.warning(f"שגיאת Groq {resp.status_code}: {resp.text[:120]}")
             return []
-        st.caption(f"✅ Gemini ענה: {resp.status_code}")
-        text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+        text = resp.json()["choices"][0]["message"]["content"].strip()
         if "```" in text:
             text = text.split("```")[1]
             if text.startswith("json"):
@@ -258,7 +225,7 @@ if img_file:
     img_bytes = img_file.getvalue()
 
     with st.spinner("מזהה מזון..."):
-        food_names = _identify_with_gemini(img_bytes)
+        food_names = _identify_with_groq(img_bytes)
 
     if not food_names:
         st.markdown(
