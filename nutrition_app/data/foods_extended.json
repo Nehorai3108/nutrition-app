@@ -9254,5 +9254,174 @@
       "artichoke",
       "globe artichoke"
     ]
+  },
+  {
+    "food_id": "ext_cholent",
+    "name_he": "חמין",
+    "name_en": "Cholent",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 185.0,
+      "protein_g": 11.0,
+      "carbs_g": 18.0,
+      "fat_g": 7.0,
+      "fiber_g": 4.0,
+      "sugar_g": 1.0,
+      "sodium_mg": 400.0
+    },
+    "default_serving_g": 300.0,
+    "aliases_he": [
+      "שולנט",
+      "חמין ירושלמי"
+    ],
+    "aliases_en": [
+      "cholent",
+      "hamin",
+      "jewish stew"
+    ]
+  },
+  {
+    "food_id": "ext_rugelach",
+    "name_he": "רוגלך",
+    "name_en": "Rugelach",
+    "category": "dessert",
+    "nutrition_per_100g": {
+      "calories_kcal": 410.0,
+      "protein_g": 6.0,
+      "carbs_g": 48.0,
+      "fat_g": 22.0,
+      "fiber_g": 1.5,
+      "sugar_g": 18.0,
+      "sodium_mg": 200.0
+    },
+    "default_serving_g": 30.0,
+    "aliases_he": [
+      "רוגלה"
+    ],
+    "aliases_en": [
+      "rugelach",
+      "rogalach"
+    ]
+  },
+  {
+    "food_id": "ext_babka",
+    "name_he": "בבקה",
+    "name_en": "Babka",
+    "category": "bakery",
+    "nutrition_per_100g": {
+      "calories_kcal": 370.0,
+      "protein_g": 7.0,
+      "carbs_g": 50.0,
+      "fat_g": 16.0,
+      "fiber_g": 2.0,
+      "sugar_g": 20.0,
+      "sodium_mg": 250.0
+    },
+    "default_serving_g": 80.0,
+    "aliases_he": [
+      "בבקה שוקולד"
+    ],
+    "aliases_en": [
+      "babka",
+      "chocolate babka"
+    ]
+  },
+  {
+    "food_id": "ext_sufganiyot",
+    "name_he": "סופגנייה",
+    "name_en": "Sufganiyot",
+    "category": "dessert",
+    "nutrition_per_100g": {
+      "calories_kcal": 310.0,
+      "protein_g": 5.0,
+      "carbs_g": 45.0,
+      "fat_g": 13.0,
+      "fiber_g": 1.0,
+      "sugar_g": 15.0,
+      "sodium_mg": 200.0
+    },
+    "default_serving_g": 70.0,
+    "aliases_he": [
+      "סופגניות",
+      "דונאט"
+    ],
+    "aliases_en": [
+      "sufganiyot",
+      "jelly donut",
+      "doughnut"
+    ]
+  },
+  {
+    "food_id": "ext_sourdough",
+    "name_he": "לחם מחמצת",
+    "name_en": "Sourdough Bread",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 274.0,
+      "protein_g": 9.0,
+      "carbs_g": 52.0,
+      "fat_g": 2.0,
+      "fiber_g": 2.5,
+      "sugar_g": 3.0,
+      "sodium_mg": 500.0
+    },
+    "default_serving_g": 50.0,
+    "aliases_he": [
+      "לחם שאור",
+      "לחם מחמצת"
+    ],
+    "aliases_en": [
+      "sourdough",
+      "sourdough bread",
+      "levain"
+    ]
+  },
+  {
+    "food_id": "ext_whey_protein",
+    "name_he": "אבקת חלבון מי גבינה",
+    "name_en": "Whey Protein Powder",
+    "category": "supplement",
+    "nutrition_per_100g": {
+      "calories_kcal": 370.0,
+      "protein_g": 80.0,
+      "carbs_g": 6.0,
+      "fat_g": 3.0,
+      "fiber_g": 0.0,
+      "sugar_g": 4.0,
+      "sodium_mg": 150.0
+    },
+    "default_serving_g": 30.0,
+    "aliases_he": [
+      "וויי",
+      "אבקת חלבון"
+    ],
+    "aliases_en": [
+      "whey protein",
+      "protein powder",
+      "whey",
+      "whey isolate"
+    ]
+  },
+  {
+    "food_id": "ext_white_chocolate",
+    "name_he": "שוקולד לבן",
+    "name_en": "White Chocolate",
+    "category": "dessert",
+    "nutrition_per_100g": {
+      "calories_kcal": 539.0,
+      "protein_g": 6.0,
+      "carbs_g": 59.0,
+      "fat_g": 32.0,
+      "fiber_g": 0.0,
+      "sugar_g": 57.0,
+      "sodium_mg": 90.0
+    },
+    "default_serving_g": 30.0,
+    "aliases_he": [
+      "שוקולד לבן"
+    ],
+    "aliases_en": [
+      "white chocolate"
+    ]
   }
 ]
