@@ -171,9 +171,11 @@ def _call_gemini(payload: dict) -> requests.Response | None:
                 resp = requests.post(url, json=payload, headers=headers, timeout=30)
                 if resp.status_code == 200:
                     return resp
+                st.caption(f"⚠️ key ...{api_key[-6:]} model {model}: {resp.status_code} — {resp.text[:120]}")
                 if resp.status_code != 429:
                     break  # שגיאה אחרת — נסה key הבא
-            except Exception:
+            except Exception as e:
+                st.caption(f"❌ exception: {e}")
                 break
     return None
 
