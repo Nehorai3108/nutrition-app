@@ -160,20 +160,25 @@ class NutritionEngine:
         - Carbs:   remaining calories
         """
         # Protein: g/kg → kcal → g
-        protein_g = round(PROTEIN_PER_KG[goal] * weight_kg, 1)
+        # Cap at 30% of total calories to prevent near-zero carbs
+        protein_g_ideal = PROTEIN_PER_KG[goal] * weight_kg
+        protein_g_max   = target_calories * 0.30 / 4   # max 30% of calories
+        protein_g = round(min(protein_g_ideal, protein_g_max), 1)
         protein_kcal = protein_g * 4
 
-        # Fat: minimum floor
+        # Fat: minimum floor (hormonal health)
         fat_g_min = round(FAT_MIN_PER_KG * weight_kg, 1)
+        # Cap fat minimum to leave room for minimum carbs (100g = 400 kcal)
+        CARBS_MIN_KCAL = 400  # minimum 100g carbs
+        fat_g_min = min(fat_g_min, round((target_calories - protein_kcal - CARBS_MIN_KCAL) / 9, 1))
+        fat_g_min = max(fat_g_min, 30.0)  # absolute minimum 30g fat
 
         # Remaining calories for fat + carbs
         remaining = target_calories - protein_kcal
 
         if goal == "lose_weight":
-            # Higher fat, lower carbs helps satiety
             fat_pct_of_remaining = 0.40
         elif goal == "gain_weight":
-            # More carbs for energy and anabolic signalling
             fat_pct_of_remaining = 0.25
         else:  # maintain
             fat_pct_of_remaining = 0.33
@@ -182,7 +187,7 @@ class NutritionEngine:
         fat_g = round(fat_kcal / 9, 1)
 
         carbs_kcal = target_calories - protein_kcal - fat_g * 9
-        carbs_g = round(max(carbs_kcal, 0) / 4, 1)
+        carbs_g = round(max(carbs_kcal, CARBS_MIN_KCAL) / 4, 1)
 
         return protein_g, carbs_g, fat_g
 
