@@ -1072,10 +1072,13 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
     alt       = name_he or "מתכון"
 
     # Use CSS background-image so failed loads show nothing (no broken icon)
-    if image_uri:
+    _ext_url  = recipe.get("image_url", "")
+    _bg_image = image_uri or (_ext_url and f"url('{_ext_url}')") or ""
+    if _bg_image:
+        _bg = f"#0d1117 {_bg_image} center/cover no-repeat" if image_uri else f"#0d1117 url('{_ext_url}') center/cover no-repeat"
         image_block = (
             f'<div class="nut-recipe-image" '
-            f'style="background:#0d1117 url(\'{image_uri}\') center/cover no-repeat" '
+            f'style="background:{_bg}" '
             f'aria-label="{alt}"></div>'
         )
     else:
