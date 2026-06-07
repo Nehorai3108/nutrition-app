@@ -1,0 +1,13 @@
+{
+  "user_id": "test_user_001",
+  "name": "טסט",
+  "meal_preferences": {
+    "kashrut": "none",
+    "medical_conditions": [
+      "IBS / מעי רגיז"
+    ],
+    "sport_type": "gym",
+    "diet_type": "mediterranean"
+  },
+  "updated_at": "2026-06-03T17:04:54.091443"
+}

@@ -250,14 +250,88 @@ class FoodCatalog:
         return self._foods.get(food_id)
 
     def search_foods(self, query: str, limit: int = 10) -> List[FoodItem]:
-        normalized = self._normalize(query)
-        results = []
+        """Return top-N foods ranked by relevance score.
+
+        Priority order:
+          1. Exact Hebrew name match  (score 1.0)
+          2. Exact English / alias match (score 0.95)
+          3. Partial match, scored by position & length
+          4. Foods from 'json' source (Hebrew DB) rank above USDA/OFF
+          5. Foods with valid calorie data rank above NULL-calorie entries
+        """
+        if not query:
+            # No query — return foods from our Hebrew catalog first
+            scored = []
+            for food in self._foods.values():
+                has_cal = food.nutrition_per_100g.calories_kcal is not None
+                src_rank = 0 if food.source == "json" else (1 if food.source == "off" else 2)
+                scored.append((src_rank, 0 if has_cal else 1, food.name_he, food))
+            scored.sort(key=lambda x: x[:3])
+            return [x[3] for x in scored[:limit]]
+
+        nq = self._normalize(query)
+        scored: list[tuple] = []
+
         for food in self._foods.values():
-            if self._matches(normalized, food):
-                results.append(food)
-                if len(results) >= limit:
-                    break
-        return results
+            score = self._score_match_extended(nq, food)
+            if score > 0:
+                scored.append((score, food))
+
+        # Sort: highest score first; break ties by source (json > off > usda)
+        SOURCE_RANK = {"json": 0, "off": 1, "usda": 2, "manual": 0}
+        scored.sort(
+            key=lambda x: (
+                -x[0],                                          # higher score first
+                SOURCE_RANK.get(x[1].source or "", 3),         # Hebrew DB first
+                0 if x[1].nutrition_per_100g.calories_kcal else 1,  # has calories
+                x[1].name_he,
+            )
+        )
+        return [f for _, f in scored[:limit]]
+
+    def _score_match_extended(self, nq: str, food: FoodItem) -> float:
+        """Extended scoring: exact > alias > starts-with > contains."""
+        if not nq:
+            return 0.5
+
+        name_he = self._normalize(food.name_he or "")
+        name_en = self._normalize(food.name_en or "")
+
+        # Exact match
+        if nq == name_he or nq == name_en:
+            return 1.0
+
+        # Alias exact match
+        for alias in (food.aliases_he or []) + (food.aliases_en or []):
+            if nq == self._normalize(alias):
+                return 0.95
+
+        # Starts-with (Hebrew preferred)
+        if name_he.startswith(nq):
+            return 0.85
+        if name_en.startswith(nq):
+            return 0.80
+
+        # Query is inside name
+        if nq in name_he:
+            # Longer name → less specific match → lower score
+            return max(0.4, 0.75 - len(name_he) * 0.005)
+        if nq in name_en:
+            return max(0.3, 0.65 - len(name_en) * 0.005)
+
+        # Name is inside query (e.g. query="חזה עוף מבושל", name="חזה עוף")
+        if name_he and name_he in nq:
+            return 0.55
+        if name_en and name_en in nq:
+            return 0.45
+
+        # Alias partial
+        for alias in (food.aliases_he or []) + (food.aliases_en or []):
+            na = self._normalize(alias)
+            if nq in na or na in nq:
+                return 0.40
+
+        return 0.0
 
     def _matches(self, normalized_query: str, food: FoodItem) -> bool:
         targets = [

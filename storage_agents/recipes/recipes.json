@@ -1319,7 +1319,7 @@
       }
     ],
     "total_nutrition": {
-      "calories": 158,
+      "calories": 178,
       "protein": 2.2,
       "carbs": 40.6,
       "fat": 0.7
@@ -3011,7 +3011,7 @@
       }
     ],
     "total_nutrition": {
-      "calories": 265,
+      "calories": 296,
       "protein": 8.6,
       "carbs": 27.4,
       "fat": 16.9
@@ -5505,7 +5505,7 @@
       }
     ],
     "total_nutrition": {
-      "calories": 144,
+      "calories": 164,
       "protein": 3.1,
       "carbs": 36.2,
       "fat": 0.7
@@ -9335,7 +9335,7 @@
       }
     ],
     "total_nutrition": {
-      "calories": 289,
+      "calories": 330,
       "protein": 7.8,
       "carbs": 54.8,
       "fat": 8.9
@@ -11481,7 +11481,8 @@
       "protein": 28.5,
       "carbs": 87.1,
       "fat": 6.5
-    }
+    },
+    "portions": 2
   },
   {
     "recipe_id": "recipe_227",
@@ -11535,7 +11536,8 @@
       "protein": 33.9,
       "carbs": 145.7,
       "fat": 14.2
-    }
+    },
+    "portions": 2
   },
   {
     "recipe_id": "recipe_228",
@@ -11591,7 +11593,8 @@
       "protein": 34.3,
       "carbs": 81.9,
       "fat": 61.7
-    }
+    },
+    "portions": 2
   },
   {
     "recipe_id": "recipe_229",
@@ -11635,7 +11638,8 @@
       "protein": 12.9,
       "carbs": 27.6,
       "fat": 46.5
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_230",
@@ -11668,7 +11672,8 @@
       "protein": 9.5,
       "carbs": 44.8,
       "fat": 12.0
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_231",
@@ -11721,7 +11726,8 @@
       "protein": 41.8,
       "carbs": 36.4,
       "fat": 38.3
-    }
+    },
+    "portions": 2
   },
   {
     "recipe_id": "recipe_232",
@@ -11781,7 +11787,8 @@
       "protein": 5.3,
       "carbs": 36.4,
       "fat": 16.4
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_233",
@@ -11835,7 +11842,8 @@
       "protein": 21.9,
       "carbs": 52.3,
       "fat": 14.8
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_234",
@@ -11889,7 +11897,8 @@
       "protein": 23.6,
       "carbs": 39.9,
       "fat": 30.8
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_235",
@@ -11937,7 +11946,8 @@
       "protein": 19.1,
       "carbs": 68.5,
       "fat": 7.4
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_236",
@@ -11991,7 +12001,8 @@
       "protein": 66.6,
       "carbs": 119.4,
       "fat": 19.3
-    }
+    },
+    "portions": 2
   },
   {
     "recipe_id": "recipe_237",
@@ -12051,7 +12062,8 @@
       "protein": 11.9,
       "carbs": 26.1,
       "fat": 28.7
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_238",
@@ -12106,7 +12118,8 @@
       "protein": 37.0,
       "carbs": 5.5,
       "fat": 13.2
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_239",
@@ -12162,7 +12175,8 @@
       "protein": 7.3,
       "carbs": 11.4,
       "fat": 10.8
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_240",
@@ -12217,7 +12231,8 @@
       "protein": 9.8,
       "carbs": 29.3,
       "fat": 24.6
-    }
+    },
+    "portions": 1
   },
   {
     "recipe_id": "recipe_241",
@@ -14672,7 +14687,7 @@
       }
     ],
     "total_nutrition": {
-      "calories": 218,
+      "calories": 251,
       "protein": 10.6,
       "carbs": 29.3,
       "fat": 10.2

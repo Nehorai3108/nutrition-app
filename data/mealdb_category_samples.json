@@ -1,0 +1,52 @@
+{
+  "chicken": [
+    "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg",
+    "https://www.themealdb.com/images/media/meals/020z181619788503.jpg",
+    "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
+  ],
+  "fish": [
+    "https://www.themealdb.com/images/media/meals/jc6oub1763196663.jpg",
+    "https://www.themealdb.com/images/media/meals/1548772327.jpg",
+    "https://www.themealdb.com/images/media/meals/qqwhw51780093126.jpg"
+  ],
+  "beef": [
+    "https://www.themealdb.com/images/media/meals/8rfd4q1764112993.jpg",
+    "https://www.themealdb.com/images/media/meals/13fg4j1764441982.jpg",
+    "https://www.themealdb.com/images/media/meals/jgl9qq1764437635.jpg"
+  ],
+  "breakfast": [
+    "https://www.themealdb.com/images/media/meals/jvjnoh1780086318.jpg",
+    "https://www.themealdb.com/images/media/meals/hqaejl1695738653.jpg",
+    "https://www.themealdb.com/images/media/meals/1550441882.jpg"
+  ],
+  "pasta": [
+    "https://www.themealdb.com/images/media/meals/usywpp1511189717.jpg",
+    "https://www.themealdb.com/images/media/meals/0jv5gx1661040802.jpg",
+    "https://www.themealdb.com/images/media/meals/uquqtu1511178042.jpg"
+  ],
+  "vegetarian": [
+    "https://www.themealdb.com/images/media/meals/3m8yae1763257951.jpg",
+    "https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg",
+    "https://www.themealdb.com/images/media/meals/zub3s91764110535.jpg"
+  ],
+  "dessert": [
+    "https://www.themealdb.com/images/media/meals/wkhg581762773124.jpg",
+    "https://www.themealdb.com/images/media/meals/a4kgf21763075288.jpg",
+    "https://www.themealdb.com/images/media/meals/q47rkb1762324620.jpg"
+  ],
+  "misc": [
+    "https://www.themealdb.com/images/media/meals/vxuyrx1511302687.jpg",
+    "https://www.themealdb.com/images/media/meals/skzd0x1780091674.jpg",
+    "https://www.themealdb.com/images/media/meals/ussyxw1515364536.jpg"
+  ],
+  "lamb": [
+    "https://www.themealdb.com/images/media/meals/04axct1763793018.jpg",
+    "https://www.themealdb.com/images/media/meals/8xuvhj1763794991.jpg",
+    "https://www.themealdb.com/images/media/meals/p9tebp1764118792.jpg"
+  ],
+  "side": [
+    "https://www.themealdb.com/images/media/meals/grhn401765687086.jpg",
+    "https://www.themealdb.com/images/media/meals/se5vhk1764114880.jpg",
+    "https://www.themealdb.com/images/media/meals/o2cd4r1764113576.jpg"
+  ]
+}
