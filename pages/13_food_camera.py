@@ -143,34 +143,37 @@ FOOD_ALIASES: dict[str, list[str]] = {
 def _get_catalog():
     return FoodCatalog()
 
-def _call_gemini(api_key: str, payload: dict, headers: dict) -> requests.Response | None:
-    """נסה מודלים — מינימום בקשות כדי לא לשרוף quota."""
-    import time
-    # רק 2 מודלים עיקריים — חוסכים quota
+def _get_api_keys() -> list[str]:
+    """מחזיר את כל ה-Gemini API keys מה-secrets."""
+    keys = st.secrets.get("GEMINI_API_KEYS", [])
+    if keys:
+        return list(keys)
+    single = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
+    return [single] if single else []
+
+def _call_gemini(payload: dict) -> requests.Response | None:
+    """מנסה את כל ה-API keys בrotation — עובר לבא אם 429."""
     models = ["gemini-2.0-flash", "gemini-2.0-flash-lite"]
-    for model in models:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        try:
-            resp = requests.post(url, json=payload, headers=headers, timeout=30)
-            if resp.status_code == 200:
-                return resp
-            if resp.status_code == 429:
-                # rate limit — המתן ונסה שוב פעם אחת
-                time.sleep(5)
-                resp2 = requests.post(url, json=payload, headers=headers, timeout=30)
-                if resp2.status_code == 200:
-                    return resp2
-                break  # אין טעם להמשיך — quota מלא
-        except Exception:
-            continue
+    api_keys = _get_api_keys()
+    if not api_keys:
+        st.error("GEMINI_API_KEYS לא מוגדר ב-Secrets")
+        return None
+    for api_key in api_keys:
+        headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
+        for model in models:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+            try:
+                resp = requests.post(url, json=payload, headers=headers, timeout=30)
+                if resp.status_code == 200:
+                    return resp
+                if resp.status_code != 429:
+                    break  # שגיאה אחרת — נסה key הבא
+            except Exception:
+                break
     return None
 
 def _identify_with_gemini(image_bytes: bytes) -> list[str]:
     """שולח תמונה ל-Gemini REST API, מקבל רשימת שמות מזון באנגלית."""
-    api_key = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY", ""))
-    if not api_key:
-        st.error("GEMINI_API_KEY לא מוגדר ב-Secrets")
-        return []
     try:
         img  = Image.open(io.BytesIO(image_bytes))
         buf  = io.BytesIO()
@@ -199,8 +202,7 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
             ]}],
             "generationConfig": {"temperature": 0.0, "maxOutputTokens": 200},
         }
-        headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
-        resp = _call_gemini(api_key, payload, headers)
+        resp = _call_gemini(payload)
         if resp is None:
             st.warning("שרת Gemini עמוס כרגע — נסה שוב בעוד כמה שניות")
             return []
