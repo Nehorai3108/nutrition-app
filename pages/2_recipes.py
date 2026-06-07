@@ -134,8 +134,8 @@ for recipe in results:
     )
     st.markdown('<div class="recipe-nav">', unsafe_allow_html=True)
     if st.button("לפרטי המתכון ←", key=f"nav_{_rid}", use_container_width=True):
-        st.query_params["id"] = _rid
-        st.query_params["from"] = "recipes"
+        st.session_state["_nav_recipe_id"] = _rid
+        st.session_state["_nav_recipe_from"] = "recipes"
         st.switch_page("pages/3_recipe_detail.py")
     st.markdown('</div>', unsafe_allow_html=True)
 
