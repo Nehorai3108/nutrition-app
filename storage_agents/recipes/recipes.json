@@ -196,7 +196,6 @@
       "DINNER"
     ],
     "tags": [
-      "low-carb",
       "low_carb",
       "quick",
       "vegetarian"
@@ -2074,7 +2073,7 @@
       "LUNCH"
     ],
     "tags": [
-      "high-protein",
+      "high_protein",
       "israeli",
       "low_calorie",
       "low_carb",
@@ -2125,7 +2124,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "israeli",
       "meat",
@@ -2233,7 +2231,7 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
+      "high_protein",
       "low_calorie",
       "low_carb",
       "meat"
@@ -2289,7 +2287,7 @@
       "DINNER"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "low_carb",
       "soup",
@@ -2341,10 +2339,9 @@
     ],
     "tags": [
       "fish",
-      "high-protein",
       "high_protein",
       "low_carb",
-      "omega-3"
+      "omega3"
     ],
     "kashrut": "parve"
   },
@@ -2396,7 +2393,7 @@
       "LUNCH"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "low_carb",
       "salad",
@@ -2447,7 +2444,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "low_carb",
       "meat",
@@ -2505,7 +2501,7 @@
     ],
     "tags": [
       "low_calorie",
-      "meal-prep",
+      "meal_prep",
       "vegan",
       "vegetarian"
     ],
@@ -2554,7 +2550,7 @@
       "DINNER"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "middle-eastern",
       "vegan"
@@ -2657,7 +2653,7 @@
     "tags": [
       "low_calorie",
       "vegan",
-      "whole-grain"
+      "whole_grain"
     ],
     "kashrut": "parve"
   },
@@ -2759,7 +2755,7 @@
       "DINNER"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "stew",
       "vegan"
@@ -2809,7 +2805,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "israeli",
       "low_carb",
@@ -2860,7 +2855,6 @@
       "DINNER"
     ],
     "tags": [
-      "low-calorie",
       "low_calorie",
       "low_carb",
       "quick",
@@ -3271,7 +3265,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "israeli",
       "low_calorie",
@@ -3322,7 +3315,7 @@
       "BREAKFAST"
     ],
     "tags": [
-      "high-protein",
+      "high_protein",
       "low_carb",
       "quick",
       "vegetarian"
@@ -3378,7 +3371,7 @@
       "LUNCH"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "middle-eastern",
       "quick",
@@ -3486,8 +3479,8 @@
       "DINNER"
     ],
     "tags": [
-      "high-fiber",
-      "high-protein",
+      "high_fiber",
+      "high_protein",
       "low_calorie",
       "low_carb",
       "vegan"
@@ -3538,7 +3531,6 @@
     ],
     "tags": [
       "israeli",
-      "low-carb",
       "low_calorie",
       "low_carb",
       "vegan"
@@ -3696,7 +3688,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "low_carb",
       "meat",
@@ -3848,7 +3839,7 @@
     ],
     "tags": [
       "dairy",
-      "high-protein",
+      "high_protein",
       "israeli",
       "low_calorie",
       "low_carb"
@@ -3908,7 +3899,7 @@
       "low_calorie",
       "low_carb",
       "meat",
-      "one-pot"
+      "one_pot"
     ],
     "kashrut": "meat"
   },
@@ -4015,7 +4006,7 @@
       "low_calorie",
       "low_carb",
       "vegan",
-      "whole-grain"
+      "whole_grain"
     ],
     "kashrut": "parve"
   },
@@ -4384,7 +4375,7 @@
       "LUNCH"
     ],
     "tags": [
-      "high-protein",
+      "high_protein",
       "israeli",
       "low_calorie",
       "quick",
@@ -4549,7 +4540,7 @@
     ],
     "tags": [
       "fitness",
-      "high-protein",
+      "high_protein",
       "low_calorie",
       "quick"
     ],
@@ -4603,7 +4594,7 @@
       "LUNCH"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "quick",
       "salad",
@@ -5241,7 +5232,6 @@
     ],
     "tags": [
       "dairy",
-      "high-protein",
       "high_protein",
       "pancakes",
       "quick"
@@ -5339,8 +5329,7 @@
       "BREAKFAST"
     ],
     "tags": [
-      "high-protein",
-      "low-carb",
+      "high_protein",
       "low_calorie",
       "low_carb",
       "parve",
@@ -5732,7 +5721,6 @@
     ],
     "tags": [
       "dairy",
-      "high-protein",
       "high_protein",
       "quick",
       "smoothie"
@@ -8889,7 +8877,7 @@
       "low_calorie",
       "quinoa",
       "vegan",
-      "warm-salad"
+      "warm_salad"
     ],
     "kashrut": "parve"
   },
@@ -9313,7 +9301,7 @@
     ],
     "tags": [
       "dairy",
-      "high-protein",
+      "high_protein",
       "low_calorie",
       "low_carb",
       "no-bake",
@@ -9556,7 +9544,6 @@
     ],
     "tags": [
       "dairy",
-      "high-protein",
       "high_protein",
       "quick",
       "shake"
@@ -10222,7 +10209,6 @@
     ],
     "tags": [
       "dairy",
-      "high-protein",
       "high_protein",
       "low_calorie",
       "quick",
@@ -10909,7 +10895,6 @@
     ],
     "tags": [
       "dairy",
-      "high-protein",
       "high_protein",
       "quick",
       "toast"
@@ -10965,7 +10950,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "low_carb",
       "quick",
@@ -11028,9 +11012,9 @@
       "DINNER"
     ],
     "tags": [
-      "vegan",
       "healthy",
-      "high-fiber"
+      "high_fiber",
+      "vegan"
     ],
     "kashrut": "parve"
   },
@@ -11077,7 +11061,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "meat",
       "traditional"
@@ -11139,7 +11122,7 @@
       "DINNER"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "low_carb",
       "salad",
@@ -11245,7 +11228,7 @@
       "DINNER"
     ],
     "tags": [
-      "budget-friendly",
+      "budget_friendly",
       "filling",
       "low_calorie",
       "traditional",
@@ -11304,7 +11287,7 @@
     "tags": [
       "crispy",
       "high_protein",
-      "kids-friendly",
+      "kids_friendly",
       "low_carb",
       "meat",
       "traditional"
@@ -11507,7 +11490,7 @@
       "DINNER"
     ],
     "tags": [
-      "high-fiber",
+      "high_fiber",
       "low_calorie",
       "traditional",
       "vegan",
@@ -11628,7 +11611,7 @@
       "LUNCH"
     ],
     "tags": [
-      "high-protein",
+      "high_protein",
       "low_carb",
       "quick",
       "vegetarian"
@@ -11859,7 +11842,7 @@
     "prep_time_minutes": 25,
     "tags": [
       "healthy",
-      "high-protein",
+      "high_protein",
       "low_calorie",
       "parve",
       "salad",
@@ -11972,10 +11955,10 @@
     "prep_time_minutes": 5,
     "tags": [
       "parve",
-      "vegan",
       "quick",
+      "street_food",
       "traditional",
-      "street-food"
+      "vegan"
     ],
     "total_nutrition": {
       "calories": 966,
@@ -12684,7 +12667,7 @@
     ],
     "tags": [
       "fish",
-      "gluten-free",
+      "gluten_free",
       "healthy",
       "high_protein",
       "low_calorie",
@@ -12743,7 +12726,7 @@
       "DINNER"
     ],
     "tags": [
-      "gluten-free",
+      "gluten_free",
       "iraqi",
       "low_calorie",
       "low_carb",
@@ -12816,7 +12799,7 @@
       "high_protein",
       "iraqi-jewish",
       "parve",
-      "street-food",
+      "street_food",
       "traditional",
       "vegetarian"
     ]
@@ -12870,7 +12853,7 @@
       "AFTERNOON_SNACK"
     ],
     "tags": [
-      "gluten-free",
+      "gluten_free",
       "low_calorie",
       "low_carb",
       "parve",
@@ -13034,7 +13017,6 @@
     ],
     "tags": [
       "dairy",
-      "low-carb",
       "low_carb",
       "quick",
       "vegan",
@@ -13413,7 +13395,6 @@
       "DINNER"
     ],
     "tags": [
-      "high-protein",
       "high_protein",
       "meat",
       "traditional"
@@ -14373,9 +14354,7 @@
     "tags": [
       "low_calorie",
       "low_carb",
-      "quick",
-      "ביצים",
-      "פטרוזיליה"
+      "quick"
     ],
     "ingredients": [
       {
@@ -14419,9 +14398,7 @@
     "tags": [
       "low_calorie",
       "quick",
-      "vegan",
-      "דייסה",
-      "טבעוני"
+      "vegan"
     ],
     "ingredients": [
       {
@@ -14462,10 +14439,7 @@
     "prep_time_minutes": 20,
     "portions": 1,
     "kashrut": "dairy",
-    "tags": [
-      "פנקייק",
-      "תותים"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "קמח",
@@ -14508,9 +14482,7 @@
     "tags": [
       "low_calorie",
       "quick",
-      "vegan",
-      "טבעוני",
-      "שייק"
+      "vegan"
     ],
     "ingredients": [
       {
@@ -14554,9 +14526,7 @@
     "tags": [
       "high_protein",
       "low_carb",
-      "quick",
-      "גבינה",
-      "דייסה"
+      "quick"
     ],
     "ingredients": [
       {
@@ -14599,9 +14569,7 @@
     "kashrut": "parve",
     "tags": [
       "quick",
-      "vegan",
-      "זיתים",
-      "טוסט"
+      "vegan"
     ],
     "ingredients": [
       {
@@ -14643,9 +14611,7 @@
     "portions": 1,
     "kashrut": "parve",
     "tags": [
-      "vegan",
-      "טבעוני",
-      "פנקייק"
+      "vegan"
     ],
     "ingredients": [
       {
@@ -14687,9 +14653,7 @@
     "portions": 1,
     "kashrut": "parve",
     "tags": [
-      "quick",
-      "בריא",
-      "טבעוני"
+      "quick"
     ],
     "ingredients": [
       {
@@ -14730,10 +14694,7 @@
     "prep_time_minutes": 20,
     "portions": 1,
     "kashrut": "dairy",
-    "tags": [
-      "מתוק",
-      "ישראלי"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "וופלים",
@@ -14773,10 +14734,7 @@
     "prep_time_minutes": 25,
     "portions": 2,
     "kashrut": "parve",
-    "tags": [
-      "טבעוני",
-      "אמריקאי"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "קמח",
@@ -14816,10 +14774,7 @@
     "prep_time_minutes": 20,
     "portions": 1,
     "kashrut": "dairy",
-    "tags": [
-      "מתוק",
-      "ישראלי"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "וופלים",
@@ -14860,9 +14815,7 @@
     "portions": 1,
     "kashrut": "parve",
     "tags": [
-      "quick",
-      "בריא",
-      "טבעוני"
+      "quick"
     ],
     "ingredients": [
       {
@@ -14903,10 +14856,7 @@
     "prep_time_minutes": 25,
     "portions": 2,
     "kashrut": "parve",
-    "tags": [
-      "טבעוני",
-      "ים-תיכוני"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "קמח",
@@ -14946,10 +14896,7 @@
     "prep_time_minutes": 20,
     "portions": 2,
     "kashrut": "dairy|parve",
-    "tags": [
-      "ים-תיכוני",
-      "צמחוני"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "ביצים",
@@ -15008,9 +14955,7 @@
     "portions": 1,
     "kashrut": "dairy",
     "tags": [
-      "quick",
-      "ים-תיכוני",
-      "צמחוני"
+      "quick"
     ],
     "ingredients": [
       {
@@ -15058,9 +15003,7 @@
     "portions": 2,
     "kashrut": "dairy",
     "tags": [
-      "quick",
-      "ים-תיכוני",
-      "צמחוני"
+      "quick"
     ],
     "ingredients": [
       {
@@ -15111,9 +15054,7 @@
       "low_calorie",
       "low_carb",
       "quick",
-      "vegan",
-      "טבעוני",
-      "ים-תיכוני"
+      "vegan"
     ],
     "ingredients": [
       {
@@ -15156,9 +15097,7 @@
     "kashrut": "dairy",
     "tags": [
       "low_calorie",
-      "low_carb",
-      "ים-תיכוני",
-      "צמחוני"
+      "low_carb"
     ],
     "ingredients": [
       {
@@ -15201,9 +15140,7 @@
     "kashrut": "parve",
     "tags": [
       "quick",
-      "vegan",
-      "טבעוני",
-      "ים-תיכוני"
+      "vegan"
     ],
     "ingredients": [
       {
@@ -15244,10 +15181,7 @@
     "prep_time_minutes": 20,
     "portions": 2,
     "kashrut": "dairy",
-    "tags": [
-      "ים-תיכוני",
-      "צמחוני"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "ג'חנון",
@@ -15287,10 +15221,7 @@
     "prep_time_minutes": 25,
     "portions": 2,
     "kashrut": "dairy",
-    "tags": [
-      "ים-תיכוני",
-      "צמחוני"
-    ],
+    "tags": [],
     "ingredients": [
       {
         "food_name": "קנאפה",
