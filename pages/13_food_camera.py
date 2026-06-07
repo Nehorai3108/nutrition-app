@@ -207,10 +207,13 @@ def _identify_with_gemini(image_bytes: bytes) -> list[str]:
             ]}],
             "generationConfig": {"temperature": 0.0, "maxOutputTokens": 200},
         }
+        api_keys = _get_api_keys()
+        st.caption(f"🔑 נמצאו {len(api_keys)} API keys")
         resp = _call_gemini(payload)
         if resp is None:
             st.warning("שרת Gemini עמוס כרגע — נסה שוב בעוד כמה שניות")
             return []
+        st.caption(f"✅ Gemini ענה: {resp.status_code}")
         text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
         if "```" in text:
             text = text.split("```")[1]
