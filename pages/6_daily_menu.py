@@ -127,7 +127,7 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
                         "storage", "nutrition.db")
 
 @st.cache_resource
-def get_mgr(_version=3):
+def get_mgr(_version=5):
     return RecipeManager()
 
 @st.cache_resource
@@ -1442,18 +1442,14 @@ for tab, (meal_key, meal_label, _) in zip(tabs[:-3], MEAL_SECTIONS):
                 st.rerun()
 
         try:
-            import inspect as _inspect
-            _rm_params = _inspect.signature(recipe_mgr.recommend_meal).parameters
-            _kwargs = dict(
+            suggestions = recipe_mgr.recommend_meal(
                 meal_type=meal_key,
                 target_calories=target_cal,
                 inventory_names=inventory_names if inventory_names else None,
                 allergens=_user_allergens if _user_allergens else None,
                 disliked_foods=_user_disliked if _user_disliked else None,
-            )
-            if "variation_seed" in _rm_params:
-                _kwargs["variation_seed"] = st.session_state[_seed_key]
-            suggestions = recipe_mgr.recommend_meal(**_kwargs)[:3]
+                variation_seed=st.session_state[_seed_key],
+            )[:3]
         except Exception as _e:
             st.error(f"שגיאה: {_e}")
             suggestions = []
