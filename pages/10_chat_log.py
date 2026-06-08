@@ -23,6 +23,31 @@ st.set_page_config(page_title="BiteFit · הזנה", page_icon="", layout="wide"
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
+st.markdown("""
+<style>
+.biti-thinking {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    height: 20px;
+}
+.biti-thinking span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #8892a4;
+    animation: biti-blink 1.4s infinite ease-in-out;
+}
+.biti-thinking span:nth-child(1) { animation-delay: 0s; }
+.biti-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.biti-thinking span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes biti-blink {
+    0%, 60%, 100% { opacity: 0.15; transform: scale(0.85); }
+    30% { opacity: 1; transform: scale(1.1); }
+}
+</style>
+""", unsafe_allow_html=True)
+
 with st.sidebar:
     st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px"> {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()
@@ -204,6 +229,16 @@ Do NOT say "X גרם" as the main description — say the food name naturally.
 Add calorie info in parentheses, naturally.
 Be brief — 1-2 sentences max.
 
+=== COMPOSITE DISHES — log as ONE single item (do NOT split!) ===
+These are complete dishes — return as ONE food item with unit=מנה qty=1:
+- קבב בפיתה / קבב עם פיתה  → name:"קבב בפיתה"  unit=מנה qty=1  (~550 קל')
+- שווארמה בפיתה / שווארמה  → name:"שווארמה בפיתה" unit=מנה qty=1 (~500 קל')
+- פלאפל בפיתה / פלאפל      → name:"פלאפל בפיתה"  unit=מנה qty=1 (~400 קל')
+- סביח בפיתה / סביח         → name:"סביח בפיתה"   unit=מנה qty=1 (~450 קל')
+- המבורגר / המבורגר בלחמנייה → name:"המבורגר"    unit=מנה qty=1 (~550 קל')
+- שניצל בפיתה               → name:"שניצל בפיתה"  unit=מנה qty=1 (~500 קל')
+- כריך גבינה / כריך טונה / כריך עוף → name:"כריך [מילוי]" unit=מנה qty=1
+
 === CRITICAL FOOD RULES ===
 - קציצות/קציצה/קציצת עוף → name:"קציצות עוף" (unit=יחידה, default qty=3)
   QUANTITY OVERRIDE: "קציצה אחת"=qty=1, "שתי קציצות"=qty=2, "5 קציצות"=qty=5
@@ -212,13 +247,9 @@ Be brief — 1-2 sentences max.
 - חביתה / ביצת עין / מקושקשת / שקשוקה = SINGLE food item name:"ביצה"
   • "חביתה" alone → qty=2; "חביתה עם X ביצים" → qty=X (ONE item only)
   • NEVER return both "חביתה" AND "ביצה" — they are the same thing
-- כריך → name:"לחם לבן" qty=2 פרוסות + filling
 - מלפפון ≠ תפוח ≠ קישוא — COMPLETELY different foods, never compare or confuse
 - ירקות ≠ פירות — never mix them up
 - Dish marked [מתכון] → use exact recipe name
-- שווארמה / שאורמה → foods: [עוף (200g), פיתה (1), טחינה (1כף), עגבנייה(1), מלפפון(1)]
-  ← אין גבינה בשווארמה! בשר + סלט + טחינה בלבד
-- פלאפל → foods: [פלאפל (3 כדורים), פיתה (1), טחינה (1כף)]
 - Unknown dish → split into individual ingredients
 - Corrections → return FULL updated JSON with ALL items
 - QUANTITY WORDS: אחד/אחת=1, שניים/שתיים=2, שלוש/שלושה=3, ארבע=4, חמש=5
@@ -403,6 +434,19 @@ UNIT_TO_GRAMS = {
     "לחמנייה": 50,
 }
 
+# מנות מורכבות — ערכים משוערים לכל מנה
+_COMPOSITE_DISHES = {
+    "קבב בפיתה":       {"cal": 550, "prot": 30, "carbs": 55, "fat": 20, "grams": 300},
+    "שווארמה בפיתה":   {"cal": 500, "prot": 28, "carbs": 50, "fat": 18, "grams": 280},
+    "פלאפל בפיתה":     {"cal": 400, "prot": 14, "carbs": 58, "fat": 14, "grams": 260},
+    "סביח בפיתה":      {"cal": 450, "prot": 18, "carbs": 52, "fat": 18, "grams": 270},
+    "המבורגר":         {"cal": 550, "prot": 32, "carbs": 38, "fat": 28, "grams": 280},
+    "שניצל בפיתה":     {"cal": 500, "prot": 28, "carbs": 50, "fat": 18, "grams": 270},
+    "כריך גבינה":      {"cal": 320, "prot": 14, "carbs": 40, "fat": 12, "grams": 180},
+    "כריך טונה":       {"cal": 300, "prot": 20, "carbs": 38, "fat":  8, "grams": 180},
+    "כריך עוף":        {"cal": 350, "prot": 24, "carbs": 38, "fat": 10, "grams": 200},
+}
+
 _STOPWORDS = {"עם","של","ה","ו","ל","מ","ב","את","שחור","טרי","מבושל","מטוגן"}
 
 def _resolve_alias(name: str) -> str:
@@ -418,6 +462,26 @@ def _resolve_alias(name: str) -> str:
     return best
 
 def _match_food(name: str, quantity: float, unit: str):
+    # 0. Check composite dishes first
+    for dish_name, vals in _COMPOSITE_DISHES.items():
+        if dish_name in name or name in dish_name:
+            n_portions = max(1, int(round(quantity)))
+            return {
+                "food_id":   f"composite_{dish_name}",
+                "food_name": dish_name,
+                "grams":     float(vals["grams"] * n_portions),
+                "calories":  float(vals["cal"] * n_portions),
+                "protein":   float(vals["prot"] * n_portions),
+                "carbs":     float(vals["carbs"] * n_portions),
+                "fat":       float(vals["fat"] * n_portions),
+                "nutrition_per_100g": {
+                    "calories_kcal": round(vals["cal"] / vals["grams"] * 100, 1),
+                    "protein_g":     round(vals["prot"] / vals["grams"] * 100, 1),
+                    "carbs_g":       round(vals["carbs"] / vals["grams"] * 100, 1),
+                    "fat_g":         round(vals["fat"] / vals["grams"] * 100, 1),
+                },
+            }
+
     # 1. Try alias on full name first
     resolved = _resolve_alias(name)
 
@@ -823,15 +887,9 @@ def _render_chat():
                 # "thinking" bubble gets a pulsing dots style
                 if msg.get("_thinking"):
                     bubble_content = (
-                        '<span style="display:inline-flex;gap:4px;align-items:center">'
-                        '<span style="width:6px;height:6px;border-radius:50%;background:#8892a4;'
-                        'animation:blink 1.2s infinite 0s"></span>'
-                        '<span style="width:6px;height:6px;border-radius:50%;background:#8892a4;'
-                        'animation:blink 1.2s infinite 0.4s"></span>'
-                        '<span style="width:6px;height:6px;border-radius:50%;background:#8892a4;'
-                        'animation:blink 1.2s infinite 0.8s"></span>'
+                        '<span class="biti-thinking">'
+                        '<span></span><span></span><span></span>'
                         '</span>'
-                        '<style>@keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}</style>'
                     )
                 else:
                     bubble_content = txt
