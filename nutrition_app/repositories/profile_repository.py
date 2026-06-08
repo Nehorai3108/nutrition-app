@@ -47,6 +47,11 @@ class ProfileRepository:
 
     def _use_supabase(self) -> bool:
         try:
+            import streamlit as st
+            # אם auth מבוטל (user_id == ui_user_001) — השתמש ב-local בלבד
+            uid = st.session_state.get("user_id", "")
+            if not uid or uid == "ui_user_001":
+                return False
             from nutrition_app.db.supabase_client import is_supabase_configured
             return is_supabase_configured()
         except Exception:
