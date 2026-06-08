@@ -225,6 +225,10 @@ These are complete dishes — return as ONE food item with unit=מנה qty=1:
 - מלפפון ≠ תפוח ≠ קישוא — COMPLETELY different foods, never compare or confuse
 - ירקות ≠ פירות — never mix them up
 - Dish marked [מתכון] → use exact recipe name
+- פיצה → name:"פיצה" unit=פרוסה qty=1 (~266 קל' לפרוסה)
+- סושי / מאקי / ניגירי / רול → name:"סושי" unit=מנה qty=1
+- לזניה → name:"לזניה" unit=מנה qty=1
+- פד תאי → name:"פד תאי" unit=מנה qty=1
 - Unknown dish → split into individual ingredients
 - Corrections → return FULL updated JSON with ALL items
 - QUANTITY WORDS: אחד/אחת=1, שניים/שתיים=2, שלוש/שלושה=3, ארבע=4, חמש=5
@@ -409,6 +413,94 @@ UNIT_TO_GRAMS = {
     "לחמנייה": 50,
 }
 
+# ─── מאגר מזונות מורחב — cal/prot/carbs/fat per 100g ───────────────────────
+# משמש כ-fallback כשה-DB לא מוצא את המאכל
+_KNOWN_FOODS_PER100 = {
+    # פיצה
+    "פיצה":                  {"cal": 266, "prot": 11, "carbs": 33, "fat": 10, "srv": 150, "unit": "פרוסה"},
+    "פיצה מרגריטה":          {"cal": 250, "prot": 10, "carbs": 31, "fat":  9, "srv": 150, "unit": "פרוסה"},
+    "פיצה פטריות":           {"cal": 245, "prot": 10, "carbs": 30, "fat":  9, "srv": 150, "unit": "פרוסה"},
+    "פיצה עם בשר":           {"cal": 280, "prot": 13, "carbs": 30, "fat": 12, "srv": 150, "unit": "פרוסה"},
+    "פיצה טונה":             {"cal": 255, "prot": 12, "carbs": 30, "fat": 10, "srv": 150, "unit": "פרוסה"},
+    "פיצה קלאסית":           {"cal": 266, "prot": 11, "carbs": 33, "fat": 10, "srv": 150, "unit": "פרוסה"},
+    # סושי
+    "סושי":                  {"cal": 145, "prot":  6, "carbs": 27, "fat":  2, "srv": 120, "unit": "מנה"},
+    "מאקי":                  {"cal": 140, "prot":  5, "carbs": 28, "fat":  1, "srv":  30, "unit": "יחידה"},
+    "ניגירי":                {"cal": 130, "prot":  7, "carbs": 18, "fat":  2, "srv":  30, "unit": "יחידה"},
+    "קליפורניה רול":         {"cal": 155, "prot":  5, "carbs": 25, "fat":  4, "srv": 200, "unit": "מנה"},
+    "סשימי":                 {"cal": 130, "prot": 22, "carbs":  0, "fat":  4, "srv": 100, "unit": "מנה"},
+    "ספייסי טונה רול":       {"cal": 175, "prot":  8, "carbs": 25, "fat":  5, "srv": 200, "unit": "מנה"},
+    "רול אבוקדו":            {"cal": 140, "prot":  3, "carbs": 24, "fat":  4, "srv": 200, "unit": "מנה"},
+    # פסטה ואורז
+    "פסטה בולונז":           {"cal": 150, "prot":  9, "carbs": 18, "fat":  5, "srv": 300, "unit": "מנה"},
+    "פסטה קרבונרה":          {"cal": 200, "prot": 10, "carbs": 20, "fat": 10, "srv": 300, "unit": "מנה"},
+    "פסטה אלפרדו":           {"cal": 190, "prot":  8, "carbs": 20, "fat": 10, "srv": 300, "unit": "מנה"},
+    "פסטה ארביאטה":          {"cal": 140, "prot":  5, "carbs": 25, "fat":  4, "srv": 300, "unit": "מנה"},
+    "פסטה פסטו":             {"cal": 170, "prot":  6, "carbs": 22, "fat":  7, "srv": 300, "unit": "מנה"},
+    "לזניה":                 {"cal": 160, "prot": 10, "carbs": 16, "fat":  7, "srv": 300, "unit": "מנה"},
+    "ריזוטו":                {"cal": 140, "prot":  5, "carbs": 22, "fat":  5, "srv": 250, "unit": "מנה"},
+    "אורז עם עוף":           {"cal": 140, "prot": 10, "carbs": 18, "fat":  3, "srv": 300, "unit": "מנה"},
+    # בשר ועוף
+    "אנטריקוט":              {"cal": 250, "prot": 26, "carbs":  0, "fat": 16, "srv": 200, "unit": "מנה"},
+    "צלעות":                 {"cal": 290, "prot": 24, "carbs":  0, "fat": 21, "srv": 200, "unit": "מנה"},
+    "כנפי עוף":              {"cal": 200, "prot": 19, "carbs":  0, "fat": 13, "srv": 150, "unit": "מנה"},
+    "עוף שלם":               {"cal": 190, "prot": 20, "carbs":  0, "fat": 12, "srv": 200, "unit": "מנה"},
+    "כבד עוף":               {"cal": 165, "prot": 25, "carbs":  1, "fat":  6, "srv": 100, "unit": "מנה"},
+    "נקניקיות":              {"cal": 290, "prot": 11, "carbs":  3, "fat": 26, "srv": 100, "unit": "יחידה"},
+    "נקניקייה":              {"cal": 290, "prot": 11, "carbs":  3, "fat": 26, "srv":  60, "unit": "יחידה"},
+    "קורנביף":               {"cal": 250, "prot": 22, "carbs":  0, "fat": 17, "srv": 100, "unit": "גרם"},
+    # מאפים ולחמים
+    "קרואסון":               {"cal": 406, "prot":  9, "carbs": 46, "fat": 21, "srv":  80, "unit": "יחידה"},
+    "בייגל":                 {"cal": 270, "prot": 10, "carbs": 53, "fat":  2, "srv": 100, "unit": "יחידה"},
+    "לחמנייה":               {"cal": 280, "prot":  9, "carbs": 50, "fat":  4, "srv":  60, "unit": "יחידה"},
+    "מאפין":                 {"cal": 380, "prot":  5, "carbs": 55, "fat": 15, "srv": 100, "unit": "יחידה"},
+    "וופל":                  {"cal": 310, "prot":  7, "carbs": 42, "fat": 13, "srv":  75, "unit": "יחידה"},
+    "פרנץ' טוסט":            {"cal": 230, "prot":  8, "carbs": 28, "fat": 10, "srv": 120, "unit": "מנה"},
+    "בורקס":                 {"cal": 320, "prot":  7, "carbs": 35, "fat": 17, "srv":  80, "unit": "יחידה"},
+    "סמבוסק":                {"cal": 280, "prot":  8, "carbs": 32, "fat": 13, "srv":  80, "unit": "יחידה"},
+    "חלה":                   {"cal": 290, "prot":  9, "carbs": 48, "fat":  7, "srv":  50, "unit": "פרוסה"},
+    "פיתה לבנה":             {"cal": 255, "prot":  9, "carbs": 52, "fat":  1, "srv":  60, "unit": "יחידה"},
+    # מתוקים וקינוחים
+    "עוגת שוקולד":           {"cal": 370, "prot":  5, "carbs": 52, "fat": 17, "srv": 100, "unit": "פרוסה"},
+    "גלידה שוקולד":          {"cal": 215, "prot":  4, "carbs": 28, "fat": 11, "srv": 100, "unit": "כדור"},
+    "גלידה וניל":            {"cal": 200, "prot":  4, "carbs": 24, "fat": 11, "srv": 100, "unit": "כדור"},
+    "גלידה":                 {"cal": 207, "prot":  4, "carbs": 26, "fat": 11, "srv": 100, "unit": "כדור"},
+    "עוגיית שוקולד צ'יפס":   {"cal": 490, "prot":  6, "carbs": 65, "fat": 24, "srv":  30, "unit": "יחידה"},
+    "בראוניז":               {"cal": 420, "prot":  5, "carbs": 58, "fat": 20, "srv":  60, "unit": "יחידה"},
+    "חלבה":                  {"cal": 510, "prot": 12, "carbs": 57, "fat": 29, "srv":  30, "unit": "כף"},
+    "קנאפה":                 {"cal": 380, "prot":  7, "carbs": 50, "fat": 18, "srv": 150, "unit": "מנה"},
+    "בקלאווה":               {"cal": 430, "prot":  5, "carbs": 45, "fat": 25, "srv":  60, "unit": "יחידה"},
+    "ממתק":                  {"cal": 380, "prot":  3, "carbs": 80, "fat":  5, "srv":  20, "unit": "יחידה"},
+    "שוקולד חלב":            {"cal": 535, "prot":  8, "carbs": 60, "fat": 30, "srv":  25, "unit": "קוביות"},
+    # שתייה
+    "מיץ תפוחים":            {"cal":  46, "prot":  0, "carbs": 11, "fat":  0, "srv": 200, "unit": "כוס"},
+    "מיץ ענבים":             {"cal":  60, "prot":  1, "carbs": 15, "fat":  0, "srv": 200, "unit": "כוס"},
+    "לימונדה":               {"cal":  40, "prot":  0, "carbs": 10, "fat":  0, "srv": 300, "unit": "כוס"},
+    "שייק פירות":            {"cal": 100, "prot":  3, "carbs": 22, "fat":  1, "srv": 300, "unit": "כוס"},
+    "שייק חלבון":            {"cal": 120, "prot": 25, "carbs":  5, "fat":  2, "srv": 300, "unit": "כוס"},
+    "קפה קר":                {"cal":  80, "prot":  2, "carbs": 15, "fat":  2, "srv": 300, "unit": "כוס"},
+    "אנרגטיק":               {"cal":  45, "prot":  0, "carbs": 11, "fat":  0, "srv": 250, "unit": "פחית"},
+    # חטיפים
+    "פופקורן":               {"cal": 375, "prot": 11, "carbs": 74, "fat":  4, "srv":  30, "unit": "קערה"},
+    "נאצ'וס":                {"cal": 490, "prot":  7, "carbs": 66, "fat": 23, "srv":  50, "unit": "מנה"},
+    "גרנולה בר":             {"cal": 400, "prot":  7, "carbs": 60, "fat": 14, "srv":  40, "unit": "יחידה"},
+    "חטיף אנרגיה":           {"cal": 380, "prot": 10, "carbs": 55, "fat": 12, "srv":  45, "unit": "יחידה"},
+    "אגוזי קשיו":            {"cal": 553, "prot": 18, "carbs": 30, "fat": 44, "srv":  30, "unit": "כף"},
+    "פיסטוקים":              {"cal": 562, "prot": 20, "carbs": 28, "fat": 45, "srv":  30, "unit": "כף"},
+    # אוכל אסייתי
+    "פד תאי":                {"cal": 180, "prot": 12, "carbs": 26, "fat":  5, "srv": 300, "unit": "מנה"},
+    "אורז מטוגן":            {"cal": 160, "prot":  5, "carbs": 28, "fat":  4, "srv": 250, "unit": "מנה"},
+    "בירייאני":              {"cal": 160, "prot":  9, "carbs": 22, "fat":  4, "srv": 300, "unit": "מנה"},
+    "קארי עוף":              {"cal": 150, "prot": 14, "carbs": 10, "fat":  6, "srv": 300, "unit": "מנה"},
+    "וואנטון":               {"cal": 100, "prot":  6, "carbs": 13, "fat":  3, "srv":  50, "unit": "יחידה"},
+    # בריאות
+    "קוואקר עם חלב":         {"cal": 145, "prot":  6, "carbs": 24, "fat":  3, "srv": 250, "unit": "קערה"},
+    "גרנולה עם יוגורט":      {"cal": 200, "prot":  8, "carbs": 30, "fat":  6, "srv": 200, "unit": "קערה"},
+    "פירות יבשים":           {"cal": 270, "prot":  3, "carbs": 65, "fat":  0, "srv":  30, "unit": "כף"},
+    "תמרים":                 {"cal": 282, "prot":  2, "carbs": 75, "fat":  0, "srv":  30, "unit": "יחידה"},
+    "שזיפים מיובשים":        {"cal": 240, "prot":  2, "carbs": 63, "fat":  0, "srv":  30, "unit": "כף"},
+}
+
 # מנות מורכבות — ערכים משוערים לכל מנה
 _COMPOSITE_DISHES = {
     # מנה אחת = כל הרכיבים יחד — ערכים ריאליים
@@ -514,7 +606,31 @@ def _match_food(name: str, quantity: float, unit: str):
             },
         }
 
-    #  Fallback: search recipes (complex dishes) 
+    #  Fallback 1: _KNOWN_FOODS_PER100
+    for cand in candidates:
+        kf = _KNOWN_FOODS_PER100.get(cand.strip())
+        if kf:
+            unit_g = UNIT_TO_GRAMS.get(unit, kf["srv"])
+            grams  = unit_g * quantity if unit in UNIT_TO_GRAMS else kf["srv"] * quantity
+            grams  = max(1.0, round(grams, 0))
+            ratio  = grams / 100.0
+            return {
+                "food_id":   f"known_{cand}",
+                "food_name": cand,
+                "grams":     grams,
+                "calories":  round(kf["cal"] * ratio, 1),
+                "protein":   round(kf["prot"] * ratio, 1),
+                "carbs":     round(kf["carbs"] * ratio, 1),
+                "fat":       round(kf["fat"] * ratio, 1),
+                "nutrition_per_100g": {
+                    "calories_kcal": kf["cal"],
+                    "protein_g":     kf["prot"],
+                    "carbs_g":       kf["carbs"],
+                    "fat_g":         kf["fat"],
+                },
+            }
+
+    #  Fallback 2: search recipes (complex dishes)
     for cand in candidates:
         recipe_results = recipe_mgr.search_recipes(
             RecipeFilter(search_text=cand.strip(), max_results=1)
