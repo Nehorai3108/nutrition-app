@@ -110,11 +110,12 @@ def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
     return ""
 
 @st.cache_data(ttl=60)
-def _load_user_prefs(user_id: str) -> dict:
-    """טוען העדפות משתמש — מתרענן כל דקה."""
-    return ProfileRepository().load(user_id).get("meal_preferences", {})
+def _load_profile(user_id: str) -> dict:
+    """טוען פרופיל משתמש — מתרענן כל דקה."""
+    return ProfileRepository().load(user_id)
 
-_user_prefs     = _load_user_prefs(USER_ID)
+_profile        = _load_profile(USER_ID)
+_user_prefs     = _profile.get("meal_preferences", {})
 _user_allergens = _user_prefs.get("allergies", [])
 _user_disliked  = _user_prefs.get("disliked_foods", [])
 
