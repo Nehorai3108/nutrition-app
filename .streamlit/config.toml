@@ -17,3 +17,8 @@ gatherUsageStats = false
 [server]
 runOnSave = true
 address = "0.0.0.0"
+maxUploadSize = 10
+enableWebsocketCompression = false
+
+[runner]
+fastReruns = false
