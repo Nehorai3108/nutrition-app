@@ -455,6 +455,46 @@ class RecipeManager:
         "שומשום": ["sesame", "tahini"],
     }
 
+    def _is_unhealthy_for_recommendation(self, recipe: dict) -> bool:
+        """מסנן מתכונים לא בריאים מהמלצות יומיות.
+        מתכונים עם סוכר גבוה / שומן רווי גבוה / קלוריות גבוהות מדי לא מומלצים.
+        """
+        portions = max(recipe.get("portions", 1), 1)
+        nut = recipe.get("total_nutrition", {}) or {}
+        cal_per  = nut.get("calories", 0) / portions
+        sugar_per = nut.get("sugar", 0) / portions
+        fat_per  = nut.get("fat", 0) / portions
+
+        # חשב סוכר מרכיבים אם אין שדה sugar
+        if sugar_per == 0:
+            sugar_g = 0
+            for ing in recipe.get("ingredients", []):
+                name = (ing.get("food_name_he", "") + ing.get("food_name_en", "")).lower()
+                qty  = float(ing.get("quantity", 0) or 0)
+                unit = ing.get("unit", "")
+                # זהה מרכיבי סוכר
+                if any(w in name for w in ["sugar","סוכר","דבש","honey","ריבה","jam","שוקולד","chocolate","ממתק","candy"]):
+                    # המרה גסה ליחידות → גרמים
+                    unit_g = {"כפית": 4, "כפיות": 4, "כף": 12, "כפות": 12,
+                              "כוס": 200, "כוסות": 200, "גרם": 1, "g": 1}.get(unit, 5)
+                    sugar_g += qty * unit_g
+            sugar_per = sugar_g / portions
+
+        # חוקים לסינון
+        if sugar_per > 25:      return True  # >25ג סוכר למנה — עוגה/ממתק
+        if cal_per > 800:       return True  # >800 קל' למנה — כבד מדי
+        if fat_per > 40:        return True  # >40ג שומן למנה — שמנוני מדי
+
+        # זהה עוגות/קינוחים לפי שם
+        name = (recipe.get("name_he", "") + recipe.get("name_en", "")).lower()
+        dessert_words = ["cake","עוגה","עוגיה","cookie","brownie","בראוני","donut",
+                         "סופגנייה","chocolate cake","cheesecake","pudding","פודינג",
+                         "ice cream","גלידה","candy","ממתק","waffle","וופל","pancake syrup"]
+        if any(w in name for w in dessert_words):
+            return True
+
+        return False
+
     def _recipe_contains_allergen(self, recipe: dict, allergens: List[str]) -> bool:
         """Return True if the recipe likely contains any of the given allergens."""
         # Check kashrut: dairy recipes contain lactose
@@ -547,6 +587,9 @@ class RecipeManager:
 
         scored: List[tuple] = []
         for recipe in candidates:
+            # סנן מתכונים לא בריאים מהמלצות יומיות
+            if self._is_unhealthy_for_recommendation(recipe):
+                continue
             score = self._score_recipe(
                 recipe,
                 target_calories,
