@@ -69,7 +69,7 @@ def _get_cookies():
 
 _COOKIES_CHECKED = "_sb_cookies_checked"
 _COOKIES_WAIT_COUNT = "_sb_cookie_wait"
-_MAX_COOKIE_WAIT = 4   # max extra renders to wait for CookieManager to deliver
+_MAX_COOKIE_WAIT = 2   # max extra renders to wait for CookieManager to deliver
 
 
 def install_cookie_session() -> bool:
@@ -89,6 +89,12 @@ def install_cookie_session() -> bool:
     mgr = _get_cookies()
     if mgr is None:
         return True  # No cookie support — fall back to session-only auth.
+
+    # אם כבר חיכינו פעם אחת ועדיין לא קיבלנו cookies — עצור להמתין
+    wait_count = st.session_state.get(_COOKIES_WAIT_COUNT, 0)
+    if wait_count >= _MAX_COOKIE_WAIT:
+        st.session_state.pop(_COOKIES_WAIT_COUNT, None)
+        return True  # תן לאפליקציה להמשיך ל-login
 
     # If we already have the user in session_state, nothing to do.
     if st.session_state.get(_KEY_USER_ID):
