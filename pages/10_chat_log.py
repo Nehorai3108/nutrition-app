@@ -23,31 +23,6 @@ st.set_page_config(page_title="BiteFit · הזנה", page_icon="", layout="wide"
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
-st.markdown("""
-<style>
-.biti-thinking {
-    display: inline-flex;
-    gap: 5px;
-    align-items: center;
-    height: 20px;
-}
-.biti-thinking span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #8892a4;
-    animation: biti-blink 1.4s infinite ease-in-out;
-}
-.biti-thinking span:nth-child(1) { animation-delay: 0s; }
-.biti-thinking span:nth-child(2) { animation-delay: 0.2s; }
-.biti-thinking span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes biti-blink {
-    0%, 60%, 100% { opacity: 0.15; transform: scale(0.85); }
-    30% { opacity: 1; transform: scale(1.1); }
-}
-</style>
-""", unsafe_allow_html=True)
-
 with st.sidebar:
     st.markdown(f'<div style="font-size:0.75rem;color:#8892a4;padding:4px"> {st.session_state.get("bitefit_user", {}).get("email", "")}</div>', unsafe_allow_html=True)
     logout_button()

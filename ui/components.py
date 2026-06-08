@@ -490,6 +490,28 @@ def inject_global_css() -> None:
             box-shadow: {t.SHADOW_LG}, 0 0 0 1px rgba(124,92,255,0.08);
         }}
 
+        /*  Chat thinking dots  */
+        .biti-thinking {{
+            display: inline-flex;
+            gap: 5px;
+            align-items: center;
+            height: 20px;
+        }}
+        .biti-thinking span {{
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #8892a4;
+            animation: biti-blink 1.4s infinite ease-in-out;
+        }}
+        .biti-thinking span:nth-child(1) {{ animation-delay: 0s; }}
+        .biti-thinking span:nth-child(2) {{ animation-delay: 0.2s; }}
+        .biti-thinking span:nth-child(3) {{ animation-delay: 0.4s; }}
+        @keyframes biti-blink {{
+            0%, 60%, 100% {{ opacity: 0.15; transform: scale(0.85); }}
+            30% {{ opacity: 1; transform: scale(1.1); }}
+        }}
+
         /*  Recipe images  */
         .nut-recipe-image {{
             width: 100%;
