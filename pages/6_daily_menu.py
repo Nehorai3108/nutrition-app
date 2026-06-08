@@ -109,11 +109,14 @@ def _get_recipe_img_html(recipe_id: str, recipe: dict = None) -> str:
         )
     return ""
 
-# Load user allergies from profile
-_profile_repo = ProfileRepository()
-_profile = _profile_repo.load(USER_ID)
-_user_allergens: list  = _profile.get("meal_preferences", {}).get("allergies", [])
-_user_disliked: list   = _profile.get("meal_preferences", {}).get("disliked_foods", [])
+@st.cache_data(ttl=60)
+def _load_user_prefs(user_id: str) -> dict:
+    """טוען העדפות משתמש — מתרענן כל דקה."""
+    return ProfileRepository().load(user_id).get("meal_preferences", {})
+
+_user_prefs     = _load_user_prefs(USER_ID)
+_user_allergens = _user_prefs.get("allergies", [])
+_user_disliked  = _user_prefs.get("disliked_foods", [])
 
 st.set_page_config(page_title="BiteFit · תפריט", page_icon="", layout="wide",
                    initial_sidebar_state="collapsed")

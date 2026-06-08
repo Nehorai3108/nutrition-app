@@ -13,12 +13,14 @@ import streamlit as st
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
+from nutrition_app.repositories.profile_repository import ProfileRepository
 
 from ui.components import (
     inject_global_css, page_header, section_header, nav_menu, recipe_card_html,
 )
 from ui.images import image_data_uri
 from chatbot.sidebar_widget import render_chatbot_sidebar
+from ui.user_auth import require_auth
 
 #  Page config 
 
@@ -55,11 +57,18 @@ div[data-testid="stButton"].recipe-nav > button:hover {
 """, unsafe_allow_html=True)
 nav_menu(active="מתכונים")
 
+_USER_ID = require_auth()
+
 @st.cache_resource
 def get_recipe_manager():
     return RecipeManager()
 
+@st.cache_data(ttl=60)
+def _get_user_allergens(user_id: str) -> list:
+    return ProfileRepository().load(user_id).get("meal_preferences", {}).get("allergies", [])
+
 manager = get_recipe_manager()
+_user_allergens = _get_user_allergens(_USER_ID)
 stats = manager.get_stats()
 
 #  Sidebar filters 
@@ -101,10 +110,16 @@ selected_tags = st.sidebar.multiselect("תגיות", options=all_tags)
 max_results = st.sidebar.slider("מספר תוצאות", 5, 100, 20, step=5)
 
 with st.sidebar:
+    if _user_allergens:
+        st.markdown(
+            f'<div dir="rtl" style="font-size:0.75rem;color:#f87171;padding:4px 0">'
+            f'מסנן אלרגיות: {", ".join(_user_allergens)}</div>',
+            unsafe_allow_html=True,
+        )
     st.divider()
     render_chatbot_sidebar()
 
-#  Build filter and search 
+#  Build filter and search
 
 recipe_filter = RecipeFilter(
     calorie_min=calorie_min if calorie_min > 0 else None,
@@ -117,7 +132,14 @@ recipe_filter = RecipeFilter(
     max_results=max_results,
 )
 
-results = manager.search_recipes(recipe_filter)
+_all_results = manager.search_recipes(recipe_filter)
+
+# סינון לפי אלרגיות המשתמש
+if _user_allergens:
+    results = [r for r in _all_results
+               if not manager._recipe_contains_allergen(r, _user_allergens)]
+else:
+    results = _all_results
 
 #  Display results 
 
