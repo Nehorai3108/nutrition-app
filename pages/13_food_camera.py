@@ -143,35 +143,58 @@ FOOD_ALIASES: dict[str, list[str]] = {
 def _get_catalog():
     return FoodCatalog()
 
-def _identify_with_groq(image_bytes: bytes) -> list[str]:
-    """שולח תמונה ל-Groq Vision API, מקבל רשימת שמות מזון באנגלית."""
+def _identify_with_groq(image_bytes: bytes) -> list[dict]:
+    """
+    שולח תמונה ל-Groq Vision, מחזיר רשימת:
+    [{"name": "grilled chicken breast", "grams": 150, "name_he": "חזה עוף על הגריל"}, ...]
+    """
     api_key = st.secrets.get("groq_api_key", os.environ.get("GROQ_API_KEY", ""))
     if not api_key:
         st.error("groq_api_key לא מוגדר ב-Secrets")
         return []
     try:
         img = Image.open(io.BytesIO(image_bytes))
+        # שפר רזולוציה לזיהוי טוב יותר
+        img = img.convert("RGB")
+        if max(img.size) > 1024:
+            img.thumbnail((1024, 1024), Image.LANCZOS)
         buf = io.BytesIO()
-        img.save(buf, format="JPEG")
+        img.save(buf, format="JPEG", quality=90)
         img_b64 = base64.b64encode(buf.getvalue()).decode()
 
-        prompt_text = (
-            "You are a professional nutritionist and food recognition expert.\n"
-            "Look at this image and identify ALL food items visible — including:\n"
-            "- Raw ingredients: chicken, beef, fish, eggs, rice, pasta, bread, vegetables, fruits\n"
-            "- Cooked dishes: schnitzel, shakshuka, soup, salad, omelette, steak\n"
-            "- Dairy: milk, yogurt, cheese, cottage\n"
-            "- Grains: rice, pasta, bread, oats, quinoa, bulgur\n"
-            "- Snacks, sauces, spreads\n"
-            "Use simple English food names (e.g. 'chicken breast', 'white rice', 'green apple').\n"
-            "Return ONLY a valid JSON array of lowercase English strings. No explanation.\n"
-            "Examples: [\"chicken breast\"], [\"rice\",\"broccoli\"], [\"apple\"], [\"egg\",\"tomato\"]\n"
-            "If no food is visible at all, return []."
-        )
+        prompt_text = """You are an expert food recognition AI, similar to MyFitnessPal's camera feature.
+Analyze this food image with high precision.
+
+For EACH food item visible, identify:
+1. The EXACT food item (not just "chicken" but "grilled chicken breast" or "fried chicken thigh")
+2. The cooking method if visible (grilled, fried, baked, raw, boiled, steamed)
+3. Estimated weight in grams based on visual portion size
+
+Return ONLY a JSON array. Each item must have:
+- "name": precise English food name (lowercase, specific)
+- "name_he": Hebrew name
+- "grams": estimated weight (integer, realistic portion size)
+
+Visual estimation rules:
+- A standard plate portion = 150-200g for proteins, 100-150g for carbs
+- A slice of bread = 30g, pita = 60g
+- A whole fruit = 100-180g depending on size
+- A handful of nuts = 30g
+- A tablespoon = 15g
+- Restaurant portion = larger than home portion
+
+Examples:
+[{"name": "grilled chicken breast", "name_he": "חזה עוף על הגריל", "grams": 150}]
+[{"name": "cooked white rice", "name_he": "אורז לבן מבושל", "grams": 120}, {"name": "grilled salmon fillet", "name_he": "פילה סלמון על הגריל", "grams": 130}]
+[{"name": "whole banana", "name_he": "בננה שלמה", "grams": 120}]
+
+If you cannot identify any food with reasonable confidence, return [].
+Return ONLY the JSON array, no explanation."""
+
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         models = [
-            "meta-llama/llama-4-scout-17b-16e-instruct",
             "meta-llama/llama-4-maverick-17b-128e-instruct",
+            "meta-llama/llama-4-scout-17b-16e-instruct",
         ]
         resp = None
         for model in models:
@@ -182,7 +205,7 @@ def _identify_with_groq(image_bytes: bytes) -> list[str]:
                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
                 ]}],
                 "temperature": 0.0,
-                "max_tokens": 200,
+                "max_tokens": 500,
             }
             r = requests.post("https://api.groq.com/openai/v1/chat/completions",
                               json=payload, headers=headers, timeout=30)
@@ -197,7 +220,19 @@ def _identify_with_groq(image_bytes: bytes) -> list[str]:
             text = text.split("```")[1]
             if text.startswith("json"):
                 text = text[4:]
-        return json.loads(text.strip())
+        parsed = json.loads(text.strip())
+        # וודא שכל פריט הוא dict תקין
+        result = []
+        for item in parsed:
+            if isinstance(item, dict) and "name" in item:
+                result.append({
+                    "name":    item.get("name", ""),
+                    "name_he": item.get("name_he", ""),
+                    "grams":   int(item.get("grams", 100)),
+                })
+            elif isinstance(item, str):
+                result.append({"name": item, "name_he": "", "grams": 100})
+        return result
     except Exception as e:
         st.error(f"שגיאה בזיהוי: {e}")
         return []
@@ -245,9 +280,9 @@ if img_file:
     img_bytes = img_file.getvalue()
 
     with st.spinner("מזהה מזון..."):
-        food_names = _identify_with_groq(img_bytes)
+        detected_items = _identify_with_groq(img_bytes)
 
-    if not food_names:
+    if not detected_items:
         st.markdown(
             '<div dir="rtl" style="background:#2d1b1b;border:1px solid #744141;'
             'border-radius:14px;padding:16px;text-align:center;color:#f87171">'
@@ -255,20 +290,26 @@ if img_file:
             unsafe_allow_html=True,
         )
     else:
+        # הצג מה זוהה
+        detected_labels = ", ".join(
+            item.get("name_he") or item.get("name", "") for item in detected_items
+        )
         st.markdown(
-            f'<div dir="rtl" style="font-size:0.78rem;color:#4ade80;margin:6px 0 10px">'
-            f'✅ זוהה: {", ".join(food_names)}</div>',
+            f'<div dir="rtl" style="font-size:0.82rem;color:#4ade80;margin:6px 0 12px;'
+            f'font-weight:600">זוהה: {detected_labels}</div>',
             unsafe_allow_html=True,
         )
 
-        # חפש כל פריט ב-DB (ללא כפילויות)
+        # חפש כל פריט ב-DB
         seen_ids = set()
-        all_matches = []
-        for name in food_names:
-            for h in _search_food(name):
+        all_matches = []  # list of (food_item, estimated_grams, ai_name_he)
+        for item in detected_items:
+            ai_grams   = item.get("grams", 100)
+            ai_name_he = item.get("name_he", "")
+            for h in _search_food(item["name"]):
                 if h.food_id not in seen_ids:
                     seen_ids.add(h.food_id)
-                    all_matches.append(h)
+                    all_matches.append((h, ai_grams, ai_name_he))
 
         if not all_matches:
             st.markdown(
@@ -284,25 +325,31 @@ if img_file:
                 unsafe_allow_html=True,
             )
 
-            for food in all_matches[:6]:
-                n100 = food.nutrition_per_100g
+            for food, ai_grams, ai_name_he in all_matches[:6]:
+                n100  = food.nutrition_per_100g
+                ratio = ai_grams / 100.0
+                est_cal  = round(n100.calories_kcal * ratio)
+                est_prot = round(n100.protein_g * ratio, 1)
+                est_carb = round(n100.carbs_g * ratio, 1)
+                est_fat  = round(n100.fat_g * ratio, 1)
+                display_name = food.name_he or ai_name_he
                 st.markdown(
                     f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
                     f'border-radius:14px;padding:12px 14px;margin-bottom:6px">'
-                    f'<div style="font-size:0.9rem;font-weight:800;color:#f4f6fb">{food.name_he}</div>'
-                    f'<div style="font-size:0.72rem;color:#545e70;margin-bottom:6px">{food.name_en}</div>'
-                    f'<div style="display:flex;gap:12px;font-size:0.78rem">'
-                    f'<span style="color:#f4f6fb;font-weight:700">{round(n100.calories_kcal)} קק"ל/100ג</span>'
-                    f'<span style="color:#4f8ef7">{n100.protein_g}ג חלבון</span>'
-                    f'<span style="color:#f59e0b">{n100.carbs_g}ג פחמ׳</span>'
-                    f'<span style="color:#f472b6">{n100.fat_g}ג שומן</span>'
+                    f'<div style="font-size:0.9rem;font-weight:800;color:#f4f6fb">{display_name}</div>'
+                    f'<div style="font-size:0.72rem;color:#4ade80;margin-bottom:6px">~ {ai_grams}ג (הערכת AI)</div>'
+                    f'<div style="display:flex;gap:12px;font-size:0.82rem">'
+                    f'<span style="color:#f4f6fb;font-weight:700">{est_cal} קק"ל</span>'
+                    f'<span style="color:#4f8ef7">{est_prot}ג חלבון</span>'
+                    f'<span style="color:#f59e0b">{est_carb}ג פחמ׳</span>'
+                    f'<span style="color:#f472b6">{est_fat}ג שומן</span>'
                     f'</div></div>',
                     unsafe_allow_html=True,
                 )
-                if st.button(f"בחר — {food.name_he}", key=f"sel_{food.food_id}",
+                if st.button(f"בחר — {display_name}", key=f"sel_{food.food_id}",
                              use_container_width=True):
                     st.session_state["cam_selected"] = food
-                    st.session_state["cam_grams"]    = 100
+                    st.session_state["cam_grams"]    = ai_grams  # גרמים מה-AI
 
     # ── אם נבחר מוצר ──────────────────────────────────────────────────────────
     if "cam_selected" in st.session_state:
