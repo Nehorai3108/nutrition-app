@@ -162,33 +162,35 @@ def _identify_with_groq(image_bytes: bytes) -> list[dict]:
         img.save(buf, format="JPEG", quality=90)
         img_b64 = base64.b64encode(buf.getvalue()).decode()
 
-        prompt_text = """You are an expert food recognition AI, similar to MyFitnessPal's camera feature.
-Analyze this food image with high precision.
+        prompt_text = """You are an expert food recognition and nutrition AI.
+Analyze this food image with maximum precision.
 
-For EACH food item visible, identify:
-1. The EXACT food item (not just "chicken" but "grilled chicken breast" or "fried chicken thigh")
-2. The cooking method if visible (grilled, fried, baked, raw, boiled, steamed)
-3. Estimated weight in grams based on visual portion size
+CRITICAL: You MUST provide nutrition values for EVERY food you identify — even if it's packaged, branded, or unusual.
 
-Return ONLY a JSON array. Each item must have:
-- "name": precise English food name (lowercase, specific)
+For EACH food item visible, return:
+- "name": exact English food name (specific: "canned tuna in oil", not just "tuna")
 - "name_he": Hebrew name
-- "grams": estimated weight (integer, realistic portion size)
+- "grams": estimated weight in grams (realistic portion)
+- "calories": estimated total calories for this portion
+- "protein": estimated protein in grams
+- "carbs": estimated carbohydrates in grams
+- "fat": estimated fat in grams
 
 Visual estimation rules:
-- A standard plate portion = 150-200g for proteins, 100-150g for carbs
-- A slice of bread = 30g, pita = 60g
-- A whole fruit = 100-180g depending on size
-- A handful of nuts = 30g
-- A tablespoon = 15g
-- Restaurant portion = larger than home portion
+- Packaged product = use standard serving size from the package type
+- Canned tuna (100g can) = ~120 cal, 26g protein, 0g carbs, 3g fat
+- Tuna salad with mayo = ~180 cal, 16g protein, 2g carbs, 12g fat
+- Plate of food = estimate by visual proportion
+- Whole fruit = 100-200g depending on size
+- Restaurant portion = 150-250g protein, 100-200g carbs
 
-Examples:
-[{"name": "grilled chicken breast", "name_he": "חזה עוף על הגריל", "grams": 150}]
-[{"name": "cooked white rice", "name_he": "אורז לבן מבושל", "grams": 120}, {"name": "grilled salmon fillet", "name_he": "פילה סלמון על הגריל", "grams": 130}]
-[{"name": "whole banana", "name_he": "בננה שלמה", "grams": 120}]
+ALWAYS return nutrition values. If unsure, use typical values for that food type.
 
-If you cannot identify any food with reasonable confidence, return [].
+Return ONLY a JSON array:
+[{"name": "canned tuna in brine", "name_he": "טונה בציר", "grams": 100, "calories": 90, "protein": 20, "carbs": 0, "fat": 1}]
+[{"name": "grilled chicken breast", "name_he": "חזה עוף על הגריל", "grams": 150, "calories": 165, "protein": 31, "carbs": 0, "fat": 4}]
+
+If truly no food visible, return [].
 Return ONLY the JSON array, no explanation."""
 
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
@@ -221,17 +223,21 @@ Return ONLY the JSON array, no explanation."""
             if text.startswith("json"):
                 text = text[4:]
         parsed = json.loads(text.strip())
-        # וודא שכל פריט הוא dict תקין
         result = []
         for item in parsed:
             if isinstance(item, dict) and "name" in item:
                 result.append({
-                    "name":    item.get("name", ""),
-                    "name_he": item.get("name_he", ""),
-                    "grams":   int(item.get("grams", 100)),
+                    "name":     item.get("name", ""),
+                    "name_he":  item.get("name_he", ""),
+                    "grams":    int(item.get("grams", 100)),
+                    "calories": float(item.get("calories", 0)),
+                    "protein":  float(item.get("protein", 0)),
+                    "carbs":    float(item.get("carbs", 0)),
+                    "fat":      float(item.get("fat", 0)),
                 })
             elif isinstance(item, str):
-                result.append({"name": item, "name_he": "", "grams": 100})
+                result.append({"name": item, "name_he": "", "grams": 100,
+                                "calories": 0, "protein": 0, "carbs": 0, "fat": 0})
         return result
     except Exception as e:
         st.error(f"שגיאה בזיהוי: {e}")
@@ -312,12 +318,37 @@ if img_file:
                     all_matches.append((h, ai_grams, ai_name_he))
 
         if not all_matches:
+            # השתמש ישירות בנתוני ה-AI
             st.markdown(
-                '<div dir="rtl" style="background:#2d1b1b;border:1px solid #744141;'
-                'border-radius:14px;padding:16px;text-align:center;color:#f87171">'
-                'המזון זוהה אך לא נמצא במאגר. נסה לחפש ידנית בתפריט היומי.</div>',
+                '<div dir="rtl" style="font-size:0.85rem;font-weight:700;color:#f4f6fb;'
+                'margin:4px 0 8px">תוצאות זיהוי AI:</div>',
                 unsafe_allow_html=True,
             )
+            for item in detected_items:
+                ai_name = item.get("name_he") or item.get("name", "")
+                ai_g    = item.get("grams", 100)
+                ai_cal  = item.get("calories", 0)
+                ai_prot = item.get("protein", 0)
+                ai_carb = item.get("carbs", 0)
+                ai_fat  = item.get("fat", 0)
+                st.markdown(
+                    f'<div dir="rtl" style="background:#161b26;border:1px solid #252d3d;'
+                    f'border-radius:14px;padding:12px 14px;margin-bottom:6px">'
+                    f'<div style="font-size:0.9rem;font-weight:800;color:#f4f6fb">{ai_name}</div>'
+                    f'<div style="font-size:0.72rem;color:#4ade80;margin-bottom:6px">~ {ai_g}ג (הערכת AI)</div>'
+                    f'<div style="display:flex;gap:12px;font-size:0.82rem">'
+                    f'<span style="color:#f4f6fb;font-weight:700">{round(ai_cal)} קק"ל</span>'
+                    f'<span style="color:#4f8ef7">{ai_prot}ג חלבון</span>'
+                    f'<span style="color:#f59e0b">{ai_carb}ג פחמ׳</span>'
+                    f'<span style="color:#f472b6">{ai_fat}ג שומן</span>'
+                    f'</div></div>',
+                    unsafe_allow_html=True,
+                )
+                _ai_key = f"ai_{item['name'].replace(' ','_')}"
+                if st.button(f"הוסף — {ai_name}", key=f"ai_sel_{_ai_key}",
+                             use_container_width=True):
+                    st.session_state["cam_selected_ai"] = item
+                    st.session_state["cam_grams"] = ai_g
         else:
             st.markdown(
                 '<div dir="rtl" style="font-size:0.85rem;font-weight:700;color:#f4f6fb;'
@@ -351,7 +382,56 @@ if img_file:
                     st.session_state["cam_selected"] = food
                     st.session_state["cam_grams"]    = ai_grams  # גרמים מה-AI
 
-    # ── אם נבחר מוצר ──────────────────────────────────────────────────────────
+    # ── אם נבחר מוצר מ-AI ישירות ────────────────────────────────────────────
+    if "cam_selected_ai" in st.session_state:
+        ai_item = st.session_state["cam_selected_ai"]
+        ai_name = ai_item.get("name_he") or ai_item.get("name", "")
+        ai_g    = st.session_state.get("cam_grams", ai_item.get("grams", 100))
+        ratio   = ai_g / (ai_item.get("grams", 100) or 100)
+
+        st.markdown(
+            f'<div dir="rtl" style="background:#0d2240;border:1px solid #1e4080;'
+            f'border-radius:14px;padding:14px;margin:10px 0 8px">'
+            f'<div style="font-size:0.9rem;font-weight:800;color:#f4f6fb">{ai_name}</div>'
+            f'</div>', unsafe_allow_html=True,
+        )
+        grams_ai = st.number_input("כמות (גרמים)", min_value=1, max_value=2000,
+                                   value=int(ai_g), step=10, key="cam_grams_ai")
+        ratio2   = grams_ai / (ai_item.get("grams", 100) or 100)
+        pcal  = round(ai_item.get("calories", 0) * ratio2)
+        pprot = round(ai_item.get("protein", 0) * ratio2, 1)
+        pcarb = round(ai_item.get("carbs", 0) * ratio2, 1)
+        pfat  = round(ai_item.get("fat", 0) * ratio2, 1)
+
+        meal_map = {"breakfast": "ארוחת בוקר", "morning_snack": "חטיף בוקר",
+                    "lunch": "ארוחת צהריים", "afternoon_snack": "חטיף אחה״צ",
+                    "dinner": "ארוחת ערב", "evening_snack": "חטיף ערב"}
+        meal_ai = st.selectbox("ארוחה", list(meal_map.keys()),
+                               format_func=lambda k: meal_map[k], key="cam_meal_ai")
+
+        st.markdown(
+            f'<div style="background:#0d1117;border-radius:10px;padding:10px 14px;'
+            f'display:flex;gap:16px;font-size:0.85rem;direction:rtl;margin:6px 0">'
+            f'<span style="color:#f4f6fb;font-weight:800">{pcal} קק"ל</span>'
+            f'<span style="color:#4f8ef7">{pprot}ג חלבון</span>'
+            f'<span style="color:#f59e0b">{pcarb}ג פחמ׳</span>'
+            f'<span style="color:#f472b6">{pfat}ג שומן</span>'
+            f'</div>', unsafe_allow_html=True,
+        )
+        if st.button("➕ הוסף ליומן", type="primary",
+                     use_container_width=True, key="cam_add_ai"):
+            food_log_repo.add_entry(USER_ID, date.today(), FoodLogEntry(
+                food_id=f"ai_{ai_item['name'][:20]}",
+                food_name=ai_name,
+                grams=float(grams_ai), calories=float(pcal),
+                protein=float(pprot), carbs=float(pcarb), fat=float(pfat),
+                meal_type=meal_ai, timestamp=datetime.now().isoformat(),
+            ))
+            st.success(f"✅ נוסף: {ai_name} · {pcal} קק\"ל")
+            del st.session_state["cam_selected_ai"]
+            st.rerun()
+
+    # ── אם נבחר מוצר מ-DB ────────────────────────────────────────────────────
     if "cam_selected" in st.session_state:
         sel  = st.session_state["cam_selected"]
         n100 = sel.nutrition_per_100g
