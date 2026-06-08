@@ -54,20 +54,10 @@ def require_auth() -> str:
         st.caption("Please contact support.")
         st.stop()
 
-    cookies_ready = install_cookie_session()
+    install_cookie_session()
     user = get_current_user()
 
     if user is None:
-        if not cookies_ready:
-            # First render of a fresh session — CookieManager hasn't sent
-            # cookies yet.  Show a silent dark screen and stop; the component
-            # will trigger a rerun in milliseconds and cookies will hydrate.
-            st.markdown(
-                "<style>html,body,[data-testid='stApp']"
-                "{background:#0d0f14!important}</style>",
-                unsafe_allow_html=True,
-            )
-            st.stop()
         render_login_ui()
         st.stop()
 

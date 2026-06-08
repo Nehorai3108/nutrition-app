@@ -69,7 +69,7 @@ def _get_cookies():
 
 _COOKIES_CHECKED = "_sb_cookies_checked"
 _COOKIES_WAIT_COUNT = "_sb_cookie_wait"
-_MAX_COOKIE_WAIT = 2   # max extra renders to wait for CookieManager to deliver
+_MAX_COOKIE_WAIT = 0   # no waiting — show login immediately if not in session
 
 
 def install_cookie_session() -> bool:
