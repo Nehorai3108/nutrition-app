@@ -1,0 +1,87 @@
+"""
+fetch_recipe_images.py — מוסיף image_url מ-TheMealDB לכל מתכון ב-recipes.json
+"""
+import json, time, requests, os, random
+
+RECIPES_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                            "storage_agents", "recipes", "recipes.json")
+
+def search_meal(name: str) -> str:
+    try:
+        r = requests.get("https://www.themealdb.com/api/json/v1/1/search.php",
+                         params={"s": name}, timeout=10)
+        if r.status_code == 200:
+            meals = r.json().get("meals") or []
+            if meals:
+                return meals[0].get("strMealThumb", "")
+    except Exception:
+        pass
+    return ""
+
+def search_by_category(cat: str) -> str:
+    try:
+        r = requests.get("https://www.themealdb.com/api/json/v1/1/filter.php",
+                         params={"c": cat}, timeout=10)
+        meals = (r.json().get("meals") or []) if r.status_code == 200 else []
+        if meals:
+            meal = random.choice(meals[:10])
+            r2 = requests.get("https://www.themealdb.com/api/json/v1/1/lookup.php",
+                              params={"i": meal["idMeal"]}, timeout=10)
+            m = (r2.json().get("meals") or [None])[0]
+            if m:
+                return m.get("strMealThumb", "")
+    except Exception:
+        pass
+    return ""
+
+def guess_category(name_en: str, name_he: str) -> str:
+    n = (name_en + " " + name_he).lower()
+    if any(w in n for w in ["chicken","עוף","schnitzel","שניצל","turkey","הודו"]): return "Chicken"
+    if any(w in n for w in ["beef","בקר","steak","meatball","hamburger","kebab","kofta"]): return "Beef"
+    if any(w in n for w in ["salmon","tuna","fish","sea","דג","סלמון","טונה"]): return "Seafood"
+    if any(w in n for w in ["pasta","pesto","lasagna","spaghetti","פסטה"]): return "Pasta"
+    if any(w in n for w in ["cake","chocolate","dessert","cookie","עוגה","שוקולד","halva"]): return "Dessert"
+    if any(w in n for w in ["pancake","waffle","oat","smoothie","breakfast","בוקר","egg","ביצ"]): return "Breakfast"
+    if any(w in n for w in ["soup","מרק"]): return "Miscellaneous"
+    if any(w in n for w in ["salad","סלט"]): return "Vegetarian"
+    if any(w in n for w in ["tofu","vegan","טופו","טבעוני","vegetable","ירק"]): return "Vegetarian"
+    if any(w in n for w in ["lamb","כבש","mutton"]): return "Lamb"
+    return "Chicken"
+
+def main():
+    with open(RECIPES_PATH, encoding="utf-8") as f:
+        recipes = json.load(f)
+
+    updated = 0
+    for i, recipe in enumerate(recipes):
+        if recipe.get("image_url") or recipe.get("image_path"):
+            continue
+        name_en = recipe.get("name_en", "") or ""
+        name_he = recipe.get("name_he", "") or ""
+        print(f"[{i+1}/{len(recipes)}] {name_en[:40]}", end=" ... ", flush=True)
+
+        url = search_meal(name_en) if name_en else ""
+        if not url:
+            cat = guess_category(name_en, name_he)
+            url = search_by_category(cat)
+
+        if url:
+            recipe["image_url"] = url
+            updated += 1
+            print("OK")
+        else:
+            print("SKIP")
+
+        time.sleep(0.3)
+
+        if updated % 30 == 0 and updated > 0:
+            with open(RECIPES_PATH, "w", encoding="utf-8") as f:
+                json.dump(recipes, f, ensure_ascii=False, indent=2)
+            print(f"  >> saved {updated}")
+
+    with open(RECIPES_PATH, "w", encoding="utf-8") as f:
+        json.dump(recipes, f, ensure_ascii=False, indent=2)
+    print(f"\nDone. Added {updated} image URLs.")
+
+if __name__ == "__main__":
+    main()

@@ -364,7 +364,8 @@
       "quick",
       "traditional"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_008",
@@ -470,7 +471,8 @@
       "meat",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_010",
@@ -519,7 +521,8 @@
       "quick",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_011",
@@ -623,7 +626,8 @@
       "meat",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_013",
@@ -728,7 +732,8 @@
       "meat",
       "street_food"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_015",
@@ -834,7 +839,8 @@
       "moroccan",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
   },
   {
     "recipe_id": "recipe_017",
@@ -883,7 +889,8 @@
       "meal_prep",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_018",
@@ -939,7 +946,8 @@
       "low_calorie",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/3m8yae1763257951.jpg"
   },
   {
     "recipe_id": "recipe_019",
@@ -989,7 +997,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/zub3s91764110535.jpg"
   },
   {
     "recipe_id": "recipe_020",
@@ -1046,7 +1055,8 @@
       "low_carb",
       "quick"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/4xcfai1763765676.jpg"
   },
   {
     "recipe_id": "recipe_021",
@@ -1102,7 +1112,8 @@
       "vegan",
       "winter"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/ussyxw1515364536.jpg"
   },
   {
     "recipe_id": "recipe_022",
@@ -1157,7 +1168,8 @@
       "low_calorie",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/utxryw1511721587.jpg"
   },
   {
     "recipe_id": "recipe_023",
@@ -1259,7 +1271,8 @@
       "soup",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/xd9aj21740432378.jpg"
   },
   {
     "recipe_id": "recipe_025",
@@ -1315,7 +1328,8 @@
       "low_carb",
       "protein"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/bfok4w1780242078.jpg"
   },
   {
     "recipe_id": "recipe_026",
@@ -1365,7 +1379,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/qwicc91764368097.jpg"
   },
   {
     "recipe_id": "recipe_027",
@@ -1401,7 +1416,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_028",
@@ -1446,7 +1462,8 @@
       "protein",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/utxryw1511721587.jpg"
   },
   {
     "recipe_id": "recipe_029",
@@ -1484,7 +1501,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_030",
@@ -1529,7 +1547,8 @@
       "protein",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_031",
@@ -1586,7 +1605,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg"
   },
   {
     "recipe_id": "recipe_032",
@@ -1635,7 +1655,8 @@
       "italian",
       "quick"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/xutquv1505330523.jpg"
   },
   {
     "recipe_id": "recipe_033",
@@ -1685,7 +1706,8 @@
       "low_carb",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "recipe_id": "recipe_034",
@@ -1737,7 +1759,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_035",
@@ -1779,7 +1802,8 @@
       "quick",
       "trendy"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/utxryw1511721587.jpg"
   },
   {
     "recipe_id": "recipe_036",
@@ -1829,7 +1853,8 @@
       "soup",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/kggfo91763288633.jpg"
   },
   {
     "recipe_id": "recipe_037",
@@ -1880,7 +1905,8 @@
       "traditional",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/zadvgb1699012544.jpg"
   },
   {
     "recipe_id": "recipe_038",
@@ -1928,7 +1954,8 @@
       "meat",
       "quick"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_039",
@@ -1978,7 +2005,8 @@
       "protein",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/tnwy8m1628770384.jpg"
   },
   {
     "recipe_id": "recipe_040",
@@ -2028,7 +2056,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/3m8yae1763257951.jpg"
   },
   {
     "recipe_id": "recipe_041",
@@ -2079,7 +2108,8 @@
       "low_carb",
       "vegetarian"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_042",
@@ -2129,7 +2159,8 @@
       "meat",
       "quick"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_043",
@@ -2186,7 +2217,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/flrajf1762341295.jpg"
   },
   {
     "recipe_id": "recipe_044",
@@ -2236,7 +2268,8 @@
       "low_carb",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_045",
@@ -2293,7 +2326,8 @@
       "soup",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/gpz67p1560458984.jpg"
   },
   {
     "recipe_id": "recipe_046",
@@ -2343,7 +2377,8 @@
       "low_carb",
       "omega3"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/qqwhw51780093126.jpg"
   },
   {
     "recipe_id": "recipe_047",
@@ -2399,7 +2434,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/ra2k8a1764365055.jpg"
   },
   {
     "recipe_id": "recipe_048",
@@ -2449,7 +2485,8 @@
       "meat",
       "mediterranean"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_049",
@@ -2505,7 +2542,8 @@
       "vegan",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_050",
@@ -2555,7 +2593,8 @@
       "middle-eastern",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_051",
@@ -2606,7 +2645,8 @@
       "low_carb",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_052",
@@ -2655,7 +2695,8 @@
       "vegan",
       "whole_grain"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_053",
@@ -2704,7 +2745,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_054",
@@ -2760,7 +2802,8 @@
       "stew",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/02s6gc1763799560.jpg"
   },
   {
     "recipe_id": "recipe_055",
@@ -2810,7 +2853,8 @@
       "low_carb",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_056",
@@ -2861,7 +2905,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
   },
   {
     "recipe_id": "recipe_057",
@@ -2910,7 +2955,8 @@
       "low_calorie",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/qvrwpt1511181864.jpg"
   },
   {
     "recipe_id": "recipe_058",
@@ -2959,7 +3005,8 @@
       "side-dish",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/zub3s91764110535.jpg"
   },
   {
     "recipe_id": "recipe_059",
@@ -3008,7 +3055,8 @@
       "vegan",
       "yemenite"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_060",
@@ -3057,7 +3105,8 @@
       "vegan",
       "yemenite"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "recipe_id": "recipe_061",
@@ -3108,7 +3157,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/oaqz9f1766593912.jpg"
   },
   {
     "recipe_id": "recipe_062",
@@ -3165,7 +3215,8 @@
       "meat",
       "soup"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vxuyrx1511302687.jpg"
   },
   {
     "recipe_id": "recipe_063",
@@ -3214,7 +3265,8 @@
       "israeli",
       "pastry"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_064",
@@ -3271,7 +3323,8 @@
       "low_carb",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_065",
@@ -3320,7 +3373,8 @@
       "quick",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_066",
@@ -3377,7 +3431,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/lvn2d51598732465.jpg"
   },
   {
     "recipe_id": "recipe_067",
@@ -3428,7 +3483,8 @@
       "low_carb",
       "snack"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/c0gmo31766594751.jpg"
   },
   {
     "recipe_id": "recipe_068",
@@ -3485,7 +3541,8 @@
       "low_carb",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_069",
@@ -3535,7 +3592,8 @@
       "low_carb",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "recipe_id": "recipe_070",
@@ -3586,7 +3644,8 @@
       "snack",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/wkhg581762773124.jpg"
   },
   {
     "recipe_id": "recipe_071",
@@ -3643,7 +3702,8 @@
       "soup",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vwwspt1487394060.jpg"
   },
   {
     "recipe_id": "recipe_072",
@@ -3693,7 +3753,8 @@
       "meat",
       "quick"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_073",
@@ -3750,7 +3811,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/qwicc91764368097.jpg"
   },
   {
     "recipe_id": "recipe_074",
@@ -3793,7 +3855,8 @@
       "quick",
       "shake"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_075",
@@ -3844,7 +3907,8 @@
       "low_calorie",
       "low_carb"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_076",
@@ -3901,7 +3965,8 @@
       "meat",
       "one_pot"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_077",
@@ -3958,7 +4023,8 @@
       "low_carb",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_078",
@@ -4008,7 +4074,8 @@
       "vegan",
       "whole_grain"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/3m8yae1763257951.jpg"
   },
   {
     "recipe_id": "recipe_079",
@@ -4065,7 +4132,8 @@
       "middle-eastern",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/oga0ax1780089591.jpg"
   },
   {
     "recipe_id": "recipe_080",
@@ -4120,7 +4188,8 @@
       "dairy",
       "low_calorie"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_081",
@@ -4164,7 +4233,8 @@
       "vegan",
       "yemenite"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_082",
@@ -4222,7 +4292,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/3m8yae1763257951.jpg"
   },
   {
     "recipe_id": "recipe_083",
@@ -4273,7 +4344,8 @@
       "meat",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/b66myb1683207208.jpg"
   },
   {
     "recipe_id": "recipe_084",
@@ -4324,7 +4396,8 @@
       "low_carb",
       "soup"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/vwwspt1487394060.jpg"
   },
   {
     "recipe_id": "recipe_085",
@@ -4381,7 +4454,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_086",
@@ -4437,7 +4511,8 @@
       "low_calorie",
       "parve"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/c0gmo31766594751.jpg"
   },
   {
     "recipe_id": "recipe_087",
@@ -4495,7 +4570,8 @@
       "moroccan",
       "spicy"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/uvuyxu1503067369.jpg"
   },
   {
     "recipe_id": "recipe_088",
@@ -4544,7 +4620,8 @@
       "low_calorie",
       "quick"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/adxcbq1619787919.jpg"
   },
   {
     "recipe_id": "recipe_089",
@@ -4600,7 +4677,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/qwicc91764368097.jpg"
   },
   {
     "recipe_id": "recipe_090",
@@ -4658,7 +4736,8 @@
       "soup",
       "yemenite"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_091",
@@ -4707,7 +4786,8 @@
       "french",
       "baking"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_092",
@@ -4764,7 +4844,8 @@
       "stew",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_093",
@@ -4814,7 +4895,8 @@
       "dessert",
       "low_calorie"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/dokbyt1779645030.jpg"
   },
   {
     "recipe_id": "recipe_094",
@@ -4871,7 +4953,8 @@
       "low_carb",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/ctg8jd1585563097.jpg"
   },
   {
     "recipe_id": "recipe_095",
@@ -4922,7 +5005,8 @@
       "quick",
       "smoothie"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/bfok4w1780242078.jpg"
   },
   {
     "recipe_id": "recipe_096",
@@ -4967,7 +5051,8 @@
       "side-dish",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_097",
@@ -5023,7 +5108,8 @@
       "quick",
       "sandwich"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/4o4wh11761848573.jpg"
   },
   {
     "recipe_id": "recipe_098",
@@ -5073,7 +5159,8 @@
       "italian",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/0jv5gx1661040802.jpg"
   },
   {
     "recipe_id": "recipe_099",
@@ -5127,7 +5214,8 @@
       "snack",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/xvsurr1511719182.jpg"
   },
   {
     "recipe_id": "recipe_100",
@@ -5187,7 +5275,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/zub3s91764110535.jpg"
   },
   {
     "recipe_id": "recipe_101",
@@ -5236,7 +5325,8 @@
       "pancakes",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/p277uc1764109195.jpg"
   },
   {
     "recipe_id": "recipe_102",
@@ -5285,7 +5375,8 @@
       "quick",
       "sweet"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/sywswr1511383814.jpg"
   },
   {
     "recipe_id": "recipe_103",
@@ -5335,7 +5426,8 @@
       "parve",
       "quick"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/jvjnoh1780086318.jpg"
   },
   {
     "recipe_id": "recipe_104",
@@ -5383,7 +5475,8 @@
       "israeli",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_105",
@@ -5431,7 +5524,8 @@
       "baking",
       "shakshuka"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_106",
@@ -5480,7 +5574,8 @@
       "garlic",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/eqnf3p1779649407.jpg"
   },
   {
     "recipe_id": "recipe_107",
@@ -5528,7 +5623,8 @@
       "israeli",
       "pastry"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_108",
@@ -5577,7 +5673,8 @@
       "quick",
       "sweet"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_109",
@@ -5626,7 +5723,8 @@
       "pastry",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_110",
@@ -5676,7 +5774,8 @@
       "smoothie",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1550441882.jpg"
   },
   {
     "recipe_id": "recipe_111",
@@ -5725,7 +5824,8 @@
       "quick",
       "smoothie"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/sqrtwu1511721265.jpg"
   },
   {
     "recipe_id": "recipe_112",
@@ -5782,7 +5882,8 @@
       "quick",
       "shakshuka"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_113",
@@ -5831,7 +5932,8 @@
       "trendy",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "recipe_id": "recipe_114",
@@ -5886,7 +5988,8 @@
       "israeli",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/jvjnoh1780086318.jpg"
   },
   {
     "recipe_id": "recipe_115",
@@ -5942,7 +6045,8 @@
       "low_carb",
       "vegetables"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
   },
   {
     "recipe_id": "recipe_116",
@@ -5998,7 +6102,8 @@
       "middle-eastern",
       "rice"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/m0p0j81765568742.jpg"
   },
   {
     "recipe_id": "recipe_117",
@@ -6054,7 +6159,8 @@
       "low_carb",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_118",
@@ -6115,7 +6221,8 @@
       "noodles",
       "thai"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_119",
@@ -6177,7 +6284,8 @@
       "stir-fry",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/zadvgb1699012544.jpg"
   },
   {
     "recipe_id": "recipe_120",
@@ -6227,7 +6335,8 @@
       "meatballs",
       "sauce"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_121",
@@ -6278,7 +6387,8 @@
       "meat",
       "skewers"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_122",
@@ -6334,7 +6444,8 @@
       "low_calorie",
       "low_carb"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/r7mcjm1780261264.jpg"
   },
   {
     "recipe_id": "recipe_123",
@@ -6390,7 +6501,8 @@
       "quick",
       "salad"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/k29viq1585565980.jpg"
   },
   {
     "recipe_id": "recipe_124",
@@ -6452,7 +6564,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/zub3s91764110535.jpg"
   },
   {
     "recipe_id": "recipe_125",
@@ -6507,7 +6620,8 @@
       "quick",
       "wrap"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_126",
@@ -6555,7 +6669,8 @@
       "wrap",
       "quick"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_127",
@@ -6605,7 +6720,8 @@
       "pasta",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/0jv5gx1661040802.jpg"
   },
   {
     "recipe_id": "recipe_128",
@@ -6661,7 +6777,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/0jv5gx1661040802.jpg"
   },
   {
     "recipe_id": "recipe_129",
@@ -6716,7 +6833,8 @@
       "lasagna",
       "low_calorie"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/uquqtu1511178042.jpg"
   },
   {
     "recipe_id": "recipe_130",
@@ -6773,7 +6891,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/lvn2d51598732465.jpg"
   },
   {
     "recipe_id": "recipe_131",
@@ -6823,7 +6942,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_132",
@@ -6879,7 +6999,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_133",
@@ -6935,7 +7056,8 @@
       "middle-eastern",
       "stuffed"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/qwicc91764368097.jpg"
   },
   {
     "recipe_id": "recipe_134",
@@ -6991,7 +7113,8 @@
       "meat",
       "stew"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/ntafxw1763586291.jpg"
   },
   {
     "recipe_id": "recipe_135",
@@ -7041,7 +7164,8 @@
       "meat",
       "roasted"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_136",
@@ -7091,7 +7215,8 @@
       "meat",
       "oven"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_137",
@@ -7141,7 +7266,8 @@
       "meat",
       "steak"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/13fg4j1764441982.jpg"
   },
   {
     "recipe_id": "recipe_138",
@@ -7198,7 +7324,8 @@
       "meat",
       "quick"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/kgfh3q1763075438.jpg"
   },
   {
     "recipe_id": "recipe_139",
@@ -7253,7 +7380,8 @@
       "kebab",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/sytuqu1511553755.jpg"
   },
   {
     "recipe_id": "recipe_140",
@@ -7310,7 +7438,8 @@
       "oven",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/9q1ci41779735714.jpg"
   },
   {
     "recipe_id": "recipe_141",
@@ -7361,7 +7490,8 @@
       "simple",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_142",
@@ -7418,7 +7548,8 @@
       "premium",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/qqwhw51780093126.jpg"
   },
   {
     "recipe_id": "recipe_143",
@@ -7475,7 +7606,8 @@
       "tofu",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/ra2k8a1764365055.jpg"
   },
   {
     "recipe_id": "recipe_144",
@@ -7531,7 +7663,8 @@
       "quick",
       "salad"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/zadvgb1699012544.jpg"
   },
   {
     "recipe_id": "recipe_145",
@@ -7580,7 +7713,8 @@
       "quick",
       "salad"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/ra2k8a1764365055.jpg"
   },
   {
     "recipe_id": "recipe_146",
@@ -7635,7 +7769,8 @@
       "low_calorie",
       "risotto"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
   },
   {
     "recipe_id": "recipe_147",
@@ -7690,7 +7825,8 @@
       "meat",
       "rice"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_148",
@@ -7744,7 +7880,8 @@
       "italian",
       "pizza"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_149",
@@ -7800,7 +7937,8 @@
       "high_protein",
       "quick"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_150",
@@ -7856,7 +7994,8 @@
       "low_carb",
       "meat"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_151",
@@ -7912,7 +8051,8 @@
       "soup",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/wvpvsu1511786158.jpg"
   },
   {
     "recipe_id": "recipe_152",
@@ -7968,7 +8108,8 @@
       "meat",
       "soup"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_153",
@@ -8024,7 +8165,8 @@
       "tomato",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/stpuws1511191310.jpg"
   },
   {
     "recipe_id": "recipe_154",
@@ -8074,7 +8216,8 @@
       "low_carb",
       "soup"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/xd9aj21740432378.jpg"
   },
   {
     "recipe_id": "recipe_155",
@@ -8123,7 +8266,8 @@
       "vegetarian",
       "warm"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/oaqz9f1766593912.jpg"
   },
   {
     "recipe_id": "recipe_156",
@@ -8185,7 +8329,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/92wbmf1763252334.jpg"
   },
   {
     "recipe_id": "recipe_157",
@@ -8241,7 +8386,8 @@
       "middle-eastern",
       "stuffed"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/oga0ax1780089591.jpg"
   },
   {
     "recipe_id": "recipe_158",
@@ -8291,7 +8437,8 @@
       "roasted",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_159",
@@ -8341,7 +8488,8 @@
       "middle-eastern",
       "stuffed"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_160",
@@ -8397,7 +8545,8 @@
       "mushrooms",
       "stuffed"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_161",
@@ -8453,7 +8602,8 @@
       "moroccan",
       "spicy"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/92wbmf1763252334.jpg"
   },
   {
     "recipe_id": "recipe_162",
@@ -8509,7 +8659,8 @@
       "low_carb",
       "teriyaki"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/xxyupu1468262513.jpg"
   },
   {
     "recipe_id": "recipe_163",
@@ -8565,7 +8716,8 @@
       "mediterranean",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/eqnf3p1779649407.jpg"
   },
   {
     "recipe_id": "recipe_164",
@@ -8620,7 +8772,8 @@
       "stew",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/tnwy8m1628770384.jpg"
   },
   {
     "recipe_id": "recipe_165",
@@ -8670,7 +8823,8 @@
       "meat",
       "stuffed"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_166",
@@ -8725,7 +8879,8 @@
       "low_calorie",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
   },
   {
     "recipe_id": "recipe_167",
@@ -8775,7 +8930,8 @@
       "shakshuka",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/eqnf3p1779649407.jpg"
   },
   {
     "recipe_id": "recipe_168",
@@ -8824,7 +8980,8 @@
       "spanish",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_169",
@@ -8879,7 +9036,8 @@
       "vegan",
       "warm_salad"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/zadvgb1699012544.jpg"
   },
   {
     "recipe_id": "recipe_170",
@@ -8927,7 +9085,8 @@
       "comfort",
       "classic"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_171",
@@ -8983,7 +9142,8 @@
       "high_protein",
       "low_carb"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/qqwhw51780093126.jpg"
   },
   {
     "recipe_id": "recipe_172",
@@ -9035,7 +9195,8 @@
       "simple",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_173",
@@ -9093,7 +9254,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_174",
@@ -9149,7 +9311,8 @@
       "spicy",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_175",
@@ -9203,7 +9366,8 @@
       "italian",
       "mushroom"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_176",
@@ -9255,7 +9419,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_177",
@@ -9307,7 +9472,8 @@
       "no-bake",
       "quick"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "recipe_id": "recipe_178",
@@ -9358,7 +9524,8 @@
       "vegan",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_179",
@@ -9415,7 +9582,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_180",
@@ -9459,7 +9627,8 @@
       "snack",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_181",
@@ -9504,7 +9673,8 @@
       "quick",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1543774956.jpg"
   },
   {
     "recipe_id": "recipe_182",
@@ -9548,7 +9718,8 @@
       "quick",
       "shake"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_183",
@@ -9599,7 +9770,8 @@
       "superfood",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_184",
@@ -9643,7 +9815,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_185",
@@ -9698,7 +9871,8 @@
       "low_calorie",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/c0gmo31766594751.jpg"
   },
   {
     "recipe_id": "recipe_186",
@@ -9748,7 +9922,8 @@
       "low_calorie",
       "low_carb"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg"
   },
   {
     "recipe_id": "recipe_187",
@@ -9793,7 +9968,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_188",
@@ -9831,7 +10007,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_189",
@@ -9887,7 +10064,8 @@
       "quick",
       "sweet"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_190",
@@ -9938,7 +10116,8 @@
       "low_carb",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/wkhg581762773124.jpg"
   },
   {
     "recipe_id": "recipe_191",
@@ -9983,7 +10162,8 @@
       "tahini",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/dokbyt1779645030.jpg"
   },
   {
     "recipe_id": "recipe_192",
@@ -10029,7 +10209,8 @@
       "vegan",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/dokbyt1779645030.jpg"
   },
   {
     "recipe_id": "recipe_193",
@@ -10080,7 +10261,8 @@
       "quick",
       "yogurt"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/qwicc91764368097.jpg"
   },
   {
     "recipe_id": "recipe_194",
@@ -10125,7 +10307,8 @@
       "snack",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_195",
@@ -10170,7 +10353,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_196",
@@ -10214,7 +10398,8 @@
       "quick",
       "shake"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_197",
@@ -10264,7 +10449,8 @@
       "low_carb",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/02s6gc1763799560.jpg"
   },
   {
     "recipe_id": "recipe_198",
@@ -10309,7 +10495,8 @@
       "quick",
       "yogurt"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_199",
@@ -10358,7 +10545,8 @@
       "toast",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_200",
@@ -10408,7 +10596,8 @@
       "vegan",
       "warm"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_201",
@@ -10459,7 +10648,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1549542994.jpg"
   },
   {
     "recipe_id": "recipe_202",
@@ -10510,7 +10700,8 @@
       "low_carb",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_203",
@@ -10553,7 +10744,8 @@
       "quick",
       "snack"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_204",
@@ -10604,7 +10796,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg"
   },
   {
     "recipe_id": "recipe_205",
@@ -10655,7 +10848,8 @@
       "tahini",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/02s6gc1763799560.jpg"
   },
   {
     "recipe_id": "recipe_206",
@@ -10704,7 +10898,8 @@
       "quick",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/fk80jp1763280767.jpg"
   },
   {
     "recipe_id": "recipe_207",
@@ -10749,7 +10944,8 @@
       "quick",
       "simple"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/bfok4w1780242078.jpg"
   },
   {
     "recipe_id": "recipe_208",
@@ -10800,7 +10996,8 @@
       "low_carb",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_209",
@@ -10850,7 +11047,8 @@
       "low_carb",
       "potato"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_210",
@@ -10899,7 +11097,8 @@
       "quick",
       "toast"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_211",
@@ -10955,7 +11154,8 @@
       "quick",
       "vegetarian"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/z267f71764364072.jpg"
   },
   {
     "recipe_id": "recipe_212",
@@ -11016,7 +11216,8 @@
       "high_fiber",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_213",
@@ -11065,7 +11266,8 @@
       "meat",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_214",
@@ -11128,7 +11330,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg"
   },
   {
     "recipe_id": "recipe_215",
@@ -11177,7 +11380,8 @@
       "quick",
       "shake"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/1543774956.jpg"
   },
   {
     "recipe_id": "recipe_216",
@@ -11234,7 +11438,8 @@
       "traditional",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_217",
@@ -11292,7 +11497,8 @@
       "meat",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_218",
@@ -11356,7 +11562,8 @@
       "mediterranean",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_219",
@@ -11427,7 +11634,8 @@
       "vegan",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/02s6gc1763799560.jpg"
   },
   {
     "recipe_id": "recipe_220",
@@ -11496,7 +11704,8 @@
       "vegan",
       "warming"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/xd9aj21740432378.jpg"
   },
   {
     "recipe_id": "recipe_221",
@@ -11560,7 +11769,8 @@
       "traditional",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/p277uc1764109195.jpg"
   },
   {
     "recipe_id": "recipe_222",
@@ -11616,7 +11826,8 @@
       "quick",
       "vegetarian"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/z267f71764364072.jpg"
   },
   {
     "recipe_id": "recipe_223",
@@ -11679,7 +11890,8 @@
       "traditional",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/flrajf1762341295.jpg"
   },
   {
     "recipe_id": "recipe_224",
@@ -11727,7 +11939,8 @@
       "quick",
       "trendy"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/thazgm1555350962.jpg"
   },
   {
     "recipe_id": "recipe_225",
@@ -11792,7 +12005,8 @@
       "vegan",
       "warming"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/xd9aj21740432378.jpg"
   },
   {
     "recipe_id": "recipe_226",
@@ -11854,7 +12068,8 @@
       "carbs": 87.1,
       "fat": 6.5
     },
-    "portions": 2
+    "portions": 2,
+    "image_url": "https://www.themealdb.com/images/media/meals/qwicc91764368097.jpg"
   },
   {
     "recipe_id": "recipe_227",
@@ -11909,7 +12124,8 @@
       "carbs": 145.7,
       "fat": 14.2
     },
-    "portions": 2
+    "portions": 2,
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_228",
@@ -11966,7 +12182,8 @@
       "carbs": 81.9,
       "fat": 61.7
     },
-    "portions": 2
+    "portions": 2,
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_229",
@@ -12011,7 +12228,8 @@
       "carbs": 27.6,
       "fat": 46.5
     },
-    "portions": 1
+    "portions": 1,
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_230",
@@ -12046,7 +12264,8 @@
       "carbs": 44.8,
       "fat": 12.0
     },
-    "portions": 1
+    "portions": 1,
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_231",
@@ -12102,7 +12321,8 @@
       "fat": 38.3
     },
     "portions": 2,
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_232",
@@ -12163,7 +12383,8 @@
       "carbs": 36.4,
       "fat": 16.4
     },
-    "portions": 1
+    "portions": 1,
+    "image_url": "https://www.themealdb.com/images/media/meals/zub3s91764110535.jpg"
   },
   {
     "recipe_id": "recipe_233",
@@ -12219,7 +12440,8 @@
       "carbs": 52.3,
       "fat": 14.8
     },
-    "portions": 1
+    "portions": 1,
+    "image_url": "https://www.themealdb.com/images/media/meals/qserum1780156275.jpg"
   },
   {
     "recipe_id": "recipe_234",
@@ -12275,7 +12497,8 @@
       "fat": 30.8
     },
     "portions": 1,
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_235",
@@ -12325,7 +12548,8 @@
       "fat": 7.4
     },
     "portions": 1,
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_236",
@@ -12382,7 +12606,8 @@
       "fat": 19.3
     },
     "portions": 2,
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "recipe_id": "recipe_237",
@@ -12444,7 +12669,8 @@
       "fat": 28.7
     },
     "portions": 1,
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
   },
   {
     "recipe_id": "recipe_238",
@@ -12504,7 +12730,8 @@
       "carbs": 5.5,
       "fat": 13.2
     },
-    "portions": 1
+    "portions": 1,
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_239",
@@ -12563,7 +12790,8 @@
       "carbs": 11.4,
       "fat": 10.8
     },
-    "portions": 1
+    "portions": 1,
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_240",
@@ -12621,7 +12849,8 @@
       "fat": 24.6
     },
     "portions": 1,
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_241",
@@ -12681,7 +12910,8 @@
       "mediterranean",
       "parve",
       "vegan"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/4o4wh11761848573.jpg"
   },
   {
     "recipe_id": "recipe_242",
@@ -12739,7 +12969,8 @@
       "parve",
       "traditional",
       "vegan"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "recipe_id": "recipe_243",
@@ -12808,7 +13039,8 @@
       "street_food",
       "traditional",
       "vegetarian"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_244",
@@ -12866,7 +13098,8 @@
       "quick",
       "raw",
       "vegan"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/3m8yae1763257951.jpg"
   },
   {
     "recipe_id": "recipe_245",
@@ -12916,7 +13149,8 @@
       "quick",
       "vegan",
       "vegetarian"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/vvtvtr1511180578.jpg"
   },
   {
     "recipe_id": "recipe_246",
@@ -12977,7 +13211,8 @@
       "vegan",
       "traditional",
       "mediterranean"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/ra2k8a1764365055.jpg"
   },
   {
     "recipe_id": "recipe_247",
@@ -13028,7 +13263,8 @@
       "vegan",
       "vegetarian"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/zadvgb1699012544.jpg"
   },
   {
     "recipe_id": "recipe_248",
@@ -13086,7 +13322,8 @@
       "parve",
       "traditional",
       "vegan"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "recipe_id": "recipe_249",
@@ -13129,7 +13366,8 @@
       "traditional",
       "weekend",
       "yemenite"
-    ]
+    ],
+    "image_url": "https://www.themealdb.com/images/media/meals/1550441882.jpg"
   },
   {
     "recipe_id": "recipe_250",
@@ -13179,7 +13417,8 @@
       "quick",
       "traditional"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/z267f71764364072.jpg"
   },
   {
     "recipe_id": "recipe_251",
@@ -13242,7 +13481,8 @@
       "traditional",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/vdwloy1713225718.jpg"
   },
   {
     "recipe_id": "recipe_252",
@@ -13297,7 +13537,8 @@
       "vegetarian",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_253",
@@ -13346,7 +13587,8 @@
       "vegan",
       "quick"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/1550441882.jpg"
   },
   {
     "recipe_id": "recipe_254",
@@ -13407,7 +13649,8 @@
       "meat",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "recipe_id": "recipe_255",
@@ -13471,7 +13714,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/flrajf1762341295.jpg"
   },
   {
     "recipe_id": "recipe_256",
@@ -13528,7 +13772,8 @@
       "traditional",
       "tripolitean"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "recipe_id": "recipe_257",
@@ -13591,7 +13836,8 @@
       "salad",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg"
   },
   {
     "recipe_id": "recipe_258",
@@ -13641,7 +13887,8 @@
       "meat",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/wrssvt1511556563.jpg"
   },
   {
     "recipe_id": "recipe_259",
@@ -13696,7 +13943,8 @@
       "quick",
       "healthy"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_260",
@@ -13746,7 +13994,8 @@
       "smoothie",
       "healthy"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/jvjnoh1780086318.jpg"
   },
   {
     "recipe_id": "recipe_261",
@@ -13805,7 +14054,8 @@
       "salad",
       "vegetarian"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg"
   },
   {
     "recipe_id": "recipe_262",
@@ -13863,7 +14113,8 @@
       "traditional",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/xxtsvx1511814083.jpg"
   },
   {
     "recipe_id": "recipe_263",
@@ -13914,7 +14165,8 @@
       "sweet",
       "traditional"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg"
   },
   {
     "recipe_id": "recipe_264",
@@ -13970,7 +14222,8 @@
       "sandwich",
       "high_protein"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/jg4r991779916649.jpg"
   },
   {
     "recipe_id": "recipe_265",
@@ -14020,7 +14273,8 @@
       "side",
       "vegan"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_266",
@@ -14089,7 +14343,8 @@
       "slow_cook",
       "high_protein"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "recipe_id": "recipe_267",
@@ -14158,7 +14413,8 @@
       "high_protein",
       "fried"
     ],
-    "kashrut": "parve"
+    "kashrut": "parve",
+    "image_url": "https://www.themealdb.com/images/media/meals/92wbmf1763252334.jpg"
   },
   {
     "recipe_id": "recipe_268",
@@ -14228,7 +14484,8 @@
       "stuffed",
       "traditional"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
   },
   {
     "recipe_id": "recipe_269",
@@ -14278,7 +14535,8 @@
       "low_calorie",
       "quick"
     ],
-    "kashrut": "dairy"
+    "kashrut": "dairy",
+    "image_url": "https://www.themealdb.com/images/media/meals/sqrtwu1511721265.jpg"
   },
   {
     "recipe_id": "recipe_270",
@@ -14348,7 +14606,8 @@
       "comfort",
       "high_protein"
     ],
-    "kashrut": "meat"
+    "kashrut": "meat",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "name_he": "ביצים מטוגנות עם פטרוזיליה",
@@ -14392,7 +14651,8 @@
     },
     "recipe_id": "recipe_271",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/1550441882.jpg"
   },
   {
     "name_he": "דייסה טבעונית",
@@ -14436,7 +14696,8 @@
     },
     "recipe_id": "recipe_272",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/ra2k8a1764365055.jpg"
   },
   {
     "name_he": "פנקייק עם תותים",
@@ -14476,7 +14737,8 @@
     },
     "recipe_id": "recipe_273",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/c0gmo31766594751.jpg"
   },
   {
     "name_he": "שייק טבעוני",
@@ -14520,7 +14782,8 @@
     },
     "recipe_id": "recipe_274",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/jvjnoh1780086318.jpg"
   },
   {
     "name_he": "דייסה עם גבינה",
@@ -14564,7 +14827,8 @@
     },
     "recipe_id": "recipe_275",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/0y6uvc1763258983.jpg"
   },
   {
     "name_he": "טוסט עם זיתים",
@@ -14607,7 +14871,8 @@
     },
     "recipe_id": "recipe_276",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "name_he": "פנקייק טבעוני",
@@ -14649,7 +14914,8 @@
     },
     "recipe_id": "recipe_277",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/q47rkb1762324620.jpg"
   },
   {
     "name_he": "גרנולה עם פירות",
@@ -14691,7 +14957,8 @@
     },
     "recipe_id": "recipe_278",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/1529446352.jpg"
   },
   {
     "name_he": "וופלים עם דבש",
@@ -14731,7 +14998,8 @@
     },
     "recipe_id": "recipe_279",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/sqrtwu1511721265.jpg"
   },
   {
     "name_he": "חביתות עם תירס",
@@ -14771,7 +15039,8 @@
     },
     "recipe_id": "recipe_280",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/wkhg581762773124.jpg"
   },
   {
     "name_he": "וופלים עם בננה",
@@ -14811,7 +15080,8 @@
     },
     "recipe_id": "recipe_281",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/oaqz9f1766593912.jpg"
   },
   {
     "name_he": "גרנולה עם קוואקר",
@@ -14853,7 +15123,8 @@
     },
     "recipe_id": "recipe_282",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/utxryw1511721587.jpg"
   },
   {
     "name_he": "חביתות עם תמרים",
@@ -14893,7 +15164,8 @@
     },
     "recipe_id": "recipe_283",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/a4kgf21763075288.jpg"
   },
   {
     "name_he": "שאקשוקה תוניסאית",
@@ -14951,7 +15223,8 @@
     },
     "recipe_id": "recipe_284",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "name_he": "לחם עם גבינה וירקות",
@@ -14999,7 +15272,8 @@
     },
     "recipe_id": "recipe_285",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/zadvgb1699012544.jpg"
   },
   {
     "name_he": "מנקיקה עם זיתים וגבינה",
@@ -15047,7 +15321,8 @@
     },
     "recipe_id": "recipe_286",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "name_he": "קוסה עם חומוס",
@@ -15092,7 +15367,8 @@
     },
     "recipe_id": "recipe_287",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg"
   },
   {
     "name_he": "מקדושה עם ביצים",
@@ -15135,7 +15411,8 @@
     },
     "recipe_id": "recipe_288",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/1543774956.jpg"
   },
   {
     "name_he": "פלאפל עם חומוס",
@@ -15178,7 +15455,8 @@
     },
     "recipe_id": "recipe_289",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/uuuspp1511297945.jpg"
   },
   {
     "name_he": "ג'חנון עם ביצים",
@@ -15218,7 +15496,8 @@
     },
     "recipe_id": "recipe_290",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/hqaejl1695738653.jpg"
   },
   {
     "name_he": "קנאפה עם גבינה ופיסטוק",
@@ -15258,7 +15537,8 @@
     },
     "recipe_id": "recipe_291",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
   },
   {
     "name_he": "עוף בתנור עם תבלינים",
@@ -15310,7 +15590,8 @@
     },
     "recipe_id": "recipe_292",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "name_he": "קציצות עוף עם ירקות",
@@ -15362,7 +15643,8 @@
     },
     "recipe_id": "recipe_293",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/sypxpx1515365095.jpg"
   },
   {
     "name_he": "שניצל עוף עם סלט",
@@ -15414,7 +15696,8 @@
     },
     "recipe_id": "recipe_294",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/wruvqv1511880994.jpg"
   },
   {
     "name_he": "בשר טחון עם ירקות",
@@ -15466,7 +15749,8 @@
     },
     "recipe_id": "recipe_295",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/tbj1bs1764118062.jpg"
   },
   {
     "name_he": "קציצות טופו עם ירקות",
@@ -15519,7 +15803,8 @@
     },
     "recipe_id": "recipe_296",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/z0ageb1583189517.jpg"
   },
   {
     "name_he": "שניצל פולקרית עם סלט",
@@ -15571,7 +15856,8 @@
     },
     "recipe_id": "recipe_297",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/9ya6o71780262651.jpg"
   },
   {
     "name_he": "בשר טחון צמחוני עם ירקות",
@@ -15623,7 +15909,8 @@
     },
     "recipe_id": "recipe_298",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/zub3s91764110535.jpg"
   },
   {
     "name_he": "קציצות טבעוניות עם ירקות",
@@ -15675,6 +15962,7 @@
     },
     "recipe_id": "recipe_299",
     "image_path": "",
-    "image_credit": ""
+    "image_credit": "",
+    "image_url": "https://www.themealdb.com/images/media/meals/z0ageb1583189517.jpg"
   }
 ]
