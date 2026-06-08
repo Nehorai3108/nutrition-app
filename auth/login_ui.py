@@ -37,29 +37,8 @@ _KEY_PENDING_CONFIRMATION = "_pending_email_confirmation"
 # Public API
 
 def require_auth() -> str:
-    """
-    Gate at the top of every page. Returns user_id when authenticated.
-
-    When Supabase is misconfigured: render error + st.stop().
-    When no user is logged in: render login UI + st.stop().
-
-    Cookie session is hydrated first so that raw <a href> navigation (which
-    drops Streamlit's in-memory session_state) doesn't force a re-login.
-    On the very first render of a fresh session we show a dark loading screen
-    (instead of the login form) while the CookieManager iframe loads the
-    stored JWT — this prevents a false login prompt on every navigation.
-    """
-    if not is_supabase_configured():
-        st.error("Server misconfigured: Supabase credentials missing.")
-        st.caption("Please contact support.")
-        st.stop()
-
-    install_cookie_session()
-    user = get_current_user()
-
-    if user is None:
-        render_login_ui()
-        st.stop()
+    """Auth temporarily disabled — returns default user."""
+    return "ui_user_001"
 
     # Successful auth — reset the cookie-wait counter so the next
     # fresh navigation (F5 / direct URL) gets a clean grace period.
