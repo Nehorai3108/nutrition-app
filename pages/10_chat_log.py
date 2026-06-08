@@ -206,7 +206,7 @@ Be brief — 1-2 sentences max.
 
 === COMPOSITE DISHES — log as ONE single item (do NOT split!) ===
 These are complete dishes — return as ONE food item with unit=מנה qty=1:
-- קבב בפיתה / קבב עם פיתה  → name:"קבב בפיתה"  unit=מנה qty=1  (~550 קל')
+- קבב בפיתה / קבב עם פיתה  → name:"קבב בפיתה"  unit=מנה qty=1  (~480 קל') ← ALWAYS qty=1, never 2!
 - שווארמה בפיתה / שווארמה  → name:"שווארמה בפיתה" unit=מנה qty=1 (~500 קל')
 - פלאפל בפיתה / פלאפל      → name:"פלאפל בפיתה"  unit=מנה qty=1 (~400 קל')
 - סביח בפיתה / סביח         → name:"סביח בפיתה"   unit=מנה qty=1 (~450 קל')
@@ -411,15 +411,19 @@ UNIT_TO_GRAMS = {
 
 # מנות מורכבות — ערכים משוערים לכל מנה
 _COMPOSITE_DISHES = {
-    "קבב בפיתה":       {"cal": 550, "prot": 30, "carbs": 55, "fat": 20, "grams": 300},
-    "שווארמה בפיתה":   {"cal": 500, "prot": 28, "carbs": 50, "fat": 18, "grams": 280},
-    "פלאפל בפיתה":     {"cal": 400, "prot": 14, "carbs": 58, "fat": 14, "grams": 260},
-    "סביח בפיתה":      {"cal": 450, "prot": 18, "carbs": 52, "fat": 18, "grams": 270},
-    "המבורגר":         {"cal": 550, "prot": 32, "carbs": 38, "fat": 28, "grams": 280},
-    "שניצל בפיתה":     {"cal": 500, "prot": 28, "carbs": 50, "fat": 18, "grams": 270},
-    "כריך גבינה":      {"cal": 320, "prot": 14, "carbs": 40, "fat": 12, "grams": 180},
-    "כריך טונה":       {"cal": 300, "prot": 20, "carbs": 38, "fat":  8, "grams": 180},
-    "כריך עוף":        {"cal": 350, "prot": 24, "carbs": 38, "fat": 10, "grams": 200},
+    # מנה אחת = כל הרכיבים יחד — ערכים ריאליים
+    "קבב בפיתה":       {"cal": 480, "prot": 28, "carbs": 45, "fat": 18, "grams": 280},
+    "שווארמה בפיתה":   {"cal": 520, "prot": 30, "carbs": 48, "fat": 20, "grams": 300},
+    "שווארמה":         {"cal": 520, "prot": 30, "carbs": 48, "fat": 20, "grams": 300},
+    "פלאפל בפיתה":     {"cal": 380, "prot": 13, "carbs": 55, "fat": 13, "grams": 250},
+    "פלאפל":           {"cal": 380, "prot": 13, "carbs": 55, "fat": 13, "grams": 250},
+    "סביח בפיתה":      {"cal": 430, "prot": 17, "carbs": 50, "fat": 17, "grams": 260},
+    "סביח":            {"cal": 430, "prot": 17, "carbs": 50, "fat": 17, "grams": 260},
+    "המבורגר":         {"cal": 500, "prot": 28, "carbs": 35, "fat": 25, "grams": 260},
+    "שניצל בפיתה":     {"cal": 470, "prot": 26, "carbs": 48, "fat": 17, "grams": 260},
+    "כריך גבינה":      {"cal": 280, "prot": 12, "carbs": 36, "fat": 10, "grams": 160},
+    "כריך טונה":       {"cal": 270, "prot": 18, "carbs": 34, "fat":  7, "grams": 160},
+    "כריך עוף":        {"cal": 310, "prot": 22, "carbs": 34, "fat":  9, "grams": 180},
 }
 
 _STOPWORDS = {"עם","של","ה","ו","ל","מ","ב","את","שחור","טרי","מבושל","מטוגן"}
@@ -437,10 +441,10 @@ def _resolve_alias(name: str) -> str:
     return best
 
 def _match_food(name: str, quantity: float, unit: str):
-    # 0. Check composite dishes first
+    # 0. Check composite dishes first — always 1 portion regardless of qty
     for dish_name, vals in _COMPOSITE_DISHES.items():
         if dish_name in name or name in dish_name:
-            n_portions = max(1, int(round(quantity)))
+            n_portions = 1  # מנה מורכבת = תמיד 1
             return {
                 "food_id":   f"composite_{dish_name}",
                 "food_name": dish_name,
