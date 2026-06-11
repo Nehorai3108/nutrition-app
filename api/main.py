@@ -4,6 +4,8 @@ BiteFit FastAPI Backend
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 from api.routers import auth, profile, food_log, recipes, daily_menu, chat, camera, water, barcode
 
@@ -25,6 +27,10 @@ app.include_router(chat.router,       prefix="/chat",       tags=["chat"])
 app.include_router(camera.router,     prefix="/camera",     tags=["camera"])
 app.include_router(water.router,      prefix="/water",      tags=["water"])
 app.include_router(barcode.router,    prefix="/barcode",    tags=["barcode"])
+
+_images_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage_agents", "recipe_images", "approved")
+if os.path.exists(_images_path):
+    app.mount("/recipe-images", StaticFiles(directory=_images_path), name="recipe-images")
 
 @app.get("/health")
 def health():

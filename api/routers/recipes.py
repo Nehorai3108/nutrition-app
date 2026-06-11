@@ -33,6 +33,15 @@ def search_recipes(
         max_results=limit,
     )
     results = mgr.search_recipes(f)
+    # Enrich with local image URL if available
+    images_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                              "storage_agents", "recipe_images", "approved")
+    for r in results:
+        if not r.get("image_url"):
+            rid = r.get("recipe_id", "")
+            local = os.path.join(images_dir, f"{rid}.jpg")
+            if os.path.exists(local):
+                r["image_url"] = f"http://localhost:8000/recipe-images/{rid}.jpg"
     return {"recipes": results, "total": len(results)}
 
 @router.get("/{recipe_id}")

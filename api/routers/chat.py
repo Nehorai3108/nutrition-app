@@ -26,6 +26,14 @@ def chat(body: ChatRequest, user=Depends(get_current_user)):
 
     api_key = os.environ.get("GROQ_API_KEY", "")
     if not api_key:
+        try:
+            import tomllib
+            secrets_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".streamlit", "secrets.toml")
+            with open(secrets_path, "rb") as f:
+                api_key = tomllib.load(f).get("groq_api_key", "")
+        except Exception:
+            pass
+    if not api_key:
         return {"reply": "שגיאה: Groq API key חסר", "food_data": None}
 
     client = Groq(api_key=api_key)

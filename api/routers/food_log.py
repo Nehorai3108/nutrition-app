@@ -49,6 +49,28 @@ def add_entry(body: AddFoodEntry, user=Depends(get_current_user)):
     repo.add_entry(user["id"], d, entry)
     return {"ok": True}
 
+@router.get("/search-food")
+def search_food_nutrition(q: str, user=Depends(get_current_user)):
+    """חיפוש ערכי תזונה לפי שם מזון."""
+    from nutrition_app.agents.agent_3_food import FoodCatalog
+    DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                           "storage", "nutrition.db")
+    cat = FoodCatalog(db_path=DB_PATH)
+    results = cat.search_foods(q, limit=3)
+    if not results:
+        return {"found": False}
+    food = results[0]
+    n = food.nutrition_per_100g
+    return {
+        "found": True,
+        "food_id": food.food_id,
+        "name_he": food.name_he,
+        "calories_per_100g": n.calories_kcal,
+        "protein_per_100g": n.protein_g,
+        "carbs_per_100g": n.carbs_g,
+        "fat_per_100g": n.fat_g,
+    }
+
 @router.delete("/{entry_id}")
 def delete_entry(entry_id: str, user=Depends(get_current_user)):
     repo.delete_entry(user["id"], entry_id)

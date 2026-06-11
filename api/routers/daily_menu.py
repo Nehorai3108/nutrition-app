@@ -47,6 +47,14 @@ def get_meal_suggestions(
         disliked_foods=disliked or None,
         variation_seed=seed,
     )
+    images_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                              "storage_agents", "recipe_images", "approved")
+    for r in results:
+        if not r.get("image_url"):
+            rid = r.get("recipe_id", "")
+            local = os.path.join(images_dir, f"{rid}.jpg")
+            if os.path.exists(local):
+                r["image_url"] = f"http://localhost:8000/recipe-images/{rid}.jpg"
     return {"meal_type": meal_type, "recipes": results[:3]}
 
 @router.get("/plan")
@@ -62,6 +70,18 @@ def get_daily_plan(user=Depends(get_current_user)):
     allergens = prefs.get("allergies", [])
     disliked  = prefs.get("disliked_foods", [])
 
+    images_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                              "storage_agents", "recipe_images", "approved")
+
+    def enrich_images(recipes):
+        for r in recipes:
+            if not r.get("image_url"):
+                rid = r.get("recipe_id", "")
+                local = os.path.join(images_dir, f"{rid}.jpg")
+                if os.path.exists(local):
+                    r["image_url"] = f"http://localhost:8000/recipe-images/{rid}.jpg"
+        return recipes
+
     plan = {}
     for meal, ratio in MEAL_DISTRIBUTION.items():
         meal_cal = total_cal * ratio
@@ -73,7 +93,7 @@ def get_daily_plan(user=Depends(get_current_user)):
         )
         plan[meal] = {
             "target_calories": round(meal_cal),
-            "recipes": suggestions[:3],
+            "recipes": enrich_images(suggestions[:3]),
         }
 
     return {"plan": plan, "total_target": total_cal}
