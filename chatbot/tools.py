@@ -161,6 +161,22 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "suggest_food_alternatives",
+            "description": "Find similar food alternatives for a given food (same food group, similar macros, calorie-matched portion). Use when the user wants to swap a food or asks what they can eat instead. Returns alternatives with food_id so you can then call modify_meal_item with action=swap.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "food_name": {"type": "string", "description": "Food to find alternatives for (Hebrew or English)"},
+                    "target_calories": {"type": "number", "description": "Calories the replacement should provide (optional — defaults to a standard serving)"},
+                    "limit": {"type": "integer", "description": "Max alternatives (default 4)"},
+                },
+                "required": ["food_name"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "generate_new_meal_plan",
             "description": "Generate a completely new meal plan using the current profile, targets, and inventory. Returns the new plan summary.",
             "parameters": {"type": "object", "properties": {}},
@@ -204,6 +220,8 @@ def execute_tool(tool_name: str, arguments: dict) -> str:
             return _get_inventory()
         elif tool_name == "update_inventory":
             return _update_inventory(arguments)
+        elif tool_name == "suggest_food_alternatives":
+            return _suggest_food_alternatives(arguments)
         elif tool_name == "generate_new_meal_plan":
             return _generate_new_meal_plan()
         else:
@@ -467,6 +485,21 @@ def _update_inventory(args: dict) -> str:
         return json.dumps({"error": f"Unknown action: {action}"})
 
     return json.dumps({"success": True, "food_name": food.name_he}, ensure_ascii=False)
+
+
+def _suggest_food_alternatives(args: dict) -> str:
+    from nutrition_app.agents.agent_3_food import SubstitutionEngine
+
+    catalog = _get_catalog()
+    engine = SubstitutionEngine(catalog)
+    alts = engine.find_alternatives(
+        args["food_name"],
+        target_calories=args.get("target_calories"),
+        k=args.get("limit", 4),
+    )
+    if not alts:
+        return json.dumps({"error": f"לא נמצאו חלופות ל: {args['food_name']}"}, ensure_ascii=False)
+    return json.dumps(alts, ensure_ascii=False)
 
 
 def _generate_new_meal_plan() -> str:

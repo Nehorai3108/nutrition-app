@@ -21,7 +21,7 @@ from ui.components import inject_global_css, recipe_card_html, bottom_nav
 from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from ui.images import image_data_uri as _image_data_uri
-from nutrition_app.agents.agent_3_food import FoodCatalog
+from nutrition_app.agents.agent_3_food import FoodCatalog, SubstitutionEngine, meal_kashrut_flags
 from nutrition_app.utils.household_units import get_unit_info, grams_to_household, suggested_quantity
 
 setup_persistent_auth()
@@ -147,6 +147,10 @@ def load_catalog():
 
 recipe_mgr = get_mgr()
 CATALOG = load_catalog()
+
+@st.cache_resource
+def _get_sub_engine():
+    return SubstitutionEngine(get_catalog())
 
 #  Groq client (shared with chat page) 
 @st.cache_resource
@@ -625,14 +629,16 @@ with _c2:
 
 if _clear_btn:
     for _k in list(st.session_state.keys()):
-        if _k.startswith(f"ai_menu_{USER_ID}") or _k.startswith(f"swap_opts_{USER_ID}"):
+        if (_k.startswith(f"ai_menu_{USER_ID}") or _k.startswith(f"swap_opts_{USER_ID}")
+                or _k.startswith(f"item_swap_{USER_ID}")):
             st.session_state.pop(_k, None)
     st.rerun()
 
 if _gen_btn:
     # Clear previous menu + swap state
     for _k in list(st.session_state.keys()):
-        if _k.startswith(f"ai_menu_{USER_ID}") or _k.startswith(f"swap_opts_{USER_ID}"):
+        if (_k.startswith(f"ai_menu_{USER_ID}") or _k.startswith(f"swap_opts_{USER_ID}")
+                or _k.startswith(f"item_swap_{USER_ID}")):
             st.session_state.pop(_k, None)
     with st.spinner("מכין תפריט מותאם אישית..."):
         try:
@@ -675,7 +681,7 @@ if _AI_MENU_KEY in st.session_state:
         _swap_key = f"swap_opts_{USER_ID}_{_i}"
 
         # Swap / log buttons
-        _sb1, _sb2 = st.columns(2)
+        _sb1, _sb2, _sb3 = st.columns(3)
         with _sb1:
             if st.button(" החלף ארוחה", key=f"swap_btn_{_i}",
                          use_container_width=True):
@@ -695,7 +701,19 @@ if _AI_MENU_KEY in st.session_state:
                         st.error(f"שגיאה: {_e}")
                 st.rerun()
 
+        _item_open_key = f"item_swap_{USER_ID}_open_{_i}"
+        _item_sel_key  = f"item_swap_{USER_ID}_sel_{_i}"
         with _sb2:
+            if st.button(" החלף פריט", key=f"item_swap_btn_{_i}",
+                         use_container_width=True):
+                if st.session_state.get(_item_open_key):
+                    st.session_state.pop(_item_open_key, None)
+                    st.session_state.pop(_item_sel_key, None)
+                else:
+                    st.session_state[_item_open_key] = True
+                st.rerun()
+
+        with _sb3:
             _log_key = f"ai_logged_{USER_ID}_{_i}"
             if st.session_state.get(_log_key):
                 st.markdown(
@@ -736,6 +754,88 @@ if _AI_MENU_KEY in st.session_state:
                                 timestamp=datetime.now().isoformat(),
                             ))
                     st.session_state[_log_key] = True
+                    st.rerun()
+
+        # Per-item swap panel — pick a single food, swap for a similar one
+        if st.session_state.get(_item_open_key):
+            _foods_in_meal = _meal.get("foods", [])
+            _sel_idx = st.session_state.get(_item_sel_key)
+
+            if _sel_idx is None:
+                st.markdown(
+                    '<div dir="rtl" style="font-size:0.8rem;font-weight:700;'
+                    'color:#f4f6fb;margin:8px 0 6px">איזה פריט להחליף?</div>',
+                    unsafe_allow_html=True,
+                )
+                for _fi, _food_it in enumerate(_foods_in_meal):
+                    if st.button(
+                        f"{_natural_food_text(_food_it)} · {_food_it.get('calories', 0)} קק״ל",
+                        key=f"item_pick_{_i}_{_fi}",
+                        use_container_width=True,
+                    ):
+                        st.session_state[_item_sel_key] = _fi
+                        st.rerun()
+            elif 0 <= _sel_idx < len(_foods_in_meal):
+                _old_food = _foods_in_meal[_sel_idx]
+                _old_name = _old_food.get("name", "")
+                _old_cal  = float(_old_food.get("calories", 0) or 0)
+                _has_meat, _has_dairy = meal_kashrut_flags(
+                    get_catalog(), [f.get("name", "") for f in _foods_in_meal]
+                )
+                _alts_items = _get_sub_engine().find_alternatives(
+                    _old_name,
+                    target_calories=_old_cal if _old_cal > 0 else None,
+                    k=4,
+                    allergies=_user_allergens,
+                    disliked=_user_disliked,
+                    exclude_names=[f.get("name", "") for f in _foods_in_meal],
+                    meal_has_meat=_has_meat,
+                    meal_has_dairy=_has_dairy,
+                )
+                st.markdown(
+                    f'<div dir="rtl" style="font-size:0.8rem;font-weight:700;'
+                    f'color:#f4f6fb;margin:8px 0 6px">'
+                    f'במקום {_old_name} ({int(_old_cal)} קק״ל):</div>',
+                    unsafe_allow_html=True,
+                )
+                if not _alts_items:
+                    st.info("לא נמצאו חלופות מתאימות לפריט הזה.")
+                for _ai_j, _alt_it in enumerate(_alts_items):
+                    _alt_disp = _natural_food_text({
+                        "name": _alt_it["name"],
+                        "quantity": _alt_it["quantity"],
+                        "unit": _alt_it["unit"],
+                    })
+                    if st.button(
+                        f"{_alt_disp} · {_alt_it['calories']} קק״ל · "
+                        f"{_alt_it['protein']:.0f}g חלבון",
+                        key=f"item_alt_{_i}_{_ai_j}",
+                        use_container_width=True,
+                    ):
+                        _foods_in_meal[_sel_idx] = {
+                            "name":     _alt_it["name"],
+                            "name_en":  _alt_it["name_en"],
+                            "quantity": _alt_it["quantity"],
+                            "unit":     _alt_it["unit"],
+                            "grams":    _alt_it["grams"],
+                            "calories": _alt_it["calories"],
+                            "protein":  _alt_it["protein"],
+                            "carbs":    _alt_it["carbs"],
+                            "fat":      _alt_it["fat"],
+                        }
+                        _meal["foods"] = _foods_in_meal
+                        _meal["total_calories"] = round(
+                            sum(float(f.get("calories", 0) or 0) for f in _foods_in_meal)
+                        )
+                        _ai_meals[_i] = _meal
+                        st.session_state[_AI_MENU_KEY] = _ai_meals
+                        st.session_state.pop(_item_open_key, None)
+                        st.session_state.pop(_item_sel_key, None)
+                        st.rerun()
+                if st.button("ביטול", key=f"item_swap_cancel_{_i}",
+                             use_container_width=True):
+                    st.session_state.pop(_item_open_key, None)
+                    st.session_state.pop(_item_sel_key, None)
                     st.rerun()
 
         # Show swap alternatives if requested

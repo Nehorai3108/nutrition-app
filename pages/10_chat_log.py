@@ -293,6 +293,16 @@ These are complete dishes — return as ONE food item with unit=מנה qty=1:
 - "X, Y, Z" or "X עם Y ועם Z" → log ALL foods as separate items in foods array
 - If foods array would be EMPTY → do NOT return JSON at all
 
+=== DAILY MENU ACTIONS — user wants to CHANGE the daily menu or asks for alternatives ===
+The app has a daily menu (תפריט יומי) the user may have generated. These are NOT food logging!
+1. User asks to REPLACE a food in their menu ("תחליף את העוף בדג בצהריים", "שים פסטה במקום האורז בתפריט"):
+   Return ONLY: {{"action":"swap_item","meal_type":"lunch","old_food":"חזה עוף","new_food":"דג סלמון","reply":"מחליף לך..."}}
+   - meal_type: breakfast/morning_snack/lunch/afternoon_snack/dinner/evening_snack. Omit if user didn't say which meal.
+   - new_food: omit if user didn't specify a replacement — the system picks the closest match.
+2. User asks WHAT CAN REPLACE a food ("מה אפשר במקום אורז?", "תן לי חלופה לעוף", "נמאס לי מביצים, מה במקום?"):
+   Return ONLY: {{"action":"suggest_swaps","food":"אורז לבן","reply":"הנה כמה חלופות:"}}
+Key difference: "אכלתי X" = log food (meal_type+foods JSON). "תחליף/במקום/חלופה" = menu action (action JSON).
+
 === IF NO FOOD AT ALL (pure question, greeting, or vague) — plain Hebrew only (no JSON) ===
 Examples of NO-JSON inputs:
   "תודה", "כן", "לא", "בסדר", "אוקיי" → just reply warmly, NO JSON
@@ -809,6 +819,150 @@ def _build_knowledge_context(user_id: str) -> str:
         return ""
 
 
+#  Dynamic menu actions — swap items / suggest alternatives
+def _get_user_food_prefs() -> tuple:
+    """Return (allergies, disliked) from the user profile."""
+    try:
+        from nutrition_app.repositories.profile_repository import ProfileRepository as _PR
+        _prefs = _PR().load(USER_ID).get("meal_preferences", {})
+        return _prefs.get("allergies", []), _prefs.get("disliked_foods", [])
+    except Exception:
+        return [], []
+
+
+def _fmt_alt(alt: dict) -> str:
+    """Format an alternative dict as natural Hebrew."""
+    qty = alt.get("quantity", 1)
+    unit = alt.get("unit", "")
+    name = alt.get("name", "")
+    if unit == "גרם":
+        amount = f"{int(alt.get('grams', qty))} גרם {name}"
+    else:
+        qty_s = str(int(qty)) if float(qty) == int(qty) else f"{qty:g}"
+        amount = f"{qty_s} {unit} {name}" if not (unit == "יחידה" and qty == 1) else name
+    return f"{amount} ({alt['calories']} קק״ל, {alt['protein']:.0f}g חלבון)"
+
+
+def _handle_menu_action(data: dict, reply: str) -> str:
+    """Execute a swap_item / suggest_swaps action against the daily menu."""
+    from nutrition_app.agents.agent_3_food import SubstitutionEngine, meal_kashrut_flags
+    from nutrition_app.utils.household_units import suggested_quantity
+
+    engine = SubstitutionEngine(catalog)
+    allergies, disliked = _get_user_food_prefs()
+    action = data.get("action", "")
+
+    #  Suggest alternatives only
+    if action == "suggest_swaps":
+        food = (data.get("food") or "").strip()
+        if not food:
+            return reply or "לאיזה מאכל לחפש חלופות?"
+        alts = engine.find_alternatives(food, k=4, allergies=allergies, disliked=disliked)
+        if not alts:
+            return (reply + "\n\n" if reply else "") + f"לא מצאתי חלופות מתאימות ל{food} במאגר."
+        lines = "\n".join(f"• {_fmt_alt(a)}" for a in alts)
+        header = reply or f"חלופות ל{food}:"
+        return f"{header}\n{lines}\n\nרוצה שאחליף בתפריט? כתוב למשל \"תחליף את {food} ב{alts[0]['name']}\""
+
+    #  Swap an item in the daily menu
+    if action == "swap_item":
+        menu = st.session_state.get(f"ai_menu_{USER_ID}")
+        if not menu:
+            return ((reply + "\n\n") if reply else "") + \
+                "אין כרגע תפריט יומי פעיל. צור תפריט בדף 'תפריט יומי' ואז אוכל להחליף בו פריטים."
+
+        old_food  = (data.get("old_food") or "").strip()
+        new_food  = (data.get("new_food") or "").strip()
+        meal_type = (data.get("meal_type") or "").strip()
+        if not old_food:
+            return reply or "איזה פריט להחליף?"
+
+        # Locate the item: prefer the requested meal, else search all meals
+        found = None  # (meal_idx, food_idx)
+        for mi, meal in enumerate(menu):
+            if meal_type and meal.get("meal_type") != meal_type:
+                continue
+            for fi, f in enumerate(meal.get("foods", [])):
+                fname = f.get("name", "")
+                if old_food in fname or fname in old_food:
+                    found = (mi, fi)
+                    break
+            if found:
+                break
+        if not found and meal_type:  # retry without meal filter
+            for mi, meal in enumerate(menu):
+                for fi, f in enumerate(meal.get("foods", [])):
+                    fname = f.get("name", "")
+                    if old_food in fname or fname in old_food:
+                        found = (mi, fi)
+                        break
+                if found:
+                    break
+        if not found:
+            return ((reply + "\n\n") if reply else "") + f"לא מצאתי את {old_food} בתפריט היומי."
+
+        mi, fi = found
+        meal = menu[mi]
+        foods = meal.get("foods", [])
+        old_item = foods[fi]
+        old_cal = float(old_item.get("calories", 0) or 0)
+        names_in_meal = [f.get("name", "") for f in foods]
+        has_meat, has_dairy = meal_kashrut_flags(catalog, names_in_meal)
+
+        replacement = None
+        if new_food:
+            hits = catalog.search_foods(new_food, limit=1)
+            if hits:
+                cand = hits[0]
+                # Kashrut guard for explicit requests
+                from nutrition_app.agents.agent_3_food.substitution import _is_meat
+                from nutrition_app.models.enums import FoodCategory as _FC
+                if has_dairy and _is_meat(cand):
+                    return f"שים לב: {cand.name_he} בשרי והארוחה הזו חלבית. נסה חלופה פרווה — למשל דג או ביצה."
+                if has_meat and cand.category == _FC.DAIRY:
+                    return f"שים לב: {cand.name_he} חלבי והארוחה הזו בשרית. נסה חלופה פרווה."
+                from nutrition_app.agents.agent_3_food.substitution import portion_macros
+                cal100 = cand.nutrition_per_100g.calories_kcal or 0
+                qty, unit, grams = suggested_quantity(cand.name_he or new_food,
+                                                      old_cal if old_cal > 0 else 200, cal100)
+                macros = portion_macros(cand, grams)
+                replacement = {
+                    "name": cand.name_he or cand.name_en, "name_en": cand.name_en or "",
+                    "quantity": qty, "unit": unit, "grams": grams,
+                    "calories": round(macros["calories_kcal"]),
+                    "protein": round(macros["protein_g"], 1),
+                    "carbs": round(macros["carbs_g"], 1),
+                    "fat": round(macros["fat_g"], 1),
+                }
+        if replacement is None:
+            alts = engine.find_alternatives(
+                new_food or old_food,
+                target_calories=old_cal if old_cal > 0 else None,
+                k=1, allergies=allergies, disliked=disliked,
+                exclude_names=names_in_meal,
+                meal_has_meat=has_meat, meal_has_dairy=has_dairy,
+            )
+            if not alts:
+                return ((reply + "\n\n") if reply else "") + f"לא מצאתי חלופה מתאימה ל{old_food}."
+            a = alts[0]
+            replacement = {k: a[k] for k in
+                           ("name", "name_en", "quantity", "unit", "grams",
+                            "calories", "protein", "carbs", "fat")}
+
+        foods[fi] = replacement
+        meal["foods"] = foods
+        meal["total_calories"] = round(sum(float(f.get("calories", 0) or 0) for f in foods))
+        menu[mi] = meal
+        st.session_state[f"ai_menu_{USER_ID}"] = menu
+
+        meal_he = MEAL_HEB.get(meal.get("meal_type", ""), meal.get("meal_name", "הארוחה"))
+        return (f"החלפתי ב{meal_he}: {old_item.get('name','')} ← {_fmt_alt(replacement)}.\n"
+                f"סה״כ הארוחה עכשיו: {meal['total_calories']} קק״ל. "
+                f"התפריט המעודכן מחכה לך בדף 'תפריט יומי'.")
+
+    return reply or "לא הבנתי את הפעולה המבוקשת."
+
+
 def _ask_groq(history: list, user_msg: str, pending: list = None):
     """Send to Groq, return (reply_text, food_data_or_None)."""
     profile_ctx   = _build_profile_context(USER_ID)
@@ -864,6 +1018,11 @@ def _ask_groq(history: list, user_msg: str, pending: list = None):
         m2 = re.search(r'(\{[\s\S]*"meal_type"[\s\S]*"foods"[\s\S]*\})', raw)
         if m2:
             json_str = m2.group(1)
+        else:
+            # 3. Menu-action JSON (swap_item / suggest_swaps)
+            m3 = re.search(r'(\{[\s\S]*"action"[\s\S]*\})', raw)
+            if m3:
+                json_str = m3.group(1)
 
     if json_str:
         try:
@@ -932,7 +1091,16 @@ if st.session_state._ai_processing and st.session_state._pending_user_msg:
     if _reply_text:
         st.session_state.groq_history.append({"role": "assistant", "content": _reply_text})
 
-    if _food_data:
+    if _food_data and _food_data.get("action"):
+        # Dynamic menu action (swap / suggest alternatives) — not food logging
+        try:
+            _reply_text = _handle_menu_action(_food_data, _reply_text)
+        except Exception as _e3:
+            import traceback as _tb3
+            st.session_state["_last_chat_error"] = _tb3.format_exc()
+            _reply_text = (_reply_text or "") + f"\n\n שגיאה בעדכון התפריט: `{type(_e3).__name__}`"
+        _food_data = None
+    elif _food_data:
         try:
             _meal_type = _food_data.get("meal_type", "lunch")
             st.session_state.detected_meal = _meal_type
