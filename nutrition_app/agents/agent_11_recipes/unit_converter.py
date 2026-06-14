@@ -297,6 +297,17 @@ def _format_quantity_hebrew(count: float, unit_singular: str, unit_plural: str) 
     return f"{count:.1f} {unit_plural}"
 
 
+def enrich_recipe_ingredients(recipe: dict) -> dict:
+    """Add a `display_he` household-unit string to every ingredient (in-place).
+
+    Idempotent — safe to call repeatedly on the same cached recipe object.
+    Returns the recipe for chaining.
+    """
+    for ing in recipe.get("ingredients", []) or []:
+        ing["display_he"] = format_ingredient_display(ing)
+    return recipe
+
+
 def format_ingredient_display(ingredient: dict) -> str:
     """Convert a recipe ingredient from grams to household display string.
 
@@ -319,8 +330,13 @@ def format_ingredient_display(ingredient: dict) -> str:
     if not quantity or quantity <= 0:
         return food_name
 
-    # Look up in conversion table
+    # Look up in conversion table. Try exact match first, then fall back to the
+    # last word ("white rice" → "rice") and first word ("green pepper" → ...pepper)
+    # so common modifiers don't drop us to a grams display.
     entry = HOUSEHOLD_UNITS.get(food_name_en)
+    if not entry and " " in food_name_en:
+        words = food_name_en.split()
+        entry = HOUSEHOLD_UNITS.get(words[-1]) or HOUSEHOLD_UNITS.get(words[0])
     if not entry:
         # Fallback: show grams
         q_display = int(quantity) if quantity == int(quantity) else quantity
