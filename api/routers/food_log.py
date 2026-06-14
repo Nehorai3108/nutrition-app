@@ -27,72 +27,87 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__
 
 
 def _hebrew_tokens(text: str) -> set:
-    """Hebrew words of length >= 2 in the query."""
+    """Hebrew words of length >= 2 in the text (the geresh ׳ stays attached)."""
     import re
     return {w for w in re.findall("[֐-׿]+", text or "") if len(w) >= 2}
 
 
-def _catalog_covers_query(food, q: str) -> bool:
-    """True if the matched food accounts for ALL Hebrew words in the query.
+def _norm(text: str) -> str:
+    return (text or "").strip().lower()
 
-    Guards against a multi-word dish (e.g. "פיתה פלאפל") collapsing onto a
-    single-word partial match ("פיתה"). Single-word queries that hit a
-    catalog entry are always considered covered.
+
+def _catalog_covers_query(food, q: str) -> bool:
+    """True only if the food accounts for EVERY Hebrew word in the query.
+
+    Word-token based (not substring): query "סושי" is NOT covered by
+    "אורז עגול קלרוז לסושי" because "לסושי" ≠ "סושי". Non-Hebrew queries
+    (no Hebrew tokens) are treated as covered so English search still hits
+    the catalog. This is what stops a multi-word dish ("פיתה פלאפל") or a
+    bare term ("סושי") from collapsing onto an irrelevant partial match.
     """
     q_tokens = _hebrew_tokens(q)
-    if len(q_tokens) <= 1:
+    if not q_tokens:
         return True
     searchable = " ".join([food.name_he or "", " ".join(food.aliases_he or [])])
-    food_tokens = _hebrew_tokens(searchable)
-    return q_tokens.issubset(food_tokens)
+    return q_tokens.issubset(_hebrew_tokens(searchable))
+
+
+def _is_trusted_match(food, q: str) -> bool:
+    """Whether a catalog hit is reliable enough to show without AI.
+
+    Trust the curated Hebrew catalog (json), manual entries, and AI-estimated
+    foods when they cover the query. For the noisy USDA/Open-Food-Facts rows,
+    trust only an exact Hebrew-name match — otherwise defer to the AI estimator,
+    which is far more reliable for free-text dish names than a random product.
+    """
+    if not _catalog_covers_query(food, q):
+        return False
+    src = (food.source or "").lower()
+    if src in ("json", "manual", "ai", "catalog", "user_custom"):
+        return True
+    return bool(_hebrew_tokens(q)) and _norm(food.name_he) == _norm(q)
+
+
+def _food_response(food) -> dict:
+    n = food.nutrition_per_100g
+    return {
+        "found": True,
+        "source": food.source or "catalog",
+        "food_id": food.food_id,
+        "name_he": food.name_he,
+        "calories_per_100g": n.calories_kcal,
+        "protein_per_100g": n.protein_g,
+        "carbs_per_100g": n.carbs_g,
+        "fat_per_100g": n.fat_g,
+    }
 
 
 @router.get("/search-food")
 def search_food_nutrition(q: str, user=Depends(get_current_user)):
     """חיפוש ערכי תזונה לפי שם מזון.
 
-    קטלוג קודם; אם אין התאמה טובה (חסרות קלוריות, או המאכל לא מכסה את כל
-    מילות החיפוש) — Groq מעריך את הערכים והפריט נשמר למסד כמקור 'ai'
-    כך שהקטלוג העברי גדל אורגנית.
+    מחזיר נתון רק כשאפשר לסמוך עליו: התאמה חזקה בקטלוג העברי המוקפד / AI /
+    התאמה מדויקת. כל השאר (התאמות חלקיות, נתוני OFF/USDA רועשים) → Groq מעריך
+    את הערכים, והפריט נשמר כמקור 'ai' כך שהקטלוג העברי גדל אורגנית.
     """
     from nutrition_app.agents.agent_3_food import FoodCatalog
     cat = FoodCatalog(db_path=_DB_PATH)
-    # Get more candidates, then prefer entries with actual nutrition data
     candidates = cat.search_foods(q, limit=20)
     with_data = [f for f in candidates if f.nutrition_per_100g.calories_kcal]
 
-    food = with_data[0] if with_data else None
-    if food is not None and _catalog_covers_query(food, q):
-        n = food.nutrition_per_100g
-        return {
-            "found": True,
-            "source": food.source or "catalog",
-            "food_id": food.food_id,
-            "name_he": food.name_he,
-            "calories_per_100g": n.calories_kcal,
-            "protein_per_100g": n.protein_g,
-            "carbs_per_100g": n.carbs_g,
-            "fat_per_100g": n.fat_g,
-        }
+    # 1. First reliable catalog match wins.
+    for food in with_data:
+        if _is_trusted_match(food, q):
+            return _food_response(food)
 
-    # No good catalog match → AI estimate + persist for next time.
+    # 2. Nothing trustworthy → AI estimate + persist for next time.
     ai = _ai_estimate_and_store(q)
     if ai:
         return ai
 
-    # AI unavailable — fall back to whatever the catalog had, if anything.
-    if food is not None:
-        n = food.nutrition_per_100g
-        return {
-            "found": True,
-            "source": food.source or "catalog",
-            "food_id": food.food_id,
-            "name_he": food.name_he,
-            "calories_per_100g": n.calories_kcal,
-            "protein_per_100g": n.protein_g,
-            "carbs_per_100g": n.carbs_g,
-            "fat_per_100g": n.fat_g,
-        }
+    # 3. AI unavailable — return the best catalog hit rather than nothing.
+    if with_data:
+        return _food_response(with_data[0])
     return {"found": False}
 
 
