@@ -129,6 +129,12 @@ def _enrich_food(food: dict) -> dict:
             carbs = round(est["carbs"] * f, 1)
             fat   = round(est["fat"] * f, 1)
 
+    try:
+        from api.food_image import get_food_image
+        image_url = get_food_image(name_en, name_he)
+    except Exception:
+        image_url = None
+
     return {
         "name": name_en,
         "name_he": name_he,
@@ -137,6 +143,7 @@ def _enrich_food(food: dict) -> dict:
         "protein": round(prot, 1),
         "carbs": round(carbs, 1),
         "fat": round(fat, 1),
+        "image_url": image_url,
         # keep originals for display
         "quantity": food.get("quantity"),
         "unit": food.get("unit"),

@@ -68,6 +68,14 @@ def _is_trusted_match(food, q: str) -> bool:
     return bool(_hebrew_tokens(q)) and _norm(food.name_he) == _norm(q)
 
 
+def _food_image(name_en: str, name_he: str):
+    try:
+        from api.food_image import get_food_image
+        return get_food_image(name_en or "", name_he or "")
+    except Exception:
+        return None
+
+
 def _food_response(food) -> dict:
     n = food.nutrition_per_100g
     return {
@@ -79,6 +87,7 @@ def _food_response(food) -> dict:
         "protein_per_100g": n.protein_g,
         "carbs_per_100g": n.carbs_g,
         "fat_per_100g": n.fat_g,
+        "image_url": _food_image(getattr(food, "name_en", ""), food.name_he),
     }
 
 
@@ -146,6 +155,7 @@ def _ai_estimate_and_store(q: str) -> Optional[dict]:
         "protein_per_100g": est["protein"],
         "carbs_per_100g": est["carbs"],
         "fat_per_100g": est["fat"],
+        "image_url": _food_image(est.get("name_en", ""), est["name_he"]),
     }
 
 @router.post("/")
