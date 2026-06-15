@@ -38,14 +38,9 @@ def _save_cache() -> None:
         pass
 
 
-def _wiki_image(title: str, lang: str) -> str | None:
-    if not title or not title.strip():
-        return None
-    q = urllib.parse.urlencode({
-        "action": "query", "titles": title.strip(), "prop": "pageimages",
-        "format": "json", "pithumbsize": "500", "redirects": "1",
-    })
-    url = f"https://{lang}.wikipedia.org/w/api.php?{q}"
+def _wiki_query(params: dict, lang: str) -> str | None:
+    params = {**params, "format": "json", "prop": "pageimages", "pithumbsize": "500"}
+    url = f"https://{lang}.wikipedia.org/w/api.php?{urllib.parse.urlencode(params)}"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "BiteFit/1.0"})
         data = json.loads(urllib.request.urlopen(req, timeout=8).read())
@@ -56,6 +51,24 @@ def _wiki_image(title: str, lang: str) -> str | None:
     except Exception:
         pass
     return None
+
+
+def _wiki_image(title: str, lang: str) -> str | None:
+    """Exact-title lookup — accurate for simple foods (apple, pita...)."""
+    if not title or not title.strip():
+        return None
+    return _wiki_query({"action": "query", "titles": title.strip(), "redirects": "1"}, lang)
+
+
+def _wiki_search_image(query: str, lang: str) -> str | None:
+    """Search the closest article and use its image — handles descriptive
+    dish names like "toast with yellow cheese" that have no exact article."""
+    if not query or not query.strip():
+        return None
+    return _wiki_query(
+        {"action": "query", "generator": "search", "gsrsearch": query.strip(), "gsrlimit": "1"},
+        lang,
+    )
 
 
 def get_food_image(name_en: str = "", name_he: str = "") -> str | None:
@@ -72,7 +85,12 @@ def get_food_image(name_en: str = "", name_he: str = "") -> str | None:
         if key in cache:
             return cache[key] or None
 
-    img = _wiki_image(name_en, "en") or _wiki_image(name_he, "he")
+    img = (
+        _wiki_image(name_en, "en")
+        or _wiki_image(name_he, "he")
+        or _wiki_search_image(name_en, "en")
+        or _wiki_search_image(name_he, "he")
+    )
 
     with _lock:
         cache[key] = img or ""
