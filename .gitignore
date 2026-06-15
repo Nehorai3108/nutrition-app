@@ -24,3 +24,6 @@ storage_agents/profiles/test_user_001.json
 storage_agents/audit/director_reports/
 .DS_Store
 Thumbs.db
+
+# User-captured food photos (runtime data)
+storage_agents/food_photos/

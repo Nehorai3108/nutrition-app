@@ -32,6 +32,11 @@ _images_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage
 if os.path.exists(_images_path):
     app.mount("/recipe-images", StaticFiles(directory=_images_path), name="recipe-images")
 
+# User-captured food photos (from the camera identify flow).
+_photos_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage_agents", "food_photos")
+os.makedirs(_photos_path, exist_ok=True)
+app.mount("/food-photos", StaticFiles(directory=_photos_path), name="food-photos")
+
 @app.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
