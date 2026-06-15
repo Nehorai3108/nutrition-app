@@ -7,6 +7,97 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 router = APIRouter()
 
+_DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                        "storage", "nutrition.db")
+
+
+@router.get("/insight")
+def daily_insight(user=Depends(get_current_user)):
+    """תובנה פרואקטיבית של Biti — מבוססת נתוני היום של המשתמש.
+
+    הקוד מחשב את המספרים (יעד, נאכל, נשרף, מה שנותר); הניסוח בעברית
+    דטרמיניסטי וטבעי — תלוי במצב בפועל.
+    """
+    from datetime import date, datetime
+    import sqlite3
+
+    # Targets
+    try:
+        from api.routers.profile import get_targets
+        t = get_targets(user)
+    except Exception:
+        t = {"calories": 2000, "protein": 150, "carbs": 250, "fat": 67}
+
+    # Eaten today
+    try:
+        from nutrition_app.repositories.food_log_repository import FoodLogRepository
+        totals = FoodLogRepository().get_totals(user["id"], date.today())
+    except Exception:
+        totals = {"calories": 0, "protein": 0, "carbs": 0, "fat": 0, "count": 0}
+
+    # Burned today
+    burned = 0
+    try:
+        conn = sqlite3.connect(_DB_PATH)
+        row = conn.execute(
+            "SELECT COALESCE(SUM(calories_burned),0) FROM workout_log WHERE user_id=? AND date=?",
+            (user["id"], date.today().isoformat()),
+        ).fetchone()
+        burned = round(row[0] or 0)
+        conn.close()
+    except Exception:
+        pass
+
+    eaten_cal = round(totals.get("calories", 0))
+    eaten_prot = round(totals.get("protein", 0))
+    target_cal = round(t.get("calories", 2000))
+    target_prot = round(t.get("protein", 150))
+    budget = target_cal + burned
+    remaining_cal = budget - eaten_cal
+    remaining_prot = target_prot - eaten_prot
+    count = totals.get("count", 0)
+
+    hour = datetime.now().hour
+    if hour < 11:
+        greet = "בוקר טוב"
+    elif hour < 16:
+        greet = "צהריים טובים"
+    elif hour < 21:
+        greet = "ערב טוב"
+    else:
+        greet = "לילה טוב"
+
+    lines = []
+    if count == 0:
+        lines.append(f"{greet}! עוד לא רשמת ארוחות היום. היעד שלך הוא {target_cal} קק\"ל.")
+        lines.append("ספר לי מה אכלת או צלם ארוחה ואעדכן לך את היומן.")
+    else:
+        if remaining_cal > 50:
+            lines.append(f"{greet}! אכלת {eaten_cal} קק\"ל היום — נשארו לך {remaining_cal} קק\"ל מתוך {budget}.")
+        elif remaining_cal < -50:
+            lines.append(f"{greet}! עברת את היעד היומי ב-{abs(remaining_cal)} קק\"ל ({eaten_cal} מתוך {budget}).")
+        else:
+            lines.append(f"{greet}! אתה בדיוק על היעד — {eaten_cal} מתוך {budget} קק\"ל. כל הכבוד!")
+
+        if burned > 0:
+            lines.append(f"שרפת היום {burned} קק\"ל באימון — הוספתי אותן לתקציב.")
+
+        if remaining_prot > 25:
+            lines.append(f"כדאי להוסיף חלבון — נשארו לך {remaining_prot}g מהיעד היומי.")
+        elif remaining_prot <= 5 and eaten_prot > 0:
+            lines.append(f"השלמת כמעט את כל יעד החלבון ({eaten_prot}/{target_prot}g) — מצוין.")
+
+    return {
+        "message": "\n".join(lines),
+        "greeting": greet,
+        "target_calories": target_cal,
+        "eaten_calories": eaten_cal,
+        "burned_calories": burned,
+        "remaining_calories": remaining_cal,
+        "remaining_protein": remaining_prot,
+        "entries": count,
+    }
+
 class ChatMessage(BaseModel):
     role: str  # "user" | "assistant"
     content: str
