@@ -22,7 +22,9 @@ start "BiteFit API (8000)" cmd /k "cd /d "%BACKEND_DIR%" && set PUBLIC_BASE_URL=
 timeout /t 3 >nul
 
 echo Starting Expo / Metro bundler on port 8081...
-start "BiteFit App (Expo)" cmd /k "cd /d "%MOBILE_DIR%" && npx expo start --port 8081"
+REM Pin Metro's advertised host to the Tailscale IP so the phone can always
+REM reach the bundle, even when it's not on the same Wi-Fi/LAN.
+start "BiteFit App (Expo)" cmd /k "cd /d "%MOBILE_DIR%" && set REACT_NATIVE_PACKAGER_HOSTNAME=%TAILSCALE_IP% && npx expo start --port 8081"
 
 echo.
 echo ============================================================
