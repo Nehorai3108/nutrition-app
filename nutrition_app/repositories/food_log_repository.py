@@ -29,6 +29,7 @@ class FoodLogEntry:
     meal_type: str
     timestamp: str
     entry_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    image_url: Optional[str] = None
 
 
 def _default_db_path() -> str:
@@ -95,20 +96,20 @@ class FoodLogRepository:
             conn.execute("""
                 INSERT OR REPLACE INTO food_log
                   (entry_id, user_id, date, food_id, food_name, grams,
-                   calories, protein, carbs, fat, meal_type, timestamp)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                   calories, protein, carbs, fat, meal_type, timestamp, image_url)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 entry.entry_id, user_id, day.isoformat(),
                 entry.food_id, entry.food_name, entry.grams,
                 entry.calories, entry.protein, entry.carbs, entry.fat,
-                entry.meal_type, entry.timestamp,
+                entry.meal_type, entry.timestamp, entry.image_url,
             ))
 
     def _sqlite_remove_entry(self, user_id: str, day: date_cls, entry_id: str):
         with self._db() as conn:
             conn.execute(
-                "DELETE FROM food_log WHERE user_id=? AND date=? AND entry_id=?",
-                (user_id, day.isoformat(), entry_id),
+                "DELETE FROM food_log WHERE user_id=? AND entry_id=?",
+                (user_id, entry_id),
             )
 
     def _sqlite_clear_day(self, user_id: str, day: date_cls):
@@ -233,6 +234,57 @@ class FoodLogRepository:
         data.pop(day.isoformat(), None)
         self._save_json(user_id, data)
 
+    def get_history(self, user_id: str, start: date_cls, end: date_cls) -> dict:
+        """Per-day nutrition totals between start and end (inclusive).
+
+        Returns {iso_date: {calories, protein, carbs, fat, count}} for days
+        that have at least one entry.
+        """
+        if self._use_sqlite():
+            try:
+                with self._db() as conn:
+                    rows = conn.execute(
+                        """SELECT date,
+                                  SUM(calories) AS calories,
+                                  SUM(protein)  AS protein,
+                                  SUM(carbs)    AS carbs,
+                                  SUM(fat)      AS fat,
+                                  COUNT(*)      AS count
+                           FROM food_log
+                           WHERE user_id=? AND date BETWEEN ? AND ?
+                           GROUP BY date""",
+                        (user_id, start.isoformat(), end.isoformat()),
+                    ).fetchall()
+                return {
+                    r["date"]: {
+                        "calories": round(r["calories"] or 0),
+                        "protein":  round(r["protein"] or 0, 1),
+                        "carbs":    round(r["carbs"] or 0, 1),
+                        "fat":      round(r["fat"] or 0, 1),
+                        "count":    r["count"],
+                    }
+                    for r in rows
+                }
+            except Exception:
+                pass
+        # JSON fallback
+        data = self._load(user_id)
+        out = {}
+        for iso, entries in data.items():
+            try:
+                d = date_cls.fromisoformat(iso)
+            except ValueError:
+                continue
+            if start <= d <= end and entries:
+                out[iso] = {
+                    "calories": round(sum(e.get("calories", 0) for e in entries)),
+                    "protein":  round(sum(e.get("protein", 0) for e in entries), 1),
+                    "carbs":    round(sum(e.get("carbs", 0) for e in entries), 1),
+                    "fat":      round(sum(e.get("fat", 0) for e in entries), 1),
+                    "count":    len(entries),
+                }
+        return out
+
     def get_totals(self, user_id: str, day: date_cls) -> dict:
         entries = self.get_log(user_id, day)
         return {
@@ -258,4 +310,5 @@ def _row_to_entry(row: dict) -> FoodLogEntry:
         meal_type = row.get("meal_type", "lunch"),
         timestamp = row.get("timestamp", ""),
         entry_id  = row.get("entry_id", str(uuid.uuid4())),
+        image_url = row.get("image_url"),
     )

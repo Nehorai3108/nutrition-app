@@ -167,6 +167,14 @@ def add_entry(body: AddFoodEntry, user=Depends(get_current_user)):
     repo.add_entry(user["id"], d, entry)
     return {"ok": True}
 
+@router.get("/history")
+def get_history(days: int = 35, user=Depends(get_current_user)):
+    """סיכום קלורי לכל יום ב-N הימים האחרונים (לתצוגת לוח שנה)."""
+    from datetime import timedelta
+    end = date.today()
+    start = end - timedelta(days=max(1, min(days, 366)))
+    return {"days": repo.get_history(user["id"], start, end)}
+
 @router.get("/{date_str}")
 def get_log(date_str: str, user=Depends(get_current_user)):
     """מחזיר יומן אכילה לתאריך, עם תמונה ממתכון אם קיימת."""
