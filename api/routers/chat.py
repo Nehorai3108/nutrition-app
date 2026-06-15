@@ -38,9 +38,12 @@ def chat(body: ChatRequest, user=Depends(get_current_user)):
 
     client = Groq(api_key=api_key)
 
-    # System prompt מקוצר לAPI
+    # System prompt — when food is mentioned, the model must estimate the REAL
+    # portion in grams and the TOTAL nutrition for that portion (not per 100g).
     system = """You are Biti — Israeli nutrition assistant. Always reply in Hebrew.
-When user mentions food, return JSON: {"meal_type":"lunch","foods":[{"name":"food name","quantity":1,"unit":"יחידה"}],"reply":"short Hebrew reply"}
+When the user mentions eating food, return JSON ONLY in this exact shape:
+{"meal_type":"lunch","foods":[{"name_he":"שם בעברית","name_en":"english name","grams":<total grams of the portion>,"calories":<total kcal for that portion>,"protein":<g>,"carbs":<g>,"fat":<g>}],"reply":"short Hebrew reply"}
+Estimate realistic portion sizes (e.g. ביצה≈55g, פרוסת לחם≈30g, מנת אורז≈180g, חזה עוף≈170g, תפוח≈180g) and compute the TOTAL nutrition for the whole portion the user described, multiplying by the count. name_he must be Hebrew, never Arabic.
 Otherwise reply naturally in Hebrew without JSON."""
 
     messages = [{"role": "system", "content": system}]
@@ -76,6 +79,65 @@ Otherwise reply naturally in Hebrew without JSON."""
                 except Exception:
                     pass
 
+        if food_data and isinstance(food_data.get("foods"), list):
+            food_data["foods"] = [_enrich_food(f) for f in food_data["foods"]]
+
         return {"reply": raw, "food_data": food_data}
     except Exception as e:
         return {"reply": f"שגיאה: {e}", "food_data": None}
+
+
+def _enrich_food(food: dict) -> dict:
+    """Guarantee a chat-detected food has grams + total calories/macros.
+
+    The model is asked to provide them; if calories are missing or zero we
+    resolve per-100g nutrition (AI estimator on the Hebrew name) and scale by
+    the portion grams. Returns a normalized dict the client can log directly.
+    """
+    name_he = food.get("name_he") or food.get("name") or "מזון"
+    name_en = food.get("name_en") or food.get("name") or name_he
+
+    try:
+        grams = float(food.get("grams") or 0)
+    except (TypeError, ValueError):
+        grams = 0.0
+    if grams <= 0:
+        grams = 100.0
+
+    def _num(v):
+        try:
+            return float(v or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    cal = _num(food.get("calories"))
+    prot = _num(food.get("protein"))
+    carbs = _num(food.get("carbs"))
+    fat = _num(food.get("fat"))
+
+    if cal <= 0:
+        # Fallback: AI estimates per-100g, then scale to the portion.
+        try:
+            from api.nutrition_ai import estimate_nutrition_per_100g
+            est = estimate_nutrition_per_100g(name_he)
+        except Exception:
+            est = None
+        if est:
+            f = grams / 100.0
+            cal   = round(est["calories"] * f)
+            prot  = round(est["protein"] * f, 1)
+            carbs = round(est["carbs"] * f, 1)
+            fat   = round(est["fat"] * f, 1)
+
+    return {
+        "name": name_en,
+        "name_he": name_he,
+        "grams": round(grams),
+        "calories": round(cal),
+        "protein": round(prot, 1),
+        "carbs": round(carbs, 1),
+        "fat": round(fat, 1),
+        # keep originals for display
+        "quantity": food.get("quantity"),
+        "unit": food.get("unit"),
+    }
