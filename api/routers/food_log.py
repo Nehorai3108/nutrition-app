@@ -185,6 +185,11 @@ def get_history(days: int = 35, user=Depends(get_current_user)):
     start = end - timedelta(days=max(1, min(days, 366)))
     return {"days": repo.get_history(user["id"], start, end)}
 
+@router.get("/recents")
+def get_recents(limit: int = 12, user=Depends(get_current_user)):
+    """מאכלים אחרונים ייחודיים — לרישום חוזר בלחיצה אחת."""
+    return {"foods": repo.get_recent_foods(user["id"], limit=max(1, min(limit, 50)))}
+
 @router.get("/{date_str}")
 def get_log(date_str: str, user=Depends(get_current_user)):
     """מחזיר יומן אכילה לתאריך, עם תמונה ממתכון אם קיימת."""

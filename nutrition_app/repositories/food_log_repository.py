@@ -285,6 +285,43 @@ class FoodLogRepository:
                 }
         return out
 
+    def get_recent_foods(self, user_id: str, limit: int = 12) -> list:
+        """Distinct recently-logged foods (newest first) for one-tap re-logging.
+
+        Each item carries the nutrition from its most recent logging plus how
+        many times it was logged.
+        """
+        if self._use_sqlite():
+            try:
+                with self._db() as conn:
+                    rows = conn.execute(
+                        """SELECT food_name, food_id, grams, calories, protein, carbs,
+                                  fat, image_url, meal_type,
+                                  MAX(timestamp) AS last, COUNT(*) AS cnt
+                           FROM food_log
+                           WHERE user_id=? AND food_name IS NOT NULL AND food_name != ''
+                           GROUP BY food_name
+                           ORDER BY last DESC
+                           LIMIT ?""",
+                        (user_id, limit),
+                    ).fetchall()
+                return [dict(r) for r in rows]
+            except Exception:
+                pass
+        # JSON fallback: aggregate across all days
+        data = self._load(user_id)
+        by_name = {}
+        for iso in sorted(data.keys()):
+            for e in data[iso]:
+                name = e.get("food_name")
+                if not name:
+                    continue
+                prev = by_name.get(name)
+                cnt = (prev["cnt"] + 1) if prev else 1
+                by_name[name] = {**e, "last": e.get("timestamp", iso), "cnt": cnt}
+        items = sorted(by_name.values(), key=lambda x: x.get("last", ""), reverse=True)
+        return items[:limit]
+
     def get_totals(self, user_id: str, day: date_cls) -> dict:
         entries = self.get_log(user_id, day)
         return {
