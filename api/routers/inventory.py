@@ -77,6 +77,10 @@ class AddItem(BaseModel):
     category: str = "other"
 
 
+class BulkItems(BaseModel):
+    items: list[AddItem]
+
+
 def _insert(conn, user_id: str, name_he: str, quantity, unit: str, category: str) -> dict:
     item_id = uuid.uuid4().hex
     conn.execute(
@@ -106,6 +110,20 @@ def add_item(body: AddItem, user=Depends(get_current_user)):
                        body.unit, body.category)
         conn.commit()
     return {"ok": True, "item": item}
+
+
+@router.post("/bulk")
+def add_bulk(body: BulkItems, user=Depends(get_current_user)):
+    """שמירה מרוכזת — אחרי שהמשתמש אישר/ערך את רשימת הקבלה."""
+    added = []
+    with _conn() as conn:
+        for it in body.items:
+            name = (it.name_he or "").strip()
+            if not name:
+                continue
+            added.append(_insert(conn, user["id"], name, it.quantity, it.unit, it.category))
+        conn.commit()
+    return {"ok": True, "count": len(added), "items": added}
 
 
 @router.delete("/{item_id}")
@@ -179,17 +197,65 @@ Return ONLY a JSON array, no markdown:
     except Exception as e:
         return {"items": [], "error": str(e)}
 
-    added = []
+    # Parse only — return the items for the user to review/edit before saving.
+    items = []
+    for p in parsed:
+        name = _clean_name(p.get("name_he"), p.get("name_en"))
+        if not name:
+            continue
+        try:
+            qty = float(p.get("quantity") or 1)
+        except (TypeError, ValueError):
+            qty = 1
+        items.append({
+            "name_he": name,
+            "quantity": qty,
+            "unit": p.get("unit") or "יח׳",
+            "category": _norm_category(p.get("category")),
+        })
+    return {"items": items, "count": len(items)}
+
+
+@router.get("/cook")
+def cook_from_inventory(user=Depends(get_current_user)):
+    """מתכונים שאפשר להכין ממה שיש במלאי — מדורגים לפי כמה מרכיבים יש לך."""
     with _conn() as conn:
-        for p in parsed:
-            name = _clean_name(p.get("name_he"), p.get("name_en"))
-            if not name:
-                continue
-            try:
-                qty = float(p.get("quantity") or 1)
-            except (TypeError, ValueError):
-                qty = 1
-            added.append(_insert(conn, user["id"], name, qty,
-                                 p.get("unit") or "יח׳", p.get("category") or "other"))
-        conn.commit()
-    return {"items": added, "count": len(added)}
+        rows = conn.execute(
+            "SELECT name_he FROM inventory WHERE user_id=?", (user["id"],)
+        ).fetchall()
+    inv_names = {r["name_he"] for r in rows if r["name_he"]}
+    if not inv_names:
+        return {"recipes": [], "inventory_count": 0}
+
+    from nutrition_app.agents.agent_11_recipes.recipe_manager import (
+        RecipeManager, get_recipe_inventory_match,
+    )
+    from nutrition_app.agents.agent_11_recipes.unit_converter import enrich_recipe_ingredients
+    from api.routers.daily_menu import enrich_images
+
+    mgr = RecipeManager()
+    scored = []
+    for r in mgr._recipes:
+        ings = r.get("ingredients", [])
+        if not ings:
+            continue
+        match = get_recipe_inventory_match(r, inv_names)
+        if match["match_pct"] <= 0:
+            continue
+        scored.append((match["match_pct"], len(match["available"]), r, match))
+
+    # Best coverage first, then most matched ingredients.
+    scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
+
+    results = []
+    for pct, _, recipe, match in scored[:10]:
+        rec = dict(recipe)
+        enrich_recipe_ingredients(rec)
+        results.append({
+            **rec,
+            "match_pct": pct,
+            "available": [i.get("food_name") for i in match["available"]],
+            "missing": [i.get("food_name") for i in match["missing"]],
+        })
+    enrich_images(results)
+    return {"recipes": results, "inventory_count": len(inv_names)}
