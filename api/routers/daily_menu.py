@@ -20,23 +20,37 @@ def get_manager():
         _manager = RecipeManager()
     return _manager
 
-# Same curated map the recipes page / original Streamlit app uses as image fallback.
+# Curated Unsplash map + a pre-resolved Wikipedia map (built offline by
+# scripts/resolve_recipe_images.py). Both are plain dict lookups — NO network
+# calls happen during a request, so meal endpoints stay fast.
 _recipe_image_map = None
+_recipe_wiki_map = None
+
+def _load_json(rel_path):
+    import json
+    try:
+        with open(os.path.join(_PROJECT_ROOT, rel_path), encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
 def _get_recipe_image_map():
     global _recipe_image_map
     if _recipe_image_map is None:
-        import json
-        try:
-            with open(os.path.join(_PROJECT_ROOT, "data", "recipe_images.json"), encoding="utf-8") as f:
-                _recipe_image_map = json.load(f)
-        except Exception:
-            _recipe_image_map = {}
+        _recipe_image_map = _load_json(os.path.join("data", "recipe_images.json"))
     return _recipe_image_map
 
+def _get_recipe_wiki_map():
+    global _recipe_wiki_map
+    if _recipe_wiki_map is None:
+        _recipe_wiki_map = _load_json(os.path.join("data", "recipe_wiki_images.json"))
+    return _recipe_wiki_map
+
 def enrich_images(recipes):
-    """Mirror the original app: local approved JPG → curated Unsplash map → none.
-    Never keep the generic themealdb image_url (mismatched)."""
+    """Local approved JPG → curated Unsplash map → pre-resolved Wikipedia map →
+    none. All dict/file lookups; no per-request network calls."""
     img_map = _get_recipe_image_map()
+    wiki_map = _get_recipe_wiki_map()
     for r in recipes:
         rid = r.get("recipe_id", "")
         local = os.path.join(_IMAGES_DIR, f"{rid}.jpg")
@@ -45,15 +59,9 @@ def enrich_images(recipes):
         else:
             mapped = img_map.get(rid) or ""
             r["image_url"] = mapped if "images.unsplash.com" in mapped else None
-        # Fallback so no recipe is left image-less: look one up by name (cached).
+        # Pre-resolved Wikipedia image (offline) — instant dict lookup.
         if not r.get("image_url"):
-            try:
-                from api.food_image import get_food_image
-                # Exact-title only: a fuzzy match can return a wrong photo
-                # (e.g. shawarma for a pita-hummus recipe). Accuracy over coverage.
-                r["image_url"] = get_food_image(r.get("name_en", ""), r.get("name_he", ""), allow_search=False)
-            except Exception:
-                pass
+            r["image_url"] = wiki_map.get(rid) or None
         # Add household-unit display strings (e.g. "4 ביצים") to each ingredient.
         enrich_recipe_ingredients(r)
     return recipes

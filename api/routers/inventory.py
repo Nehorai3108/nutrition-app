@@ -243,13 +243,11 @@ def cook_from_inventory(user=Depends(get_current_user)):
     if not inv_names:
         return {"recipes": [], "inventory_count": 0}
 
-    from nutrition_app.agents.agent_11_recipes.recipe_manager import (
-        RecipeManager, get_recipe_inventory_match,
-    )
+    from nutrition_app.agents.agent_11_recipes.recipe_manager import get_recipe_inventory_match
     from nutrition_app.agents.agent_11_recipes.unit_converter import enrich_recipe_ingredients
-    from api.routers.daily_menu import enrich_images
+    from api.routers.daily_menu import enrich_images, get_manager
 
-    mgr = RecipeManager()
+    mgr = get_manager()  # shared singleton — don't reload all recipes per request
     scored = []
     for r in mgr._recipes:
         ings = r.get("ingredients", [])
