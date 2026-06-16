@@ -42,6 +42,22 @@ def _norm_category(c: str) -> str:
     return c if c in _VALID_CATEGORIES else "other"
 
 
+def _has_arabic(text: str) -> bool:
+    # Arabic Unicode block U+0600–U+06FF
+    return any("؀" <= ch <= "ۿ" for ch in text or "")
+
+
+def _clean_name(name_he: str, name_en: str) -> Optional[str]:
+    """Reject Arabic-script names; fall back to the English name if needed."""
+    name_he = (name_he or "").strip()
+    if name_he and not _has_arabic(name_he):
+        return name_he
+    name_en = (name_en or "").strip()
+    if name_en and not _has_arabic(name_en):
+        return name_en
+    return None  # drop items we can't render in a sane language
+
+
 def _groq_key() -> str:
     key = os.environ.get("GROQ_API_KEY", "")
     if key:
@@ -119,17 +135,22 @@ async def scan_receipt(file: UploadFile = File(...), user=Depends(get_current_us
     img_b64 = base64.b64encode(await file.read()).decode()
 
     prompt = """You are reading an Israeli supermarket receipt (חשבונית סופרמרקט).
-Extract ONLY the food / grocery PRODUCTS. IGNORE prices, totals (סה""כ), store
+Extract EVERY food / grocery PRODUCT line. IGNORE prices, totals (סה""כ), store
 name, address, dates, cashier, payment, VAT (מע""מ), and any non-food item.
 
 For each product return:
-- name_he: the product name in Hebrew (clean, generic — e.g. "עגבניות", "חלב 3%", "לחם פרוס")
+- name_he: the product name in HEBREW only (clean, generic — e.g. "עגבניות", "חלב 3%", "לחם פרוס")
+- name_en: the same product name in English (e.g. "tomatoes", "milk", "bread")
 - category: one of produce, meat, dairy, bakery, pantry, frozen, beverages, snacks, other
 - quantity: number (default 1)
 - unit: one of יח׳, ק"ג, גרם, חבילה, בקבוק
 
+CRITICAL LANGUAGE RULE: name_he MUST be written in HEBREW letters (עברית) only —
+NEVER in Arabic script. Examples: tomatoes = "עגבניות" (NOT "عغبنيوت"),
+milk = "חלב", bread = "לחם", cucumber = "מלפפון", chicken = "עוף".
+
 Return ONLY a JSON array, no markdown:
-[{"name_he":"עגבניות","category":"produce","quantity":1,"unit":"ק\\"ג"}]"""
+[{"name_he":"עגבניות","name_en":"tomatoes","category":"produce","quantity":1,"unit":"ק\\"ג"}]"""
 
     try:
         resp = requests.post(
@@ -161,7 +182,7 @@ Return ONLY a JSON array, no markdown:
     added = []
     with _conn() as conn:
         for p in parsed:
-            name = (p.get("name_he") or "").strip()
+            name = _clean_name(p.get("name_he"), p.get("name_en"))
             if not name:
                 continue
             try:
