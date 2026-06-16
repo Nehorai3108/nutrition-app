@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
-from api.routers import auth, profile, food_log, recipes, daily_menu, chat, camera, water, barcode, workout
+from api.routers import auth, profile, food_log, recipes, daily_menu, chat, camera, water, barcode, workout, inventory
 
 app = FastAPI(title="BiteFit API", version="1.0.0")
 
@@ -28,6 +28,7 @@ app.include_router(camera.router,     prefix="/camera",     tags=["camera"])
 app.include_router(water.router,      prefix="/water",      tags=["water"])
 app.include_router(barcode.router,    prefix="/barcode",    tags=["barcode"])
 app.include_router(workout.router,    prefix="/workout",    tags=["workout"])
+app.include_router(inventory.router,  prefix="/inventory",  tags=["inventory"])
 
 _images_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage_agents", "recipe_images", "approved")
 if os.path.exists(_images_path):

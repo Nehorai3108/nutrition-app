@@ -1,0 +1,174 @@
+from fastapi import APIRouter, Depends, UploadFile, File
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+from api.deps import get_current_user
+import sys, os, uuid, sqlite3, base64, json, requests
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+router = APIRouter()
+
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+_DB_PATH = os.path.join(_PROJECT_ROOT, "storage", "nutrition.db")
+
+_VALID_CATEGORIES = {
+    "produce", "meat", "dairy", "bakery", "pantry",
+    "frozen", "beverages", "snacks", "other",
+}
+
+_CREATE = """
+CREATE TABLE IF NOT EXISTS inventory (
+    item_id    TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL,
+    name_he    TEXT NOT NULL,
+    quantity   REAL DEFAULT 1,
+    unit       TEXT DEFAULT 'יח׳',
+    category   TEXT DEFAULT 'other',
+    added_at   TEXT NOT NULL
+)
+"""
+
+
+def _conn():
+    conn = sqlite3.connect(_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.execute(_CREATE)
+    return conn
+
+
+def _norm_category(c: str) -> str:
+    c = (c or "other").lower().strip()
+    return c if c in _VALID_CATEGORIES else "other"
+
+
+def _groq_key() -> str:
+    key = os.environ.get("GROQ_API_KEY", "")
+    if key:
+        return key
+    try:
+        import tomllib
+        with open(os.path.join(_PROJECT_ROOT, ".streamlit", "secrets.toml"), "rb") as f:
+            return tomllib.load(f).get("groq_api_key", "")
+    except Exception:
+        return ""
+
+
+class AddItem(BaseModel):
+    name_he: str
+    quantity: float = 1
+    unit: str = "יח׳"
+    category: str = "other"
+
+
+def _insert(conn, user_id: str, name_he: str, quantity, unit: str, category: str) -> dict:
+    item_id = uuid.uuid4().hex
+    conn.execute(
+        """INSERT INTO inventory (item_id, user_id, name_he, quantity, unit, category, added_at)
+           VALUES (?,?,?,?,?,?,?)""",
+        (item_id, user_id, name_he, quantity, unit, _norm_category(category),
+         datetime.now().isoformat()),
+    )
+    return {"item_id": item_id, "name_he": name_he, "quantity": quantity,
+            "unit": unit, "category": _norm_category(category)}
+
+
+@router.get("/")
+def list_inventory(user=Depends(get_current_user)):
+    with _conn() as conn:
+        rows = conn.execute(
+            "SELECT * FROM inventory WHERE user_id=? ORDER BY category, added_at DESC",
+            (user["id"],),
+        ).fetchall()
+    return {"items": [dict(r) for r in rows]}
+
+
+@router.post("/")
+def add_item(body: AddItem, user=Depends(get_current_user)):
+    with _conn() as conn:
+        item = _insert(conn, user["id"], body.name_he.strip(), body.quantity,
+                       body.unit, body.category)
+        conn.commit()
+    return {"ok": True, "item": item}
+
+
+@router.delete("/{item_id}")
+def delete_item(item_id: str, user=Depends(get_current_user)):
+    with _conn() as conn:
+        conn.execute("DELETE FROM inventory WHERE user_id=? AND item_id=?",
+                     (user["id"], item_id))
+        conn.commit()
+    return {"ok": True}
+
+
+@router.delete("/")
+def clear_inventory(user=Depends(get_current_user)):
+    with _conn() as conn:
+        conn.execute("DELETE FROM inventory WHERE user_id=?", (user["id"],))
+        conn.commit()
+    return {"ok": True}
+
+
+@router.post("/scan-receipt")
+async def scan_receipt(file: UploadFile = File(...), user=Depends(get_current_user)):
+    """קולט תמונת קבלה, מחלץ מוצרי מזון עם Groq, ומוסיף למלאי."""
+    api_key = _groq_key()
+    if not api_key:
+        return {"items": [], "error": "GROQ_API_KEY missing"}
+
+    img_b64 = base64.b64encode(await file.read()).decode()
+
+    prompt = """You are reading an Israeli supermarket receipt (חשבונית סופרמרקט).
+Extract ONLY the food / grocery PRODUCTS. IGNORE prices, totals (סה""כ), store
+name, address, dates, cashier, payment, VAT (מע""מ), and any non-food item.
+
+For each product return:
+- name_he: the product name in Hebrew (clean, generic — e.g. "עגבניות", "חלב 3%", "לחם פרוס")
+- category: one of produce, meat, dairy, bakery, pantry, frozen, beverages, snacks, other
+- quantity: number (default 1)
+- unit: one of יח׳, ק"ג, גרם, חבילה, בקבוק
+
+Return ONLY a JSON array, no markdown:
+[{"name_he":"עגבניות","category":"produce","quantity":1,"unit":"ק\\"ג"}]"""
+
+    try:
+        resp = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+                "messages": [{"role": "user", "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
+                ]}],
+                "temperature": 0.0,
+                "max_tokens": 1500,
+            },
+            timeout=45,
+        )
+        text = resp.json()["choices"][0]["message"]["content"].strip()
+        if "```" in text:
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        start, end = text.find("["), text.rfind("]")
+        if start != -1 and end != -1:
+            text = text[start:end + 1]
+        parsed = json.loads(text.strip())
+    except Exception as e:
+        return {"items": [], "error": str(e)}
+
+    added = []
+    with _conn() as conn:
+        for p in parsed:
+            name = (p.get("name_he") or "").strip()
+            if not name:
+                continue
+            try:
+                qty = float(p.get("quantity") or 1)
+            except (TypeError, ValueError):
+                qty = 1
+            added.append(_insert(conn, user["id"], name, qty,
+                                 p.get("unit") or "יח׳", p.get("category") or "other"))
+        conn.commit()
+    return {"items": added, "count": len(added)}
