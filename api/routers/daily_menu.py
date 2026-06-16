@@ -49,7 +49,9 @@ def enrich_images(recipes):
         if not r.get("image_url"):
             try:
                 from api.food_image import get_food_image
-                r["image_url"] = get_food_image(r.get("name_en", ""), r.get("name_he", ""))
+                # Exact-title only: a fuzzy match can return a wrong photo
+                # (e.g. shawarma for a pita-hummus recipe). Accuracy over coverage.
+                r["image_url"] = get_food_image(r.get("name_en", ""), r.get("name_he", ""), allow_search=False)
             except Exception:
                 pass
         # Add household-unit display strings (e.g. "4 ביצים") to each ingredient.
@@ -75,11 +77,22 @@ _HEAVY_DISHES = [
     "לחוח", "בורקס", "קובה", "שווארמה", "חמין", "סמבוסק", "ג'ובן",
 ]
 
+# Real breakfast/snack foods (stems, to catch חביתה/חביתת, גבינה/גבינות, ביצה/ביצים).
+_BREAKFAST_FOODS = [
+    "חבית", "אומלט", "ביצ", "טוסט", "כריך", "סנדוויץ", "אבוקדו", "יוגורט",
+    "גרנולה", "שיבולת שועל", "קוואקר", "דייסה", "שייק", "סמוז", "סמוד",
+    "סלט", "גבינ", "קוטג", "לבנה", "פנקייק", "וופל", "לחם", "טונה",
+    "שקשוק", "פרי", "קרקר", "חלה", "דגנים", "קורנפלקס", "בייגל", "פריטטה",
+]
+
 def _prep_cap(meal_type: str):
     return 20 if meal_type.upper() in _QUICK_MEALS else None
 
 def _exclude_kw(meal_type: str):
     return _HEAVY_DISHES if meal_type.upper() in _QUICK_MEALS else None
+
+def _include_kw(meal_type: str):
+    return _BREAKFAST_FOODS if meal_type.upper() in _QUICK_MEALS else None
 
 @router.get("/suggestions/{meal_type}")
 def get_meal_suggestions(
@@ -106,6 +119,7 @@ def get_meal_suggestions(
         variation_seed=seed,
         max_prep_minutes=_prep_cap(meal_type),
         exclude_name_keywords=_exclude_kw(meal_type),
+        include_name_keywords=_include_kw(meal_type),
     )
     enrich_images(results)
     return {"meal_type": meal_type, "recipes": results[:3]}
@@ -133,6 +147,7 @@ def get_daily_plan(user=Depends(get_current_user)):
             disliked_foods=disliked or None,
             max_prep_minutes=_prep_cap(meal),
             exclude_name_keywords=_exclude_kw(meal),
+            include_name_keywords=_include_kw(meal),
         )
         plan[meal] = {
             "target_calories": round(meal_cal),

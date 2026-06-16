@@ -546,6 +546,7 @@ class RecipeManager:
         variation_seed: int = 0,
         max_prep_minutes: Optional[int] = None,
         exclude_name_keywords: Optional[List[str]] = None,
+        include_name_keywords: Optional[List[str]] = None,
     ) -> List[dict]:
         """Find top 5 recipes for a specific meal slot.
 
@@ -599,6 +600,16 @@ class RecipeManager:
             ]
             if filtered:
                 candidates = filtered
+
+        # Allowlist: keep only dishes whose name matches a real breakfast/snack
+        # keyword (positive filter — more robust than blocklisting). Don't empty.
+        if include_name_keywords:
+            allowed = [
+                r for r in candidates
+                if any(kw in (r.get("name_he", "")) for kw in include_name_keywords)
+            ]
+            if allowed:
+                candidates = allowed
 
         # Estimate macro targets from calorie target using typical ratios
         est_protein = target_calories * 0.30 / 4.0  # 30% from protein

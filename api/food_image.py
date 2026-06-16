@@ -71,13 +71,16 @@ def _wiki_search_image(query: str, lang: str) -> str | None:
     )
 
 
-def get_food_image(name_en: str = "", name_he: str = "") -> str | None:
+def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = True) -> str | None:
     """Return a food image URL (English Wikipedia first, then Hebrew). Cached.
 
+    allow_search=False uses ONLY exact-title lookups (accurate), skipping the
+    fuzzy search that can return a loosely-related photo — important for recipe
+    names like "פיתה עם חומוס ואמבה" where search wrongly returned shawarma.
     Caches misses as "" so we don't repeatedly query foods with no page image.
     """
-    key = (name_en or name_he or "").strip().lower()
-    if not key:
+    key = ("s:" if allow_search else "x:") + (name_en or name_he or "").strip().lower()
+    if key in ("s:", "x:"):
         return None
 
     with _lock:
@@ -85,12 +88,9 @@ def get_food_image(name_en: str = "", name_he: str = "") -> str | None:
         if key in cache:
             return cache[key] or None
 
-    img = (
-        _wiki_image(name_en, "en")
-        or _wiki_image(name_he, "he")
-        or _wiki_search_image(name_en, "en")
-        or _wiki_search_image(name_he, "he")
-    )
+    img = _wiki_image(name_en, "en") or _wiki_image(name_he, "he")
+    if not img and allow_search:
+        img = _wiki_search_image(name_en, "en") or _wiki_search_image(name_he, "he")
 
     with _lock:
         cache[key] = img or ""
