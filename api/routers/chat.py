@@ -129,16 +129,31 @@ def chat(body: ChatRequest, user=Depends(get_current_user)):
 
     client = Groq(api_key=api_key)
 
-    # System prompt — when food is mentioned, the model must estimate the REAL
-    # portion in grams and the TOTAL nutrition for that portion (not per 100g).
-    system = """You are Biti — Israeli nutrition assistant. Always reply in Hebrew.
-When the user mentions eating food, return JSON ONLY in this exact shape:
-{"meal_type":"lunch","foods":[{"name_he":"שם בעברית","name_en":"english name","grams":<total grams of the portion>,"calories":<total kcal for that portion>,"protein":<g>,"carbs":<g>,"fat":<g>}],"reply":"short Hebrew reply"}
-Estimate realistic portion sizes (e.g. ביצה≈55g, פרוסת לחם≈30g, מנת אורז≈180g, חזה עוף≈170g, תפוח≈180g) and compute the TOTAL nutrition for the whole portion the user described, multiplying by the count. name_he must be Hebrew, never Arabic.
-Otherwise reply naturally in Hebrew without JSON."""
+    inv_ctx = _inventory_context(user["id"])
+
+    system = f"""You are Biti — a smart Israeli nutrition assistant. Always reply in Hebrew.
+
+USER CONTEXT (live data — use it):
+- Inventory (מלאי): {inv_ctx}
+
+You can ACT for the user by returning a JSON object (inside a ```json block). Use it when relevant:
+
+1. LOG food the user says they ate — include "foods":
+   "foods":[{{"name_he":"שם בעברית","name_en":"english","grams":<total grams>,"calories":<total kcal>,"protein":<g>,"carbs":<g>,"fat":<g>}}]
+   Estimate realistic portions (ביצה≈55g, פרוסת לחם≈30g, מנת אורז≈180g, חזה עוף≈170g, תפוח≈180g) and compute TOTAL nutrition for the portion described.
+
+2. ADD or REMOVE inventory items when the user asks (e.g. "קניתי עגבניות תוסיף למלאי", "תוריד חלב מהמלאי") — include "actions":
+   "actions":[{{"type":"add_inventory","name_he":"עגבניות","quantity":1,"unit":"יח׳","category":"produce"}}]
+   type is "add_inventory" or "remove_inventory". category ∈ produce,meat,dairy,bakery,pantry,frozen,beverages,snacks,other.
+
+The system REALLY performs the actions — so confirm it's done in your reply (e.g. "הוספתי עגבניות למלאי ✓"). Do NOT ask the user to add it himself.
+
+Always include "reply": one short natural Hebrew sentence.
+For plain questions just reply with normal Hebrew text (no JSON).
+name_he must be in Hebrew, NEVER Arabic."""
 
     messages = [{"role": "system", "content": system}]
-    for m in body.history[-10:]:  # שמור 10 הודעות אחרונות
+    for m in body.history[-10:]:
         messages.append({"role": m.role, "content": m.content})
     messages.append({"role": "user", "content": body.message})
 
@@ -146,36 +161,101 @@ Otherwise reply naturally in Hebrew without JSON."""
         resp = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=messages,
-            max_tokens=500,
+            max_tokens=600,
             temperature=0.2,
         )
         raw = resp.choices[0].message.content.strip()
 
-        # נסה לחלץ JSON
-        import re, json
+        data = _extract_json(raw)
+        reply = raw
         food_data = None
-        m = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', raw)
-        if m:
-            try:
-                food_data = json.loads(m.group(1))
-                raw = food_data.get("reply", raw)
-            except Exception:
-                pass
-        else:
-            m2 = re.search(r'(\{[\s\S]*"meal_type"[\s\S]*"foods"[\s\S]*\})', raw)
-            if m2:
-                try:
-                    food_data = json.loads(m2.group(1))
-                    raw = food_data.get("reply", raw)
-                except Exception:
-                    pass
+        actions_done = []
 
-        if food_data and isinstance(food_data.get("foods"), list):
-            food_data["foods"] = [_enrich_food(f) for f in food_data["foods"]]
+        if data:
+            reply = (data.get("reply") or "").strip() or "בוצע ✓"
+            if isinstance(data.get("foods"), list) and data["foods"]:
+                food_data = {
+                    "meal_type": data.get("meal_type", "lunch"),
+                    "foods": [_enrich_food(f) for f in data["foods"]],
+                }
+            if isinstance(data.get("actions"), list) and data["actions"]:
+                actions_done = _exec_actions(user["id"], data["actions"])
 
-        return {"reply": raw, "food_data": food_data}
+        return {"reply": reply, "food_data": food_data, "actions": actions_done}
     except Exception as e:
         return {"reply": f"שגיאה: {e}", "food_data": None}
+
+
+def _extract_json(raw: str):
+    """Pull the first JSON object out of the model reply (fenced or raw)."""
+    import json
+    text = raw
+    if "```" in text:
+        parts = text.split("```")
+        if len(parts) >= 2:
+            text = parts[1]
+            if text.lstrip().lower().startswith("json"):
+                text = text.lstrip()[4:]
+    start, end = text.find("{"), text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        try:
+            return json.loads(text[start:end + 1])
+        except Exception:
+            return None
+    return None
+
+
+def _inventory_context(user_id: str) -> str:
+    try:
+        from api.routers.inventory import _conn
+        with _conn() as c:
+            rows = c.execute(
+                "SELECT name_he, quantity, unit FROM inventory WHERE user_id=? ORDER BY added_at DESC LIMIT 40",
+                (user_id,),
+            ).fetchall()
+        if not rows:
+            return "ריק (אין מוצרים)"
+        return ", ".join(f"{r['name_he']} ({_fmt_q(r['quantity'])} {r['unit']})" for r in rows)
+    except Exception:
+        return "לא זמין"
+
+
+def _fmt_q(q):
+    try:
+        q = float(q)
+        return int(q) if q == int(q) else round(q, 1)
+    except (TypeError, ValueError):
+        return q
+
+
+def _exec_actions(user_id: str, actions: list) -> list:
+    """Execute inventory add/remove actions. Returns a list of (op, name)."""
+    from api.routers.inventory import _conn, _insert
+    done = []
+    try:
+        with _conn() as c:
+            for a in actions:
+                if not isinstance(a, dict):
+                    continue
+                t = (a.get("type") or "").lower().strip()
+                name = (a.get("name_he") or a.get("name") or "").strip()
+                if not name:
+                    continue
+                if t in ("add_inventory", "add"):
+                    try:
+                        qty = float(a.get("quantity") or 1)
+                    except (TypeError, ValueError):
+                        qty = 1
+                    _insert(c, user_id, name, qty, a.get("unit") or "יח׳", a.get("category") or "other")
+                    done.append({"op": "added", "name": name})
+                elif t in ("remove_inventory", "remove", "delete"):
+                    c.execute("DELETE FROM inventory WHERE user_id=? AND name_he LIKE ?",
+                              (user_id, f"%{name}%"))
+                    done.append({"op": "removed", "name": name})
+            c.commit()
+    except Exception:
+        pass
+    return done
 
 
 def _enrich_food(food: dict) -> dict:
