@@ -45,6 +45,13 @@ def enrich_images(recipes):
         else:
             mapped = img_map.get(rid) or ""
             r["image_url"] = mapped if "images.unsplash.com" in mapped else None
+        # Fallback so no recipe is left image-less: look one up by name (cached).
+        if not r.get("image_url"):
+            try:
+                from api.food_image import get_food_image
+                r["image_url"] = get_food_image(r.get("name_en", ""), r.get("name_he", ""))
+            except Exception:
+                pass
         # Add household-unit display strings (e.g. "4 ביצים") to each ingredient.
         enrich_recipe_ingredients(r)
     return recipes
@@ -56,6 +63,23 @@ MEAL_DISTRIBUTION = {
     "AFTERNOON_SNACK": 0.10,
     "DINNER":          0.20,
 }
+
+# Breakfast & snacks should be quick/simple (חביתה, סלט, כריך) — cap prep time
+# so heavy dishes (ג'חנון, מלאווח, בורקס) aren't suggested for them.
+_QUICK_MEALS = {"BREAKFAST", "MORNING_SNACK", "AFTERNOON_SNACK", "EVENING_SNACK"}
+
+# Heavy / labor-intensive dishes that shouldn't be offered as a simple
+# breakfast or snack (the user wants חביתה / סלט / כריך, not these).
+_HEAVY_DISHES = [
+    "סביח", "פלאפל", "ג'חנון", "ג׳חנון", "מלאווח", "מלווח", "לאפה",
+    "לחוח", "בורקס", "קובה", "שווארמה", "חמין", "סמבוסק", "ג'ובן",
+]
+
+def _prep_cap(meal_type: str):
+    return 20 if meal_type.upper() in _QUICK_MEALS else None
+
+def _exclude_kw(meal_type: str):
+    return _HEAVY_DISHES if meal_type.upper() in _QUICK_MEALS else None
 
 @router.get("/suggestions/{meal_type}")
 def get_meal_suggestions(
@@ -80,6 +104,8 @@ def get_meal_suggestions(
         allergens=allergens or None,
         disliked_foods=disliked or None,
         variation_seed=seed,
+        max_prep_minutes=_prep_cap(meal_type),
+        exclude_name_keywords=_exclude_kw(meal_type),
     )
     enrich_images(results)
     return {"meal_type": meal_type, "recipes": results[:3]}
@@ -105,6 +131,8 @@ def get_daily_plan(user=Depends(get_current_user)):
             target_calories=meal_cal,
             allergens=allergens or None,
             disliked_foods=disliked or None,
+            max_prep_minutes=_prep_cap(meal),
+            exclude_name_keywords=_exclude_kw(meal),
         )
         plan[meal] = {
             "target_calories": round(meal_cal),

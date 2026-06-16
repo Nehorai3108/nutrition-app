@@ -82,15 +82,31 @@ class BulkItems(BaseModel):
 
 
 def _insert(conn, user_id: str, name_he: str, quantity, unit: str, category: str) -> dict:
+    """Add an item — merging into an existing one of the same name+unit
+    (so "5 מלפפונים" + "5 מלפפונים" becomes 10, not two rows)."""
+    cat = _norm_category(category)
+    now = datetime.now().isoformat()
+    existing = conn.execute(
+        "SELECT item_id, quantity FROM inventory WHERE user_id=? AND name_he=? AND unit=?",
+        (user_id, name_he, unit),
+    ).fetchone()
+    if existing:
+        new_q = (existing["quantity"] or 0) + (quantity or 0)
+        conn.execute(
+            "UPDATE inventory SET quantity=?, category=?, added_at=? WHERE item_id=?",
+            (new_q, cat, now, existing["item_id"]),
+        )
+        return {"item_id": existing["item_id"], "name_he": name_he,
+                "quantity": new_q, "unit": unit, "category": cat}
+
     item_id = uuid.uuid4().hex
     conn.execute(
         """INSERT INTO inventory (item_id, user_id, name_he, quantity, unit, category, added_at)
            VALUES (?,?,?,?,?,?,?)""",
-        (item_id, user_id, name_he, quantity, unit, _norm_category(category),
-         datetime.now().isoformat()),
+        (item_id, user_id, name_he, quantity, unit, cat, now),
     )
     return {"item_id": item_id, "name_he": name_he, "quantity": quantity,
-            "unit": unit, "category": _norm_category(category)}
+            "unit": unit, "category": cat}
 
 
 @router.get("/")

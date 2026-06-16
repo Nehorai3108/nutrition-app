@@ -544,6 +544,8 @@ class RecipeManager:
         allergens: Optional[List[str]] = None,
         disliked_foods: Optional[List[str]] = None,
         variation_seed: int = 0,
+        max_prep_minutes: Optional[int] = None,
+        exclude_name_keywords: Optional[List[str]] = None,
     ) -> List[dict]:
         """Find top 5 recipes for a specific meal slot.
 
@@ -579,6 +581,24 @@ class RecipeManager:
                 r for r in candidates
                 if not self._recipe_contains_disliked(r, disliked_foods)
             ]
+
+        # Keep only quick-to-prepare recipes (e.g. breakfast/snacks should be
+        # simple — no ג'חנון/מלאווח/בורקס). Don't filter to empty.
+        if max_prep_minutes is not None:
+            quick = [r for r in candidates
+                     if (r.get("prep_time_minutes") or 0) <= max_prep_minutes]
+            if quick:
+                candidates = quick
+
+        # Exclude heavy/inconvenient dishes by name (used for breakfast/snacks,
+        # which should be light: חביתה, סלט, כריך — not סביח/פלאפל/ג'חנון).
+        if exclude_name_keywords:
+            filtered = [
+                r for r in candidates
+                if not any(kw in (r.get("name_he", "")) for kw in exclude_name_keywords)
+            ]
+            if filtered:
+                candidates = filtered
 
         # Estimate macro targets from calorie target using typical ratios
         est_protein = target_calories * 0.30 / 4.0  # 30% from protein
