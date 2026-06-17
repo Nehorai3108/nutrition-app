@@ -4,6 +4,7 @@ from api.deps import get_current_user
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
+from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.agents.agent_11_recipes.unit_converter import enrich_recipe_ingredients
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
@@ -131,6 +132,40 @@ def get_meal_suggestions(
     )
     enrich_images(results)
     return {"meal_type": meal_type, "recipes": results[:3]}
+
+@router.get("/search")
+def search_recipes_for_meal(
+    q: str,
+    target_calories: Optional[int] = None,
+    user=Depends(get_current_user),
+):
+    """חיפוש מתכון לפי שם (מכל הארוחות), מותאם ליעד הקלורי של הארוחה.
+
+    לדוגמה: מחפשים 'שקשוקה' ל-759 קק"ל — מקבלים את השקשוקה כשהכמויות והערכים
+    מותאמים בדיוק ליעד.
+    """
+    import copy
+    mgr = get_manager()
+    results = mgr.search_recipes(RecipeFilter(search_text=q, max_results=20))
+
+    out = []
+    for r in results[:10]:
+        rec = copy.deepcopy(r)  # never mutate the cached recipe
+        n = rec.get("total_nutrition", {}) or {}
+        cal = n.get("calories", 0) or 0
+        if target_calories and cal > 0:
+            factor = float(target_calories) / cal
+            for k in ("calories", "protein", "carbs", "fat"):
+                if n.get(k) is not None:
+                    n[k] = round(n[k] * factor, 1)
+            for ing in rec.get("ingredients", []) or []:
+                if ing.get("quantity"):
+                    ing["quantity"] = round(ing["quantity"] * factor)
+            rec["scaled_to_calories"] = round(float(target_calories))
+        out.append(rec)
+
+    enrich_images(out)  # also recomputes household-unit displays on scaled amounts
+    return {"recipes": out}
 
 @router.get("/plan")
 def get_daily_plan(user=Depends(get_current_user)):
