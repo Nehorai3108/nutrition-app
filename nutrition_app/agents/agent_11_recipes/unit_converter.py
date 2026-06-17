@@ -353,4 +353,10 @@ def format_ingredient_display(ingredient: dict) -> str:
 
     count = quantity / grams_per_unit
 
+    # Countable whole items (eggs, tomatoes, pitas...) shouldn't be shown as
+    # fractions once you have at least one — nobody puts 6⅔ eggs in a dish.
+    # Round to a whole number from 1 upwards; keep small fractions (½ onion).
+    if category == "countable" and count >= 1:
+        count = round(count)
+
     return _format_quantity_hebrew(count, unit_he, unit_he_plural)
