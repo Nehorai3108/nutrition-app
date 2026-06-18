@@ -64,6 +64,15 @@ CRITICAL LANGUAGE RULE:
 - Examples: apple = "תפוח" (NOT "تفاح"), peach = "אפרסק", bread = "לחם", rice = "אורז", chicken = "עוף".
 - If unsure of the Hebrew word, transliterate into Hebrew letters, but never output Arabic script.
 
+ACCURACY — distinguish look-alike foods carefully before naming:
+- Cucumber (מלפפון) vs melon (מלון): cucumber is long, thin, dark-green, uniform;
+  melon is large, round, with netted/pale skin. A green vegetable on a salad plate
+  is almost always cucumber, NOT melon.
+- Zucchini (קישוא) vs cucumber; lemon (לימון) vs lime; sweet potato vs potato.
+- When two foods look similar, prefer the one that fits the context of the dish
+  (salad, plate, meal) rather than an exotic guess.
+- If genuinely unsure, choose the more COMMON everyday food.
+
 Return ONLY a JSON array (no markdown, no explanation):
 [{"name": "food name in English", "name_he": "השם בעברית", "grams": <estimated portion grams>, "calories": <total calories for that portion>, "protein": <total protein g>, "carbs": <total carbs g>, "fat": <total fat g>}]
 

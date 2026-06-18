@@ -208,15 +208,11 @@ def _extract_json(raw: str):
 
 def _inventory_context(user_id: str) -> str:
     try:
-        from api.routers.inventory import _conn
-        with _conn() as c:
-            rows = c.execute(
-                "SELECT name_he, quantity, unit FROM inventory WHERE user_id=? ORDER BY added_at DESC LIMIT 40",
-                (user_id,),
-            ).fetchall()
+        from api.routers.inventory import _list_items
+        rows = _list_items(user_id)[:40]
         if not rows:
             return "ריק (אין מוצרים)"
-        return ", ".join(f"{r['name_he']} ({_fmt_q(r['quantity'])} {r['unit']})" for r in rows)
+        return ", ".join(f"{r.get('name_he')} ({_fmt_q(r.get('quantity'))} {r.get('unit')})" for r in rows)
     except Exception:
         return "לא זמין"
 
@@ -230,32 +226,39 @@ def _fmt_q(q):
 
 
 def _exec_actions(user_id: str, actions: list) -> list:
-    """Execute inventory add/remove actions. Returns a list of (op, name)."""
-    from api.routers.inventory import _conn, _insert
+    """Execute inventory add/remove actions via the shared inventory storage
+    (Supabase in the cloud, SQLite locally) — same store the inventory list reads."""
+    from api.routers.inventory import _add_item, _list_items, _use_sb, _sb, _conn
     done = []
-    try:
-        with _conn() as c:
-            for a in actions:
-                if not isinstance(a, dict):
-                    continue
-                t = (a.get("type") or "").lower().strip()
-                name = (a.get("name_he") or a.get("name") or "").strip()
-                if not name:
-                    continue
-                if t in ("add_inventory", "add"):
-                    try:
-                        qty = float(a.get("quantity") or 1)
-                    except (TypeError, ValueError):
-                        qty = 1
-                    _insert(c, user_id, name, qty, a.get("unit") or "יח׳", a.get("category") or "other")
-                    done.append({"op": "added", "name": name})
-                elif t in ("remove_inventory", "remove", "delete"):
-                    c.execute("DELETE FROM inventory WHERE user_id=? AND name_he LIKE ?",
-                              (user_id, f"%{name}%"))
-                    done.append({"op": "removed", "name": name})
-            c.commit()
-    except Exception:
-        pass
+    for a in actions:
+        if not isinstance(a, dict):
+            continue
+        t = (a.get("type") or "").lower().strip()
+        name = (a.get("name_he") or a.get("name") or "").strip()
+        if not name:
+            continue
+        try:
+            if t in ("add_inventory", "add"):
+                try:
+                    qty = float(a.get("quantity") or 1)
+                except (TypeError, ValueError):
+                    qty = 1
+                _add_item(user_id, name, qty, a.get("unit") or "יח׳", a.get("category") or "other")
+                done.append({"op": "added", "name": name})
+            elif t in ("remove_inventory", "remove", "delete"):
+                if _use_sb():
+                    # מצא פריטים תואמים ומחק לפי item_id (אין LIKE ב-PostgREST פשוט)
+                    for it in _list_items(user_id):
+                        if name in (it.get("name_he") or ""):
+                            _sb().table("inventory").delete().eq("item_id", it["item_id"]).execute()
+                else:
+                    with _conn() as c:
+                        c.execute("DELETE FROM inventory WHERE user_id=? AND name_he LIKE ?",
+                                  (user_id, f"%{name}%"))
+                        c.commit()
+                done.append({"op": "removed", "name": name})
+        except Exception:
+            pass
     return done
 
 
