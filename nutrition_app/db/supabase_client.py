@@ -1,20 +1,66 @@
 """
-supabase_client.py — Per-session Supabase client for BiteFit.
+supabase_client.py — Supabase client for BiteFit.
 
-Creates one Supabase client per Streamlit session (stored in session_state)
-and authenticates it with the current user's JWT so that RLS policies work
-correctly and every user sees only their own data.
+Two contexts share this module:
+  • Streamlit app  → one client per session (session_state), JWT from session.
+  • FastAPI backend → one module-level client (env vars), JWT taken from the
+    current request via a contextvar (set in api/deps.get_current_user).
 
-Reads JWT from the new auth system keys (_sb_access_token / _sb_refresh_token)
-and also forces postgrest.auth() which supabase-py v2 requires for RLS.
+In both cases the user's JWT is attached so RLS policies (auth.uid()=user_id)
+work and each user only sees their own rows.
 """
 from __future__ import annotations
 
+import os
+import contextvars
 import streamlit as st
 from supabase import create_client, Client
 
+# ── API (non-Streamlit) context ──────────────────────────────────────────────
+# The current request's Supabase access token, set per-request by the API.
+_api_jwt: contextvars.ContextVar[str | None] = contextvars.ContextVar("_api_jwt", default=None)
+_api_client: Client | None = None
+
+
+def set_api_jwt(token: str | None) -> None:
+    """Called by the API per request so the data client uses the user's JWT."""
+    _api_jwt.set(token)
+
+
+def _in_streamlit() -> bool:
+    """True only inside a live Streamlit run (not when imported by the API)."""
+    try:
+        return st.runtime.exists()
+    except Exception:
+        return False
+
+
+def _api_get_supabase() -> Client:
+    """Module-level client for the FastAPI backend, authed with the request JWT."""
+    global _api_client
+    url = os.environ.get("SUPABASE_URL", "")
+    key = os.environ.get("SUPABASE_ANON_KEY", "")
+    if not url or not key:
+        raise RuntimeError("Supabase credentials missing from env")
+    if _api_client is None:
+        _api_client = create_client(url, key)
+    token = _api_jwt.get()
+    # Attach (or clear) the per-request user JWT so RLS sees the right user.
+    try:
+        _api_client.postgrest.auth(token or key)
+    except Exception:
+        pass
+    return _api_client
+
 
 def get_supabase() -> Client:
+    """Return the right Supabase client for the current context."""
+    if not _in_streamlit():
+        return _api_get_supabase()
+    return _streamlit_get_supabase()
+
+
+def _streamlit_get_supabase() -> Client:
     """
     Return a Supabase client for the current Streamlit session.
 

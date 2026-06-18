@@ -26,6 +26,14 @@ async def get_current_user(authorization: str = Header(None)) -> dict:
         user = sb.auth.get_user(token)
         if not user or not user.user:
             raise HTTPException(status_code=401, detail="Invalid token")
+        # שמור את ה-JWT לבקשה הזו כדי שלקוח הנתונים יעבוד מול RLS
+        try:
+            from nutrition_app.db.supabase_client import set_api_jwt
+            set_api_jwt(token)
+        except Exception:
+            pass
         return {"id": user.user.id, "email": user.user.email}
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
