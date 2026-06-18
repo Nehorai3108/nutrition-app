@@ -9,6 +9,10 @@ services:
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      # אזור זמן ישראל — כדי ש-datetime.now() בשרת יחזיר שעון מקומי ולא UTC
+      # (מתקן את חותמות הזמן של יומן אוכל / מים / אימונים).
+      - key: TZ
+        value: Asia/Jerusalem
       # הערכים עצמם מוגדרים ב-Render Dashboard (Environment) — לא בקוד.
       - key: SUPABASE_URL
         sync: false
