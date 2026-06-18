@@ -20,3 +20,7 @@ extra-streamlit-components>=0.1.60
 duckduckgo_search
 python-dotenv
 openai
+# ── FastAPI backend (BiteFit API) ──
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9

@@ -16,13 +16,12 @@ class AddWater(BaseModel):
 @router.get("/{date_str}")
 def get_water(date_str: str, user=Depends(get_current_user)):
     d = date.fromisoformat(date_str)
-    total = repo.get_total(user["id"], d)
-    goal  = repo.get_goal(user["id"])
-    return {"date": date_str, "total_ml": total, "goal_ml": goal}
+    total = repo.get_daily_total(user["id"], d)
+    goal  = repo.get_water_goal(user["id"]).daily_goal_ml
+    return {"date": date_str, "total_ml": round(total), "goal_ml": round(goal)}
 
 @router.post("/")
 def add_water(body: AddWater, user=Depends(get_current_user)):
     from datetime import datetime
-    d = date.fromisoformat(body.date) if body.date else date.today()
-    repo.add_entry(user["id"], d, body.amount_ml)
+    repo.add_water_intake(user["id"], body.amount_ml)
     return {"ok": True}

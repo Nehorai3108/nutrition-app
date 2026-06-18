@@ -2,18 +2,21 @@
 Dependencies — auth, DB, shared resources
 """
 import os
+from dotenv import load_dotenv
+# path מוחלט — עובד בכל CWD
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+
 from fastapi import Header, HTTPException
 from supabase import create_client, Client
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
-
 def get_supabase() -> Client:
-    return create_client(SUPABASE_URL, SUPABASE_KEY)
+    url = os.environ.get("SUPABASE_URL", "")
+    key = os.environ.get("SUPABASE_ANON_KEY", "")
+    return create_client(url, key)
 
 async def get_current_user(authorization: str = Header(None)) -> dict:
     """מאמת JWT token מ-Supabase. אם Supabase לא מוגדר — dev bypass."""
-    if not SUPABASE_URL:
+    if not os.environ.get("SUPABASE_URL"):
         return {"id": "ui_user_001", "email": "dev@bitefit.local"}
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")

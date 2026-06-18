@@ -438,10 +438,16 @@ class RecipeManager:
         )
 
     # Mapping from Hebrew allergy name → English ingredient keywords to exclude
+    # מילות מפתח (food_name_en) לכל אלרגן. כולל aliases בעברית כדי שגם
+    # "חלב" וגם "לקטוז" וגם "מוצרי חלב" יזוהו — לא משנה איך המשתמש סימן.
+    _DAIRY_KW = ["milk", "cheese", "cream", "yogurt", "butter", "dairy",
+                 "whey", "lactose", "mozzarella", "parmesan", "cottage",
+                 "ricotta", "brie", "feta", "cheddar", "gouda", "labneh",
+                 "halloumi", "ghee", "laban"]
     ALLERGEN_INGREDIENT_KEYWORDS: Dict[str, List[str]] = {
-        "לקטוז": ["milk", "cheese", "cream", "yogurt", "butter", "dairy",
-                  "whey", "lactose", "mozzarella", "parmesan", "cottage",
-                  "ricotta", "brie", "feta", "cheddar", "gouda"],
+        "לקטוז": _DAIRY_KW,
+        "חלב": _DAIRY_KW,
+        "מוצרי חלב": _DAIRY_KW,
         "גלוטן": ["wheat", "flour", "bread", "pasta", "barley", "rye",
                   "gluten", "couscous", "bulgur", "semolina", "oat",
                   "noodle", "pita", "cracker", "biscuit"],
@@ -497,8 +503,9 @@ class RecipeManager:
 
     def _recipe_contains_allergen(self, recipe: dict, allergens: List[str]) -> bool:
         """Return True if the recipe likely contains any of the given allergens."""
-        # Check kashrut: dairy recipes contain lactose
-        if "לקטוז" in allergens and recipe.get("kashrut", "").lower() == "dairy":
+        # Check kashrut: dairy recipes contain lactose (כל תווית חלב/לקטוז)
+        _dairy_allergens = {"לקטוז", "חלב", "מוצרי חלב"}
+        if _dairy_allergens & set(allergens) and recipe.get("kashrut", "").lower() == "dairy":
             return True
 
         # Build a set of all ingredient name_en values (lowercase)
@@ -840,21 +847,54 @@ def _today_str() -> str:
     return _dt.date.today().isoformat()
 
 
+_FINAL_LETTERS = str.maketrans({"ם": "מ", "ן": "נ", "ך": "כ", "ף": "פ", "ץ": "צ"})
+
+
+def _he_stem(word: str) -> str:
+    """מנרמל מילה עברית לצורת בסיס להשוואת מלאי↔מתכון.
+
+    מטפל בפער העיקרי: קבלות מחזירות רבים ("עגבניות", "ביצים") אבל מתכונים
+    ביחיד ("עגבנייה", "ביצה"). מנרמל אותיות סופיות, יוד כפול, ומוריד סיומות
+    רבים/נקבה (ים/ות/ה) כדי ששתי הצורות יתלכדו לאותו גזע.
+    """
+    w = (word or "").strip().lower()
+    w = w.replace("יי", "י")          # עגבנייה -> עגבניה
+    if w.startswith("ה") and len(w) > 4:
+        w = w[1:]                     # תווית יידוע: "העגבניות" -> "עגבניות"
+    # מסירים סיומת רבים/נקבה לפני נרמול אותיות סופיות (כי "ים" מסתיים ב-ם סופית)
+    for suf in ("ים", "ות", "ה"):
+        if w.endswith(suf) and len(w) - len(suf) >= 3:
+            w = w[: -len(suf)]
+            break
+    return w.translate(_FINAL_LETTERS)  # נרמול אותיות סופיות אחרי הגזירה
+
+
+def _stems(name: str) -> Set[str]:
+    """גזעים של כל מילה בשם מזון (כדי לתפוס 'שמן זית' מול 'זית'/'שמן')."""
+    return {_he_stem(tok) for tok in (name or "").split() if len(tok) >= 2}
+
+
 def _ingredient_in_inventory(ingredient: dict, inventory_names: Set[str]) -> bool:
     """Check if a recipe ingredient matches any item in the user's inventory.
 
-    Matches by English food name (case-insensitive substring), so
-    "olive oil" in inventory matches ingredient food_name_en="olive oil".
+    Hebrew-aware: normalizes plural/singular and final letters so receipt
+    items ("עגבניות") match recipe ingredients ("עגבנייה"). Falls back to an
+    English substring match for any items that carry an English name.
     """
-    food_name_en = ingredient.get("food_name_en", "").lower().strip()
-    food_name_he = ingredient.get("food_name", "").lower().strip()
-    if not food_name_en and not food_name_he:
+    ing_he = ingredient.get("food_name", "")
+    ing_en = ingredient.get("food_name_en", "").lower().strip()
+    ing_stems = _stems(ing_he)
+    if not ing_stems and not ing_en:
         return False
+
     for inv_name in inventory_names:
-        inv = inv_name.lower()
-        if food_name_en and (food_name_en in inv or inv in food_name_en):
+        inv_stems = _stems(inv_name)
+        # התאמה ברמת גזע-מילה (לא תת-מחרוזת) — מונע 'חלב'->'חלבה' אך מתיר רבים/יחיד
+        if ing_stems & inv_stems:
             return True
-        if food_name_he and (food_name_he in inv or inv in food_name_he):
+        # גיבוי אנגלי — רק אם פריט המלאי נושא שם אנגלי
+        inv = inv_name.lower()
+        if ing_en and (ing_en in inv or inv in ing_en) and any(c.isascii() and c.isalpha() for c in inv):
             return True
     return False
 

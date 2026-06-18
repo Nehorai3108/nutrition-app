@@ -424,8 +424,8 @@
         "unit": "grams"
       },
       {
-        "food_name": "לחם",
-        "food_name_en": "bread",
+        "food_name": "פירורי לחם",
+        "food_name_en": "breadcrumbs",
         "quantity": 30,
         "unit": "grams"
       },
@@ -635,8 +635,8 @@
     "name_en": "Mujadara",
     "ingredients": [
       {
-        "food_name": "עדשים אדומות",
-        "food_name_en": "red lentils",
+        "food_name": "עדשים ירוקות",
+        "food_name_en": "green lentils",
         "quantity": 150,
         "unit": "grams"
       },
@@ -1145,7 +1145,7 @@
         "unit": "grams"
       },
       {
-        "food_name": "לחם",
+        "food_name": "טורטייה",
         "food_name_en": "tortilla",
         "quantity": 60,
         "unit": "grams"
@@ -1920,7 +1920,7 @@
         "unit": "grams"
       },
       {
-        "food_name": "לחם",
+        "food_name": "טורטייה",
         "food_name_en": "tortilla",
         "quantity": 60,
         "unit": "grams"
@@ -2014,7 +2014,7 @@
     "name_en": "Ptitim with Vegetables",
     "ingredients": [
       {
-        "food_name": "קוסקוס",
+        "food_name": "פתיתים",
         "food_name_en": "ptitim",
         "quantity": 150,
         "unit": "grams"
@@ -3916,7 +3916,7 @@
     "name_en": "Chicken Pot with Vegetables",
     "ingredients": [
       {
-        "food_name": "שוקיי עוף",
+        "food_name": "שוקי עוף",
         "food_name_en": "chicken drumsticks",
         "quantity": 400,
         "unit": "grams"
@@ -11453,8 +11453,8 @@
         "unit": "grams"
       },
       {
-        "food_name": "לחם חלה",
-        "food_name_en": "challah bread",
+        "food_name": "פירורי לחם",
+        "food_name_en": "breadcrumbs",
         "quantity": 50,
         "unit": "grams"
       },
@@ -12014,39 +12014,53 @@
     "name_en": "Black Lentil Salad with Vegetables",
     "ingredients": [
       {
-        "food_name": "Black Lentils (Beluga)",
-        "food_id": "food_118",
-        "quantity_g": 200
+        "food_name": "עדשים שחורות",
+        "food_name_en": "black lentils",
+        "quantity": 200,
+        "unit": "grams",
+        "food_id": "food_118"
       },
       {
-        "food_name": "Tomato",
-        "food_id": "food_080",
-        "quantity_g": 100
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams",
+        "food_id": "food_080"
       },
       {
-        "food_name": "Cucumber",
-        "food_id": "food_081",
-        "quantity_g": 100
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 100,
+        "unit": "grams",
+        "food_id": "food_081"
       },
       {
-        "food_name": "Red Bell Pepper",
-        "food_id": "food_018",
-        "quantity_g": 80
+        "food_name": "פלפל אדום",
+        "food_name_en": "red bell pepper",
+        "quantity": 80,
+        "unit": "grams",
+        "food_id": "food_018"
       },
       {
-        "food_name": "Olive Oil",
-        "food_id": "food_079",
-        "quantity_g": 15
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams",
+        "food_id": "food_079"
       },
       {
-        "food_name": "Lemon",
-        "food_id": "food_070",
-        "quantity_g": 30
+        "food_name": "לימון",
+        "food_name_en": "lemon",
+        "quantity": 30,
+        "unit": "grams",
+        "food_id": "food_070"
       },
       {
-        "food_name": "Parsley",
-        "food_id": "food_071",
-        "quantity_g": 10
+        "food_name": "פטרוזיליה",
+        "food_name_en": "parsley",
+        "quantity": 10,
+        "unit": "grams",
+        "food_id": "food_071"
       }
     ],
     "meal_types": [
@@ -12077,34 +12091,46 @@
     "name_en": "Green Shakshuka with Spinach",
     "ingredients": [
       {
-        "food_name": "Egg",
-        "food_id": "food_074",
-        "quantity_g": 200
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 200,
+        "unit": "grams",
+        "food_id": "food_074"
       },
       {
-        "food_name": "Spinach",
-        "food_id": "food_017",
-        "quantity_g": 150
+        "food_name": "תרד",
+        "food_name_en": "spinach",
+        "quantity": 150,
+        "unit": "grams",
+        "food_id": "food_017"
       },
       {
-        "food_name": "Onion",
-        "food_id": "food_067",
-        "quantity_g": 80
+        "food_name": "בצל",
+        "food_name_en": "onion",
+        "quantity": 80,
+        "unit": "grams",
+        "food_id": "food_067"
       },
       {
-        "food_name": "Garlic",
-        "food_id": "food_068",
-        "quantity_g": 10
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 10,
+        "unit": "grams",
+        "food_id": "food_068"
       },
       {
-        "food_name": "Bulgarian Cheese",
-        "food_id": "food_030",
-        "quantity_g": 50
+        "food_name": "גבינה בולגרית",
+        "food_name_en": "bulgarian cheese",
+        "quantity": 50,
+        "unit": "grams",
+        "food_id": "food_030"
       },
       {
-        "food_name": "Olive Oil",
-        "food_id": "food_079",
-        "quantity_g": 15
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams",
+        "food_id": "food_079"
       }
     ],
     "meal_types": [
@@ -12133,34 +12159,46 @@
     "name_en": "Pita with Hummus and Amba",
     "ingredients": [
       {
-        "food_name": "Pita Bread",
-        "food_id": "food_021",
-        "quantity_g": 80
+        "food_name": "פיתה",
+        "food_name_en": "pita",
+        "quantity": 80,
+        "unit": "grams",
+        "food_id": "food_021"
       },
       {
-        "food_name": "Hummus",
-        "food_id": "food_052",
-        "quantity_g": 100
+        "food_name": "חומוס",
+        "food_name_en": "hummus",
+        "quantity": 100,
+        "unit": "grams",
+        "food_id": "food_052"
       },
       {
-        "food_name": "Amba (Mango Pickle Sauce)",
-        "food_id": "food_120",
-        "quantity_g": 15
+        "food_name": "אמבה",
+        "food_name_en": "amba",
+        "quantity": 15,
+        "unit": "grams",
+        "food_id": "food_120"
       },
       {
-        "food_name": "Tomato",
-        "food_id": "food_080",
-        "quantity_g": 60
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 60,
+        "unit": "grams",
+        "food_id": "food_080"
       },
       {
-        "food_name": "Cucumber",
-        "food_id": "food_081",
-        "quantity_g": 60
+        "food_name": "מלפפון",
+        "food_name_en": "cucumber",
+        "quantity": 60,
+        "unit": "grams",
+        "food_id": "food_081"
       },
       {
-        "food_name": "Raw Tahini (Whole)",
-        "food_id": "food_113",
-        "quantity_g": 20
+        "food_name": "טחינה גולמית",
+        "food_name_en": "raw tahini",
+        "quantity": 20,
+        "unit": "grams",
+        "food_id": "food_113"
       }
     ],
     "meal_types": [
@@ -12191,24 +12229,32 @@
     "name_en": "Laban Bowl with Pistachios and Silan",
     "ingredients": [
       {
-        "food_name": "Laban (Fermented Milk)",
-        "food_id": "food_115",
-        "quantity_g": 250
+        "food_name": "לבן",
+        "food_name_en": "laban",
+        "quantity": 250,
+        "unit": "grams",
+        "food_id": "food_115"
       },
       {
-        "food_name": "Pistachios",
-        "food_id": "food_119",
-        "quantity_g": 20
+        "food_name": "פיסטוקים",
+        "food_name_en": "pistachios",
+        "quantity": 20,
+        "unit": "grams",
+        "food_id": "food_119"
       },
       {
-        "food_name": "Date Syrup (Silan)",
-        "food_id": "food_109",
-        "quantity_g": 15
+        "food_name": "סילאן",
+        "food_name_en": "date syrup",
+        "quantity": 15,
+        "unit": "grams",
+        "food_id": "food_109"
       },
       {
-        "food_name": "Granola",
-        "food_id": "food_063",
-        "quantity_g": 30
+        "food_name": "גרנולה",
+        "food_name_en": "granola",
+        "quantity": 30,
+        "unit": "grams",
+        "food_id": "food_063"
       }
     ],
     "meal_types": [
@@ -12237,14 +12283,18 @@
     "name_en": "Hot Sahlab with Pistachios and Cinnamon",
     "ingredients": [
       {
-        "food_name": "Sahlab (Hot Milk Drink)",
-        "food_id": "food_117",
-        "quantity_g": 300
+        "food_name": "סחלב",
+        "food_name_en": "sahlab",
+        "quantity": 300,
+        "unit": "grams",
+        "food_id": "food_117"
       },
       {
-        "food_name": "Pistachios",
-        "food_id": "food_119",
-        "quantity_g": 10
+        "food_name": "פיסטוקים",
+        "food_name_en": "pistachios",
+        "quantity": 10,
+        "unit": "grams",
+        "food_id": "food_119"
       }
     ],
     "meal_types": [
@@ -12273,9 +12323,27 @@
     "name_en": "Chicken Schnitzel with Vegetable Salad",
     "ingredients": [
       {
-        "food_name": "שניצל עוף",
-        "food_name_en": "chicken schnitzel",
-        "quantity": 200,
+        "food_name": "חזה עוף",
+        "food_name_en": "chicken breast",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פירורי לחם",
+        "food_name_en": "breadcrumbs",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן לטיגון",
+        "food_name_en": "frying oil",
+        "quantity": 15,
         "unit": "grams"
       },
       {
@@ -14364,8 +14432,8 @@
         "unit": "grams"
       },
       {
-        "food_name": "לחם",
-        "food_name_en": "bread",
+        "food_name": "פירורי לחם",
+        "food_name_en": "breadcrumbs",
         "quantity": 40,
         "unit": "grams"
       },
@@ -14670,21 +14738,27 @@
     ],
     "ingredients": [
       {
-        "food_name": "תירס",
-        "food_name_en": "corn",
+        "food_name": "שיבולת שועל",
+        "food_name_en": "rolled oats",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חלב שיבולת שועל",
+        "food_name_en": "oat milk",
+        "quantity": 200,
+        "unit": "grams"
+      },
+      {
+        "food_name": "בננה",
+        "food_name_en": "banana",
         "quantity": 100,
         "unit": "grams"
       },
       {
-        "food_name": "סויה",
-        "food_name_en": "soy",
-        "quantity": 50,
-        "unit": "grams"
-      },
-      {
-        "food_name": "שמן",
-        "food_name_en": "oil",
-        "quantity": 10,
+        "food_name": "דבש",
+        "food_name_en": "honey",
+        "quantity": 15,
         "unit": "grams"
       }
     ],
@@ -14801,20 +14875,32 @@
     ],
     "ingredients": [
       {
-        "food_name": "ביצים",
-        "food_name_en": "eggs",
-        "quantity": 120,
+        "food_name": "שיבולת שועל",
+        "food_name_en": "rolled oats",
+        "quantity": 80,
         "unit": "grams"
       },
       {
-        "food_name": "גבינה",
-        "food_name_en": "cheese",
+        "food_name": "חלב",
+        "food_name_en": "milk",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
         "quantity": 50,
         "unit": "grams"
       },
       {
-        "food_name": "שמן",
-        "food_name_en": "oil",
+        "food_name": "גבינה צהובה",
+        "food_name_en": "yellow cheese",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "חמאה",
+        "food_name_en": "butter",
         "quantity": 10,
         "unit": "grams"
       }
@@ -15289,9 +15375,27 @@
     ],
     "ingredients": [
       {
-        "food_name": "מנקיקה",
-        "food_name_en": "manaqish",
-        "quantity": 200,
+        "food_name": "קמח",
+        "food_name_en": "flour",
+        "quantity": 250,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמרים",
+        "food_name_en": "yeast",
+        "quantity": 7,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מים",
+        "food_name_en": "water",
+        "quantity": 150,
         "unit": "grams"
       },
       {
@@ -15301,15 +15405,15 @@
         "unit": "grams"
       },
       {
-        "food_name": "גבינה",
-        "food_name_en": "cheese",
+        "food_name": "גבינה בולגרית",
+        "food_name_en": "bulgarian cheese",
         "quantity": 50,
         "unit": "grams"
       },
       {
         "food_name": "פטרוזיליה",
         "food_name_en": "parsley",
-        "quantity": 20,
+        "quantity": 15,
         "unit": "grams"
       }
     ],
@@ -15385,21 +15489,45 @@
     ],
     "ingredients": [
       {
-        "food_name": "מקדושה",
-        "food_name_en": "makdoush",
-        "quantity": 200,
-        "unit": "grams"
-      },
-      {
         "food_name": "ביצים",
         "food_name_en": "eggs",
         "quantity": 120,
         "unit": "grams"
       },
       {
+        "food_name": "פלפל אדום",
+        "food_name_en": "red bell pepper",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שום",
+        "food_name_en": "garlic",
+        "quantity": 10,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פלפל חריף",
+        "food_name_en": "hot pepper",
+        "quantity": 5,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
+        "food_name": "כוסברה",
+        "food_name_en": "cilantro",
+        "quantity": 15,
+        "unit": "grams"
+      },
+      {
         "food_name": "פטרוזיליה",
         "food_name_en": "parsley",
-        "quantity": 20,
+        "quantity": 15,
         "unit": "grams"
       }
     ],
@@ -15429,8 +15557,8 @@
     ],
     "ingredients": [
       {
-        "food_name": "פלאפל",
-        "food_name_en": "falafel",
+        "food_name": "כדורי פלאפל מוכנים",
+        "food_name_en": "ready-made falafel balls",
         "quantity": 200,
         "unit": "grams"
       },
@@ -15511,20 +15639,38 @@
     "tags": [],
     "ingredients": [
       {
-        "food_name": "קנאפה",
-        "food_name_en": "knafeh",
+        "food_name": "בצק קדאיף",
+        "food_name_en": "kataifi pastry",
+        "quantity": 150,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גבינה ניוקסה",
+        "food_name_en": "nabulsi cheese",
         "quantity": 200,
         "unit": "grams"
       },
       {
-        "food_name": "גבינה",
-        "food_name_en": "cheese",
+        "food_name": "חמאה",
+        "food_name_en": "butter",
         "quantity": 50,
         "unit": "grams"
       },
       {
-        "food_name": "פיסטוק",
-        "food_name_en": "pistachio",
+        "food_name": "סוכר",
+        "food_name_en": "sugar",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "מי ורדים",
+        "food_name_en": "rose water",
+        "quantity": 20,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פיסטוקים",
+        "food_name_en": "pistachios",
         "quantity": 25,
         "unit": "grams"
       }
@@ -15580,6 +15726,12 @@
         "food_name_en": "garlic",
         "quantity": 20,
         "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 20,
+        "unit": "grams"
       }
     ],
     "total_nutrition": {
@@ -15633,6 +15785,30 @@
         "food_name_en": "bell pepper",
         "quantity": 100,
         "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פירורי לחם",
+        "food_name_en": "breadcrumbs",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
       }
     ],
     "total_nutrition": {
@@ -15670,7 +15846,7 @@
         "unit": "grams"
       },
       {
-        "food_name": "לחמניות",
+        "food_name": "פירורי לחם",
         "food_name_en": "breadcrumbs",
         "quantity": 100,
         "unit": "grams"
@@ -15682,7 +15858,7 @@
         "unit": "grams"
       },
       {
-        "food_name": "טומאט",
+        "food_name": "עגבנייה",
         "food_name_en": "tomato",
         "quantity": 100,
         "unit": "grams"
@@ -15739,6 +15915,24 @@
         "food_name_en": "bell pepper",
         "quantity": 100,
         "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
       }
     ],
     "total_nutrition": {
@@ -15793,6 +15987,30 @@
         "food_name_en": "bell pepper",
         "quantity": 100,
         "unit": "grams"
+      },
+      {
+        "food_name": "ביצה",
+        "food_name_en": "egg",
+        "quantity": 50,
+        "unit": "grams"
+      },
+      {
+        "food_name": "קמח",
+        "food_name_en": "flour",
+        "quantity": 30,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
       }
     ],
     "total_nutrition": {
@@ -15830,7 +16048,7 @@
         "unit": "grams"
       },
       {
-        "food_name": "לחמניות",
+        "food_name": "פירורי לחם",
         "food_name_en": "breadcrumbs",
         "quantity": 100,
         "unit": "grams"
@@ -15842,7 +16060,7 @@
         "unit": "grams"
       },
       {
-        "food_name": "טומאט",
+        "food_name": "עגבנייה",
         "food_name_en": "tomato",
         "quantity": 100,
         "unit": "grams"
@@ -15899,6 +16117,24 @@
         "food_name_en": "bell pepper",
         "quantity": 100,
         "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "עגבנייה",
+        "food_name_en": "tomato",
+        "quantity": 100,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
+        "unit": "grams"
       }
     ],
     "total_nutrition": {
@@ -15930,27 +16166,45 @@
     ],
     "ingredients": [
       {
-        "food_name": "קציצות טבעוניות",
-        "food_name_en": "vegan meatballs",
-        "quantity": 600,
+        "food_name": "עדשים מבושלות",
+        "food_name_en": "cooked lentils",
+        "quantity": 200,
         "unit": "grams"
       },
       {
         "food_name": "בצל",
         "food_name_en": "onion",
-        "quantity": 100,
+        "quantity": 80,
         "unit": "grams"
       },
       {
         "food_name": "שום",
         "food_name_en": "garlic",
-        "quantity": 20,
+        "quantity": 10,
         "unit": "grams"
       },
       {
-        "food_name": "פלפל",
-        "food_name_en": "bell pepper",
-        "quantity": 100,
+        "food_name": "פלפל אדום",
+        "food_name_en": "red bell pepper",
+        "quantity": 80,
+        "unit": "grams"
+      },
+      {
+        "food_name": "פירורי לחם פנקו",
+        "food_name_en": "panko breadcrumbs",
+        "quantity": 40,
+        "unit": "grams"
+      },
+      {
+        "food_name": "גזר",
+        "food_name_en": "carrot",
+        "quantity": 60,
+        "unit": "grams"
+      },
+      {
+        "food_name": "שמן זית",
+        "food_name_en": "olive oil",
+        "quantity": 15,
         "unit": "grams"
       }
     ],

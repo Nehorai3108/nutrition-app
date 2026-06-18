@@ -13,6 +13,9 @@ class SignupRequest(BaseModel):
     password: str
     name: str = ""
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
 @router.post("/login")
 def login(body: LoginRequest):
     try:
@@ -34,6 +37,7 @@ def signup(body: SignupRequest):
         res = sb.auth.sign_up({"email": body.email, "password": body.password})
         return {
             "access_token":  res.session.access_token if res.session else None,
+            "refresh_token": res.session.refresh_token if res.session else None,
             "user_id":       res.user.id,
             "email":         res.user.email,
         }
@@ -41,10 +45,10 @@ def signup(body: SignupRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/refresh")
-def refresh(refresh_token: str):
+def refresh(body: RefreshRequest):
     try:
         sb = get_supabase()
-        res = sb.auth.refresh_session(refresh_token)
+        res = sb.auth.refresh_session(body.refresh_token)
         return {
             "access_token":  res.session.access_token,
             "refresh_token": res.session.refresh_token,

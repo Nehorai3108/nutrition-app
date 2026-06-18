@@ -254,47 +254,52 @@ _MIXED_FRACTIONS = [
 ]
 
 
-def _format_quantity_hebrew(count: float, unit_singular: str, unit_plural: str) -> str:
-    """Format a quantity with the correct Hebrew unit form.
+def _snap_to_nice(count: float) -> float:
+    """Snap count to nearest whole or half (0.5 steps only).
 
-    Rules:
-    - Exactly 1     -> "unit אחת/אחד" (feminine assumed: אחת)
-    - Whole > 1     -> "N unit_plural"
-    - Pure fraction -> "fraction unit_singular"  (e.g. חצי עגבנייה)
-    - Mixed number  -> "whole+fraction unit_plural" (e.g. אחד וחצי עגבניות)
+    Examples: 0.3→0.5, 0.8→1, 1.3→1.5, 1.7→2
+    Minimum is 0.5.
     """
-    # Exactly 1
-    if abs(count - 1.0) < 0.01:
-        return f"{unit_singular} אחת"
+    if count <= 0:
+        return 0.5
+    snapped = round(count * 2) / 2
+    if snapped == 0:
+        snapped = 0.5
+    return snapped
 
-    # Exactly 2
-    if abs(count - 2.0) < 0.01:
-        return f"2 {unit_plural}"
+
+def _format_quantity_hebrew(count: float, unit_singular: str, unit_plural: str) -> str:
+    """Format a quantity with a human-friendly Hebrew string.
+
+    Always snaps to the nearest ¼/⅓/½/⅔/¾ so the user never sees 0.2 or 0.8.
+    """
+    count = _snap_to_nice(count)
+
+    if count <= 0:
+        return unit_singular
 
     whole = int(count)
-    frac = count - whole
+    frac = round(count - whole, 6)
 
-    # Pure fraction (no whole part)
-    if whole == 0 and frac > 0.01:
-        for threshold, label in _FRACTIONS:
-            if abs(frac - threshold) < 0.05:
-                return f"{label} {unit_singular}"
-        # Not a recognized fraction — use decimal
-        return f"{count:.1f} {unit_plural}"
+    FRAC_LABELS = {
+        0.5: "חצי",
+    }
+    MIXED_LABELS = {
+        0.5: "וחצי",
+    }
 
-    # Whole number with no fraction
-    if frac < 0.01:
+    if whole == 0:
+        return f"חצי {unit_singular}"
+
+    if frac == 0:
+        if whole == 1:
+            return f"{unit_singular} אחת"
         return f"{whole} {unit_plural}"
 
-    # Mixed number (whole + fraction)
-    for threshold, label in _MIXED_FRACTIONS:
-        if abs(frac - threshold) < 0.05:
-            if whole == 1:
-                return f"אחד {label} {unit_plural}"
-            return f"{whole} {label} {unit_plural}"
-
-    # Unrecognized fraction — show decimal
-    return f"{count:.1f} {unit_plural}"
+    mixed = "וחצי"
+    if whole == 1:
+        return f"אחד {mixed} {unit_plural}"
+    return f"{whole} {mixed} {unit_plural}"
 
 
 def enrich_recipe_ingredients(recipe: dict) -> dict:
@@ -352,11 +357,5 @@ def format_ingredient_display(ingredient: dict) -> str:
         return f"קמצוץ {food_name}"
 
     count = quantity / grams_per_unit
-
-    # Countable whole items (eggs, tomatoes, pitas...) shouldn't be shown as
-    # fractions once you have at least one — nobody puts 6⅔ eggs in a dish.
-    # Round to a whole number from 1 upwards; keep small fractions (½ onion).
-    if category == "countable" and count >= 1:
-        count = round(count)
 
     return _format_quantity_hebrew(count, unit_he, unit_he_plural)
