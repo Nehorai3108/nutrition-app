@@ -139,6 +139,21 @@ CREATE POLICY "inventory_all" ON inventory
   WITH CHECK (auth.uid()::text = user_id);
 
 
+-- ── 4d. meal_balance (התאמות מאזן קלורי פר-יום) ──────────────
+CREATE TABLE IF NOT EXISTS meal_balance (
+  user_id     TEXT NOT NULL,
+  date        TEXT NOT NULL,
+  adjustments JSONB NOT NULL DEFAULT '{}'::jsonb,
+  PRIMARY KEY (user_id, date)
+);
+
+ALTER TABLE meal_balance ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "meal_balance_all" ON meal_balance;
+CREATE POLICY "meal_balance_all" ON meal_balance
+  FOR ALL USING (auth.uid()::text = user_id)
+  WITH CHECK (auth.uid()::text = user_id);
+
+
 -- ── 5. daily_summaries ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS daily_summaries (
   user_id TEXT NOT NULL,
