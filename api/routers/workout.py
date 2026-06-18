@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date, datetime
 from api.deps import get_current_user
+from api._tz import now_il_iso, today_il
 import sys, os, uuid, sqlite3
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -31,7 +32,7 @@ class AddWorkout(BaseModel):
 
 @router.post("/")
 def add_workout(body: AddWorkout, user=Depends(get_current_user)):
-    d = body.date or date.today().isoformat()
+    d = body.date or today_il().isoformat()
     with _conn() as conn:
         conn.execute(
             """INSERT INTO workout_log
@@ -41,7 +42,7 @@ def add_workout(body: AddWorkout, user=Depends(get_current_user)):
             (
                 uuid.uuid4().hex, user["id"], d, body.mode, body.workout_type,
                 body.intensity, body.duration_minutes, body.distance_km,
-                body.calories_burned, datetime.now().isoformat(),
+                body.calories_burned, now_il_iso(),
             ),
         )
         conn.commit()
@@ -53,7 +54,7 @@ def get_workouts(date_str: str, user=Depends(get_current_user)):
     try:
         date.fromisoformat(date_str)
     except ValueError:
-        date_str = date.today().isoformat()
+        date_str = today_il().isoformat()
     with _conn() as conn:
         rows = conn.execute(
             "SELECT * FROM workout_log WHERE user_id=? AND date=? ORDER BY rowid",
@@ -67,7 +68,7 @@ def get_workout_summary(date_str: str, user=Depends(get_current_user)):
     try:
         date.fromisoformat(date_str)
     except ValueError:
-        date_str = date.today().isoformat()
+        date_str = today_il().isoformat()
     with _conn() as conn:
         row = conn.execute(
             """SELECT COALESCE(SUM(calories_burned),0) AS burned,

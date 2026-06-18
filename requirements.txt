@@ -24,3 +24,4 @@ openai
 fastapi>=0.110.0
 uvicorn[standard]>=0.27.0
 python-multipart>=0.0.9
+tzdata>=2024.1  # מבטיח שאזור הזמן Asia/Jerusalem זמין ל-zoneinfo בענן

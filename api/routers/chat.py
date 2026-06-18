@@ -19,6 +19,7 @@ def daily_insight(user=Depends(get_current_user)):
     דטרמיניסטי וטבעי — תלוי במצב בפועל.
     """
     from datetime import date, datetime
+    from api._tz import now_il, today_il
     import sqlite3
 
     # Targets
@@ -31,7 +32,7 @@ def daily_insight(user=Depends(get_current_user)):
     # Eaten today
     try:
         from nutrition_app.repositories.food_log_repository import FoodLogRepository
-        totals = FoodLogRepository().get_totals(user["id"], date.today())
+        totals = FoodLogRepository().get_totals(user["id"], today_il())
     except Exception:
         totals = {"calories": 0, "protein": 0, "carbs": 0, "fat": 0, "count": 0}
 
@@ -41,7 +42,7 @@ def daily_insight(user=Depends(get_current_user)):
         conn = sqlite3.connect(_DB_PATH)
         row = conn.execute(
             "SELECT COALESCE(SUM(calories_burned),0) FROM workout_log WHERE user_id=? AND date=?",
-            (user["id"], date.today().isoformat()),
+            (user["id"], today_il().isoformat()),
         ).fetchone()
         burned = round(row[0] or 0)
         conn.close()
@@ -57,7 +58,7 @@ def daily_insight(user=Depends(get_current_user)):
     remaining_prot = target_prot - eaten_prot
     count = totals.get("count", 0)
 
-    hour = datetime.now().hour
+    hour = now_il().hour
     if hour < 11:
         greet = "בוקר טוב"
     elif hour < 16:

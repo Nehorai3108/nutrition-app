@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 from api.deps import get_current_user
+from api._tz import now_il_iso, today_il
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
@@ -160,8 +161,7 @@ def _ai_estimate_and_store(q: str) -> Optional[dict]:
 
 @router.post("/")
 def add_entry(body: AddFoodEntry, user=Depends(get_current_user)):
-    from datetime import datetime
-    d = date.fromisoformat(body.date) if body.date else date.today()
+    d = date.fromisoformat(body.date) if body.date else today_il()
     entry = FoodLogEntry(
         food_id=body.food_id,
         food_name=body.food_name,
@@ -171,7 +171,7 @@ def add_entry(body: AddFoodEntry, user=Depends(get_current_user)):
         carbs=body.carbs,
         fat=body.fat,
         meal_type=body.meal_type,
-        timestamp=datetime.now().isoformat(),
+        timestamp=now_il_iso(),
         image_url=body.image_url,
     )
     repo.add_entry(user["id"], d, entry)
@@ -181,7 +181,7 @@ def add_entry(body: AddFoodEntry, user=Depends(get_current_user)):
 def get_history(days: int = 35, user=Depends(get_current_user)):
     """סיכום קלורי לכל יום ב-N הימים האחרונים (לתצוגת לוח שנה)."""
     from datetime import timedelta
-    end = date.today()
+    end = today_il()
     start = end - timedelta(days=max(1, min(days, 366)))
     return {"days": repo.get_history(user["id"], start, end)}
 
@@ -196,7 +196,7 @@ def get_log(date_str: str, user=Depends(get_current_user)):
     try:
         d = date.fromisoformat(date_str)
     except ValueError:
-        d = date.today()
+        d = today_il()
     entries = repo.get_log(user["id"], d)
     # Enrich with recipe images for entries that came from a recipe card
     recipe_images = _load_recipe_images()
@@ -227,7 +227,7 @@ def _load_recipe_images() -> dict:
 
 @router.delete("/{entry_id}")
 def delete_entry(entry_id: str, user=Depends(get_current_user)):
-    repo.remove_entry(user["id"], date.today(), entry_id)
+    repo.remove_entry(user["id"], today_il(), entry_id)
     return {"ok": True}
 
 @router.get("/{date_str}/summary")
@@ -236,7 +236,7 @@ def get_summary(date_str: str, user=Depends(get_current_user)):
     try:
         d = date.fromisoformat(date_str)
     except ValueError:
-        d = date.today()
+        d = today_il()
     entries = repo.get_log(user["id"], d)
     total_cal  = sum(e.calories for e in entries)
     total_prot = sum(e.protein  for e in entries)

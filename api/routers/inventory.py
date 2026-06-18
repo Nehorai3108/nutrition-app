@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 from api.deps import get_current_user
+from api._tz import now_il_iso
 import sys, os, uuid, sqlite3, base64, json, requests
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -85,7 +86,7 @@ def _insert(conn, user_id: str, name_he: str, quantity, unit: str, category: str
     """Add an item — merging into an existing one of the same name+unit
     (so "5 מלפפונים" + "5 מלפפונים" becomes 10, not two rows)."""
     cat = _norm_category(category)
-    now = datetime.now().isoformat()
+    now = now_il_iso()
     existing = conn.execute(
         "SELECT item_id, quantity FROM inventory WHERE user_id=? AND name_he=? AND unit=?",
         (user_id, name_he, unit),
