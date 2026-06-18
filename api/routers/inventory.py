@@ -43,6 +43,56 @@ def _norm_category(c: str) -> str:
     return c if c in _VALID_CATEGORIES else "other"
 
 
+# ── Storage: Supabase בענן (נשמר לאורך זמן), SQLite בפיתוח מקומי ──
+def _use_sb() -> bool:
+    return bool(os.environ.get("SUPABASE_URL"))
+
+
+def _sb():
+    from nutrition_app.db.supabase_client import get_supabase
+    return get_supabase()
+
+
+def _list_items(user_id: str) -> list:
+    if _use_sb():
+        return (_sb().table("inventory").select("*")
+                .eq("user_id", user_id).order("added_at", desc=True).execute()).data or []
+    with _conn() as conn:
+        rows = conn.execute(
+            "SELECT * FROM inventory WHERE user_id=? ORDER BY category, added_at DESC",
+            (user_id,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def _add_item(user_id: str, name_he: str, quantity, unit: str, category: str) -> dict:
+    """מוסיף פריט — ממזג עם פריט קיים בעל אותו שם+יחידה (סוכם כמויות)."""
+    cat = _norm_category(category)
+    now = now_il_iso()
+    if _use_sb():
+        existing = (_sb().table("inventory").select("item_id,quantity")
+                    .eq("user_id", user_id).eq("name_he", name_he).eq("unit", unit)
+                    .limit(1).execute()).data
+        if existing:
+            new_q = (existing[0].get("quantity") or 0) + (quantity or 0)
+            _sb().table("inventory").update(
+                {"quantity": new_q, "category": cat, "added_at": now}
+            ).eq("item_id", existing[0]["item_id"]).execute()
+            return {"item_id": existing[0]["item_id"], "name_he": name_he,
+                    "quantity": new_q, "unit": unit, "category": cat}
+        item_id = uuid.uuid4().hex
+        _sb().table("inventory").insert(
+            {"item_id": item_id, "user_id": user_id, "name_he": name_he,
+             "quantity": quantity, "unit": unit, "category": cat, "added_at": now}
+        ).execute()
+        return {"item_id": item_id, "name_he": name_he, "quantity": quantity,
+                "unit": unit, "category": cat}
+    with _conn() as conn:
+        item = _insert(conn, user_id, name_he, quantity, unit, cat)
+        conn.commit()
+        return item
+
+
 def _has_arabic(text: str) -> bool:
     # Arabic Unicode block U+0600–U+06FF
     return any("؀" <= ch <= "ۿ" for ch in text or "")
@@ -112,20 +162,13 @@ def _insert(conn, user_id: str, name_he: str, quantity, unit: str, category: str
 
 @router.get("/")
 def list_inventory(user=Depends(get_current_user)):
-    with _conn() as conn:
-        rows = conn.execute(
-            "SELECT * FROM inventory WHERE user_id=? ORDER BY category, added_at DESC",
-            (user["id"],),
-        ).fetchall()
-    return {"items": [dict(r) for r in rows]}
+    return {"items": _list_items(user["id"])}
 
 
 @router.post("/")
 def add_item(body: AddItem, user=Depends(get_current_user)):
-    with _conn() as conn:
-        item = _insert(conn, user["id"], body.name_he.strip(), body.quantity,
-                       body.unit, body.category)
-        conn.commit()
+    item = _add_item(user["id"], body.name_he.strip(), body.quantity,
+                     body.unit, body.category)
     return {"ok": True, "item": item}
 
 
@@ -133,30 +176,34 @@ def add_item(body: AddItem, user=Depends(get_current_user)):
 def add_bulk(body: BulkItems, user=Depends(get_current_user)):
     """שמירה מרוכזת — אחרי שהמשתמש אישר/ערך את רשימת הקבלה."""
     added = []
-    with _conn() as conn:
-        for it in body.items:
-            name = (it.name_he or "").strip()
-            if not name:
-                continue
-            added.append(_insert(conn, user["id"], name, it.quantity, it.unit, it.category))
-        conn.commit()
+    for it in body.items:
+        name = (it.name_he or "").strip()
+        if not name:
+            continue
+        added.append(_add_item(user["id"], name, it.quantity, it.unit, it.category))
     return {"ok": True, "count": len(added), "items": added}
 
 
 @router.delete("/{item_id}")
 def delete_item(item_id: str, user=Depends(get_current_user)):
-    with _conn() as conn:
-        conn.execute("DELETE FROM inventory WHERE user_id=? AND item_id=?",
-                     (user["id"], item_id))
-        conn.commit()
+    if _use_sb():
+        _sb().table("inventory").delete().eq("user_id", user["id"]).eq("item_id", item_id).execute()
+    else:
+        with _conn() as conn:
+            conn.execute("DELETE FROM inventory WHERE user_id=? AND item_id=?",
+                         (user["id"], item_id))
+            conn.commit()
     return {"ok": True}
 
 
 @router.delete("/")
 def clear_inventory(user=Depends(get_current_user)):
-    with _conn() as conn:
-        conn.execute("DELETE FROM inventory WHERE user_id=?", (user["id"],))
-        conn.commit()
+    if _use_sb():
+        _sb().table("inventory").delete().eq("user_id", user["id"]).execute()
+    else:
+        with _conn() as conn:
+            conn.execute("DELETE FROM inventory WHERE user_id=?", (user["id"],))
+            conn.commit()
     return {"ok": True}
 
 
@@ -236,11 +283,7 @@ Return ONLY a JSON array, no markdown:
 @router.get("/cook")
 def cook_from_inventory(user=Depends(get_current_user)):
     """מתכונים שאפשר להכין ממה שיש במלאי — מדורגים לפי כמה מרכיבים יש לך."""
-    with _conn() as conn:
-        rows = conn.execute(
-            "SELECT name_he FROM inventory WHERE user_id=?", (user["id"],)
-        ).fetchall()
-    inv_names = {r["name_he"] for r in rows if r["name_he"]}
+    inv_names = {it.get("name_he") for it in _list_items(user["id"]) if it.get("name_he")}
     if not inv_names:
         return {"recipes": [], "inventory_count": 0}
 
