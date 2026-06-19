@@ -16,7 +16,7 @@ from ui.user_auth import require_auth
 USER_ID = require_auth()
 
 st.set_page_config(
-    page_title="אשף תפריט – BiteFit",
+    page_title="אשף תפריט – NutriSmart",
     page_icon="🍽️",
     layout="centered",
     initial_sidebar_state="collapsed",

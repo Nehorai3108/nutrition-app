@@ -24,6 +24,7 @@ from auth.supabase_client import (
     install_cookie_session,
     write_session_cookies,
     clear_session_cookies,
+    _jwt_is_expired,
 )
 
 _KEY_USER_ID = "user_id"
@@ -58,7 +59,32 @@ def require_auth() -> str:
     if user is None:
         render_login_ui()
         st.stop()
+    # The cookie/session said "logged in", but the JWT may have expired while
+    # away. get_supabase() refreshes it when a valid refresh token exists; if
+    # the access token is still expired afterwards the session is truly dead.
+    # Clear it and show login rather than letting a downstream Supabase call
+    # crash the whole page with "JWT expired".
+    if not _session_token_is_valid():
+        _clear_session()
+        render_login_ui()
+        st.stop()
     return user["id"]
+
+
+def _session_token_is_valid() -> bool:
+    """True if the session has a non-expired access token (refreshing once if
+    the current one is stale but a refresh token is available)."""
+    access = st.session_state.get(_KEY_ACCESS_TOKEN)
+    if access and not _jwt_is_expired(access):
+        return True
+    # Attempt a refresh via get_supabase() (it refreshes when a refresh token
+    # is present in session_state); swallow config/refresh failures as invalid.
+    try:
+        get_supabase()
+    except Exception:
+        return False
+    access = st.session_state.get(_KEY_ACCESS_TOKEN)
+    return bool(access) and not _jwt_is_expired(access)
 
 
 def get_user_id() -> str | None:
@@ -270,14 +296,30 @@ def render_login_ui() -> None:
         </style>""",
         unsafe_allow_html=True,
     )
-    st.markdown(
-        '<div style="text-align:center;padding:12px 0 4px">'
-        '<span style="font-size:3rem">\U0001f957</span><br>'
-        '<span style="font-size:1.8rem;font-weight:800;color:#f4f6fb">BiteFit</span><br>'
-        '<span style="font-size:0.82rem;color:#8892a4">מעקב תזונה חכם</span>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
+    from ui import theme as _t
+    from ui.components import brand_wordmark as _brand_wordmark, logo_bytes as _logo_bytes
+    _lb = _logo_bytes()
+    if _lb:
+        st.markdown(
+            '<style>[data-testid="stImage"]{margin:0 auto;}'
+            '[data-testid="stImage"] img{border-radius:18px;}</style>',
+            unsafe_allow_html=True,
+        )
+        st.image(_lb, width=170)
+        st.markdown(
+            f'<div style="text-align:center;padding:6px 0 6px">'
+            f'<span style="font-size:0.82rem;color:{_t.TEXT_MUTED}">התזונה האישית החכמה שלך</span></div>',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            f'<div style="text-align:center;padding:12px 0 4px">'
+            f'<span style="font-size:3rem">\U0001f957</span><br>'
+            f'{_brand_wordmark("1.9rem")}<br>'
+            f'<span style="font-size:0.82rem;color:{_t.TEXT_MUTED}">התזונה האישית החכמה שלך</span>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
     st.divider()
 
     # Pending email-confirmation flow takes over the screen entirely so the

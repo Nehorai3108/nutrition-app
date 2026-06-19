@@ -70,7 +70,7 @@ pg = st.navigation(
                 icon="📖",
             ),
             st.Page(
-                "pages/7_weekly_workout_plan.py",
+                "pages/17_weekly_workout_plan.py",
                 title="אימונים",
                 icon="🏃",
             ),

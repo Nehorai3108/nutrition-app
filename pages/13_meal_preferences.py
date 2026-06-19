@@ -30,6 +30,7 @@ import streamlit as st
 from ui.components import (
     inject_global_css, page_header, section_header,
     macro_delta_html, meal_picker_card_html, kashrut_badge_html, macro_grid_html,
+    bottom_nav as _bottom_nav,
 )
 from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
@@ -51,7 +52,7 @@ setup_persistent_auth()
 USER_ID = require_auth()
 
 st.set_page_config(
-    page_title="BiteFit · בחירת ארוחות",
+    page_title="NutriSmart · בחירת ארוחות",
     page_icon="🥗",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -640,3 +641,5 @@ elif st.session_state["mp_step"] == 5:
             if k.startswith("mp_"):
                 del st.session_state[k]
         st.switch_page("pages/6_daily_menu.py")
+
+_bottom_nav("profile")

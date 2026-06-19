@@ -15,7 +15,7 @@ from ui.user_auth import require_auth
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.barcode_repository import BarcodeRepository, BarcodeEntry
 
-st.set_page_config(page_title="BiteFit · ברקוד", page_icon="📲",
+st.set_page_config(page_title="NutriSmart · ברקוד", page_icon="📲",
                    layout="wide", initial_sidebar_state="collapsed")
 inject_global_css()
 setup_persistent_auth()
@@ -62,7 +62,7 @@ def lookup_off(barcode: str) -> dict | None:
         f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json",
     ]:
         try:
-            r = requests.get(url, timeout=8, headers={"User-Agent": "BiteFit/1.0"})
+            r = requests.get(url, timeout=8, headers={"User-Agent": "NutriSmart/1.0"})
             d = r.json()
             if d.get("status") != 1:
                 continue

@@ -17,6 +17,7 @@ from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instru
 from nutrition_app.user_manager import get_all_users, load_inventory
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 from nutrition_app.repositories.profile_repository import ProfileRepository
+from nutrition_app.repositories.water_repository import WaterRepository
 
 from ui.components import (
     inject_global_css, recipe_card_html, bottom_nav,
@@ -38,7 +39,7 @@ _profile = _profile_repo.load(USER_ID)
 _user_allergens: list  = _profile.get("meal_preferences", {}).get("allergies", [])
 _user_disliked: list   = _profile.get("meal_preferences", {}).get("disliked_foods", [])
 
-st.set_page_config(page_title="BiteFit · תפריט", page_icon="🍽️", layout="wide",
+st.set_page_config(page_title="NutriSmart · תפריט", page_icon="🍽️", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
@@ -128,11 +129,27 @@ else:
 inventory_names: set = set()
 
 # ── Header ────────────────────────────────────────────────────────────────────
+from ui import theme as _t
+from ui.components import brand_wordmark as _brand_wordmark
 st.markdown(
     f'<div dir="rtl" style="display:flex;align-items:center;justify-content:space-between;'
     f'padding:4px 2px 16px">'
-    f'<div dir="rtl" style="font-size:1.1rem;font-weight:800;color:#4f8ef7;letter-spacing:-0.01em">BiteFit</div>'
-    f'<div dir="rtl" style="font-size:0.75rem;color:#545e70">{date.today().strftime("%d/%m/%Y")}</div>'
+    f'{_brand_wordmark("1.25rem")}'
+    f'<div dir="rtl" style="font-size:0.75rem;color:{_t.TEXT_DIM}">{date.today().strftime("%d/%m/%Y")}</div>'
+    f'</div>',
+    unsafe_allow_html=True,
+)
+
+# ── Water total widget ─────────────────────────────────────────────────────────
+_water_repo = WaterRepository()
+_water_ml = _water_repo.get_daily_total(USER_ID, date.today())
+_water_l = _water_ml / 1000
+st.markdown(
+    f'<div dir="rtl" style="display:flex;align-items:center;gap:6px;'
+    f'padding:0 0 12px;font-size:0.78rem;color:#8892a4">'
+    f'<span>💧</span>'
+    f'<span style="color:#4f8ef7;font-weight:700">{_water_l:.1f} ל׳</span>'
+    f'<span>מים היום</span>'
     f'</div>',
     unsafe_allow_html=True,
 )
@@ -1040,7 +1057,7 @@ with tabs[-1]:
                 unsafe_allow_html=True,
             )
         st.markdown(
-            f'<div dir="rtl" style="text-align:left;font-size:0.75rem;color:#8892a4;margin-top:4px">'
+            f'<div dir="rtl" style="text-align:right;font-size:0.75rem;color:#8892a4;margin-top:4px">'
             f'סה״כ נשנושים: <strong style="color:#fb923c">{int(_snack_total)} קק״ל</strong></div>',
             unsafe_allow_html=True,
         )

@@ -1,9 +1,11 @@
 [theme]
-base = "dark"
-primaryColor = "#4f8ef7"
-backgroundColor = "#0d0f14"
-secondaryBackgroundColor = "#161b26"
-textColor = "#f4f6fb"
+# Light base matches the NutriSmart logo. Runtime dark mode is applied via
+# injected CSS (ui/theme.set_mode) since config.toml's base is fixed at startup.
+base = "light"
+primaryColor = "#2d6fb3"
+backgroundColor = "#eef3f9"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#15304e"
 font = "sans serif"
 
 [client]

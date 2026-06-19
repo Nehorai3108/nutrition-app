@@ -26,14 +26,25 @@ def inject_global_css() -> None:
     on each interaction so CSS must be re-injected every run.
     """
 
+    # Activate the user's chosen palette before building the CSS. Light is the
+    # brand default; the dark toggle stores "dark" in session_state.
+    t.set_mode("dark" if st.session_state.get("theme_mode") == "dark" else "light")
+
     css = f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap');
 
         /* ─── Global & RTL ────────────────────────────────────────────── */
         html, body, [class*="css"] {{
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            font-family: 'Rubik', -apple-system, BlinkMacSystemFont, sans-serif !important;
         }}
+        /* Paint surfaces from theme tokens so the light/dark toggle repaints
+           the whole app (config.toml's base is fixed at server start). */
+        [data-testid="stAppViewContainer"], .stApp, body {{
+            background: {t.BG} !important;
+            color: {t.TEXT};
+        }}
+        [data-testid="stMarkdownContainer"] {{ color: {t.TEXT}; }}
 
         /* ── RTL for all text-bearing Streamlit containers ────────────── */
         [data-testid="stMarkdownContainer"],
@@ -98,6 +109,11 @@ def inject_global_css() -> None:
             direction: rtl !important;
             text-align: right !important;
         }}
+        /* st.metric delta label */
+        [data-testid="stMetricDelta"] {{
+            direction: rtl !important;
+            text-align: right !important;
+        }}
         /* ─── Hide Streamlit chrome ───────────────────────────────────── */
         header[data-testid="stHeader"] {{ display: none !important; }}
         footer {{ display: none !important; }}
@@ -108,12 +124,20 @@ def inject_global_css() -> None:
         [data-testid="collapsedControl"] {{ display: none !important; }}
         section[data-testid="stSidebar"][aria-expanded="false"] {{ display: none !important; }}
 
-        .main .block-container {{
+        /* Center the mobile-first layout as a phone-width column on desktop.
+           Streamlit renamed this container across versions, so target every
+           known selector with !important — `layout="wide"` otherwise lets the
+           content sprawl full-width and the components look stretched. */
+        .main .block-container,
+        .block-container,
+        [data-testid="stMainBlockContainer"],
+        .stMainBlockContainer,
+        [data-testid="stAppViewBlockContainer"] {{
             direction: rtl;
-            padding-top: 0.75rem;
-            padding-bottom: 90px;
-            max-width: 480px;
-            margin: 0 auto;
+            padding-top: 0.75rem !important;
+            padding-bottom: 90px !important;
+            max-width: 480px !important;
+            margin: 0 auto !important;
         }}
         section[data-testid="stSidebar"] > div {{
             direction: rtl;
@@ -140,7 +164,7 @@ def inject_global_css() -> None:
         section[data-testid="stSidebar"] [data-testid="stMetric"] {{
             padding: 4px 0 !important;
         }}
-        h1, h2, h3, h4, h5 {{ text-align: right; color: {t.TEXT}; font-family: 'Inter', sans-serif !important; }}
+        h1, h2, h3, h4, h5 {{ text-align: right; color: {t.TEXT}; font-family: 'Rubik', sans-serif !important; }}
         input[type="number"], input[type="text"], input[type="password"], textarea {{
             text-align: right;
         }}
@@ -159,10 +183,26 @@ def inject_global_css() -> None:
         button[data-testid="baseButton-primary"] {{
             background: {t.GRAD_PRIMARY} !important;
             box-shadow: {t.SHADOW_PRI};
+            position: relative;
+            overflow: hidden;
+        }}
+        /* Shine sweep on hover — transform-only, GPU-composited */
+        button[data-testid="baseButton-primary"]::after {{
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 40%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+            transform: translateX(-150%) skewX(-20deg);
+            transition: transform {t.DUR_SLOW} {t.EASE};
+            pointer-events: none;
+        }}
+        button[data-testid="baseButton-primary"]:hover::after {{
+            transform: translateX(350%) skewX(-20deg);
         }}
         button[data-testid="baseButton-primary"]:hover {{
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(124,92,255,0.4) !important;
+            box-shadow: {t.SHADOW_PRI} !important;
         }}
         button[data-testid="baseButton-secondary"] {{
             background: {t.SURFACE_2} !important;
@@ -589,6 +629,201 @@ def inject_global_css() -> None:
         .nut-ring-cal::before   {{ background: {t.GRAD_ACCENT}; }}
         .nut-ring-sport::before {{ background: linear-gradient(90deg, {t.WARNING}, #f97316); }}
         .nut-ring-water::before {{ background: linear-gradient(90deg, {t.INFO}, {t.ACCENT}); }}
+
+        /* ═══ Motion system ════════════════════════════════════════════
+           Only `transform` and `opacity` are animated (GPU-composited),
+           so animations never trigger layout/paint and stay at 60fps. */
+        html {{ scroll-behavior: smooth; }}
+        @keyframes nutFadeUp {{
+            from {{ opacity: 0; transform: translateY(10px); }}
+            to   {{ opacity: 1; transform: translateY(0); }}
+        }}
+        @keyframes nutPop {{
+            0%   {{ opacity: 0; transform: scale(0.85); }}
+            70%  {{ transform: scale(1.04); }}
+            100% {{ opacity: 1; transform: scale(1); }}
+        }}
+        @keyframes nutGrowRTL {{
+            from {{ transform: scaleX(0); }}
+            to   {{ transform: scaleX(1); }}
+        }}
+        @keyframes nutRingDraw {{
+            from {{ stroke-dasharray: 0 999; }}
+        }}
+        @keyframes nutShimmer {{
+            100% {{ transform: translateX(-200%); }}
+        }}
+        @keyframes nutGlowFade {{
+            0%, 100% {{ opacity: 0.25; }}
+            50%      {{ opacity: 1; }}
+        }}
+        @keyframes nutBlobDrift {{
+            from {{ transform: translate(0, 0) scale(1); }}
+            to   {{ transform: translate(14px, 10px) scale(1.25); }}
+        }}
+
+        /* ─── Entrance animations ─────────────────────────────────────── */
+        .nut-pageheader {{ animation: nutFadeUp 0.4s {t.EASE_OUT} both; }}
+        .nut-card,
+        .nut-macro-card,
+        .nut-ring-card {{ animation: nutFadeUp {t.DUR_MED} {t.EASE_OUT} both; }}
+        [data-testid="stMetric"] {{ animation: nutFadeUp 0.3s {t.EASE_OUT} both; }}
+        [data-testid="stAlert"] {{ animation: nutFadeUp 0.3s {t.EASE_OUT} both; }}
+        [data-testid="stChatMessage"] {{ animation: nutFadeUp {t.DUR_MED} {t.EASE_OUT} both; }}
+
+        /* Staggered card entrances — capped to the first few children so
+           long lists don't feel sluggish */
+        .nut-welcome-grid .nut-welcome-card {{ animation: nutFadeUp 0.4s {t.EASE_OUT} both; }}
+        .nut-welcome-grid .nut-welcome-card:nth-child(2) {{ animation-delay: 0.06s; }}
+        .nut-welcome-grid .nut-welcome-card:nth-child(3) {{ animation-delay: 0.12s; }}
+        .nut-welcome-grid .nut-welcome-card:nth-child(4) {{ animation-delay: 0.18s; }}
+        .nut-welcome-grid .nut-welcome-card:nth-child(5) {{ animation-delay: 0.24s; }}
+        .nut-welcome-grid .nut-welcome-card:nth-child(6) {{ animation-delay: 0.30s; }}
+        .nut-rings-grid .nut-ring-card:nth-child(2) {{ animation-delay: 0.08s; }}
+        .nut-rings-grid .nut-ring-card:nth-child(3) {{ animation-delay: 0.16s; }}
+
+        /* Macro tiles pop in with a tiny cascade */
+        .nut-macro-grid .nut-macro-tile {{ animation: nutPop 0.3s {t.EASE_OUT} both; }}
+        .nut-macro-grid .nut-macro-tile:nth-child(2) {{ animation-delay: 0.04s; }}
+        .nut-macro-grid .nut-macro-tile:nth-child(3) {{ animation-delay: 0.08s; }}
+        .nut-macro-grid .nut-macro-tile:nth-child(4) {{ animation-delay: 0.12s; }}
+
+        /* Section header underline draws in from the right (RTL) */
+        .nut-section::after {{
+            transform-origin: right;
+            animation: nutGrowRTL 0.5s {t.EASE_OUT} both;
+        }}
+
+        /* Page header decorative blob drifts slowly */
+        .nut-pageheader::after {{
+            animation: nutBlobDrift 7s ease-in-out infinite alternate;
+        }}
+
+        /* ─── Calorie ring draw-in ─────────────────────────────────────── */
+        .nut-ring-progress {{
+            animation: nutRingDraw 0.9s {t.EASE_OUT} both;
+        }}
+        .nut-ring-center-val {{ animation: nutPop 0.5s {t.EASE_OUT} 0.35s both; }}
+
+        /* ─── "Eat now" hero glow ──────────────────────────────────────── */
+        .nut-now-eating {{ position: relative; }}
+        .nut-now-eating::after {{
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            box-shadow: {t.SHADOW_GLOW};
+            opacity: 0.25;
+            animation: nutGlowFade 3s ease-in-out infinite;
+            pointer-events: none;
+        }}
+
+        /* ─── Skeleton shimmer (loading placeholders) ──────────────────── */
+        .nut-skeleton {{
+            position: relative;
+            overflow: hidden;
+            background: {t.SURFACE_2};
+            border-radius: {t.RADIUS};
+            min-height: 16px;
+        }}
+        .nut-skeleton::after {{
+            content: '';
+            position: absolute;
+            inset: 0;
+            transform: translateX(200%);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+            animation: nutShimmer 1.4s ease-in-out infinite;
+        }}
+
+        /* ─── Welcome card icon delight ────────────────────────────────── */
+        .nut-welcome-icon {{ transition: transform 0.25s {t.EASE}; }}
+        .nut-welcome-card:hover .nut-welcome-icon {{
+            transform: scale(1.1) rotate(-4deg);
+        }}
+
+        /* ─── Inputs: focus glow ───────────────────────────────────────── */
+        .stTextInput input, .stNumberInput input, .stTextArea textarea,
+        [data-baseweb="select"] > div {{
+            transition: border-color {t.DUR_FAST} ease, box-shadow {t.DUR_FAST} ease;
+        }}
+        .stTextInput input:focus, .stNumberInput input:focus,
+        .stTextArea textarea:focus {{
+            border-color: {t.PRIMARY} !important;
+            box-shadow: 0 0 0 3px rgba(79,142,247,0.18) !important;
+        }}
+
+        /* ─── Tabs: animated highlight ─────────────────────────────────── */
+        [data-baseweb="tab-highlight"] {{
+            background: {t.GRAD_PRIMARY} !important;
+            height: 3px !important;
+            border-radius: 3px;
+        }}
+        button[role="tab"] {{ transition: color 0.2s ease; }}
+
+        /* ─── Expander chevron ─────────────────────────────────────────── */
+        [data-testid="stExpander"] summary svg {{
+            transition: transform 0.25s {t.EASE};
+        }}
+
+        /* ─── Toasts & progress ────────────────────────────────────────── */
+        [data-testid="stToast"] {{
+            background: {t.SURFACE_2} !important;
+            border: 1px solid {t.BORDER_2} !important;
+            border-radius: {t.RADIUS_LG} !important;
+            box-shadow: {t.SHADOW_LG} !important;
+            animation: nutFadeUp 0.3s {t.EASE_OUT} both;
+        }}
+        [data-testid="stProgress"] > div > div {{
+            background: {t.SURFACE_3} !important;
+            border-radius: 999px !important;
+            overflow: hidden;
+        }}
+        [data-testid="stProgress"] > div > div > div {{
+            background: {t.GRAD_ACCENT} !important;
+            border-radius: 999px !important;
+            transition: width {t.DUR_SLOW} {t.EASE};
+        }}
+
+        /* ─── Home dashboard (app_user.py builds it as inline-styled HTML,
+               so we hook animations by class names added there) ──────────── */
+        @keyframes bfBreathe {{
+            0%, 100% {{ transform: scale(1); }}
+            50%      {{ transform: scale(1.035); }}
+        }}
+        /* Direct children of the dashboard slide up in a staggered cascade
+           on every load — the visible "it's alive" cue on refresh. */
+        .bf-home > div {{ animation: nutFadeUp 0.5s {t.EASE_OUT} both; }}
+        .bf-home > div:nth-child(2) {{ animation-delay: 0.06s; }}
+        .bf-home > div:nth-child(3) {{ animation-delay: 0.12s; }}
+        .bf-home > div:nth-child(4) {{ animation-delay: 0.18s; }}
+        .bf-home > div:nth-child(5) {{ animation-delay: 0.24s; }}
+        .bf-home > div:nth-child(6) {{ animation-delay: 0.30s; }}
+        .bf-home > div:nth-child(7) {{ animation-delay: 0.36s; }}
+        /* Every ring pops in on load */
+        .bf-home svg {{ animation: nutPop 0.6s {t.EASE_OUT} both; }}
+        /* The big calorie ring keeps gently breathing — persistent, always
+           visible even in a static screenshot */
+        .bf-ring-main {{ animation: bfBreathe 3.5s ease-in-out infinite; }}
+        /* Cards & tiles lift on hover/tap */
+        .bf-tile {{ transition: transform 0.22s {t.EASE}, box-shadow 0.22s {t.EASE}, border-color 0.22s {t.EASE}; }}
+        .bf-tile:hover {{
+            transform: translateY(-3px);
+            border-color: {t.PRIMARY} !important;
+            box-shadow: {t.SHADOW_MD};
+        }}
+        .bf-tile:active {{ transform: translateY(-1px) scale(0.99); }}
+        /* Today's chip in the week strip pulses softly */
+        .bf-today {{ animation: bfBreathe 2.6s ease-in-out infinite; }}
+
+        /* ─── Accessibility: respect reduced-motion preference ─────────── */
+        @media (prefers-reduced-motion: reduce) {{
+            *, *::before, *::after {{
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }}
+        }}
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
@@ -599,8 +834,8 @@ def inject_global_css() -> None:
         '<meta name="mobile-web-app-capable" content="yes">'
         '<meta name="apple-mobile-web-app-capable" content="yes">'
         '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">'
-        '<meta name="apple-mobile-web-app-title" content="BiteFit">'
-        '<meta name="theme-color" content="#0d111c">'
+        '<meta name="apple-mobile-web-app-title" content="NutriSmart">'
+        f'<meta name="theme-color" content="{t.BG}">'
         '<script>'
         'if("serviceWorker" in navigator){'
         '  navigator.serviceWorker.register("/app/static/sw.js")'
@@ -611,12 +846,277 @@ def inject_global_css() -> None:
     )
 
 
-def bottom_nav(active: str = "home") -> None:
-    """Fixed bottom nav — uses st.page_link so clicks stay in Streamlit's router.
+def brand_wordmark(size: str = "1.1rem") -> str:
+    """Return the 'NutriSmart' wordmark as gradient HTML (green→blue, per logo).
 
-    Visual style is preserved via CSS that targets the horizontal column block
-    immediately after a sentinel marker we emit. Active state is communicated
-    by an `--active` CSS variable injected per render.
+    Falls back to a solid PRIMARY fill where background-clip:text is unsupported.
+    """
+    return (
+        f'<span style="font-size:{size};font-weight:800;letter-spacing:-0.02em;'
+        f'background:{t.GRAD_PRIMARY};-webkit-background-clip:text;background-clip:text;'
+        f'-webkit-text-fill-color:transparent;color:{t.PRIMARY}">NutriSmart</span>'
+    )
+
+
+def theme_toggle(key: str = "nut_theme_toggle") -> None:
+    """Render a light/dark mode switch. Persists choice in session_state."""
+    is_dark = st.session_state.get("theme_mode") == "dark"
+    label = "☀️ מצב בהיר" if is_dark else "🌙 מצב כהה"
+    if st.button(label, key=key, use_container_width=True):
+        st.session_state["theme_mode"] = "light" if is_dark else "dark"
+        st.rerun()
+
+
+def _logo_path() -> str:
+    import os as _os
+    root = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+    return _os.path.join(root, "logo sketch.png")
+
+
+@st.cache_data(show_spinner=False)
+def logo_bytes():
+    """Return the raw NutriSmart logo PNG bytes (or None if missing).
+
+    Use with ``st.image`` — Streamlit's markdown sanitizer strips sizing
+    attributes off raw ``<img>`` tags, so HTML embedding renders unusable.
+    """
+    import os as _os
+    path = _logo_path()
+    if not _os.path.isfile(path):
+        return None
+    try:
+        with open(path, "rb") as fh:
+            return fh.read()
+    except OSError:
+        return None
+
+
+@st.cache_data(show_spinner=False)
+def logo_data_uri() -> str:
+    """Return a base64 data-URI for the NutriSmart logo (or empty string)."""
+    import base64
+    data = logo_bytes()
+    return "data:image/png;base64," + base64.b64encode(data).decode("ascii") if data else ""
+
+
+def app_header(date_str: Optional[str] = None, theme_key: str = "nut_hdr_theme") -> bool:
+    """Sticky top header: logo (or wordmark) + date + a light/dark toggle.
+
+    Returns True if the theme toggle was clicked this run (caller may persist
+    the new ``st.session_state['theme_mode']`` and rerun). The toggle itself
+    updates session_state and triggers a rerun.
+    """
+    inject_global_css()
+    _lb = logo_bytes()
+    hc1, hc2, hc3 = st.columns([1, 5, 1], vertical_alignment="center")
+    with hc1:
+        if _lb:
+            st.image(_lb, width=42)
+        else:
+            st.markdown(brand_wordmark("1.1rem"), unsafe_allow_html=True)
+    with hc2:
+        bits = [brand_wordmark("1.15rem")]
+        if date_str:
+            bits.append(
+                f'<span style="font-size:0.72rem;color:{t.TEXT_DIM};font-weight:600">{date_str}</span>'
+            )
+        st.markdown(
+            f'<div dir="rtl" style="display:flex;align-items:center;gap:10px;padding-top:6px">'
+            f'{"".join(bits)}</div>',
+            unsafe_allow_html=True,
+        )
+    clicked = False
+    with hc3:
+        is_dark = st.session_state.get("theme_mode") == "dark"
+        if st.button("☀️" if is_dark else "🌙", key=theme_key,
+                     help="החלף מצב בהיר/כהה"):
+            st.session_state["theme_mode"] = "light" if is_dark else "dark"
+            clicked = True
+    return clicked
+
+
+def swipe_deck_css() -> None:
+    """Lay out the ``bf_deck`` container's columns as a horizontal scroll-snap deck.
+
+    Each Streamlit column becomes a full-width panel; native swipe/scroll moves
+    between them. The deck scrolls LTR (panel 0 = leftmost) for predictable
+    index→offset math even though panel content stays RTL.
+    """
+    st.markdown(
+        f"""
+<style>
+.st-key-bf_deck [data-testid="stHorizontalBlock"] {{
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    direction: ltr;
+    gap: 0 !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}}
+.st-key-bf_deck [data-testid="stHorizontalBlock"]::-webkit-scrollbar {{ display: none; }}
+.st-key-bf_deck [data-testid="stColumn"] {{
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    scroll-snap-align: start;
+    padding: 0 3px !important;
+}}
+/* Segmented deck nav — pill bar */
+.st-key-bf_decknav {{
+    position: sticky; top: 0; z-index: 50;
+    background: {t.BG};
+    padding: 4px 0 8px !important;
+}}
+.st-key-bf_decknav [data-testid="stHorizontalBlock"] {{
+    gap: 4px !important;
+    background: {t.SURFACE_2};
+    border: 1px solid {t.BORDER};
+    border-radius: 999px;
+    padding: 4px !important;
+}}
+.st-key-bf_decknav button {{
+    border-radius: 999px !important;
+    min-height: 38px !important;
+    border: none !important;
+    background: transparent !important;
+    color: {t.TEXT_MUTED} !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    box-shadow: none !important;
+}}
+.st-key-bf_decknav button:hover {{ color: {t.TEXT} !important; transform: none !important; }}
+</style>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def deck_nav(items, active: int = 0) -> None:
+    """Sticky pill nav for the swipe deck. ``items`` = list of (icon, label).
+
+    Clicking a pill sets ``st.session_state['_deck_target']`` and reruns; the
+    JS in :func:`swipe_deck_behavior` scrolls the deck to that panel.
+    """
+    with st.container(key="bf_decknav"):
+        cols = st.columns(len(items))
+        for i, (icon, label) in enumerate(items):
+            mark = "🔵 " if i == active else ""
+            if cols[i].button(f"{icon} {label}", key=f"_decknav_{i}",
+                              use_container_width=True):
+                st.session_state["_deck_target"] = i
+                st.rerun()
+        # Highlight the active pill (filled) via injected nth-child rule.
+        st.markdown(
+            f'<style>.st-key-bf_decknav [data-testid="stColumn"]:nth-child({active + 1}) '
+            f'button {{ background: {t.GRAD_PRIMARY} !important; color: #fff !important; '
+            f'box-shadow: {t.SHADOW_PRI} !important; }}</style>',
+            unsafe_allow_html=True,
+        )
+
+
+def swipe_deck_behavior(target_index: int, panel_count: int = 4) -> None:
+    """Drive the deck's scroll position across Streamlit reruns.
+
+    Streamlit reruns replace the deck DOM, which would reset the scroll to
+    panel 0. This injects (via a 0-height same-origin iframe) JS that:
+      • scrolls to ``target_index`` when the nav target changed, else
+      • restores the user's last manual scroll position from sessionStorage.
+    """
+    import streamlit.components.v1 as _stc
+    _stc.html(
+        f"""
+<script>
+(function() {{
+  const TARGET = {int(target_index)};
+  const doc = window.parent.document;
+  function deck() {{
+    return doc.querySelector('.st-key-bf_deck [data-testid="stHorizontalBlock"]');
+  }}
+  function apply() {{
+    const d = deck();
+    if (!d) return;
+    const lastT = sessionStorage.getItem('bf_deck_T');
+    if (String(TARGET) !== lastT) {{
+      sessionStorage.setItem('bf_deck_T', String(TARGET));
+      const x = TARGET * d.clientWidth;
+      d.scrollTo({{ left: x, behavior: 'smooth' }});
+      sessionStorage.setItem('bf_deck_X', String(x));
+    }} else {{
+      const sx = parseFloat(sessionStorage.getItem('bf_deck_X') || '0');
+      if (Math.abs(d.scrollLeft - sx) > 4) d.scrollLeft = sx;
+    }}
+    if (!d.dataset.bfWired) {{
+      d.dataset.bfWired = '1';
+      d.addEventListener('scroll', function() {{
+        sessionStorage.setItem('bf_deck_X', String(d.scrollLeft));
+      }});
+    }}
+  }}
+  apply();
+  let n = 0;
+  const iv = setInterval(function() {{ apply(); if (++n > 24) clearInterval(iv); }}, 150);
+}})();
+</script>
+""",
+        height=0,
+    )
+
+
+def month_calendar_html(today, logged_days=None) -> str:
+    """Compact, themed month grid (Sunday-first, Israeli week). Read-only.
+
+    ``logged_days`` — optional set of day-ints in the current month to dot-mark.
+    """
+    import calendar as _cal
+    logged_days = logged_days or set()
+    cal = _cal.Calendar(firstweekday=6)  # Sunday first
+    weeks = cal.monthdayscalendar(today.year, today.month)
+    heads = "".join(
+        f'<div style="text-align:center;font-size:0.6rem;color:{t.TEXT_DIM};'
+        f'font-weight:700;padding:2px 0">{d}</div>'
+        for d in ["א", "ב", "ג", "ד", "ה", "ו", "ש"]
+    )
+    cells = ""
+    for wk in weeks:
+        for day in wk:
+            if day == 0:
+                cells += "<div></div>"
+                continue
+            is_today = day == today.day
+            dot = (
+                f'<div style="width:4px;height:4px;border-radius:50%;background:{t.ACCENT};'
+                f'margin:1px auto 0"></div>'
+                if (day in logged_days and not is_today) else '<div style="height:5px"></div>'
+            )
+            bg = t.PRIMARY if is_today else "transparent"
+            fg = "#ffffff" if is_today else t.TEXT
+            cells += (
+                f'<div style="text-align:center;padding:3px 0">'
+                f'<div style="width:26px;height:26px;line-height:26px;margin:0 auto;'
+                f'border-radius:50%;background:{bg};color:{fg};font-size:0.72rem;'
+                f'font-weight:{"800" if is_today else "500"}">{day}</div>{dot}</div>'
+            )
+    month_names = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי",
+                   "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"]
+    title = f"{month_names[today.month - 1]} {today.year}"
+    return (
+        f'<div class="nut-card" dir="rtl" style="padding:14px 16px">'
+        f'<div style="font-size:0.9rem;font-weight:800;color:{t.TEXT};margin-bottom:10px">'
+        f'📅 {title}</div>'
+        f'<div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px">{heads}</div>'
+        f'<div style="display:grid;grid-template-columns:repeat(7,1fr)">{cells}</div>'
+        f'</div>'
+    )
+
+
+def bottom_nav(active: str = "home") -> None:
+    """Hidden-by-default bottom nav that expands from a floating button.
+
+    A circular FAB sits at the bottom centre; tapping it toggles the full
+    phone-width tab-bar (``st.session_state['_nav_open']``). Collapsed by
+    default so it never covers content at page open. Uses ``st.page_link`` so
+    clicks stay in Streamlit's router.
     """
     items = [
         ("home",     "app_user.py",                    "בית",        "🏠"),
@@ -633,66 +1133,110 @@ def bottom_nav(active: str = "home") -> None:
     # Map active key → column index so we can highlight the right cell.
     active_idx = next((i for i, it in enumerate(items) if it[0] == active), 0)
 
-    # Sentinel + CSS. The :has() selector lets us reach the column block that
-    # immediately follows the sentinel marker we emit below.
+    nav_open = st.session_state.get("_nav_open", False)
+
+    # ── Floating toggle (always visible) ──────────────────────────────────────
     st.markdown(
         f"""
 <style>
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) {{
-    margin: 0 !important;
-    padding: 0 !important;
+.st-key-bf_nav_fab {{
+    position: fixed; bottom: 16px; left: 0; right: 0; z-index: 10000;
+    width: 58px; margin: 0 auto !important;
 }}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] {{
+.st-key-bf_nav_fab button {{
+    width: 58px !important; height: 58px !important; min-height: 0 !important;
+    border-radius: 50% !important; padding: 0 !important; border: none !important;
+    background: {t.GRAD_PRIMARY} !important; color: #fff !important;
+    box-shadow: {t.SHADOW_PRI} !important; font-size: 1.4rem !important;
+}}
+.st-key-bf_nav_fab button:hover {{ transform: translateY(-2px) scale(1.04); }}
+/* Always keep content clear of the FAB */
+[data-testid="stMain"] .block-container {{ padding-bottom: 92px !important; }}
+</style>
+""",
+        unsafe_allow_html=True,
+    )
+    with st.container(key="bf_nav_fab"):
+        if st.button("✕" if nav_open else "☰", key="bf_nav_fab_btn",
+                     help="תפריט ניווט"):
+            st.session_state["_nav_open"] = not nav_open
+            st.rerun()
+
+    if not nav_open:
+        return
+
+    st.markdown(
+        f"""
+<style>
+/* Fixed, centered phone-width tab-bar anchored to the keyed container */
+.st-key-bf_bottom_nav {{
     position: fixed;
-    bottom: 0;
+    bottom: 84px;
     left: 0;
     right: 0;
     z-index: 9999;
-    background: #0d0f14;
-    border-top: 1px solid #1e2433;
-    padding: 6px 0 max(env(safe-area-inset-bottom), 10px) !important;
-    margin: 0 !important;
+    max-width: 480px;
+    margin: 0 auto !important;
+    background: {t.SURFACE};
+    backdrop-filter: blur(18px);
+    border: 1px solid {t.BORDER};
+    border-radius: {t.RADIUS_LG};
+    box-shadow: {t.SHADOW_LG};
+    padding: 8px 6px !important;
+    animation: nutFadeUp {t.DUR_MED} {t.EASE_OUT};
 }}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] [data-testid="stHorizontalBlock"] {{
+.st-key-bf_bottom_nav [data-testid="stHorizontalBlock"] {{
     gap: 0 !important;
+    flex-wrap: nowrap !important;
 }}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] a[data-testid="stPageLink-NavLink"] {{
+.st-key-bf_bottom_nav [data-testid="stColumn"] {{
+    min-width: 0 !important;
+    flex: 1 1 0 !important;
+    padding: 0 !important;
+}}
+.st-key-bf_bottom_nav a[data-testid="stPageLink-NavLink"] {{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     text-decoration: none;
-    color: #3a4254;
-    padding: 6px 4px;
-    border-radius: 8px;
-    font-size: 0.62rem;
+    color: {t.TEXT_DIM};
+    padding: 5px 1px;
+    border-radius: 10px;
+    font-size: 0.68rem;
     font-weight: 500;
-    line-height: 1.3;
-    transition: color .15s, background .15s;
+    line-height: 1.25;
+    white-space: nowrap;
+    transition: color .15s, background .15s, transform .2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }}
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] a[data-testid="stPageLink-NavLink"]:hover {{
-    color: #8892a4;
-    background: rgba(255,255,255,0.04);
+/* page_link renders the emoji + label inline; bump the emoji size a touch */
+.st-key-bf_bottom_nav a[data-testid="stPageLink-NavLink"] p {{
+    font-size: 0.68rem !important;
+    line-height: 1.25 !important;
 }}
-/* Highlight the active nav cell */
-[data-testid="stElementContainer"]:has(> .bf-nav-marker) + [data-testid="stElementContainer"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child({active_idx + 1}) a[data-testid="stPageLink-NavLink"] {{
-    color: #4f8ef7 !important;
+.st-key-bf_bottom_nav a[data-testid="stPageLink-NavLink"]:hover {{
+    color: {t.TEXT_MUTED};
+    background: {t.SURFACE_2};
 }}
-/* Body padding so content isn't hidden behind the fixed bar */
-[data-testid="stMain"] .block-container {{
-    padding-bottom: 80px !important;
+.st-key-bf_bottom_nav a[data-testid="stPageLink-NavLink"]:active {{
+    transform: scale(0.9);
+}}
+/* Active cell — colored + lifted */
+.st-key-bf_bottom_nav [data-testid="stColumn"]:nth-child({active_idx + 1}) a[data-testid="stPageLink-NavLink"] {{
+    color: {t.PRIMARY} !important;
+    transform: translateY(-2px);
 }}
 </style>
-<div class="bf-nav-marker"></div>
 """,
         unsafe_allow_html=True,
     )
 
-    cols = st.columns(len(items))
-    for i, (key, page, label, icon) in enumerate(items):
-        with cols[i]:
-            st.page_link(page, label=f"{icon} {label}", use_container_width=True)
+    with st.container(key="bf_bottom_nav"):
+        cols = st.columns(len(items))
+        for i, (key, page, label, icon) in enumerate(items):
+            with cols[i]:
+                st.page_link(page, label=f"{icon} {label}", use_container_width=True)
 
 
 def reset_css_flag() -> None:
@@ -883,7 +1427,7 @@ def calorie_ring_html(consumed: int, target: int,
         <svg width="140" height="140" viewBox="0 0 140 140">
           <circle cx="{cx}" cy="{cy}" r="{r}"
             fill="none" stroke="{t.SURFACE_3}" stroke-width="12"/>
-          <circle cx="{cx}" cy="{cy}" r="{r}"
+          <circle cx="{cx}" cy="{cy}" r="{r}" class="nut-ring-progress"
             fill="none" stroke="{color}" stroke-width="12"
             stroke-dasharray="{filled:.1f} {gap:.1f}"
             stroke-dashoffset="{circumference * 0.25:.1f}"
@@ -891,7 +1435,7 @@ def calorie_ring_html(consumed: int, target: int,
         </svg>
         <div style="position:absolute;inset:0;display:flex;flex-direction:column;
                     align-items:center;justify-content:center;text-align:center">
-          <div style="font-size:1.5rem;font-weight:800;color:{t.TEXT};line-height:1">{consumed}</div>
+          <div class="nut-ring-center-val" style="font-size:1.5rem;font-weight:800;color:{t.TEXT};line-height:1">{consumed}</div>
           <div style="font-size:0.7rem;color:{t.TEXT_MUTED};margin-top:2px">קק״ל</div>
           <div style="font-size:0.65rem;color:{t.ACCENT};margin-top:4px;font-weight:600">
             {remaining} נותרו
@@ -926,6 +1470,19 @@ def calorie_ring_html(consumed: int, target: int,
     """
 
 
+def skeleton_html(height: str = "80px", count: int = 1) -> str:
+    """Shimmering loading placeholder — render before slow content arrives.
+
+    Usage: ``ph = st.empty(); ph.markdown(skeleton_html("120px", 3), unsafe_allow_html=True)``
+    then replace ``ph`` with the real content once loaded.
+    """
+    block = (
+        f'<div class="nut-skeleton" '
+        f'style="height:{height};margin:8px 0"></div>'
+    )
+    return f'<div dir="rtl">{block * max(count, 1)}</div>'
+
+
 # ── Recipe card ─────────────────────────────────────────────────────────────
 
 def recipe_card_html(recipe: dict, image_uri: str = "",
@@ -936,7 +1493,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
     The card always:
       - has an ``alt`` attribute on the image,
       - shows kashrut as icon + label + color (not color alone),
-      - links to ``/recipe_detail?id=<recipe_id>`` for navigation.
+      - renders as a non-navigating card (no detail route exists yet).
     """
     name_he   = recipe.get("name_he", "")
     name_en   = recipe.get("name_en", "")
@@ -949,7 +1506,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
     carbs     = round(nut.get("carbs", 0) / portions)
     fat       = round(nut.get("fat", 0) / portions)
     recipe_id = recipe.get("recipe_id", "")
-    href      = f"/recipe_detail?id={recipe_id}"
+    href      = "#"
     alt       = name_he or "מתכון"
 
     image_block = (
@@ -977,7 +1534,7 @@ def recipe_card_html(recipe: dict, image_uri: str = "",
         )
 
     return (
-        f'<a href="{href}" target="_self" style="text-decoration:none;color:inherit">'
+        f'<a href="{href}" target="_self" onclick="return false;" style="text-decoration:none;color:inherit">'
         f'<div class="nut-card nut-card-clickable" style="padding:0;overflow:hidden">'
         f'{"<div style=\'position:relative\'>" + image_block + "</div>" if image_block else ""}'
         f'<div class="nut-card-body" style="padding:16px 18px">'
@@ -1014,8 +1571,8 @@ _NAV_ITEMS = [
     ("מתכונים",     "pages/2_recipes.py",              "recipe"),
     ("תפריט יומי",  "pages/6_daily_menu.py",           "plate"),
     ("מלאי",        "pages/4_inventory.py",            "inventory"),
-    ("סריקת קבלה",  "pages/2_receipt_scanner.py",      "scan"),
-    ("אימונים",     "pages/7_weekly_workout_plan.py",  "training"),
+    ("סריקת קבלה",  "pages/15_receipt_scanner.py",     "scan"),
+    ("אימונים",     "pages/17_weekly_workout_plan.py", "training"),
 ]
 
 # Admin nav item is now in pages_admin/1_agents_dashboard.py (separate app)
@@ -1294,7 +1851,8 @@ def now_eating_html(
 ) -> str:
     """Hero block for pages/6_daily_menu.py — "Eat now: <meal>"."""
     return f"""
-    <div style='background:linear-gradient(135deg,{t.ACCENT}22,{t.SURFACE_2});
+    <div class='nut-now-eating'
+         style='background:linear-gradient(135deg,{t.ACCENT}22,{t.SURFACE_2});
                 border:2px solid {t.ACCENT};border-radius:16px;padding:18px;
                 direction:rtl;margin-bottom:14px'>
       <div style='display:flex;justify-content:space-between;align-items:center'>

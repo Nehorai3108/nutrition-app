@@ -12,7 +12,7 @@ import calendar as cal
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-from ui.components import inject_global_css, page_header, section_header
+from ui.components import inject_global_css, page_header, section_header, bottom_nav as _bottom_nav
 from auth.login_ui import require_auth, logout_button
 from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository
@@ -20,7 +20,7 @@ from nutrition_app.repositories.water_repository import WaterRepository
 # ── Page config ───────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="BiteFit · יומן",
+    page_title="NutriSmart · יומן",
     page_icon="📅",
     layout="wide",
 )
@@ -276,3 +276,5 @@ with col3:
     st.markdown("**📊 סטטוס:**")
     st.markdown("- צבע תא = פעילות")
     st.markdown("- בחר יום לפרטים מלאים")
+
+_bottom_nav("history")

@@ -9,7 +9,7 @@ from datetime import date, datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-from ui.components import inject_global_css, page_header, section_header
+from ui.components import inject_global_css, page_header, section_header, bottom_nav as _bottom_nav
 from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from nutrition_app.models.enums import Gender, ActivityLevel, Goal
@@ -17,7 +17,7 @@ from nutrition_app.agents.agent_2_nutrition import NutritionEngine
 from nutrition_app.models.user import UserProfile
 from nutrition_app.repositories.profile_repository import ProfileRepository
 
-st.set_page_config(page_title="BiteFit · פרופיל", page_icon="👤", layout="wide")
+st.set_page_config(page_title="NutriSmart · פרופיל", page_icon="👤", layout="wide")
 inject_global_css()
 
 with st.sidebar:
@@ -590,3 +590,5 @@ if st.session_state.get("profile_reset_armed"):
     if st.button("ביטול", key="cancel_reset"):
         st.session_state.pop("profile_reset_armed", None)
         st.rerun()
+
+_bottom_nav("profile")

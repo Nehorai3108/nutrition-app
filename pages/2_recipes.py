@@ -15,7 +15,8 @@ from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
 
 from ui.components import (
-    inject_global_css, page_header, section_header, nav_menu, recipe_card_html,
+    inject_global_css, page_header, section_header, recipe_card_html,
+    bottom_nav as _bottom_nav,
 )
 from ui.images import image_data_uri
 from auth.login_ui import require_auth, logout_button
@@ -24,7 +25,7 @@ from chatbot.sidebar_widget import render_chatbot_sidebar
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="BiteFit · מתכונים",
+    page_title="NutriSmart · מתכונים",
     page_icon="📖",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -41,7 +42,6 @@ with st.sidebar:
     )
     logout_button(key="_recipes_logout_btn")
 
-nav_menu(active="מתכונים")
 page_header("מתכונים", icon_name="recipe",
             subtitle="חיפוש וצפייה במתכונים")
 
@@ -138,3 +138,5 @@ for recipe in results:
 
 if not results:
     st.info("לא נמצאו מתכונים התואמים לסינון. נסה להרחיב את החיפוש.")
+
+_bottom_nav("food")

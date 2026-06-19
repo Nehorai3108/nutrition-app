@@ -7,14 +7,14 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-from ui.components import inject_global_css, bottom_nav
+from ui.components import inject_global_css, bottom_nav, theme_toggle
 from ui.persistent_auth import setup_persistent_auth
 from ui.user_auth import require_auth, logout_button
 from nutrition_app.models.user_meal_preferences import UserMealPreferences
 from nutrition_app.repositories.user_meal_preferences_repository import UserMealPreferencesRepository
 
 st.set_page_config(
-    page_title="BiteFit · הגדרות",
+    page_title="NutriSmart · הגדרות",
     page_icon="⚙️",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -40,6 +40,16 @@ st.markdown(
     '<h2 style="margin-bottom:2px">⚙️ הגדרות</h2>',
     unsafe_allow_html=True,
 )
+st.divider()
+
+# ── Appearance section ────────────────────────────────────────────────────────
+
+st.markdown(
+    '<h3 style="margin-bottom:2px">מראה</h3>'
+    '<p style="color:#8892a4;font-size:0.88rem;margin-top:0">בחר בין מצב בהיר לכהה</p>',
+    unsafe_allow_html=True,
+)
+theme_toggle()
 st.divider()
 
 # ── Calm Mode section ─────────────────────────────────────────────────────────

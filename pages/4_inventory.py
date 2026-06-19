@@ -13,12 +13,13 @@ from nutrition_app.user_manager import (
 )
 
 from ui.components import (
-    inject_global_css, page_header, section_header, nav_menu, icon_button,
+    inject_global_css, page_header, section_header, icon_button,
+    bottom_nav as _bottom_nav,
 )
 from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
 
-st.set_page_config(page_title="BiteFit · מלאי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="NutriSmart · מלאי", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
 
 inject_global_css()
 
@@ -46,7 +47,6 @@ with st.sidebar:
     render_chatbot_sidebar()
 
 # ── Main ──────────────────────────────────────────────────────────────────────
-nav_menu(active="מלאי")
 page_header("המלאי שלי", icon_name="inventory",
             subtitle="ניהול המוצרים בבית — נשמר בענן")
 
@@ -157,3 +157,5 @@ else:
 st.divider()
 col_scan = st.columns(1)[0]
 col_scan.page_link("pages/5_scanner.py", label="📷 סרוק קבלה / רשימת סופר", use_container_width=True)
+
+_bottom_nav("home")

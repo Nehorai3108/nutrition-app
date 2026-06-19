@@ -15,8 +15,8 @@ from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredie
 from nutrition_app.agents.agent_11_recipes.recipe_instructions import get_instructions
 
 from ui.components import (
-    inject_global_css, page_header, section_header, nav_menu,
-    kashrut_badge_html, macro_grid_html,
+    inject_global_css, page_header, section_header,
+    kashrut_badge_html, macro_grid_html, bottom_nav as _bottom_nav,
 )
 from auth.login_ui import require_auth, logout_button
 from chatbot.sidebar_widget import render_chatbot_sidebar
@@ -24,7 +24,7 @@ from chatbot.sidebar_widget import render_chatbot_sidebar
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="BiteFit · מתכון",
+    page_title="NutriSmart · מתכון",
     page_icon="🍽",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -52,8 +52,6 @@ def get_recipe_manager():
 
 params = st.query_params
 recipe_id = params.get("id", "")
-
-nav_menu(active="מתכונים")
 
 if not recipe_id:
     st.error("לא צוין מזהה מתכון.")
@@ -145,3 +143,5 @@ if tags:
     section_header("תגיות", "menu")
     tags_html = "".join(f'<span class="nut-chip">{t}</span>' for t in tags)
     st.markdown(tags_html, unsafe_allow_html=True)
+
+_bottom_nav("menu")

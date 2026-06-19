@@ -19,7 +19,7 @@ from nutrition_app.agents.agent_11_recipes.recipe_manager import RecipeManager
 from nutrition_app.agents.agent_11_recipes.recipe_filter import RecipeFilter
 from nutrition_app.repositories.food_log_repository import FoodLogRepository, FoodLogEntry
 
-st.set_page_config(page_title="BiteFit · הזנה", page_icon="💬", layout="wide",
+st.set_page_config(page_title="NutriSmart · הזנה", page_icon="💬", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
@@ -100,7 +100,7 @@ MEAL_HEB = {
 }
 
 def _build_system_prompt(food_list: str) -> str:
-    return f"""You are "Biti" — a warm Israeli nutrition assistant inside BiteFit. Reply in Hebrew only.
+    return f"""You are "Biti" — a warm Israeli nutrition assistant inside NutriSmart. Reply in Hebrew only.
 
 FOODS IN DATABASE (use exact names in JSON):
 {food_list}

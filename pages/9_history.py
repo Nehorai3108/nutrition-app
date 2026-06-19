@@ -15,7 +15,7 @@ from nutrition_app.repositories.workout_repository import WorkoutRepository
 from nutrition_app.repositories.water_repository import WaterRepository
 from nutrition_app.repositories.food_log_repository import FoodLogRepository
 
-st.set_page_config(page_title="BiteFit · היסטוריה", page_icon=None, layout="wide",
+st.set_page_config(page_title="NutriSmart · היסטוריה", page_icon="📊", layout="wide",
                    initial_sidebar_state="collapsed")
 inject_global_css()
 
@@ -60,7 +60,28 @@ today        = date.today()
 
 HEB_WD       = {0:"שני",1:"שלישי",2:"רביעי",3:"חמישי",4:"שישי",5:"שבת",6:"ראשון"}
 HEB_WD_SHORT = {6:"א׳",0:"ב׳",1:"ג׳",2:"ד׳",3:"ה׳",4:"ו׳",5:"ש׳"}
-CALORIE_TARGET = 2000
+
+# ── Calorie target from user profile (fallback 2000 if profile incomplete) ────
+from nutrition_app.repositories.profile_repository import ProfileRepository as _HR
+from nutrition_app.agents.agent_2_nutrition import NutritionEngine as _HNE
+from nutrition_app.models.user import UserProfile as _HUP
+from nutrition_app.models.enums import Gender as _HG, ActivityLevel as _HA, Goal as _HGoal
+
+_h_profile = _HR().load(USER_ID) or {}
+try:
+    _h_user = _HUP(
+        user_id=USER_ID,
+        name=_h_profile.get("name", "user"),
+        gender=_HG(_h_profile.get("gender", "male")),
+        date_of_birth=date.fromisoformat(_h_profile.get("date_of_birth", "1990-01-01")),
+        height_cm=float(_h_profile.get("height_cm", 178)),
+        weight_kg=float(_h_profile.get("weight_kg", 80)),
+        activity_level=_HA(_h_profile.get("activity_level", "moderately_active")),
+        goal=_HGoal(_h_profile.get("goal", "maintain")),
+    )
+    CALORIE_TARGET = int(_HNE().calculate_targets(_h_user).target_calories_kcal)
+except Exception:
+    CALORIE_TARGET = 2000
 
 from nutrition_app.storage_paths import user_weekly_plan_file
 PLAN_FILE = user_weekly_plan_file(USER_ID)
@@ -148,11 +169,11 @@ if m2.button("תכנון שבועי", type="primary" if mode=="plan" else "secon
 # ── Week navigation ────────────────────────────────────────────────────────────
 n1, n2, n3 = st.columns([1, 4, 1])
 with n1:
-    if st.button("< קדימה", key="nav_prev", use_container_width=True):
+    if st.button("→ קדימה", key="nav_prev", use_container_width=True):
         st.session_state["woff"] += 1
         st.rerun()
 with n3:
-    if st.button("אחורה >", key="nav_next", use_container_width=True,
+    if st.button("אחורה ←", key="nav_next", use_container_width=True,
                  disabled=(mode == "history" and woff >= 0)):
         st.session_state["woff"] -= 1
         st.rerun()

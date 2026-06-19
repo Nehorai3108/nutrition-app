@@ -24,7 +24,7 @@ setup_persistent_auth()
 USER_ID = require_auth()
 
 st.set_page_config(
-    page_title="BiteFit · שתייה",
+    page_title="NutriSmart · שתייה",
     page_icon="💧",
     layout="centered",
     initial_sidebar_state="collapsed",
