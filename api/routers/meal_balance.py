@@ -17,10 +17,10 @@ _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__
                         "storage", "nutrition.db")
 
 # סדר וחלוקת ברירת המחדל של הארוחות (תואם ל-daily_menu)
-MEAL_ORDER = ["BREAKFAST", "MORNING_SNACK", "LUNCH", "AFTERNOON_SNACK", "DINNER"]
+MEAL_ORDER = ["BREAKFAST", "MORNING_SNACK", "LUNCH", "AFTERNOON_SNACK", "DINNER", "EVENING_SNACK"]
 MEAL_DISTRIBUTION = {
-    "BREAKFAST": 0.25, "MORNING_SNACK": 0.10, "LUNCH": 0.35,
-    "AFTERNOON_SNACK": 0.10, "DINNER": 0.20,
+    "BREAKFAST": 0.25, "MORNING_SNACK": 0.08, "LUNCH": 0.30,
+    "AFTERNOON_SNACK": 0.08, "DINNER": 0.22, "EVENING_SNACK": 0.07,
 }
 
 
