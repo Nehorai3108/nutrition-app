@@ -332,6 +332,17 @@ class FoodLogRepository:
             "count":    len(entries),
         }
 
+    def get_totals_range(self, user_id: str, start: date_cls, end: date_cls) -> list[dict]:
+        """Return daily totals for each day in [start, end] inclusive."""
+        from datetime import timedelta
+        results = []
+        d = start
+        while d <= end:
+            t = self.get_totals(user_id, d)
+            results.append({"date": d.isoformat(), **t})
+            d += timedelta(days=1)
+        return results
+
 
 # ── Helper ────────────────────────────────────────────────────────────────────
 
