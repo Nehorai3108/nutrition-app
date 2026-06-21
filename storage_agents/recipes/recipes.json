@@ -50,7 +50,8 @@
     ],
     "kashrut": "parve",
     "image_path": "storage_agents/recipe_images/approved/recipe_001.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_001.jpg"
   },
   {
     "recipe_id": "recipe_002",
@@ -94,7 +95,8 @@
     ],
     "kashrut": "dairy",
     "image_path": "storage_agents/recipe_images/approved/recipe_002.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_002.jpg"
   },
   {
     "recipe_id": "recipe_003",
@@ -145,7 +147,8 @@
     ],
     "kashrut": "dairy",
     "image_path": "storage_agents/recipe_images/approved/recipe_003.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_003.jpg"
   },
   {
     "recipe_id": "recipe_004",
@@ -202,7 +205,8 @@
     ],
     "kashrut": "parve",
     "image_path": "storage_agents/recipe_images/approved/recipe_004.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_004.jpg"
   },
   {
     "recipe_id": "recipe_005",
@@ -258,7 +262,8 @@
     ],
     "kashrut": "dairy",
     "image_path": "storage_agents/recipe_images/approved/recipe_005.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_005.jpg"
   },
   {
     "recipe_id": "recipe_006",
@@ -309,7 +314,8 @@
     ],
     "kashrut": "dairy",
     "image_path": "storage_agents/recipe_images/approved/recipe_006.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_006.jpg"
   },
   {
     "recipe_id": "recipe_007",
@@ -410,7 +416,8 @@
     ],
     "kashrut": "parve",
     "image_path": "storage_agents/recipe_images/approved/recipe_008.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_008.jpg"
   },
   {
     "recipe_id": "recipe_009",
@@ -578,7 +585,8 @@
     ],
     "kashrut": "meat",
     "image_path": "storage_agents/recipe_images/approved/recipe_011.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_011.jpg"
   },
   {
     "recipe_id": "recipe_012",
@@ -678,7 +686,8 @@
     ],
     "kashrut": "parve",
     "image_path": "storage_agents/recipe_images/approved/recipe_013.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_013.jpg"
   },
   {
     "recipe_id": "recipe_014",
@@ -785,7 +794,8 @@
     ],
     "kashrut": "parve",
     "image_path": "storage_agents/recipe_images/approved/recipe_015.jpg",
-    "image_credit": "Pexels"
+    "image_credit": "Pexels",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_015.jpg"
   },
   {
     "recipe_id": "recipe_016",
@@ -1220,7 +1230,8 @@
     ],
     "kashrut": "parve",
     "image_path": "storage_agents/recipe_images/approved/recipe_023.jpg",
-    "image_credit": "Pexels / Alena Evseenko"
+    "image_credit": "Pexels / Alena Evseenko",
+    "image_url": "http://localhost:8000/recipe-images/approved/recipe_023.jpg"
   },
   {
     "recipe_id": "recipe_024",

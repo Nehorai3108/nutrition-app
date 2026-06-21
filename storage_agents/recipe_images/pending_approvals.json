@@ -506,7 +506,7 @@
   "recipe_001": {
     "name_he": "שקשוקה",
     "name_en": "Shakshuka",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_001/0.jpg",
@@ -529,12 +529,13 @@
         "photographer_url": "https://www.pexels.com/@valeriya",
         "pexels_id": 29843063
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_001.jpg"
   },
   "recipe_002": {
     "name_he": "טוסט גבינה",
     "name_en": "Cheese Toast",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_002/0.jpg",
@@ -557,12 +558,13 @@
         "photographer_url": "https://www.pexels.com/@gu-ko-2150570603",
         "pexels_id": 31768242
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_002.jpg"
   },
   "recipe_003": {
     "name_he": "גרנולה עם יוגורט",
     "name_en": "Granola with Yogurt",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_003/0.jpg",
@@ -585,12 +587,13 @@
         "photographer_url": "https://www.pexels.com/@giovanna-kamimura-399616174",
         "pexels_id": 30265685
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_003.jpg"
   },
   "recipe_004": {
     "name_he": "אומלט ירקות",
     "name_en": "Vegetable Omelette",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_004/0.jpg",
@@ -613,12 +616,13 @@
         "photographer_url": "https://www.pexels.com/@withoguz",
         "pexels_id": 25402355
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_004.jpg"
   },
   "recipe_005": {
     "name_he": "צלחת לבנה",
     "name_en": "Labaneh Plate",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_005/0.jpg",
@@ -641,12 +645,13 @@
         "photographer_url": "https://www.pexels.com/@hissetmehurriyeti-47135946",
         "pexels_id": 13653097
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_005.jpg"
   },
   "recipe_006": {
     "name_he": "שיבולת שועל עם פירות",
     "name_en": "Oatmeal with Fruits",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_006/0.jpg",
@@ -669,12 +674,13 @@
         "photographer_url": "https://www.pexels.com/@polina-tankilevitch",
         "pexels_id": 4725751
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_006.jpg"
   },
   "recipe_008": {
     "name_he": "ביצים קשות עם ירקות",
     "name_en": "Hard Boiled Eggs with Veggies",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_008/0.jpg",
@@ -697,12 +703,13 @@
         "photographer_url": "https://www.pexels.com/@shkrabaanthony",
         "pexels_id": 4397269
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_008.jpg"
   },
   "recipe_011": {
     "name_he": "עוף צלוי עם אורז",
     "name_en": "Grilled Chicken with Rice",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_011/0.jpg",
@@ -725,12 +732,13 @@
         "photographer_url": "https://www.pexels.com/@ayat-shahin-1307738040",
         "pexels_id": 28898628
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_011.jpg"
   },
   "recipe_013": {
     "name_he": "מג׳דרה",
     "name_en": "Mujadara",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_013/0.jpg",
@@ -753,12 +761,13 @@
         "photographer_url": "https://www.pexels.com/@mohamed9380",
         "pexels_id": 36934928
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_013.jpg"
   },
   "recipe_015": {
     "name_he": "סלמון צלוי עם ירקות",
     "name_en": "Roasted Salmon with Vegetables",
-    "status": "pending",
+    "status": "approved",
     "candidates": [
       {
         "local_path": "storage_agents/recipe_images/candidates/recipe_015/0.jpg",
@@ -781,7 +790,8 @@
         "photographer_url": "https://www.pexels.com/@kaleef-lawal-1481864847",
         "pexels_id": 31890213
       }
-    ]
+    ],
+    "local_path": "storage_agents/recipe_images/approved\\recipe_015.jpg"
   },
   "recipe_041": {
     "name_he": "שקשוקה ירוקה",
