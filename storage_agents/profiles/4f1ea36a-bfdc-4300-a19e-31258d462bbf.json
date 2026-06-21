@@ -1,0 +1,17 @@
+{
+  "name": "????",
+  "date_of_birth": "1996-01-01",
+  "gender": "male",
+  "height_cm": 180,
+  "weight_kg": 85,
+  "goal": "lose_weight",
+  "activity_level": "moderately_active",
+  "meal_preferences": {
+    "allergies": [
+      "?????",
+      "???"
+    ]
+  },
+  "user_id": "4f1ea36a-bfdc-4300-a19e-31258d462bbf",
+  "updated_at": "2026-06-17T15:09:31.211618"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "x",
+  "date_of_birth": "1996-01-01",
+  "gender": "male",
+  "height_cm": 180,
+  "weight_kg": 90,
+  "goal": "lose_weight",
+  "target_weight": 90,
+  "weeks_to_goal": 40,
+  "user_id": "5e287b12-2346-46e8-9fd7-abe789159615",
+  "updated_at": "2026-06-17T15:07:28.863386"
+}

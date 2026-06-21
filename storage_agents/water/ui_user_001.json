@@ -134,6 +134,100 @@
         "source": "bottle",
         "notes": null
       }
+    ],
+    "2026-06-14": [
+      {
+        "water_id": "801cc1e9",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-14T14:00:45.203566",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "a1e12d30",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-14T14:37:09.489279",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "f581a0c0",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-14T14:37:10.206000",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "6da968e7",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-14T20:06:15.114910",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      }
+    ],
+    "2026-06-15": [
+      {
+        "water_id": "9a9baa1d",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-15T08:43:43.238151",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "fe230eb8",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-15T08:43:43.366766",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "ccc59db7",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-15T09:59:48.945625",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      }
+    ],
+    "2026-06-16": [
+      {
+        "water_id": "5539c96b",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-16T10:14:02.791825",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "40f430b7",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-16T10:14:02.956820",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "ee9255e3",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-16T10:14:03.050241",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      },
+      {
+        "water_id": "612491c9",
+        "user_id": "ui_user_001",
+        "timestamp": "2026-06-16T10:14:03.148642",
+        "amount_ml": 250,
+        "source": "water",
+        "notes": null
+      }
     ]
   },
   "goal": {
@@ -142,5 +236,5 @@
     "created_at": "2026-04-15T04:17:03.432501",
     "updated_at": "2026-04-15T04:17:33.952408"
   },
-  "updated_at": "2026-05-10T04:51:22.381082"
+  "updated_at": "2026-06-16T10:14:03.148685"
 }

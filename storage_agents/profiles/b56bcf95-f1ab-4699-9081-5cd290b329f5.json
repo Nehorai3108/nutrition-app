@@ -1,0 +1,24 @@
+{
+  "name": "דביר",
+  "gender": "male",
+  "date_of_birth": "2003-01-01",
+  "height_cm": 171,
+  "weight_kg": 70,
+  "activity_level": "very_active",
+  "goal": "gain_weight",
+  "target_weight": 73,
+  "weeks_to_goal": 14,
+  "meal_preferences": {
+    "kashrut": "parve",
+    "meals_per_day": 5,
+    "allergies": [
+      "חלב"
+    ],
+    "preferred_foods": [],
+    "disliked_foods": [],
+    "sport_type": "לא מגדיר",
+    "diet_type": "ללא הגבלה"
+  },
+  "user_id": "b56bcf95-f1ab-4699-9081-5cd290b329f5",
+  "updated_at": "2026-06-18T07:13:57.223324"
+}

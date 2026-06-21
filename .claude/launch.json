@@ -4,7 +4,7 @@
     {
       "name": "nutrition-app",
       "runtimeExecutable": "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
-      "runtimeArgs": ["-m", "streamlit", "run", "app_ui.py", "--server.headless", "true", "--server.port", "8502"],
+      "runtimeArgs": ["-m", "streamlit", "run", "app_user.py", "--server.headless", "true", "--server.port", "8502"],
       "port": 8502
     }
   ]
