@@ -88,12 +88,17 @@ class NutritionEngine:
         if weekly_change_kg is not None and weekly_change_kg > 0:
             # Convert kg/week → kcal/day  (1 kg body fat ≈ 7700 kcal)
             kcal_per_day = round(weekly_change_kg * 7700 / 7)
-            if user.goal.value == "lose_weight":
-                adjustment = -kcal_per_day
+            # Direction: a target weight is authoritative — if the user wants to
+            # reach a weight different from now, the sign of the gap drives the
+            # deficit/surplus even when the goal toggle still says "maintain".
+            direction = 0
+            if target_weight_kg and target_weight_kg != user.weight_kg:
+                direction = -1 if target_weight_kg < user.weight_kg else +1
+            elif user.goal.value == "lose_weight":
+                direction = -1
             elif user.goal.value == "gain_weight":
-                adjustment = +kcal_per_day
-            else:
-                adjustment = 0
+                direction = +1
+            adjustment = direction * kcal_per_day
             target_calories = max(round(tdee + adjustment, 1), 1200.0)
             weekly_delta_kg = weekly_change_kg
         else:
