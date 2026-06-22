@@ -206,7 +206,9 @@ name_he must be in Hebrew, NEVER Arabic."""
             rec = data.get("recipe")
             if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
                 meal_type = rec.get("meal_type", "lunch")
-                foods = [_enrich_food(f) for f in rec["foods"]]
+                # recompute=True: derive each ingredient's calories from real
+                # per-100g data × grams, never the model's hallucinated numbers.
+                foods = [_enrich_food(f, recompute=True) for f in rec["foods"]]
                 # Deterministically scale to the meal's calorie sub-target so the
                 # recipe ALWAYS matches what the user should eat for that meal —
                 # never trust the model's arithmetic.
@@ -423,12 +425,56 @@ def _exec_actions(user_id: str, actions: list) -> list:
     return done
 
 
-def _enrich_food(food: dict) -> dict:
+def _resolve_per_100g(name_he: str, name_en: str) -> dict | None:
+    """Resolve trustworthy per-100g nutrition for a food name.
+
+    Order: curated Israeli table → FoodCatalog → AI estimator. Used to compute
+    ingredient calories from grams instead of trusting the model's arithmetic.
+    """
+    # 1. curated Israeli table (most reliable for common foods)
+    try:
+        from api.routers.camera import _lookup_il_table
+        hit = _lookup_il_table(name_he, 100.0)
+        if hit:
+            return {"calories": hit["calories"], "protein": hit["protein"],
+                    "carbs": hit["carbs"], "fat": hit["fat"]}
+    except Exception:
+        pass
+    # 2. FoodCatalog
+    try:
+        from nutrition_app.agents.agent_3_food import FoodCatalog
+        cat = FoodCatalog()
+        q = (name_he or "").lower().strip()
+        for fd in cat.get_all_foods():
+            aliases = (fd.aliases_he or []) + [fd.name_he or ""]
+            if any(q and (q in a.lower() or a.lower() in q) for a in aliases if a):
+                m = fd.macros_for_grams(100.0)
+                return {"calories": round(m.get("calories_kcal", 0)),
+                        "protein": round(m.get("protein_g", 0), 1),
+                        "carbs": round(m.get("carbs_g", 0), 1),
+                        "fat": round(m.get("fat_g", 0), 1)}
+    except Exception:
+        pass
+    # 3. AI estimator
+    try:
+        from api.nutrition_ai import estimate_nutrition_per_100g
+        est = estimate_nutrition_per_100g(name_he)
+        if est:
+            return {"calories": est["calories"], "protein": est["protein"],
+                    "carbs": est["carbs"], "fat": est["fat"]}
+    except Exception:
+        pass
+    return None
+
+
+def _enrich_food(food: dict, recompute: bool = False) -> dict:
     """Guarantee a chat-detected food has grams + total calories/macros.
 
-    The model is asked to provide them; if calories are missing or zero we
-    resolve per-100g nutrition (AI estimator on the Hebrew name) and scale by
-    the portion grams. Returns a normalized dict the client can log directly.
+    When recompute=True (recipe ingredients), calories/macros are ALWAYS derived
+    from resolved per-100g nutrition × grams — the model's per-item numbers are
+    discarded (it routinely hallucinates, e.g. 665 kcal for 200g of vegetables).
+    When False (logging what the user said they ate), the model's numbers are
+    trusted and only filled in if missing.
     """
     name_he = food.get("name_he") or food.get("name") or "מזון"
     name_en = food.get("name_en") or food.get("name") or name_he
@@ -451,19 +497,18 @@ def _enrich_food(food: dict) -> dict:
     carbs = _num(food.get("carbs"))
     fat = _num(food.get("fat"))
 
-    if cal <= 0:
-        # Fallback: AI estimates per-100g, then scale to the portion.
-        try:
-            from api.nutrition_ai import estimate_nutrition_per_100g
-            est = estimate_nutrition_per_100g(name_he)
-        except Exception:
-            est = None
-        if est:
+    # Sanity guard: implausible energy density (>9 kcal/g is impossible — pure
+    # fat is 9). Forces a recompute for any food the model wildly over-counted.
+    implausible = grams > 0 and cal / grams > 6.0
+
+    if recompute or cal <= 0 or implausible:
+        per100 = _resolve_per_100g(name_he, name_en)
+        if per100:
             f = grams / 100.0
-            cal   = round(est["calories"] * f)
-            prot  = round(est["protein"] * f, 1)
-            carbs = round(est["carbs"] * f, 1)
-            fat   = round(est["fat"] * f, 1)
+            cal   = round(per100["calories"] * f)
+            prot  = round(per100["protein"] * f, 1)
+            carbs = round(per100["carbs"] * f, 1)
+            fat   = round(per100["fat"] * f, 1)
 
     try:
         from api.food_image import get_food_image
