@@ -9423,5 +9423,1655 @@
     "aliases_en": [
       "white chocolate"
     ]
+  },
+  {
+    "food_id": "food_a7671078",
+    "name_he": "חזה עוף מבושל",
+    "name_en": "Chicken Breast Cooked",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 165.0,
+      "protein_g": 31.0,
+      "carbs_g": 0.0,
+      "fat_g": 3.6,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "חזה עוף מבושל"
+    ],
+    "aliases_en": [
+      "Chicken Breast Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_63371fd3",
+    "name_he": "שוק עוף",
+    "name_en": "Chicken Thigh",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 215.0,
+      "protein_g": 26.0,
+      "carbs_g": 0.0,
+      "fat_g": 12.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 120.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "שוק עוף"
+    ],
+    "aliases_en": [
+      "Chicken Thigh"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_cc000a81",
+    "name_he": "כנפי עוף",
+    "name_en": "Chicken Wings",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 203.0,
+      "protein_g": 30.0,
+      "carbs_g": 0.0,
+      "fat_g": 8.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "כנפי עוף"
+    ],
+    "aliases_en": [
+      "Chicken Wings"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_d19b65db",
+    "name_he": "חזה הודו",
+    "name_en": "Turkey Breast",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 135.0,
+      "protein_g": 30.0,
+      "carbs_g": 0.0,
+      "fat_g": 1.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "חזה הודו"
+    ],
+    "aliases_en": [
+      "Turkey Breast"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_b0bbabd0",
+    "name_he": "נקניק עוף",
+    "name_en": "Chicken Sausage",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 195.0,
+      "protein_g": 14.0,
+      "carbs_g": 2.0,
+      "fat_g": 14.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 80.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "נקניק עוף"
+    ],
+    "aliases_en": [
+      "Chicken Sausage"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_0646f565",
+    "name_he": "בשר טחון בקר",
+    "name_en": "Ground Beef 15%",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 215.0,
+      "protein_g": 26.0,
+      "carbs_g": 0.0,
+      "fat_g": 12.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "בשר טחון בקר"
+    ],
+    "aliases_en": [
+      "Ground Beef 15%"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_f7e95a4b",
+    "name_he": "סטייק אנטריקוט",
+    "name_en": "Ribeye Steak",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 291.0,
+      "protein_g": 24.0,
+      "carbs_g": 0.0,
+      "fat_g": 21.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "סטייק אנטריקוט"
+    ],
+    "aliases_en": [
+      "Ribeye Steak"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_fb1f197a",
+    "name_he": "סלמון אפוי",
+    "name_en": "Baked Salmon",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 208.0,
+      "protein_g": 20.0,
+      "carbs_g": 0.0,
+      "fat_g": 13.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "סלמון אפוי"
+    ],
+    "aliases_en": [
+      "Baked Salmon"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_aed6a4a6",
+    "name_he": "פילה סלמון",
+    "name_en": "Salmon Fillet",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 208.0,
+      "protein_g": 20.0,
+      "carbs_g": 0.0,
+      "fat_g": 13.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פילה סלמון"
+    ],
+    "aliases_en": [
+      "Salmon Fillet"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_54a4806b",
+    "name_he": "טונה במים סחוטה",
+    "name_en": "Canned Tuna in Water",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 116.0,
+      "protein_g": 26.0,
+      "carbs_g": 0.0,
+      "fat_g": 1.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "טונה במים סחוטה"
+    ],
+    "aliases_en": [
+      "Canned Tuna in Water"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_93d796cb",
+    "name_he": "דג ים מוקפץ",
+    "name_en": "Sea Bass Stir Fry",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 124.0,
+      "protein_g": 23.0,
+      "carbs_g": 0.0,
+      "fat_g": 3.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "דג ים מוקפץ"
+    ],
+    "aliases_en": [
+      "Sea Bass Stir Fry"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_9ef2d78e",
+    "name_he": "מקרל מעושן",
+    "name_en": "Smoked Mackerel",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 305.0,
+      "protein_g": 18.5,
+      "carbs_g": 0.0,
+      "fat_g": 25.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 80.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "מקרל מעושן"
+    ],
+    "aliases_en": [
+      "Smoked Mackerel"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_f8e92112",
+    "name_he": "אמנון מבושל",
+    "name_en": "Tilapia Cooked",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 128.0,
+      "protein_g": 26.0,
+      "carbs_g": 0.0,
+      "fat_g": 2.7,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "אמנון מבושל"
+    ],
+    "aliases_en": [
+      "Tilapia Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_34957257",
+    "name_he": "סרדינים בשימורים",
+    "name_en": "Canned Sardines",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 208.0,
+      "protein_g": 25.0,
+      "carbs_g": 0.0,
+      "fat_g": 11.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "סרדינים בשימורים"
+    ],
+    "aliases_en": [
+      "Canned Sardines"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_6a184d03",
+    "name_he": "שרימפס מבושל",
+    "name_en": "Cooked Shrimp",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 99.0,
+      "protein_g": 24.0,
+      "carbs_g": 0.0,
+      "fat_g": 0.3,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "שרימפס מבושל"
+    ],
+    "aliases_en": [
+      "Cooked Shrimp"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_1ff21347",
+    "name_he": "ביצה שלמה",
+    "name_en": "Whole Egg",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 155.0,
+      "protein_g": 13.0,
+      "carbs_g": 1.1,
+      "fat_g": 11.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 55.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "ביצה שלמה"
+    ],
+    "aliases_en": [
+      "Whole Egg"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_32a0a6eb",
+    "name_he": "חלבון ביצה",
+    "name_en": "Egg White",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 52.0,
+      "protein_g": 11.0,
+      "carbs_g": 0.7,
+      "fat_g": 0.2,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 60.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "חלבון ביצה"
+    ],
+    "aliases_en": [
+      "Egg White"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_22b1634f",
+    "name_he": "ביצים מקושקשות",
+    "name_en": "Scrambled Eggs",
+    "category": "protein",
+    "nutrition_per_100g": {
+      "calories_kcal": 148.0,
+      "protein_g": 10.0,
+      "carbs_g": 1.6,
+      "fat_g": 11.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 120.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "ביצים מקושקשות"
+    ],
+    "aliases_en": [
+      "Scrambled Eggs"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_a73d764e",
+    "name_he": "קוטג' 9%",
+    "name_en": "Cottage Cheese 9%",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories_kcal": 120.0,
+      "protein_g": 11.0,
+      "carbs_g": 3.5,
+      "fat_g": 9.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "קוטג' 9%"
+    ],
+    "aliases_en": [
+      "Cottage Cheese 9%"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_af0a763e",
+    "name_he": "גבינה צהובה 28%",
+    "name_en": "Yellow Cheese 28%",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories_kcal": 350.0,
+      "protein_g": 25.0,
+      "carbs_g": 1.0,
+      "fat_g": 28.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 30.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "גבינה צהובה 28%"
+    ],
+    "aliases_en": [
+      "Yellow Cheese 28%"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_d0c475aa",
+    "name_he": "יוגורט יווני 5%",
+    "name_en": "Greek Yogurt 5%",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories_kcal": 95.0,
+      "protein_g": 6.0,
+      "carbs_g": 4.0,
+      "fat_g": 5.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "יוגורט יווני 5%"
+    ],
+    "aliases_en": [
+      "Greek Yogurt 5%"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_7c3f3c5c",
+    "name_he": "Tnuva GO יוגורט",
+    "name_en": "Tnuva GO Protein Yogurt",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories_kcal": 97.0,
+      "protein_g": 20.0,
+      "carbs_g": 5.0,
+      "fat_g": 0.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "Tnuva GO יוגורט"
+    ],
+    "aliases_en": [
+      "Tnuva GO Protein Yogurt"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_f4e59218",
+    "name_he": "חלב 1%",
+    "name_en": "Milk 1%",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories_kcal": 42.0,
+      "protein_g": 3.4,
+      "carbs_g": 5.0,
+      "fat_g": 1.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 250.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "חלב 1%"
+    ],
+    "aliases_en": [
+      "Milk 1%"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_15c23747",
+    "name_he": "חלב שוקולד",
+    "name_en": "Chocolate Milk",
+    "category": "dairy",
+    "nutrition_per_100g": {
+      "calories_kcal": 83.0,
+      "protein_g": 3.4,
+      "carbs_g": 11.4,
+      "fat_g": 2.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 250.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "חלב שוקולד"
+    ],
+    "aliases_en": [
+      "Chocolate Milk"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_e8cd4c7e",
+    "name_he": "חומוס מבושל",
+    "name_en": "Cooked Chickpeas",
+    "category": "legume",
+    "nutrition_per_100g": {
+      "calories_kcal": 164.0,
+      "protein_g": 8.9,
+      "carbs_g": 27.4,
+      "fat_g": 2.6,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "חומוס מבושל"
+    ],
+    "aliases_en": [
+      "Cooked Chickpeas"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_b11091fb",
+    "name_he": "עדשים כתומות",
+    "name_en": "Red Lentils Cooked",
+    "category": "legume",
+    "nutrition_per_100g": {
+      "calories_kcal": 116.0,
+      "protein_g": 9.0,
+      "carbs_g": 20.1,
+      "fat_g": 0.4,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "עדשים כתומות"
+    ],
+    "aliases_en": [
+      "Red Lentils Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_ab7a2bb2",
+    "name_he": "פול מבושל",
+    "name_en": "Fava Beans Cooked",
+    "category": "legume",
+    "nutrition_per_100g": {
+      "calories_kcal": 110.0,
+      "protein_g": 7.6,
+      "carbs_g": 19.7,
+      "fat_g": 0.4,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פול מבושל"
+    ],
+    "aliases_en": [
+      "Fava Beans Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_de4dbd2b",
+    "name_he": "אפונה מבושלת",
+    "name_en": "Green Peas Cooked",
+    "category": "legume",
+    "nutrition_per_100g": {
+      "calories_kcal": 84.0,
+      "protein_g": 5.4,
+      "carbs_g": 15.6,
+      "fat_g": 0.2,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "אפונה מבושלת"
+    ],
+    "aliases_en": [
+      "Green Peas Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_f1e40925",
+    "name_he": "סויה מבושלת",
+    "name_en": "Edamame Cooked",
+    "category": "legume",
+    "nutrition_per_100g": {
+      "calories_kcal": 121.0,
+      "protein_g": 11.9,
+      "carbs_g": 8.9,
+      "fat_g": 5.2,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "סויה מבושלת"
+    ],
+    "aliases_en": [
+      "Edamame Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_47e47c5d",
+    "name_he": "חומוס מרוח",
+    "name_en": "Hummus Spread",
+    "category": "legume",
+    "nutrition_per_100g": {
+      "calories_kcal": 180.0,
+      "protein_g": 8.0,
+      "carbs_g": 11.0,
+      "fat_g": 11.6,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "חומוס מרוח"
+    ],
+    "aliases_en": [
+      "Hummus Spread"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_00df7e40",
+    "name_he": "אורז חום מבושל",
+    "name_en": "Brown Rice Cooked",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 111.0,
+      "protein_g": 2.6,
+      "carbs_g": 23.0,
+      "fat_g": 0.9,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 180.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "אורז חום מבושל"
+    ],
+    "aliases_en": [
+      "Brown Rice Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_c844c2ed",
+    "name_he": "פסטה מלאה מבושלת",
+    "name_en": "Whole Wheat Pasta Cooked",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 124.0,
+      "protein_g": 5.3,
+      "carbs_g": 23.0,
+      "fat_g": 1.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פסטה מלאה מבושלת"
+    ],
+    "aliases_en": [
+      "Whole Wheat Pasta Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_b38584a7",
+    "name_he": "קוסקוס מבושל",
+    "name_en": "Couscous Cooked",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 112.0,
+      "protein_g": 3.8,
+      "carbs_g": 23.2,
+      "fat_g": 0.2,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "קוסקוס מבושל"
+    ],
+    "aliases_en": [
+      "Couscous Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_2305f6d1",
+    "name_he": "קינואה מבושלת",
+    "name_en": "Quinoa Cooked",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 120.0,
+      "protein_g": 4.4,
+      "carbs_g": 21.3,
+      "fat_g": 1.9,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "קינואה מבושלת"
+    ],
+    "aliases_en": [
+      "Quinoa Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_1293e152",
+    "name_he": "בורגול מבושל",
+    "name_en": "Bulgur Cooked",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 83.0,
+      "protein_g": 3.1,
+      "carbs_g": 18.6,
+      "fat_g": 0.2,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "בורגול מבושל"
+    ],
+    "aliases_en": [
+      "Bulgur Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_d38a4973",
+    "name_he": "שיבולת שועל יבשה",
+    "name_en": "Oats Dry",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 389.0,
+      "protein_g": 17.0,
+      "carbs_g": 66.0,
+      "fat_g": 7.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 50.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "שיבולת שועל יבשה"
+    ],
+    "aliases_en": [
+      "Oats Dry"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_bcad072d",
+    "name_he": "קורנפלקס",
+    "name_en": "Corn Flakes",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 357.0,
+      "protein_g": 7.5,
+      "carbs_g": 84.0,
+      "fat_g": 0.4,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 40.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "קורנפלקס"
+    ],
+    "aliases_en": [
+      "Corn Flakes"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_4bb802c2",
+    "name_he": "פתיתים מבושלים",
+    "name_en": "Ptitim (Israeli Couscous)",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 130.0,
+      "protein_g": 4.5,
+      "carbs_g": 26.0,
+      "fat_g": 0.8,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פתיתים מבושלים"
+    ],
+    "aliases_en": [
+      "Ptitim (Israeli Couscous)"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_d9f5c158",
+    "name_he": "פולנטה מבושלת",
+    "name_en": "Polenta Cooked",
+    "category": "grain",
+    "nutrition_per_100g": {
+      "calories_kcal": 70.0,
+      "protein_g": 1.5,
+      "carbs_g": 15.0,
+      "fat_g": 0.4,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פולנטה מבושלת"
+    ],
+    "aliases_en": [
+      "Polenta Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_6208d433",
+    "name_he": "פיתה לבנה",
+    "name_en": "White Pita",
+    "category": "bread",
+    "nutrition_per_100g": {
+      "calories_kcal": 275.0,
+      "protein_g": 9.0,
+      "carbs_g": 55.0,
+      "fat_g": 1.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 60.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פיתה לבנה"
+    ],
+    "aliases_en": [
+      "White Pita"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_e2dadfbb",
+    "name_he": "פיתה מלאה",
+    "name_en": "Whole Wheat Pita",
+    "category": "bread",
+    "nutrition_per_100g": {
+      "calories_kcal": 267.0,
+      "protein_g": 10.0,
+      "carbs_g": 50.0,
+      "fat_g": 2.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 65.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פיתה מלאה"
+    ],
+    "aliases_en": [
+      "Whole Wheat Pita"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_36d2d552",
+    "name_he": "לחם לבן פרוסה",
+    "name_en": "White Bread Slice",
+    "category": "bread",
+    "nutrition_per_100g": {
+      "calories_kcal": 265.0,
+      "protein_g": 9.0,
+      "carbs_g": 49.0,
+      "fat_g": 3.2,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 30.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "לחם לבן פרוסה"
+    ],
+    "aliases_en": [
+      "White Bread Slice"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_cecfd565",
+    "name_he": "לחם מלא פרוסה",
+    "name_en": "Whole Wheat Bread Slice",
+    "category": "bread",
+    "nutrition_per_100g": {
+      "calories_kcal": 247.0,
+      "protein_g": 13.0,
+      "carbs_g": 41.0,
+      "fat_g": 3.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 35.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "לחם מלא פרוסה"
+    ],
+    "aliases_en": [
+      "Whole Wheat Bread Slice"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_bfa14105",
+    "name_he": "בייגל",
+    "name_en": "Bagel",
+    "category": "bread",
+    "nutrition_per_100g": {
+      "calories_kcal": 270.0,
+      "protein_g": 11.0,
+      "carbs_g": 53.0,
+      "fat_g": 1.7,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 98.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "בייגל"
+    ],
+    "aliases_en": [
+      "Bagel"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_71d9245b",
+    "name_he": "עוגיית אורז",
+    "name_en": "Rice Cake",
+    "category": "bread",
+    "nutrition_per_100g": {
+      "calories_kcal": 387.0,
+      "protein_g": 8.0,
+      "carbs_g": 81.0,
+      "fat_g": 2.8,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 9.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "עוגיית אורז"
+    ],
+    "aliases_en": [
+      "Rice Cake"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_2e0e9d5e",
+    "name_he": "כרוב",
+    "name_en": "Cabbage",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 25.0,
+      "protein_g": 1.3,
+      "carbs_g": 5.8,
+      "fat_g": 0.1,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "כרוב"
+    ],
+    "aliases_en": [
+      "Cabbage"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_87ec8e58",
+    "name_he": "פטרייה",
+    "name_en": "Mushroom",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 22.0,
+      "protein_g": 3.1,
+      "carbs_g": 3.3,
+      "fat_g": 0.3,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פטרייה"
+    ],
+    "aliases_en": [
+      "Mushroom"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_a2a72293",
+    "name_he": "תירס מבושל",
+    "name_en": "Corn Cooked",
+    "category": "vegetable",
+    "nutrition_per_100g": {
+      "calories_kcal": 96.0,
+      "protein_g": 3.4,
+      "carbs_g": 21.0,
+      "fat_g": 1.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "תירס מבושל"
+    ],
+    "aliases_en": [
+      "Corn Cooked"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_29da0c84",
+    "name_he": "אנניס",
+    "name_en": "Pineapple",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 50.0,
+      "protein_g": 0.5,
+      "carbs_g": 13.1,
+      "fat_g": 0.1,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 150.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "אנניס"
+    ],
+    "aliases_en": [
+      "Pineapple"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_43baea79",
+    "name_he": "תמר",
+    "name_en": "Date",
+    "category": "fruit",
+    "nutrition_per_100g": {
+      "calories_kcal": 282.0,
+      "protein_g": 2.5,
+      "carbs_g": 75.0,
+      "fat_g": 0.4,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 24.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "תמר"
+    ],
+    "aliases_en": [
+      "Date"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_941a63d4",
+    "name_he": "זרעי צ'יה",
+    "name_en": "Chia Seeds",
+    "category": "nut",
+    "nutrition_per_100g": {
+      "calories_kcal": 486.0,
+      "protein_g": 16.5,
+      "carbs_g": 42.1,
+      "fat_g": 30.7,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 15.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "זרעי צ'יה"
+    ],
+    "aliases_en": [
+      "Chia Seeds"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_35d54efe",
+    "name_he": "לאטה",
+    "name_en": "Latte",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories_kcal": 100.0,
+      "protein_g": 5.0,
+      "carbs_g": 9.0,
+      "fat_g": 4.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 300.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "לאטה"
+    ],
+    "aliases_en": [
+      "Latte"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_daa45ff6",
+    "name_he": "תה",
+    "name_en": "Tea",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories_kcal": 1.0,
+      "protein_g": 0.0,
+      "carbs_g": 0.3,
+      "fat_g": 0.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 240.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "תה"
+    ],
+    "aliases_en": [
+      "Tea"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_b79792e5",
+    "name_he": "מיץ עגבניות",
+    "name_en": "Tomato Juice",
+    "category": "beverage",
+    "nutrition_per_100g": {
+      "calories_kcal": 17.0,
+      "protein_g": 0.8,
+      "carbs_g": 4.0,
+      "fat_g": 0.1,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "מיץ עגבניות"
+    ],
+    "aliases_en": [
+      "Tomato Juice"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_4ed2689a",
+    "name_he": "טחינה מוכנה",
+    "name_en": "Prepared Tahini",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories_kcal": 306.0,
+      "protein_g": 11.0,
+      "carbs_g": 5.0,
+      "fat_g": 27.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 30.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "טחינה מוכנה"
+    ],
+    "aliases_en": [
+      "Prepared Tahini"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_c527b6aa",
+    "name_he": "גואקמולה",
+    "name_en": "Guacamole",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories_kcal": 155.0,
+      "protein_g": 2.0,
+      "carbs_g": 8.6,
+      "fat_g": 13.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 50.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "גואקמולה"
+    ],
+    "aliases_en": [
+      "Guacamole"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_8a6117f8",
+    "name_he": "מוסטרד",
+    "name_en": "Mustard",
+    "category": "condiment",
+    "nutrition_per_100g": {
+      "calories_kcal": 66.0,
+      "protein_g": 4.4,
+      "carbs_g": 6.4,
+      "fat_g": 3.3,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 10.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "מוסטרד"
+    ],
+    "aliases_en": [
+      "Mustard"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_a396bf03",
+    "name_he": "פלאפל כדור",
+    "name_en": "Falafel Ball",
+    "category": "meal",
+    "nutrition_per_100g": {
+      "calories_kcal": 330.0,
+      "protein_g": 13.0,
+      "carbs_g": 32.0,
+      "fat_g": 18.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 100.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פלאפל כדור"
+    ],
+    "aliases_en": [
+      "Falafel Ball"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_80b4cc15",
+    "name_he": "ירקות מוקפצים",
+    "name_en": "Stir Fry Vegetables",
+    "category": "meal",
+    "nutrition_per_100g": {
+      "calories_kcal": 60.0,
+      "protein_g": 2.5,
+      "carbs_g": 10.0,
+      "fat_g": 2.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "ירקות מוקפצים"
+    ],
+    "aliases_en": [
+      "Stir Fry Vegetables"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_d9c16e0e",
+    "name_he": "סלט יווני",
+    "name_en": "Greek Salad",
+    "category": "meal",
+    "nutrition_per_100g": {
+      "calories_kcal": 90.0,
+      "protein_g": 3.5,
+      "carbs_g": 6.0,
+      "fat_g": 6.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "סלט יווני"
+    ],
+    "aliases_en": [
+      "Greek Salad"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_89c64a98",
+    "name_he": "סלט ירקות",
+    "name_en": "Vegetable Salad",
+    "category": "meal",
+    "nutrition_per_100g": {
+      "calories_kcal": 35.0,
+      "protein_g": 1.5,
+      "carbs_g": 7.0,
+      "fat_g": 0.5,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "סלט ירקות"
+    ],
+    "aliases_en": [
+      "Vegetable Salad"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_0adebd21",
+    "name_he": "אורז עם עדשים",
+    "name_en": "Rice with Lentils",
+    "category": "meal",
+    "nutrition_per_100g": {
+      "calories_kcal": 140.0,
+      "protein_g": 6.0,
+      "carbs_g": 27.0,
+      "fat_g": 1.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 200.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "אורז עם עדשים"
+    ],
+    "aliases_en": [
+      "Rice with Lentils"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_f3fda873",
+    "name_he": "עוף עם אורז",
+    "name_en": "Chicken with Rice",
+    "category": "meal",
+    "nutrition_per_100g": {
+      "calories_kcal": 175.0,
+      "protein_g": 15.0,
+      "carbs_g": 18.0,
+      "fat_g": 4.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 300.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "עוף עם אורז"
+    ],
+    "aliases_en": [
+      "Chicken with Rice"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_60f51e28",
+    "name_he": "שוקולד חלב",
+    "name_en": "Milk Chocolate",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories_kcal": 535.0,
+      "protein_g": 7.7,
+      "carbs_g": 59.5,
+      "fat_g": 30.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 30.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "שוקולד חלב"
+    ],
+    "aliases_en": [
+      "Milk Chocolate"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_78d7d8e3",
+    "name_he": "צ'יפס",
+    "name_en": "Potato Chips",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories_kcal": 536.0,
+      "protein_g": 7.0,
+      "carbs_g": 52.9,
+      "fat_g": 35.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 30.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "צ'יפס"
+    ],
+    "aliases_en": [
+      "Potato Chips"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
+  },
+  {
+    "food_id": "food_ec336d15",
+    "name_he": "פרטזל",
+    "name_en": "Pretzel",
+    "category": "snack",
+    "nutrition_per_100g": {
+      "calories_kcal": 380.0,
+      "protein_g": 10.3,
+      "carbs_g": 79.2,
+      "fat_g": 3.3,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0,
+      "sodium_mg": 0.0
+    },
+    "default_serving_g": 30.0,
+    "default_unit": "גרם",
+    "aliases_he": [
+      "פרטזל"
+    ],
+    "aliases_en": [
+      "Pretzel"
+    ],
+    "source": "manual_kb_2026",
+    "is_custom": false
   }
 ]
