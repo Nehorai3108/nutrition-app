@@ -83,6 +83,9 @@ def get_targets(user=Depends(get_current_user)):
         targets = compute_targets(user["id"])
         if targets is None:
             return {"calories": 2000, "protein": 150, "carbs": 250, "fat": 67}
+        # echo the planning inputs so the client/diagnostics can confirm the
+        # target weight + timeline were actually picked up
+        p = ProfileRepository().load(user["id"])
         return {
             "calories": round(targets.target_calories_kcal),
             "protein":  round(targets.protein_g),
@@ -90,6 +93,9 @@ def get_targets(user=Depends(get_current_user)):
             "fat":      round(targets.fat_g),
             "tdee":     round(targets.tdee_kcal),
             "bmr":      round(targets.bmr_kcal),
+            "target_weight": p.get("target_weight") or p.get("target_weight_kg"),
+            "weeks_to_goal": p.get("weeks_to_goal"),
+            "weekly_change_kg": round(derive_weekly_change_kg(p), 3) if derive_weekly_change_kg(p) else None,
         }
     except Exception as e:
         import traceback; traceback.print_exc()

@@ -88,6 +88,19 @@ class ProfileRepository:
             prefs = prefs_raw
         else:
             prefs = {}
+        # Goal-planning fields: prefer the dedicated column, but fall back to the
+        # JSONB copy (which always survives even when the columns don't exist).
+        target_weight = row.get("target_weight_kg")
+        if target_weight is None:
+            target_weight = prefs.get("target_weight_kg")
+        weeks_to_goal = row.get("weeks_to_goal")
+        if weeks_to_goal is None:
+            weeks_to_goal = prefs.get("weeks_to_goal")
+        weekly_change = row.get("weekly_change_kg")
+        if weekly_change is None:
+            weekly_change = prefs.get("weekly_change_kg")
+        pace = row.get("pace") or prefs.get("pace")
+
         d = dict(_DEFAULTS)
         d.update({
             "user_id":          user_id,
@@ -98,18 +111,33 @@ class ProfileRepository:
             "weight_kg":        row.get("weight_kg") or d["weight_kg"],
             "activity_level":   row.get("activity_level") or d["activity_level"],
             "goal":             row.get("goal") or d["goal"],
-            "pace":             row.get("pace"),
-            "weekly_change_kg": row.get("weekly_change_kg"),
-            "target_weight_kg": row.get("target_weight_kg"),
+            "pace":             pace,
+            "weekly_change_kg": weekly_change,
+            "target_weight_kg": target_weight,
             # alias: the mobile app uses "target_weight"; expose both so every
             # caller resolves the value regardless of which key it reads.
-            "target_weight":    row.get("target_weight_kg"),
-            "weeks_to_goal":    row.get("weeks_to_goal"),
+            "target_weight":    target_weight,
+            "weeks_to_goal":    weeks_to_goal,
             "meal_preferences": {**_DEFAULTS["meal_preferences"], **prefs},
         })
         return d
 
     def _sb_save(self, profile: dict) -> None:
+        target_weight = profile.get("target_weight_kg") or profile.get("target_weight")
+        weeks_to_goal = profile.get("weeks_to_goal")
+        weekly_change = profile.get("weekly_change_kg")
+        pace          = profile.get("pace")
+
+        # Goal-planning fields are ALSO embedded in meal_preferences (JSONB).
+        # The dedicated columns may not exist on older Supabase projects — when
+        # PostgREST strips them (see schema-drift loop below), the JSONB copy
+        # survives so target weight + timeline are never silently lost.
+        prefs = dict(profile.get("meal_preferences", {}) or {})
+        prefs["target_weight_kg"] = target_weight
+        prefs["weeks_to_goal"]    = weeks_to_goal
+        prefs["weekly_change_kg"] = weekly_change
+        prefs["pace"]             = pace
+
         payload = {
             "user_id":          profile["user_id"],
             "name":             profile.get("name"),
@@ -119,13 +147,13 @@ class ProfileRepository:
             "weight_kg":        profile.get("weight_kg"),
             "activity_level":   profile.get("activity_level"),
             "goal":             profile.get("goal"),
-            "pace":             profile.get("pace"),
-            "weekly_change_kg": profile.get("weekly_change_kg"),
+            "pace":             pace,
+            "weekly_change_kg": weekly_change,
             # the mobile app sends "target_weight"; fall back to it so the value
             # actually persists to the target_weight_kg column.
-            "target_weight_kg": profile.get("target_weight_kg") or profile.get("target_weight"),
-            "weeks_to_goal":    profile.get("weeks_to_goal"),
-            "meal_preferences": profile.get("meal_preferences", {}),  # JSONB
+            "target_weight_kg": target_weight,
+            "weeks_to_goal":    weeks_to_goal,
+            "meal_preferences": prefs,  # JSONB — always present, holds a copy
             "updated_at":       datetime.now().isoformat(),
         }
         # Schema drift: older Supabase projects may be missing newer columns.
