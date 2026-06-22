@@ -169,11 +169,18 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    }}
    The "foods" must sum to roughly the meal budget. Keep instructions short (2-5 steps).
    Use realistic portions and compute TOTAL nutrition per food.
+   RECIPE RULES (important):
+   • List EVERY ingredient the instructions use — including cooking oil/fat
+     (שמן זית/חמאה), spices, and anything fried/sautéed in. A fried/sautéed dish
+     MUST include שמן זית.
+   • Spell every Hebrew food name FULLY and correctly — e.g. "תפוח אדמה" (not
+     "תפוח אדם"), "עגבנייה", "מלפפון", "חזה עוף", "שמן זית". No truncated words.
 
 The system REALLY performs the actions — so confirm it's done in your reply (e.g. "הוספתי עגבניות למלאי ✓"). Do NOT ask the user to add it himself.
 
 Always include "reply": one short natural Hebrew sentence.
 For plain questions just reply with normal Hebrew text (no JSON).
+Hebrew must be spelled fully and correctly — no typos, no truncated words.
 name_he must be in Hebrew, NEVER Arabic."""
 
     messages = [{"role": "system", "content": system}]
@@ -206,24 +213,8 @@ name_he must be in Hebrew, NEVER Arabic."""
             rec = data.get("recipe")
             if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
                 meal_type = rec.get("meal_type", "lunch")
-                # recompute=True: derive each ingredient's calories from real
-                # per-100g data × grams, never the model's hallucinated numbers.
-                foods = [_enrich_food(f, recompute=True) for f in rec["foods"]]
-                # Deterministically scale to the meal's calorie sub-target so the
-                # recipe ALWAYS matches what the user should eat for that meal —
-                # never trust the model's arithmetic.
                 target_cal = _meal_target_calories(user["id"], meal_type)
-                if target_cal:
-                    foods = _scale_recipe_to_target(foods, target_cal)
-                recipe_data = {
-                    "title":        (rec.get("title") or "מתכון").strip(),
-                    "meal_type":    meal_type,
-                    "instructions": [s for s in (rec.get("instructions") or []) if s],
-                    "foods":        foods,
-                    "total_calories": round(sum(f.get("calories", 0) for f in foods)),
-                    "total_protein":  round(sum(f.get("protein", 0) for f in foods)),
-                    "meal_target":    round(target_cal) if target_cal else None,
-                }
+                recipe_data = _build_recipe_data(rec, target_cal)
             if isinstance(data.get("actions"), list) and data["actions"]:
                 actions_done = _exec_actions(user["id"], data["actions"])
 
@@ -231,6 +222,31 @@ name_he must be in Hebrew, NEVER Arabic."""
                 "recipe": recipe_data, "actions": actions_done}
     except Exception as e:
         return {"reply": f"שגיאה: {e}", "food_data": None, "recipe": None}
+
+
+def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:
+    """Turn a model recipe into a clean, accurate recipe card.
+
+    - every ingredient recomputed from real per-100g data × grams
+    - cooking fat added when the recipe fries/sautés but lists none
+    - scaled to the meal's calorie sub-target
+    - Hebrew names normalized
+    """
+    instructions = [s for s in (rec.get("instructions") or []) if s]
+    # recompute=True: never trust the model's per-item calories.
+    foods = [_enrich_food(f, recompute=True) for f in rec["foods"]]
+    foods = _ensure_recipe_has_fat(foods, instructions)
+    if target_cal:
+        foods = _scale_recipe_to_target(foods, target_cal)
+    return {
+        "title":          (rec.get("title") or "מתכון").strip(),
+        "meal_type":      rec.get("meal_type", "lunch"),
+        "instructions":   instructions,
+        "foods":          foods,
+        "total_calories": round(sum(f.get("calories", 0) for f in foods)),
+        "total_protein":  round(sum(f.get("protein", 0) for f in foods)),
+        "meal_target":    round(target_cal) if target_cal else None,
+    }
 
 
 def _extract_json(raw: str):
@@ -425,19 +441,146 @@ def _exec_actions(user_id: str, actions: list) -> list:
     return done
 
 
+# ── Hebrew food-name normalization ───────────────────────────────────────
+# Common typos / truncations the model produces → canonical Hebrew spelling.
+_NAME_FIXES = {
+    "תפוח אדם": "תפוח אדמה",
+    "תפוח אדמ": "תפוח אדמה",
+    "תפוחי אדמ": "תפוחי אדמה",
+    "בטטה מתוקה": "בטטה",
+    "חזה עו": "חזה עוף",
+    "שמן זי": "שמן זית",
+    "גבינה צהוב": "גבינה צהובה",
+    "גבינה לבנ": "גבינה לבנה",
+    "עגבני": "עגבנייה",
+    "עגבניה": "עגבנייה",
+    "מלפפו": "מלפפון",
+    "פטריו": "פטריות",
+    "פטרי": "פטרייה",
+    "בצ": "בצל",
+    "אבוקד": "אבוקדו",
+    "קינוא": "קינואה",
+    "עדשי": "עדשים",
+    "שקדי": "שקדים",
+    "אגוז": "אגוזים",
+    "ביצי": "ביצים",
+    "פלפ": "פלפל",
+    "ברוקול": "ברוקולי",
+    "טחינ": "טחינה",
+    "חומו": "חומוס",
+    "יוגור": "יוגורט",
+    "סלמו": "סלמון",
+    "טונ": "טונה",
+    "בטט": "בטטה",
+    "פסט": "פסטה",
+    "פסט'": "פסטה",
+    "גזר": "גזר",
+    "לח": "לחם",
+    "אור": "אורז",
+    "במב": "במבה",
+    "חלב": "חלב",
+    "תפו": "תפוח",
+    "בננ": "בננה",
+    "תמר": "תמר",
+    "פיתה לבנ": "פיתה לבנה",
+    "טופ": "טופו",
+    "קוטג": "קוטג'",
+}
+
+_canonical_names_cache: list | None = None
+
+
+def _canonical_names() -> list:
+    """All known canonical Hebrew food names (IL table + catalog), cached."""
+    global _canonical_names_cache
+    if _canonical_names_cache is not None:
+        return _canonical_names_cache
+    names = set()
+    try:
+        from api.routers.camera import _IL_FOODS
+        names.update(_IL_FOODS.keys())
+    except Exception:
+        pass
+    try:
+        from nutrition_app.agents.agent_3_food import FoodCatalog
+        for fd in FoodCatalog().get_all_foods():
+            if fd.name_he:
+                names.add(fd.name_he.strip())
+            for a in (fd.aliases_he or []):
+                if a:
+                    names.add(a.strip())
+    except Exception:
+        pass
+    _canonical_names_cache = sorted(names, key=len, reverse=True)
+    return _canonical_names_cache
+
+
+def _normalize_food_name(name_he: str) -> str:
+    """Fix typos/truncations and snap to a canonical Hebrew food name."""
+    name = (name_he or "").strip()
+    if not name:
+        return name
+    # 1. explicit typo/truncation fixes
+    if name in _NAME_FIXES:
+        return _NAME_FIXES[name]
+    # 2. already canonical
+    canon = _canonical_names()
+    if name in canon:
+        return name
+    # 3. prefix/truncation snap: the model dropped trailing letters
+    #    (e.g. "תפוח אדמ" → "תפוח אדמה"). Only when unambiguous & close.
+    matches = [c for c in canon if c.startswith(name) and 0 < len(c) - len(name) <= 2]
+    if len(matches) == 1:
+        return matches[0]
+    # 4. the model added a trailing letter (rare): name⊃canon
+    matches = [c for c in canon if name.startswith(c) and 0 < len(name) - len(c) <= 2]
+    if len(matches) == 1:
+        return matches[0]
+    return name
+
+
+# ── Recipe completeness: ensure cooking fat is present ────────────────────
+_COOK_VERBS = ("מטגנ", "מטוגן", "מוקפצ", "מקפיצ", "צולי", "צלוי", "אופ", "מאדים",
+               "מבשל", "טיגון", "קפיצ", "מזהיב")
+_FAT_HINTS = ("שמן", "חמאה", "מרגרינה", "טחינה", "מיונז")
+
+
+def _ensure_recipe_has_fat(foods: list, instructions: list) -> list:
+    """If the recipe involves cooking but lists no fat, add olive oil so the
+    calorie count reflects reality (frying/sautéing always adds oil)."""
+    text = " ".join(instructions or [])
+    cooks = any(v in text for v in _COOK_VERBS)
+    has_fat = any(any(h in (f.get("name_he") or "") for h in _FAT_HINTS) for f in foods)
+    if cooks and not has_fat:
+        foods.append(_enrich_food(
+            {"name_he": "שמן זית", "name_en": "olive oil", "grams": 10},
+            recompute=True,
+        ))
+    return foods
+
+
 def _resolve_per_100g(name_he: str, name_en: str) -> dict | None:
     """Resolve trustworthy per-100g nutrition for a food name.
 
     Order: curated Israeli table → FoodCatalog → AI estimator. Used to compute
     ingredient calories from grams instead of trusting the model's arithmetic.
     """
-    # 1. curated Israeli table (most reliable for common foods)
+    # 1. curated Israeli table (most reliable for common foods).
+    #    Read _IL_FOODS directly for TRUE per-100g values — _lookup_il_table
+    #    clamps to portion bounds, which would corrupt a per-100g lookup.
     try:
-        from api.routers.camera import _lookup_il_table
-        hit = _lookup_il_table(name_he, 100.0)
-        if hit:
-            return {"calories": hit["calories"], "protein": hit["protein"],
-                    "carbs": hit["carbs"], "fat": hit["fat"]}
+        from api.routers.camera import _IL_FOODS
+        nm = (name_he or "").strip()
+        best = None
+        if nm in _IL_FOODS:
+            best = nm
+        else:
+            cands = [k for k in _IL_FOODS if (k in nm or nm in k)]
+            if cands:
+                best = max(cands, key=len)
+        if best:
+            kcal, prot, carbs, fat = _IL_FOODS[best]
+            return {"calories": kcal, "protein": prot, "carbs": carbs, "fat": fat}
     except Exception:
         pass
     # 2. FoodCatalog
@@ -478,6 +621,10 @@ def _enrich_food(food: dict, recompute: bool = False) -> dict:
     """
     name_he = food.get("name_he") or food.get("name") or "מזון"
     name_en = food.get("name_en") or food.get("name") or name_he
+    # Block Arabic leaking into name_he — fall back to the English name.
+    if any("؀" <= ch <= "ۿ" for ch in name_he):
+        name_he = name_en
+    name_he = _normalize_food_name(name_he)
 
     try:
         grams = float(food.get("grams") or 0)
