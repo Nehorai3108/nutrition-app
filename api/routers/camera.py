@@ -9,6 +9,28 @@ _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 _PHOTOS_DIR   = os.path.join(_PROJECT_ROOT, "storage_agents", "food_photos")
 _PUBLIC_BASE  = os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000")
 
+# ── Realistic portion bounds per food (grams) — prevents AI hallucinations ──
+# (min_g, max_g) — AI estimate is clamped to this range if food is matched
+_PORTION_BOUNDS: dict[str, tuple] = {
+    "פיתה":         (45,  90),
+    "לחם":          (20,  80),   # 1-2 פרוסות
+    "קרואסון":      (50,  90),
+    "בייגל":        (80, 130),
+    "ביצה":         (45,  80),   # ביצה אחת
+    "חביתה":        (80, 200),
+    "בננה":         (80, 160),
+    "תפוח":         (100, 220),
+    "תפוז":         (130, 250),
+    "אבוקדו":       (70, 200),   # חצי עד שלם
+    "שוקולד":       (10,  60),
+    "טחינה גולמית": (10,  40),   # כף-שתיים
+    "שמן זית":      (5,   30),
+    "חמאה":         (5,   25),
+    "גבינה צהובה":  (15,  60),   # 1-2 פרוסות
+    "כדור פלאפל":   (15,  25),   # כדור אחד
+    "פלאפל":        (80, 200),   # מנה
+}
+
 # ── Israeli food reference: name variants → (kcal, protein, carbs, fat) per 100g ──
 # Source: planner knowledge base + USDA/FoodsDictionary (verified 2026)
 _IL_FOODS: dict[str, tuple] = {
@@ -264,17 +286,27 @@ def _crossref_and_validate(item: dict) -> dict:
     return item
 
 
+def _clamp_grams(name_he: str, grams: float) -> float:
+    """Clamp AI portion estimate to realistic bounds for known foods."""
+    for key, (lo, hi) in _PORTION_BOUNDS.items():
+        if key in name_he or name_he in key:
+            return max(lo, min(hi, grams))
+    return grams
+
+
 def _lookup_il_table(name_he: str, grams: float) -> dict | None:
     """Match against curated Israeli food table."""
     name_lower = name_he.strip()
     for key, (kcal100, prot100, carbs100, fat100) in _IL_FOODS.items():
         if key in name_lower or name_lower in key:
-            f = grams / 100.0
+            g = _clamp_grams(name_lower, grams)
+            f = g / 100.0
             return {
                 "calories": round(kcal100  * f),
                 "protein":  round(prot100  * f, 1),
                 "carbs":    round(carbs100 * f, 1),
                 "fat":      round(fat100   * f, 1),
+                "grams":    round(g),
             }
     return None
 
@@ -306,12 +338,14 @@ def _lookup_catalog(name_he: str, name_en: str, grams: float) -> dict | None:
                     break
 
         if best:
-            macros = best.macros_for_grams(grams)
+            g = _clamp_grams(name_he, grams)
+            macros = best.macros_for_grams(g)
             return {
                 "calories": round(macros.get("calories_kcal", 0)),
                 "protein":  round(macros.get("protein_g",     0), 1),
                 "carbs":    round(macros.get("carbs_g",       0), 1),
                 "fat":      round(macros.get("fat_g",         0), 1),
+                "grams":    round(g),
             }
     except Exception:
         pass
