@@ -131,11 +131,20 @@ def chat(body: ChatRequest, user=Depends(get_current_user)):
     client = Groq(api_key=api_key)
 
     inv_ctx = _inventory_context(user["id"])
+    nut_ctx = _nutrition_context(user["id"])
 
     system = f"""You are Biti — a smart Israeli nutrition assistant. Always reply in Hebrew.
 
 USER CONTEXT (live data — use it):
 - Inventory (מלאי): {inv_ctx}
+- Nutrition targets (יעדים) — USE THESE when suggesting how much to eat:
+{nut_ctx}
+
+When the user asks what/how much to eat for a meal (e.g. "כמה ביצים לארוחת בוקר"),
+look at that meal's calorie sub-target above and build a concrete suggestion that
+roughly hits it. State the meal budget and how your suggestion fits it
+(e.g. "יעד ארוחת בוקר ~640 קק\"ל — שקשוקה עם 3 ביצים (~470) + פיתה (~165) ≈ 635").
+Be specific with quantities. Never give a generic answer that ignores the budget.
 
 You can ACT for the user by returning a JSON object (inside a ```json block). Use it when relevant:
 
@@ -204,6 +213,68 @@ def _extract_json(raw: str):
         except Exception:
             return None
     return None
+
+
+_MEAL_HE = {
+    "breakfast": "ארוחת בוקר",
+    "morning_snack": "חטיף בוקר",
+    "lunch": "ארוחת צהריים",
+    "afternoon_snack": "חטיף צהריים",
+    "dinner": "ארוחת ערב",
+    "evening_snack": "חטיף ערב",
+    "snack": "חטיף",
+}
+
+
+def _nutrition_context(user_id: str) -> str:
+    """
+    Build a live nutrition briefing for the chat model: today's adjusted target,
+    what's been eaten, what remains, and per-meal calorie/protein budgets.
+    """
+    try:
+        from api.routers.profile import compute_targets
+        from nutrition_app.agents.agent_12_adaptation.adaptation_engine import AdaptationEngine
+        from nutrition_app.repositories.food_log_repository import FoodLogRepository
+        from api.routers.profile import build_user_profile
+        from nutrition_app.repositories.profile_repository import ProfileRepository
+        from api._tz import today_il
+
+        p = ProfileRepository().load(user_id)
+        if not p.get("weight_kg"):
+            return "  (פרופיל לא הוגדר — אין יעדים)"
+
+        base = compute_targets(user_id)
+        if base is None:
+            return "  (אין יעדים זמינים)"
+
+        profile = build_user_profile(p, user_id)
+        engine = AdaptationEngine()
+        day = engine.adjusted_day_target(profile, base)
+
+        # eaten so far, grouped by meal
+        entries = FoodLogRepository().get_log(user_id, today_il())
+        meals_logged = {}
+        for e in entries:
+            mt = (e.meal_type or "lunch").lower()
+            meals_logged[mt] = meals_logged.get(mt, 0.0) + (e.calories or 0)
+
+        subs = engine.meal_subtargets(profile, base, day, meals_logged)
+        eaten = round(sum(meals_logged.values()))
+        remaining = round(day.calories - eaten)
+
+        lines = [
+            f"  יעד יומי: {day.calories} קק\"ל · חלבון {round(day.protein_g)}g · "
+            f"פחמ' {round(day.carbs_g)}g · שומן {round(day.fat_g)}g",
+            f"  נאכל היום: {eaten} קק\"ל · נותרו: {remaining} קק\"ל",
+        ]
+        if subs:
+            lines.append("  יעד לכל ארוחה שעוד לא נאכלה:")
+            for s in subs:
+                name = _MEAL_HE.get(s.meal_type, s.meal_type)
+                lines.append(f"    • {name}: ~{s.calories} קק\"ל (חלבון {round(s.protein_g)}g)")
+        return "\n".join(lines)
+    except Exception:
+        return "  (לא זמין)"
 
 
 def _inventory_context(user_id: str) -> str:
