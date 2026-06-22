@@ -287,28 +287,42 @@ def _crossref_and_validate(item: dict) -> dict:
 
 
 def _clamp_grams(name_he: str, grams: float) -> float:
-    """Clamp AI portion estimate to realistic bounds for known foods."""
-    for key, (lo, hi) in _PORTION_BOUNDS.items():
-        if key in name_he or name_he in key:
-            return max(lo, min(hi, grams))
-    return grams
+    """Clamp AI portion estimate to realistic bounds for the most specific known food."""
+    name = name_he.strip()
+    candidates = [k for k in _PORTION_BOUNDS if (k in name or name in k)]
+    if not candidates:
+        return grams
+    lo, hi = _PORTION_BOUNDS[max(candidates, key=len)]
+    return max(lo, min(hi, grams))
 
 
 def _lookup_il_table(name_he: str, grams: float) -> dict | None:
-    """Match against curated Israeli food table."""
-    name_lower = name_he.strip()
-    for key, (kcal100, prot100, carbs100, fat100) in _IL_FOODS.items():
-        if key in name_lower or name_lower in key:
-            g = _clamp_grams(name_lower, grams)
-            f = g / 100.0
-            return {
-                "calories": round(kcal100  * f),
-                "protein":  round(prot100  * f, 1),
-                "carbs":    round(carbs100 * f, 1),
-                "fat":      round(fat100   * f, 1),
-                "grams":    round(g),
-            }
-    return None
+    """
+    Match against the curated Israeli food table.
+
+    Picks the MOST SPECIFIC match: an exact name wins, otherwise the longest
+    overlapping key. Prevents "פיתה לבנה" from matching the substring "לבנה"
+    (labaneh) instead of "פיתה לבנה" (pita).
+    """
+    name = name_he.strip()
+    if name in _IL_FOODS:
+        best_key = name
+    else:
+        candidates = [k for k in _IL_FOODS if (k in name or name in k)]
+        if not candidates:
+            return None
+        best_key = max(candidates, key=len)
+
+    kcal100, prot100, carbs100, fat100 = _IL_FOODS[best_key]
+    g = _clamp_grams(name, grams)
+    f = g / 100.0
+    return {
+        "calories": round(kcal100  * f),
+        "protein":  round(prot100  * f, 1),
+        "carbs":    round(carbs100 * f, 1),
+        "fat":      round(fat100   * f, 1),
+        "grams":    round(g),
+    }
 
 
 def _lookup_catalog(name_he: str, name_en: str, grams: float) -> dict | None:
