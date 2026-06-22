@@ -205,14 +205,22 @@ name_he must be in Hebrew, NEVER Arabic."""
                 }
             rec = data.get("recipe")
             if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
+                meal_type = rec.get("meal_type", "lunch")
                 foods = [_enrich_food(f) for f in rec["foods"]]
+                # Deterministically scale to the meal's calorie sub-target so the
+                # recipe ALWAYS matches what the user should eat for that meal —
+                # never trust the model's arithmetic.
+                target_cal = _meal_target_calories(user["id"], meal_type)
+                if target_cal:
+                    foods = _scale_recipe_to_target(foods, target_cal)
                 recipe_data = {
                     "title":        (rec.get("title") or "מתכון").strip(),
-                    "meal_type":    rec.get("meal_type", "lunch"),
+                    "meal_type":    meal_type,
                     "instructions": [s for s in (rec.get("instructions") or []) if s],
                     "foods":        foods,
                     "total_calories": round(sum(f.get("calories", 0) for f in foods)),
                     "total_protein":  round(sum(f.get("protein", 0) for f in foods)),
+                    "meal_target":    round(target_cal) if target_cal else None,
                 }
             if isinstance(data.get("actions"), list) and data["actions"]:
                 actions_done = _exec_actions(user["id"], data["actions"])
@@ -251,6 +259,61 @@ _MEAL_HE = {
     "evening_snack": "חטיף ערב",
     "snack": "חטיף",
 }
+
+
+def _meal_target_calories(user_id: str, meal_type: str) -> float | None:
+    """Calorie sub-target for a given meal today (remaining budget aware)."""
+    try:
+        from api.routers.profile import compute_targets, build_user_profile
+        from nutrition_app.agents.agent_12_adaptation.adaptation_engine import AdaptationEngine
+        from nutrition_app.repositories.food_log_repository import FoodLogRepository
+        from nutrition_app.repositories.profile_repository import ProfileRepository
+        from api._tz import today_il
+
+        p = ProfileRepository().load(user_id)
+        if not p.get("weight_kg"):
+            return None
+        base = compute_targets(user_id)
+        if base is None:
+            return None
+        profile = build_user_profile(p, user_id)
+        engine = AdaptationEngine()
+        day = engine.adjusted_day_target(profile, base)
+
+        entries = FoodLogRepository().get_log(user_id, today_il())
+        meals_logged = {}
+        for e in entries:
+            mt = (e.meal_type or "lunch").lower()
+            meals_logged[mt] = meals_logged.get(mt, 0.0) + (e.calories or 0)
+
+        subs = engine.meal_subtargets(profile, base, day, meals_logged)
+        mt = (meal_type or "").lower()
+        for s in subs:
+            if s.meal_type == mt:
+                return float(s.calories)
+        return None
+    except Exception:
+        return None
+
+
+def _scale_recipe_to_target(foods: list, target_cal: float) -> list:
+    """Scale every ingredient proportionally so the recipe hits the meal budget."""
+    current = sum(f.get("calories", 0) for f in foods)
+    if current <= 0 or not target_cal or target_cal <= 0:
+        return foods
+    factor = target_cal / current
+    # ignore tiny corrections; only rescale when meaningfully off
+    if abs(factor - 1.0) < 0.08:
+        return foods
+    for f in foods:
+        for k in ("grams", "calories", "protein", "carbs", "fat"):
+            if f.get(k) is not None:
+                f[k] = round(f[k] * factor, 1)
+        if f.get("grams") is not None:
+            f["grams"] = round(f["grams"])
+        if f.get("calories") is not None:
+            f["calories"] = round(f["calories"])
+    return foods
 
 
 def _nutrition_context(user_id: str) -> str:
