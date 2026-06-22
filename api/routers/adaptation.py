@@ -18,13 +18,19 @@ router = APIRouter()
 
 
 def _get_user_profile(user_id: str):
+    """Build a UserProfile domain object; returns None if no profile saved."""
     from nutrition_app.repositories.profile_repository import ProfileRepository
-    return ProfileRepository().get(user_id)
+    from api.routers.profile import build_user_profile
+    p = ProfileRepository().load(user_id)
+    if not p.get("weight_kg"):
+        return None
+    return build_user_profile(p, user_id)
 
 
 def _get_base_targets(profile):
-    from nutrition_app.agents.agent_2_nutrition.nutrition_engine import NutritionEngine
-    return NutritionEngine().calculate_targets(profile)
+    """Base targets honoring the user's target-weight + timeline (weekly rate)."""
+    from api.routers.profile import compute_targets
+    return compute_targets(profile.user_id)
 
 
 # ── GET /adaptation/day-target ────────────────────────────────────────

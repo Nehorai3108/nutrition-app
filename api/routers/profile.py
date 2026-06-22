@@ -20,49 +20,69 @@ def save_profile(data: dict, user=Depends(get_current_user)):
     repo.save(data)
     return {"ok": True}
 
-@router.get("/targets")
-def get_targets(user=Depends(get_current_user)):
-    """מחזיר יעדי קלוריות ומאקרו מחושבים."""
-    from nutrition_app.agents.agent_2_nutrition import NutritionEngine
+def build_user_profile(p: dict, user_id: str):
+    """Build a UserProfile domain object from a raw profile dict."""
     from nutrition_app.models.user import UserProfile
     from nutrition_app.models.enums import Gender, ActivityLevel, Goal
     from datetime import date
+    return UserProfile(
+        user_id=user_id,
+        name=p.get("name", ""),
+        gender=Gender(p.get("gender", "male")),
+        date_of_birth=date.fromisoformat(p.get("date_of_birth", "1990-01-01")),
+        height_cm=float(p.get("height_cm", 170)),
+        weight_kg=float(p.get("weight_kg", 70)),
+        activity_level=ActivityLevel(p.get("activity_level", "moderately_active")),
+        goal=Goal(p.get("goal", "maintain")),
+    )
 
-    repo = ProfileRepository()
-    p = repo.load(user["id"])
-    if not p.get("weight_kg"):
-        return {"calories": 2000, "protein": 150, "carbs": 250, "fat": 67}
 
+def derive_weekly_change_kg(p: dict):
+    """
+    From target weight + timeline, derive kg/week so the deficit/surplus
+    reflects the user's actual plan (not a fixed pace). Returns None if not set.
+    """
+    target_weight = p.get("target_weight") or p.get("target_weight_kg")
+    weeks = p.get("weeks_to_goal")
     try:
-        profile = UserProfile(
-            user_id=user["id"],
-            name=p.get("name",""),
-            gender=Gender(p.get("gender","male")),
-            date_of_birth=date.fromisoformat(p.get("date_of_birth","1990-01-01")),
-            height_cm=float(p.get("height_cm",170)),
-            weight_kg=float(p.get("weight_kg",70)),
-            activity_level=ActivityLevel(p.get("activity_level","moderately_active")),
-            goal=Goal(p.get("goal","maintain")),
-        )
-        # If the user set a target weight + timeline, derive the weekly rate so
-        # the deficit/surplus reflects THEIR plan (not a fixed pace).
-        weekly_change_kg = None
-        target_weight = p.get("target_weight")
-        weeks = p.get("weeks_to_goal")
-        try:
-            if target_weight and weeks and float(weeks) > 0:
-                delta = abs(float(target_weight) - float(p["weight_kg"]))
-                if delta > 0:
-                    weekly_change_kg = delta / float(weeks)
-        except (TypeError, ValueError):
-            weekly_change_kg = None
+        if target_weight and weeks and float(weeks) > 0:
+            delta = abs(float(target_weight) - float(p.get("weight_kg") or 0))
+            if delta > 0:
+                return delta / float(weeks)
+    except (TypeError, ValueError):
+        pass
+    return None
 
-        engine = NutritionEngine()
-        targets = engine.calculate_targets(
-            profile,
-            weekly_change_kg=weekly_change_kg,
-            target_weight_kg=float(target_weight) if target_weight else None,
-        )
+
+def compute_targets(user_id: str):
+    """
+    Shared base-target computation used by /profile/targets, /daily-menu, and
+    the adaptation engine. Returns a NutritionTargets object (or None).
+    """
+    from nutrition_app.agents.agent_2_nutrition import NutritionEngine
+    repo = ProfileRepository()
+    p = repo.load(user_id)
+    if not p.get("weight_kg"):
+        return None
+
+    profile = build_user_profile(p, user_id)
+    weekly_change_kg = derive_weekly_change_kg(p)
+    target_weight = p.get("target_weight") or p.get("target_weight_kg")
+
+    return NutritionEngine().calculate_targets(
+        profile,
+        weekly_change_kg=weekly_change_kg,
+        target_weight_kg=float(target_weight) if target_weight else None,
+    )
+
+
+@router.get("/targets")
+def get_targets(user=Depends(get_current_user)):
+    """מחזיר יעדי קלוריות ומאקרו מחושבים."""
+    try:
+        targets = compute_targets(user["id"])
+        if targets is None:
+            return {"calories": 2000, "protein": 150, "carbs": 250, "fat": 67}
         return {
             "calories": round(targets.target_calories_kcal),
             "protein":  round(targets.protein_g),

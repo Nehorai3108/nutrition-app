@@ -101,6 +101,9 @@ class ProfileRepository:
             "pace":             row.get("pace"),
             "weekly_change_kg": row.get("weekly_change_kg"),
             "target_weight_kg": row.get("target_weight_kg"),
+            # alias: the mobile app uses "target_weight"; expose both so every
+            # caller resolves the value regardless of which key it reads.
+            "target_weight":    row.get("target_weight_kg"),
             "weeks_to_goal":    row.get("weeks_to_goal"),
             "meal_preferences": {**_DEFAULTS["meal_preferences"], **prefs},
         })
@@ -118,7 +121,9 @@ class ProfileRepository:
             "goal":             profile.get("goal"),
             "pace":             profile.get("pace"),
             "weekly_change_kg": profile.get("weekly_change_kg"),
-            "target_weight_kg": profile.get("target_weight_kg"),
+            # the mobile app sends "target_weight"; fall back to it so the value
+            # actually persists to the target_weight_kg column.
+            "target_weight_kg": profile.get("target_weight_kg") or profile.get("target_weight"),
             "weeks_to_goal":    profile.get("weeks_to_goal"),
             "meal_preferences": profile.get("meal_preferences", {}),  # JSONB
             "updated_at":       datetime.now().isoformat(),
@@ -158,6 +163,11 @@ class ProfileRepository:
                     data[k] = v
             for k, v in _DEFAULTS["meal_preferences"].items():
                 data["meal_preferences"].setdefault(k, v)
+            # normalize target-weight aliases so every caller resolves the value
+            tw = data.get("target_weight") or data.get("target_weight_kg")
+            if tw:
+                data["target_weight"] = tw
+                data["target_weight_kg"] = tw
             return data
         except (json.JSONDecodeError, IOError):
             return dict(_DEFAULTS)
