@@ -156,6 +156,20 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    "actions":[{{"type":"add_inventory","name_he":"עגבניות","quantity":1,"unit":"יח׳","category":"produce"}}]
    type is "add_inventory" or "remove_inventory". category ∈ produce,meat,dairy,bakery,pantry,frozen,beverages,snacks,other.
 
+3. SUGGEST A MEAL / RECIPE — when the user asks for a meal, a recipe, or what to
+   cook/eat (e.g. "תכין לי מתכון", "תן לי ארוחת בוקר", "מה לאכול לצהריים") —
+   return a STRUCTURED recipe via "recipe". Build it to fit that meal's calorie
+   sub-target from the context above:
+   "recipe":{{
+     "title":"חביתת ירקות עם טונה",
+     "meal_type":"breakfast",
+     "instructions":["מטגנים בצל וירקות","מוסיפים ביצים טרופות","מערבבים טונה ומגישים"],
+     "foods":[{{"name_he":"ביצה","name_en":"egg","grams":110,"calories":160,"protein":13,"carbs":1,"fat":11}},
+              {{"name_he":"טונה","name_en":"tuna","grams":100,"calories":116,"protein":26,"carbs":0,"fat":1}}]
+   }}
+   The "foods" must sum to roughly the meal budget. Keep instructions short (2-5 steps).
+   Use realistic portions and compute TOTAL nutrition per food.
+
 The system REALLY performs the actions — so confirm it's done in your reply (e.g. "הוספתי עגבניות למלאי ✓"). Do NOT ask the user to add it himself.
 
 Always include "reply": one short natural Hebrew sentence.
@@ -179,6 +193,7 @@ name_he must be in Hebrew, NEVER Arabic."""
         data = _extract_json(raw)
         reply = raw
         food_data = None
+        recipe_data = None
         actions_done = []
 
         if data:
@@ -188,12 +203,24 @@ name_he must be in Hebrew, NEVER Arabic."""
                     "meal_type": data.get("meal_type", "lunch"),
                     "foods": [_enrich_food(f) for f in data["foods"]],
                 }
+            rec = data.get("recipe")
+            if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
+                foods = [_enrich_food(f) for f in rec["foods"]]
+                recipe_data = {
+                    "title":        (rec.get("title") or "מתכון").strip(),
+                    "meal_type":    rec.get("meal_type", "lunch"),
+                    "instructions": [s for s in (rec.get("instructions") or []) if s],
+                    "foods":        foods,
+                    "total_calories": round(sum(f.get("calories", 0) for f in foods)),
+                    "total_protein":  round(sum(f.get("protein", 0) for f in foods)),
+                }
             if isinstance(data.get("actions"), list) and data["actions"]:
                 actions_done = _exec_actions(user["id"], data["actions"])
 
-        return {"reply": reply, "food_data": food_data, "actions": actions_done}
+        return {"reply": reply, "food_data": food_data,
+                "recipe": recipe_data, "actions": actions_done}
     except Exception as e:
-        return {"reply": f"שגיאה: {e}", "food_data": None}
+        return {"reply": f"שגיאה: {e}", "food_data": None, "recipe": None}
 
 
 def _extract_json(raw: str):
