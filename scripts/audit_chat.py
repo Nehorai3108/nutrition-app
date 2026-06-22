@@ -243,6 +243,30 @@ r = C._process_model_output(
     "_no_user")
 check("  foods+recipe יחד", r["food_data"] is not None and r["recipe"] is not None)
 
+# ── Q. inventory action robustness (malformed → skipped, no crash) ───────
+print("\n[Q] עמידות פעולות מלאי")
+done = C._exec_actions("_no_user", [
+    {"type": "add_inventory"},                 # no name → skip
+    {"type": "bogus", "name_he": "משהו"},      # unknown type → skip
+    "not a dict",                               # wrong shape → skip
+    {"name_he": "", "type": "add_inventory"},  # empty name → skip
+])
+check("  פעולות פגומות לא קורסות", isinstance(done, list))
+check("  פעולות פגומות מדולגות", len(done) == 0, f"done={done}")
+
+# ── R. system-prompt assembly never crashes ──────────────────────────────
+print("\n[R] הרכבת system prompt")
+inv = C._inventory_context("_no_user")
+nut = C._nutrition_context("_no_user")
+check("  inventory_context מחזיר מחרוזת", isinstance(inv, str))
+check("  nutrition_context מחזיר מחרוזת", isinstance(nut, str))
+
+# ── S. more real-world Hebrew name fixes ─────────────────────────────────
+print("\n[S] תיקוני שם נוספים")
+for raw in ["גבינה צהוב", "יוגור", "ברוקול", "חומו", "טחינ"]:
+    fixed = C._normalize_food_name(raw)
+    check(f"  '{raw}' תוקן (≠ מקור)", fixed != raw and len(fixed) >= len(raw), f"→ '{fixed}'")
+
 # ── summary ──────────────────────────────────────────────────────────────
 print("\n" + "=" * 64)
 print(f"תוצאה: {len(PASS)}/{len(PASS)+len(FAIL)} עברו")
