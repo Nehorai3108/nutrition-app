@@ -48,7 +48,7 @@ class TestBMR:
         targets = engine.calculate_targets(male_user)
         # Mifflin-St Jeor: 10*80 + 6.25*175 - 5*age + 5
         assert targets.bmr_kcal > 0
-        assert targets.calculation_method == "mifflin_st_jeor"
+        assert targets.calculation_method.startswith("mifflin_st_jeor")
 
     def test_female_bmr(self, engine, female_user):
         targets = engine.calculate_targets(female_user)

@@ -9,6 +9,13 @@ Covers:
 
 from __future__ import annotations
 
+import pytest
+
+# The SQLAlchemy persistence layer is legacy (the live app uses sqlite3 +
+# Supabase + JSON repos). Skip cleanly when sqlalchemy isn't installed instead
+# of breaking test collection.
+pytest.importorskip("sqlalchemy")
+
 from sqlalchemy import select
 
 from nutrition_app.persistence import (

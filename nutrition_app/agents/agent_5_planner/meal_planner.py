@@ -52,9 +52,13 @@ MEAL_DISTRIBUTION = {
 # Defines which food categories are appropriate for each meal type
 MEAL_CATEGORY_RULES: Dict[MealType, List[FoodCategory]] = {
     MealType.BREAKFAST: [
-        FoodCategory.DAIRY, FoodCategory.GRAIN, FoodCategory.FRUIT,
-        FoodCategory.FAT, FoodCategory.VEGETABLE, FoodCategory.NUT_SEED,
-        FoodCategory.BEVERAGE, FoodCategory.CONDIMENT, FoodCategory.OTHER,
+        # PROTEIN belongs at breakfast (eggs, cottage cheese, Greek yogurt) —
+        # the planner also targets ≥25% protein at breakfast, so forbidding the
+        # category here created an unsatisfiable rule.
+        FoodCategory.PROTEIN, FoodCategory.DAIRY, FoodCategory.GRAIN,
+        FoodCategory.FRUIT, FoodCategory.FAT, FoodCategory.VEGETABLE,
+        FoodCategory.NUT_SEED, FoodCategory.BEVERAGE, FoodCategory.CONDIMENT,
+        FoodCategory.OTHER,
     ],
     MealType.MORNING_SNACK: [
         FoodCategory.FRUIT, FoodCategory.DAIRY, FoodCategory.NUT_SEED,

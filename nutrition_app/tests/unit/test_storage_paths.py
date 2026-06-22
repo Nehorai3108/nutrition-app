@@ -171,24 +171,24 @@ class TestRepositoriesUsePaths:
         from nutrition_app.repositories.profile_repository import ProfileRepository
         repo = ProfileRepository()
         path = repo._path("test_user")
-        assert "test_user" in path
-        assert "profile.json" in path
+        assert path.endswith("test_user.json")
+        assert "profiles" in path
 
     def test_food_log_repo_path(self, tmp_path, monkeypatch):
         monkeypatch.setenv("STORAGE_AGENTS_ROOT", str(tmp_path))
         from nutrition_app.repositories.food_log_repository import FoodLogRepository
         repo = FoodLogRepository()
         path = repo._path("test_user")
-        assert "test_user" in path
-        assert "food_log.json" in path
+        assert path.endswith("test_user.json")
+        assert "food_log" in path
 
     def test_water_repo_path(self, tmp_path, monkeypatch):
         monkeypatch.setenv("STORAGE_AGENTS_ROOT", str(tmp_path))
         from nutrition_app.repositories.water_repository import WaterRepository
         repo = WaterRepository()
         path = repo._get_filepath("test_user")
-        assert "test_user" in path
-        assert "water.json" in path
+        assert path.endswith("test_user.json")
+        assert "water" in path
 
     def test_workout_repo_path(self, tmp_path, monkeypatch):
         monkeypatch.setenv("STORAGE_AGENTS_ROOT", str(tmp_path))
