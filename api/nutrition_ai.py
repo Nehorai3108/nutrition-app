@@ -10,6 +10,30 @@ import requests
 
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Disk + memory cache so repeated foods don't re-hit Groq (per-call ~0.7s).
+_NUT_CACHE_PATH = os.path.join(_PROJECT_ROOT, "storage_agents", "nutrition_ai_cache.json")
+_nut_cache = None
+
+
+def _load_nut_cache() -> dict:
+    global _nut_cache
+    if _nut_cache is None:
+        try:
+            with open(_NUT_CACHE_PATH, encoding="utf-8") as f:
+                _nut_cache = json.load(f)
+        except Exception:
+            _nut_cache = {}
+    return _nut_cache
+
+
+def _save_nut_cache() -> None:
+    try:
+        os.makedirs(os.path.dirname(_NUT_CACHE_PATH), exist_ok=True)
+        with open(_NUT_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(_nut_cache, f, ensure_ascii=False)
+    except Exception:
+        pass
+
 # Reuse the vision-capable model already proven to work for the camera feature;
 # it handles plain text estimation fine too.
 _MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
@@ -43,8 +67,16 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
     carbs, fat (all per 100g). Returns None on any failure so callers can
     fall back gracefully.
     """
+    if not food_name_he.strip():
+        return None
+
+    key = food_name_he.strip()
+    cache = _load_nut_cache()
+    if key in cache:
+        return cache[key]
+
     api_key = get_groq_key()
-    if not api_key or not food_name_he.strip():
+    if not api_key:
         return None
 
     prompt = f"""אתה מומחה תזונה. עבור המאכל "{food_name_he}" החזר את הערכים התזונתיים ל-100 גרם.
@@ -83,7 +115,7 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
         if category not in _VALID_CATEGORIES:
             category = "other"
 
-        return {
+        result = {
             "name_he": food_name_he.strip(),
             "name_en": str(data.get("name_en", "")).strip(),
             "category": category,
@@ -92,5 +124,8 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
             "carbs": round(float(data.get("carbs", 0) or 0), 1),
             "fat": round(float(data.get("fat", 0) or 0), 1),
         }
+        cache[key] = result
+        _save_nut_cache()
+        return result
     except Exception:
         return None

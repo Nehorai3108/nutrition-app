@@ -28,3 +28,4 @@ Thumbs.db
 # User-captured food photos (runtime data)
 storage_agents/food_photos/
 storage_agents/food_image_cache.json
+storage_agents/nutrition_ai_cache.json

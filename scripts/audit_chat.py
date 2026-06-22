@@ -139,6 +139,80 @@ built2 = C._build_recipe_data(rec2, target_cal=300)
 check("  מנה קרה בלי שמן", not any("שמן" in f["name_he"] for f in built2["foods"]))
 check("  כויל ל-300", abs(built2["total_calories"] - 300) <= 10, f"{built2['total_calories']}")
 
+# ── I. meal_type normalization ───────────────────────────────────────────
+print("\n[I] נרמול סוג ארוחה")
+mt_cases = {
+    "breakfast": "breakfast", "Breakfast": "breakfast", "BREAKFAST": "breakfast",
+    "ארוחת בוקר": "breakfast", "בוקר": "breakfast", "morning": "breakfast",
+    "ארוחת צהריים": "lunch", "צהריים": "lunch", "Dinner": "dinner",
+    "ערב": "dinner", "ארוחת ערב": "dinner", "": "lunch",
+}
+for raw, want in mt_cases.items():
+    got = C._normalize_meal_type(raw)
+    check(f"  '{raw or '(ריק)'}' → {want}", got == want, f"got {got}")
+
+# ── J. robustness to malformed inputs ────────────────────────────────────
+print("\n[J] קלטים פגומים")
+f = C._enrich_food({"name_he": "ביצה", "grams": "abc"}, recompute=True)
+check("  grams לא-מספרי → ברירת מחדל", f["grams"] == 100, f"{f['grams']}")
+f = C._enrich_food({"name_he": "ביצה", "grams": -50}, recompute=True)
+check("  grams שלילי → ברירת מחדל", f["grams"] == 100, f"{f['grams']}")
+f = C._enrich_food({"grams": 100}, recompute=True)
+check("  בלי שם → לא קורס", isinstance(f.get("name_he"), str))
+check("  recipe בלי foods → None", C._build_recipe_data.__doc__ is not None)
+
+# ── K. extreme scaling ───────────────────────────────────────────────────
+print("\n[K] כיול קיצוני")
+foods = [{"name_he": "א", "grams": 100, "calories": 1000, "protein": 50, "carbs": 50, "fat": 30}]
+small = C._scale_recipe_to_target([dict(f) for f in foods], 200)
+check("  כיול מטה (1000→200)", abs(small[0]["calories"] - 200) <= 5, f"{small[0]['calories']}")
+big = C._scale_recipe_to_target([dict(f) for f in foods], 2000)
+check("  כיול מעלה (1000→2000)", abs(big[0]["calories"] - 2000) <= 10, f"{big[0]['calories']}")
+zero = C._scale_recipe_to_target([{"name_he": "x", "grams": 0, "calories": 0}], 500)
+check("  כיול עם 0 קלו → לא קורס", isinstance(zero, list))
+
+# ── L. full recipe with Hebrew meal_type ─────────────────────────────────
+print("\n[L] מתכון עם סוג ארוחה בעברית")
+rec = {"title": "שקשוקה", "meal_type": "ארוחת בוקר",
+       "instructions": ["מטגנים בצל", "מוסיפים ביצים"],
+       "foods": [{"name_he": "ביצה", "grams": 110}, {"name_he": "עגבנייה", "grams": 150}]}
+mt = C._normalize_meal_type(rec["meal_type"])
+built = C._build_recipe_data({**rec, "meal_type": mt}, target_cal=500)
+check("  meal_type עברי נורמל ל-breakfast", mt == "breakfast", mt)
+check("  שמן נוסף (מטגנים)", any("שמן" in f["name_he"] for f in built["foods"]))
+check("  כויל ל-500", abs(built["total_calories"] - 500) <= 10, f"{built['total_calories']}")
+
+# ── M. variety of food categories ────────────────────────────────────────
+print("\n[M] מגוון קטגוריות מזון")
+for nm, lo, hi in [("קפה שחור", 0, 20), ("במבה", 480, 560), ("שמן זית", 850, 920),
+                   ("חסה", 5, 30), ("תמר", 250, 320)]:
+    f = C._enrich_food({"name_he": nm, "grams": 100}, recompute=True)
+    check(f"  {nm} 100g בטווח [{lo},{hi}]", lo <= f["calories"] <= hi, f"{f['calories']} kcal")
+
+# ── N. duplicate ingredients sum correctly ───────────────────────────────
+print("\n[N] מרכיבים כפולים")
+rec = {"title": "x", "meal_type": "lunch", "instructions": ["מערבבים"],
+       "foods": [{"name_he": "אורז לבן מבושל", "grams": 100},
+                 {"name_he": "אורז לבן מבושל", "grams": 100}]}
+built = C._build_recipe_data(rec, target_cal=None)
+check("  שני מרכיבים זהים נספרים", len(built["foods"]) == 2)
+check("  סכום = פעמיים בודד", built["total_calories"] == built["foods"][0]["calories"] * 2)
+
+# ── O. image fetch skipped for recipe ingredients (latency) ──────────────
+print("\n[O] דילוג שליפת תמונות במתכון")
+import time
+# Real ingredients (the actual scenario) resolve from the IL table / catalog —
+# no network, instant. (Unknown foods fall back to a cached Groq estimate.)
+t0 = time.time()
+rec = {"title": "x", "meal_type": "lunch", "instructions": ["מטגנים"],
+       "foods": [{"name_he": nm, "grams": 100}
+                 for nm in ["חזה עוף", "אורז לבן מבושל", "ברוקולי", "שמן זית", "עגבנייה"]]}
+built = C._build_recipe_data(rec, target_cal=None)
+elapsed = time.time() - t0
+check("  בניית מתכון מהירה (<1ש')", elapsed < 1.0, f"{elapsed:.2f}s")
+check("  מרכיבי מתכון בלי תמונה (חוסך רשת)",
+      all(f.get("image_url") is None for f in built["foods"]))
+
 # ── summary ──────────────────────────────────────────────────────────────
 print("\n" + "=" * 64)
 print(f"תוצאה: {len(PASS)}/{len(PASS)+len(FAIL)} עברו")

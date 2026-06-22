@@ -207,12 +207,13 @@ name_he must be in Hebrew, NEVER Arabic."""
             reply = (data.get("reply") or "").strip() or "בוצע ✓"
             if isinstance(data.get("foods"), list) and data["foods"]:
                 food_data = {
-                    "meal_type": data.get("meal_type", "lunch"),
+                    "meal_type": _normalize_meal_type(data.get("meal_type", "lunch")),
                     "foods": [_enrich_food(f) for f in data["foods"]],
                 }
             rec = data.get("recipe")
             if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
-                meal_type = rec.get("meal_type", "lunch")
+                meal_type = _normalize_meal_type(rec.get("meal_type", "lunch"))
+                rec["meal_type"] = meal_type
                 target_cal = _meal_target_calories(user["id"], meal_type)
                 recipe_data = _build_recipe_data(rec, target_cal)
             if isinstance(data.get("actions"), list) and data["actions"]:
@@ -234,7 +235,8 @@ def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:
     """
     instructions = [s for s in (rec.get("instructions") or []) if s]
     # recompute=True: never trust the model's per-item calories.
-    foods = [_enrich_food(f, recompute=True) for f in rec["foods"]]
+    # fetch_image=False: recipe cards show no images — avoid N×8s of latency.
+    foods = [_enrich_food(f, recompute=True, fetch_image=False) for f in rec["foods"]]
     foods = _ensure_recipe_has_fat(foods, instructions)
     if target_cal:
         foods = _scale_recipe_to_target(foods, target_cal)
@@ -279,6 +281,34 @@ _MEAL_HE = {
 }
 
 
+_MEAL_ALIASES = {
+    "breakfast": "breakfast", "morning": "breakfast", "בוקר": "breakfast",
+    "ארוחת בוקר": "breakfast", "ארוחתבוקר": "breakfast",
+    "morning_snack": "morning_snack", "חטיף בוקר": "morning_snack",
+    "lunch": "lunch", "noon": "lunch", "צהריים": "lunch",
+    "ארוחת צהריים": "lunch", "ארוחתצהריים": "lunch",
+    "afternoon_snack": "afternoon_snack", "חטיף צהריים": "afternoon_snack",
+    "dinner": "dinner", "evening": "dinner", "ערב": "dinner",
+    "ארוחת ערב": "dinner", "ארוחתערב": "dinner",
+    "evening_snack": "evening_snack", "חטיף ערב": "evening_snack",
+    "snack": "snack", "חטיף": "snack",
+}
+
+
+def _normalize_meal_type(meal_type: str) -> str:
+    """Map any meal label (English caps, Hebrew, spaced) to a canonical key."""
+    if not meal_type:
+        return "lunch"
+    mt = meal_type.strip().lower()
+    if mt in _MEAL_ALIASES:
+        return _MEAL_ALIASES[mt]
+    # substring fallback (e.g. "ארוחת בוקר קלה")
+    for alias, canon in _MEAL_ALIASES.items():
+        if alias in mt or mt in alias:
+            return canon
+    return "lunch"
+
+
 def _meal_target_calories(user_id: str, meal_type: str) -> float | None:
     """Calorie sub-target for a given meal today (remaining budget aware)."""
     try:
@@ -305,7 +335,7 @@ def _meal_target_calories(user_id: str, meal_type: str) -> float | None:
             meals_logged[mt] = meals_logged.get(mt, 0.0) + (e.calories or 0)
 
         subs = engine.meal_subtargets(profile, base, day, meals_logged)
-        mt = (meal_type or "").lower()
+        mt = _normalize_meal_type(meal_type)
         for s in subs:
             if s.meal_type == mt:
                 return float(s.calories)
@@ -554,7 +584,7 @@ def _ensure_recipe_has_fat(foods: list, instructions: list) -> list:
     if cooks and not has_fat:
         foods.append(_enrich_food(
             {"name_he": "שמן זית", "name_en": "olive oil", "grams": 10},
-            recompute=True,
+            recompute=True, fetch_image=False,
         ))
     return foods
 
@@ -610,7 +640,7 @@ def _resolve_per_100g(name_he: str, name_en: str) -> dict | None:
     return None
 
 
-def _enrich_food(food: dict, recompute: bool = False) -> dict:
+def _enrich_food(food: dict, recompute: bool = False, fetch_image: bool = True) -> dict:
     """Guarantee a chat-detected food has grams + total calories/macros.
 
     When recompute=True (recipe ingredients), calories/macros are ALWAYS derived
@@ -618,6 +648,9 @@ def _enrich_food(food: dict, recompute: bool = False) -> dict:
     discarded (it routinely hallucinates, e.g. 665 kcal for 200g of vegetables).
     When False (logging what the user said they ate), the model's numbers are
     trusted and only filled in if missing.
+
+    fetch_image=False skips the (per-food, up-to-8s) Wikipedia image lookup —
+    used for recipe ingredients, where the card shows no images anyway.
     """
     name_he = food.get("name_he") or food.get("name") or "מזון"
     name_en = food.get("name_en") or food.get("name") or name_he
@@ -657,11 +690,13 @@ def _enrich_food(food: dict, recompute: bool = False) -> dict:
             carbs = round(per100["carbs"] * f, 1)
             fat   = round(per100["fat"] * f, 1)
 
-    try:
-        from api.food_image import get_food_image
-        image_url = get_food_image(name_en, name_he)
-    except Exception:
-        image_url = None
+    image_url = None
+    if fetch_image:
+        try:
+            from api.food_image import get_food_image
+            image_url = get_food_image(name_en, name_he)
+        except Exception:
+            image_url = None
 
     return {
         "name": name_en,
