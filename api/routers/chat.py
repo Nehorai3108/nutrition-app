@@ -196,33 +196,41 @@ name_he must be in Hebrew, NEVER Arabic."""
             temperature=0.2,
         )
         raw = resp.choices[0].message.content.strip()
-
-        data = _extract_json(raw)
-        reply = raw
-        food_data = None
-        recipe_data = None
-        actions_done = []
-
-        if data:
-            reply = (data.get("reply") or "").strip() or "בוצע ✓"
-            if isinstance(data.get("foods"), list) and data["foods"]:
-                food_data = {
-                    "meal_type": _normalize_meal_type(data.get("meal_type", "lunch")),
-                    "foods": [_enrich_food(f) for f in data["foods"]],
-                }
-            rec = data.get("recipe")
-            if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
-                meal_type = _normalize_meal_type(rec.get("meal_type", "lunch"))
-                rec["meal_type"] = meal_type
-                target_cal = _meal_target_calories(user["id"], meal_type)
-                recipe_data = _build_recipe_data(rec, target_cal)
-            if isinstance(data.get("actions"), list) and data["actions"]:
-                actions_done = _exec_actions(user["id"], data["actions"])
-
-        return {"reply": reply, "food_data": food_data,
-                "recipe": recipe_data, "actions": actions_done}
+        return _process_model_output(raw, user["id"])
     except Exception as e:
         return {"reply": f"שגיאה: {e}", "food_data": None, "recipe": None}
+
+
+def _process_model_output(raw: str, user_id: str) -> dict:
+    """Turn the raw model reply into the API response (reply + food/recipe/actions).
+
+    Pure glue over _extract_json / _enrich_food / _build_recipe_data / _exec_actions
+    — separated from the network call so it can be tested without hitting Groq.
+    """
+    data = _extract_json(raw)
+    reply = raw
+    food_data = None
+    recipe_data = None
+    actions_done = []
+
+    if data:
+        reply = (data.get("reply") or "").strip() or "בוצע ✓"
+        if isinstance(data.get("foods"), list) and data["foods"]:
+            food_data = {
+                "meal_type": _normalize_meal_type(data.get("meal_type", "lunch")),
+                "foods": [_enrich_food(f) for f in data["foods"]],
+            }
+        rec = data.get("recipe")
+        if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
+            meal_type = _normalize_meal_type(rec.get("meal_type", "lunch"))
+            rec["meal_type"] = meal_type
+            target_cal = _meal_target_calories(user_id, meal_type)
+            recipe_data = _build_recipe_data(rec, target_cal)
+        if isinstance(data.get("actions"), list) and data["actions"]:
+            actions_done = _exec_actions(user_id, data["actions"])
+
+    return {"reply": reply, "food_data": food_data,
+            "recipe": recipe_data, "actions": actions_done}
 
 
 def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:

@@ -213,6 +213,36 @@ check("  בניית מתכון מהירה (<1ש')", elapsed < 1.0, f"{elapsed:.2
 check("  מרכיבי מתכון בלי תמונה (חוסך רשת)",
       all(f.get("image_url") is None for f in built["foods"]))
 
+# ── P. full model-output processing (no network) ─────────────────────────
+print("\n[P] עיבוד תגובת מודל מלא")
+# plain text → reply is the text, no structured data
+r = C._process_model_output("סתם תשובה בעברית", "_no_user")
+check("  טקסט חופשי → reply", r["reply"] == "סתם תשובה בעברית" and r["food_data"] is None)
+# json reply only
+r = C._process_model_output('```json\n{"reply":"בבקשה"}\n```', "_no_user")
+check("  reply בלבד", r["reply"] == "בבקשה" and r["recipe"] is None)
+# json with foods (logging)
+r = C._process_model_output(
+    '{"reply":"רשמתי","meal_type":"ארוחת בוקר","foods":[{"name_he":"ביצה","grams":110,"calories":160,"protein":13,"carbs":1,"fat":11}]}',
+    "_no_user")
+check("  foods → food_data", r["food_data"] is not None and len(r["food_data"]["foods"]) == 1)
+check("  meal_type נורמל", r["food_data"]["meal_type"] == "breakfast", r["food_data"]["meal_type"])
+# json with recipe
+r = C._process_model_output(
+    '{"reply":"הנה מתכון","recipe":{"title":"חביתה","meal_type":"breakfast","instructions":["מטגנים"],"foods":[{"name_he":"ביצה","grams":110},{"name_he":"ירקות","grams":100}]}}',
+    "_no_user")
+check("  recipe → recipe_data", r["recipe"] is not None and r["recipe"]["title"] == "חביתה")
+check("  recipe קיבל שמן", any("שמן" in f["name_he"] for f in r["recipe"]["foods"]))
+check("  recipe קלוריות סבירות", 0 < r["recipe"]["total_calories"] < 600, r["recipe"]["total_calories"])
+# empty reply in json → default
+r = C._process_model_output('{"reply":""}', "_no_user")
+check("  reply ריק → ברירת מחדל", r["reply"] == "בוצע ✓")
+# both foods and recipe present
+r = C._process_model_output(
+    '{"reply":"x","foods":[{"name_he":"תפוח","grams":150}],"recipe":{"title":"y","meal_type":"lunch","instructions":["x"],"foods":[{"name_he":"אורז לבן מבושל","grams":150}]}}',
+    "_no_user")
+check("  foods+recipe יחד", r["food_data"] is not None and r["recipe"] is not None)
+
 # ── summary ──────────────────────────────────────────────────────────────
 print("\n" + "=" * 64)
 print(f"תוצאה: {len(PASS)}/{len(PASS)+len(FAIL)} עברו")
