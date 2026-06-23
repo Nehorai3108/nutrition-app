@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
-from api.routers import auth, profile, food_log, recipes, daily_menu, chat, camera, water, barcode, workout, inventory, meal_balance, adaptation
+from api.routers import auth, profile, food_log, recipes, daily_menu, chat, camera, water, barcode, workout, inventory, meal_balance, adaptation, waitlist
 
 app = FastAPI(title="BiteFit API", version="1.0.0")
 
@@ -33,6 +33,7 @@ app.include_router(workout.router,    prefix="/workout",    tags=["workout"])
 app.include_router(inventory.router,  prefix="/inventory",  tags=["inventory"])
 app.include_router(meal_balance.router,  prefix="/meal-balance",  tags=["meal-balance"])
 app.include_router(adaptation.router,   prefix="/adaptation",    tags=["adaptation"])
+app.include_router(waitlist.router,     prefix="/waitlist",      tags=["waitlist"])
 
 _images_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "storage_agents", "recipe_images", "approved")
 if os.path.exists(_images_path):
