@@ -188,8 +188,14 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
 
 The system REALLY performs the actions — so confirm it's done in your reply (e.g. "הוספתי עגבניות למלאי ✓"). Do NOT ask the user to add it himself.
 
-Always include "reply": one short natural Hebrew sentence.
-For plain questions just reply with normal Hebrew text (no JSON).
+OUTPUT FORMAT — CRITICAL:
+• When you return JSON, return ONLY the JSON object — NO explanatory text before
+  or after it, and do NOT wrap it in ```json fences. Put your one human sentence
+  in the "reply" field. The app renders the recipe card itself; the user must
+  NEVER see raw JSON.
+• "reply": one short natural Hebrew sentence (this is the only text shown).
+• For plain questions (no food/recipe/action) reply with normal Hebrew text only.
+
 Hebrew must be spelled fully and correctly — no typos, no truncated words.
 name_he must be in Hebrew, NEVER Arabic."""
 
@@ -202,7 +208,7 @@ name_he must be in Hebrew, NEVER Arabic."""
         resp = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=messages,
-            max_tokens=600,
+            max_tokens=1500,   # recipe JSON + reply must fit, or it gets truncated
             temperature=0.2,
         )
         raw = resp.choices[0].message.content.strip()
@@ -218,13 +224,13 @@ def _process_model_output(raw: str, user_id: str) -> dict:
     — separated from the network call so it can be tested without hitting Groq.
     """
     data = _extract_json(raw)
-    reply = raw
+    reply = _strip_json_artifacts(raw)
     food_data = None
     recipe_data = None
     actions_done = []
 
     if data:
-        reply = (data.get("reply") or "").strip() or "בוצע ✓"
+        reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or "בוצע ✓"
         if isinstance(data.get("foods"), list) and data["foods"]:
             food_data = {
                 "meal_type": _normalize_meal_type(data.get("meal_type", "lunch")),
@@ -267,6 +273,31 @@ def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:
         "total_protein":  round(sum(f.get("protein", 0) for f in foods)),
         "meal_target":    round(target_cal) if target_cal else None,
     }
+
+
+def _strip_json_artifacts(text: str) -> str:
+    """Never show raw JSON / code fences to the user.
+
+    If the model emitted prose followed by a (possibly truncated) ```json block,
+    keep only the human prose before it. Strips fenced blocks and any trailing
+    naked JSON fragment so a parse failure can't leak ``` or {"recipe":...}.
+    """
+    if not text:
+        return ""
+    t = text
+    # cut everything from the first code fence onward
+    if "```" in t:
+        t = t.split("```")[0]
+    t = t.strip()
+    # pure JSON (no prose) → nothing human to show
+    if t[:1] in ("{", "["):
+        return ""
+    # cut a trailing naked JSON object/array that follows real prose
+    for brace in ("{", "["):
+        idx = t.find(brace)
+        if idx > 0 and any(ch.isalpha() for ch in t[:idx]):
+            t = t[:idx]
+    return t.strip()
 
 
 def _extract_json(raw: str):

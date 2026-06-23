@@ -267,6 +267,19 @@ for raw in ["גבינה צהוב", "יוגור", "ברוקול", "חומו", "ט
     fixed = C._normalize_food_name(raw)
     check(f"  '{raw}' תוקן (≠ מקור)", fixed != raw and len(fixed) >= len(raw), f"→ '{fixed}'")
 
+# ── T. never leak raw JSON to the user ───────────────────────────────────
+print("\n[T] לא לדלוף JSON גולמי")
+# truncated json after prose (the real screenshot bug)
+raw = 'יעד ארוחת בוקר ~748 קק"ל — חביתה.\n```json\n{ "recipe": { "title": "x", "foods": [ {"name_he":"ביצה"'
+r = C._process_model_output(raw, "_no_user")
+check("  JSON חתוך → טקסט נקי", "```" not in r["reply"] and "{" not in r["reply"] and "json" not in r["reply"], repr(r["reply"])[:60])
+check("  נשמר ההסבר בעברית", "ארוחת בוקר" in r["reply"])
+# fenced code with prose
+raw2 = 'בבקשה:\n```json\n{"reply":"x"}\n```'
+check("  גדר קוד מנוקה", "```" not in C._strip_json_artifacts(raw2))
+# plain prose unchanged
+check("  טקסט רגיל לא נפגע", C._strip_json_artifacts("סתם תשובה נחמדה") == "סתם תשובה נחמדה")
+
 # ── summary ──────────────────────────────────────────────────────────────
 print("\n" + "=" * 64)
 print(f"תוצאה: {len(PASS)}/{len(PASS)+len(FAIL)} עברו")
