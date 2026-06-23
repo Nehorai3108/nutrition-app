@@ -141,17 +141,18 @@ ACCURACY — distinguish look-alike foods:
 async def identify_food(file: UploadFile = File(...), user=Depends(get_current_user)):
     """מקבל תמונה → זיהוי מזון + הערכת כמות + ערכי תזונה מדויקים מהקטלוג."""
     # Free-tier rate limit (food-photo scan is the most expensive feature).
-    from api.usage import check_and_consume
-    gate = check_and_consume(user["id"], "camera")
-    if not gate["allowed"]:
-        return {
-            "items": [],
-            "limit_reached": True,
-            "remaining": 0,
-            "limit": gate["limit"],
-            "message": f"הגעת למכסת היומית של {gate['limit']} צילומים. "
-                       f"שדרג ל-Pro לצילום ללא הגבלה 🚀",
-        }
+    from api.usage import check_and_consume, is_owner
+    if not is_owner(user.get("email")):
+        gate = check_and_consume(user["id"], "camera")
+        if not gate["allowed"]:
+            return {
+                "items": [],
+                "limit_reached": True,
+                "remaining": 0,
+                "limit": gate["limit"],
+                "message": f"הגעת למכסת היומית של {gate['limit']} צילומים. "
+                           f"שדרג ל-Pro לצילום ללא הגבלה.",
+            }
 
     api_key = os.environ.get("GROQ_API_KEY", "")
     if not api_key:

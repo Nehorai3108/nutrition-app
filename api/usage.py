@@ -24,6 +24,18 @@ FREE_LIMITS = {
     "chat":  30,    # chat messages / day (cheap, generous cap)
 }
 
+# Owner / admin emails — always unlimited (never rate-limited). Comma-separated
+# in OWNER_EMAILS env; defaults to the project owner.
+OWNER_EMAILS = {
+    e.strip().lower()
+    for e in os.environ.get("OWNER_EMAILS", "dviryona8@gmail.com").split(",")
+    if e.strip()
+}
+
+
+def is_owner(email: str | None) -> bool:
+    return bool(email) and email.strip().lower() in OWNER_EMAILS
+
 _CREATE = """
 CREATE TABLE IF NOT EXISTS usage_daily (
     user_id  TEXT NOT NULL,
