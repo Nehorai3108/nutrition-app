@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriSmart — ניהול תזונה חכם בעברית</title>
-  <meta name="description" content="מערכת לניהול תזונה בעברית: זיהוי מזון מתמונה, יעדים מותאמים אישית, ומאכלים ישראליים." />
+  <meta name="description" content="תזונאי אישי באפליקציה: בונה תפריט יומי מותאם ומציע מה לבשל מהמלאי שבבית. בעברית, עם מאכלים ישראליים." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -47,10 +47,8 @@
       box-shadow:0 24px 60px -18px rgba(20,40,28,.45);border:1px solid #1e2e20}
     .screen{background:#0e1a12;border-radius:25px;overflow:hidden}
     .sb{display:flex;justify-content:space-between;align-items:center;padding:11px 18px 6px;font-size:12px;color:#9fc0a4;font-weight:600}
-    .ph-head{padding:4px 18px 14px;color:#fff;font-weight:800;font-size:17px;text-align:right}
-    .ph-photo{height:118px;margin:0 14px;border-radius:14px;background:
-      radial-gradient(60px 50px at 32% 40%,#caa15e,transparent 70%),
-      radial-gradient(70px 55px at 70% 62%,#6f9b54,transparent 72%),#1a2a1d}
+    .ph-head{padding:4px 18px 4px;color:#fff;font-weight:800;font-size:17px;text-align:right}
+    .ph-tag{margin:0 18px 6px;color:#7fb98f;font-size:12px;font-weight:600;text-align:right}
     .ph-card{margin:14px;background:#16221a;border:1px solid #2a3d2e;border-radius:14px;padding:13px 14px}
     .ph-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
     .ph-total b{color:#fff;font-size:22px;font-weight:800}
@@ -111,8 +109,8 @@
 
     <header class="hero">
       <div>
-        <h1>ניהול תזונה חכם,<br>בעברית.</h1>
-        <p class="lead">מצלמים את הארוחה ומקבלים ערכים תזונתיים מדויקים — כולל מאכלים ישראליים. יעדים מותאמים אישית, בלי טבלאות ובלי התעסקות.</p>
+        <h1>התזונאי האישי שלך,<br>באפליקציה.</h1>
+        <p class="lead">בונה לכם תפריט יומי מותאם ליעדים, ומציע מה לבשל מהמצרכים שכבר נמצאים בבית. כמו תזונאי — רק זמין תמיד, ובעברית.</p>
         <form id="join">
           <input id="email" type="email" placeholder="כתובת אימייל" required autocomplete="email" />
           <button id="btn" type="submit">הצטרפות לרשימת ההמתנה</button>
@@ -127,15 +125,16 @@
       <div class="phoneWrap">
         <div class="phone"><div class="screen">
           <div class="sb"><span>9:41</span><span>NutriSmart</span></div>
-          <div class="ph-head">הארוחה שלך</div>
-          <div class="ph-photo"></div>
+          <div class="ph-head">התפריט שלך · היום</div>
+          <div class="ph-tag">מבוסס על המלאי בבית</div>
           <div class="ph-card">
-            <div class="ph-total"><b>485 ק"ל</b><span>3 פריטים זוהו</span></div>
-            <div class="ph-row"><span class="n">חזה עוף</span><span class="c">150 גרם · 248 ק"ל</span></div>
-            <div class="ph-row"><span class="n">אורז לבן</span><span class="c">120 גרם · 156 ק"ל</span></div>
-            <div class="ph-row"><span class="n">סלט ירקות</span><span class="c">160 גרם · 56 ק"ל</span></div>
+            <div class="ph-total"><b>1,850 ק"ל</b><span>יעד יומי מותאם</span></div>
+            <div class="ph-row"><span class="n">בוקר · חביתה וירקות</span><span class="c">420 ק"ל</span></div>
+            <div class="ph-row"><span class="n">צהריים · עוף עם אורז</span><span class="c">640 ק"ל</span></div>
+            <div class="ph-row"><span class="n">ערב · סלמון ובטטה</span><span class="c">540 ק"ל</span></div>
+            <div class="ph-row"><span class="n">ביניים · יוגורט ואגוזים</span><span class="c">250 ק"ל</span></div>
           </div>
-          <div class="ph-btn">הוספה ליומן</div>
+          <div class="ph-btn">הצעת מתכון מהמלאי</div>
         </div></div>
       </div>
     </header>
@@ -144,27 +143,27 @@
   <section>
     <div class="wrap">
       <div class="eyebrow">היכולות</div>
-      <div class="h2">מה שמערכות באנגלית לא נותנות</div>
+      <div class="h2">תזונאי אישי, זמין תמיד</div>
       <div class="grid">
         <div class="feat">
-          <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 8h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
-          <h3>זיהוי מזון מתמונה</h3>
-          <p>צילום אחד של הצלחת מחזיר קלוריות ומאקרו, מותאם למאכלים ישראליים.</p>
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div>
+          <h3>תפריט יומי מותאם</h3>
+          <p>תוכנית ארוחות אישית לפי היעדים, ההעדפות והקלוריות שלכם — כמו שתזונאי היה בונה.</p>
+        </div>
+        <div class="feat">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 3v8a4 4 0 008 0V3M10 3v18M18 3v6a3 3 0 01-3 3"/></svg></div>
+          <h3>בישול מהמלאי בבית</h3>
+          <p>מציע מה לבשל מהמצרכים שכבר יש לכם — פחות בזבוז, פחות קניות מיותרות.</p>
         </div>
         <div class="feat">
           <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></div>
-          <h3>יועץ תזונה מבוסס AI</h3>
-          <p>תשובות והמלצות ארוחה מותאמות ליעד הקלורי האישי שלך.</p>
+          <h3>ייעוץ תזונה מבוסס AI</h3>
+          <p>שואלים מה לאכול ומקבלים תשובה והמלצת ארוחה מותאמת ליעד שלכם.</p>
         </div>
         <div class="feat">
           <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-8"/></svg></div>
           <h3>תוכנית שמתעדכנת</h3>
-          <p>היעד מסתגל להתקדמות בפועל, לא נוסחה קבועה.</p>
-        </div>
-        <div class="feat">
-          <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></div>
-          <h3>עברית מלאה</h3>
-          <p>נבנתה לשוק הישראלי, עם המזון שאתם באמת אוכלים.</p>
+          <p>היעד מסתגל להתקדמות בפועל — מערכת שלומדת אתכם, לא נוסחה קבועה.</p>
         </div>
       </div>
     </div>
@@ -175,9 +174,9 @@
       <div class="eyebrow">איך זה עובד</div>
       <div class="h2">שלושה צעדים</div>
       <div class="steps">
-        <div class="step"><div class="num">1</div><h3>מצלמים</h3><p>תמונה אחת של הארוחה.</p></div>
-        <div class="step"><div class="num">2</div><h3>מקבלים ערכים</h3><p>קלוריות, חלבון ומאקרו — מדויק.</p></div>
-        <div class="step"><div class="num">3</div><h3>מתקדמים ליעד</h3><p>המערכת מלווה אתכם לאורך הדרך.</p></div>
+        <div class="step"><div class="num">1</div><h3>מגדירים יעד</h3><p>משקל, פעילות ומה שיש במלאי.</p></div>
+        <div class="step"><div class="num">2</div><h3>מקבלים תפריט</h3><p>תוכנית ארוחות מותאמת אישית.</p></div>
+        <div class="step"><div class="num">3</div><h3>מתקדמים ליעד</h3><p>המערכת מתעדכנת ומלווה אתכם.</p></div>
       </div>
     </div>
   </section>
@@ -191,10 +190,10 @@
         <div><span class="amt">₪29</span> <span class="per">לחודש</span></div>
         <div class="alt">או ₪199 לשנה</div>
         <ul>
-          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>זיהוי מזון ללא הגבלה</li>
-          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>יועץ תזונה אישי</li>
-          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>תוכנית מסתגלת והמלצות ארוחה</li>
-          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>היסטוריה וניתוחים מלאים</li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>תפריט יומי מותאם אישית</li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>הצעות בישול מהמלאי בבית</li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>ייעוץ תזונה אישי ללא הגבלה</li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>תוכנית מסתגלת וזיהוי מזון מתמונה</li>
         </ul>
         <div class="free">גרסה בסיסית זמינה תמיד, ללא עלות.</div>
       </div>
