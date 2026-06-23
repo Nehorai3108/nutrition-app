@@ -128,6 +128,16 @@ def chat(body: ChatRequest, user=Depends(get_current_user)):
     if not api_key:
         return {"reply": "שגיאה: Groq API key חסר", "food_data": None}
 
+    # Free-tier daily message cap.
+    from api.usage import check_and_consume
+    gate = check_and_consume(user["id"], "chat")
+    if not gate["allowed"]:
+        return {
+            "reply": f"הגעת למכסת {gate['limit']} ההודעות היומית בצ'אט. "
+                     f"שדרג ל-Pro לשיחה ללא הגבלה 🚀",
+            "food_data": None, "recipe": None, "limit_reached": True,
+        }
+
     client = Groq(api_key=api_key)
 
     inv_ctx = _inventory_context(user["id"])

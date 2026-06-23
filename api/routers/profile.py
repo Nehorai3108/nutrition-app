@@ -20,6 +20,16 @@ def save_profile(data: dict, user=Depends(get_current_user)):
     repo.save(data)
     return {"ok": True}
 
+@router.get("/usage")
+def get_usage(user=Depends(get_current_user)):
+    """מצב מכסת השימוש היומית (לתצוגה באפליקציה) — צילומים וצ'אט."""
+    from api.usage import check, get_tier
+    return {
+        "tier":   get_tier(user["id"]),
+        "camera": check(user["id"], "camera"),
+        "chat":   check(user["id"], "chat"),
+    }
+
 def build_user_profile(p: dict, user_id: str):
     """Build a UserProfile domain object from a raw profile dict."""
     from nutrition_app.models.user import UserProfile
