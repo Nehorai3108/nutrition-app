@@ -5,87 +5,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriSmart — ניהול תזונה חכם בעברית</title>
   <meta name="description" content="מערכת לניהול תזונה בעברית: זיהוי מזון מתמונה, יעדים מותאמים אישית, ומאכלים ישראליים." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --green:#2f6b41; --green-d:#27583a; --ink:#15201a; --ink2:#33433a;
-      --bg:#ffffff; --soft:#f4f6f4; --line:#e3e8e3; --muted:#5c6b60; --txt:#1b251f;
+      --green:#1f5c39; --green-d:#184a2e; --ink:#11201a; --bg:#fbfbf9; --soft:#f1f4f1;
+      --line:#e4e9e4; --muted:#5a685e; --txt:#1a241e; --plate:#eef1ec;
     }
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-      background:var(--bg);color:var(--txt);line-height:1.65;-webkit-font-smoothing:antialiased}
-    .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+    body{font-family:"Assistant",-apple-system,"Segoe UI",sans-serif;background:var(--bg);
+      color:var(--txt);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:17px}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
     a{color:inherit;text-decoration:none}
 
-    nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}
-    .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;color:var(--ink)}
-    .logo .mark{width:11px;height:11px;border-radius:3px;background:var(--green)}
-    nav .cta{font-size:15px;color:var(--green);font-weight:600}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+    .logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:20px;color:var(--ink)}
+    .logo .mark{width:24px;height:24px;border-radius:7px;background:var(--green);display:flex;
+      align-items:center;justify-content:center}
+    .logo .mark svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2}
+    nav a.cta{font-size:15px;color:var(--green);font-weight:700}
 
-    .hero{padding:84px 0 64px;text-align:center}
-    .hero h1{font-size:clamp(30px,5.2vw,48px);font-weight:800;line-height:1.18;color:var(--ink);letter-spacing:-.4px}
-    .hero p{font-size:clamp(16px,2.3vw,20px);color:var(--muted);max-width:600px;margin:20px auto 0}
-
-    form{display:flex;gap:10px;max-width:500px;margin:36px auto 0}
-    form input{flex:1;padding:14px 16px;border-radius:10px;border:1px solid var(--line);
-      background:#fff;color:var(--txt);font-size:16px;text-align:right;font-family:inherit}
+    .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:48px 0 56px}
+    .hero h1{font-size:clamp(32px,4.4vw,46px);font-weight:800;line-height:1.16;color:var(--ink);letter-spacing:-.5px}
+    .hero .lead{font-size:clamp(17px,1.7vw,20px);color:var(--muted);margin-top:18px;max-width:480px}
+    form{display:flex;gap:9px;margin-top:28px;max-width:460px}
+    form input{flex:1;padding:13px 15px;border-radius:10px;border:1px solid var(--line);background:#fff;
+      font-size:16px;text-align:right;font-family:inherit;color:var(--txt)}
     form input:focus{outline:none;border-color:var(--green)}
-    form button{padding:14px 24px;border:0;border-radius:10px;background:var(--green);color:#fff;
-      font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+    form button{padding:13px 22px;border:0;border-radius:10px;background:var(--green);color:#fff;
+      font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
     form button:hover{background:var(--green-d)}
     form button:disabled{opacity:.6}
-    .incentive{font-size:14px;color:var(--ink2);margin-top:14px;font-weight:600}
-    .ok{display:none;color:var(--green);font-weight:600;margin-top:20px;font-size:17px}
+    .incentive{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink);margin-top:16px;font-weight:600}
+    .incentive svg{width:17px;height:17px;stroke:var(--green);fill:none;stroke-width:2}
+    .ok{display:none;color:var(--green);font-weight:700;margin-top:22px;font-size:18px}
 
-    section{padding:64px 0;border-top:1px solid var(--line)}
-    .eyebrow{font-size:13px;font-weight:700;color:var(--green);letter-spacing:.6px;text-align:center}
-    .h2{text-align:center;font-size:clamp(22px,3.6vw,30px);font-weight:800;color:var(--ink);margin:8px 0 36px}
+    /* phone mockup */
+    .phoneWrap{display:flex;justify-content:center}
+    .phone{width:268px;background:#0e1a12;border-radius:34px;padding:11px;
+      box-shadow:0 24px 60px -18px rgba(20,40,28,.45);border:1px solid #1e2e20}
+    .screen{background:#0e1a12;border-radius:25px;overflow:hidden}
+    .sb{display:flex;justify-content:space-between;align-items:center;padding:11px 18px 6px;font-size:12px;color:#9fc0a4;font-weight:600}
+    .ph-head{padding:4px 18px 14px;color:#fff;font-weight:800;font-size:17px;text-align:right}
+    .ph-photo{height:118px;margin:0 14px;border-radius:14px;background:
+      radial-gradient(60px 50px at 32% 40%,#caa15e,transparent 70%),
+      radial-gradient(70px 55px at 70% 62%,#6f9b54,transparent 72%),#1a2a1d}
+    .ph-card{margin:14px;background:#16221a;border:1px solid #2a3d2e;border-radius:14px;padding:13px 14px}
+    .ph-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+    .ph-total b{color:#fff;font-size:22px;font-weight:800}
+    .ph-total span{color:#7fb98f;font-size:12px;font-weight:600}
+    .ph-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid #20301f}
+    .ph-row .n{color:#dfeae1;font-size:13.5px}
+    .ph-row .c{color:#8aa890;font-size:12.5px}
+    .ph-btn{margin:0 14px 16px;background:#2f7a49;color:#fff;text-align:center;padding:11px;
+      border-radius:11px;font-weight:700;font-size:14px}
 
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-    .feat{padding:24px;border:1px solid var(--line);border-radius:14px;background:#fff}
-    .feat .ic{width:38px;height:38px;border-radius:9px;background:var(--soft);display:flex;
-      align-items:center;justify-content:center;margin-bottom:14px}
-    .feat .ic svg{width:20px;height:20px;stroke:var(--green);fill:none;stroke-width:1.7}
-    .feat h3{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:6px}
-    .feat p{color:var(--muted);font-size:15px}
+    section{padding:62px 0;border-top:1px solid var(--line)}
+    .eyebrow{font-size:13px;font-weight:700;color:var(--green);letter-spacing:.8px;text-align:center}
+    .h2{text-align:center;font-size:clamp(24px,3.4vw,32px);font-weight:800;color:var(--ink);margin:8px 0 40px;letter-spacing:-.3px}
 
-    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
-    .step{padding:22px}
-    .step .num{font-size:14px;font-weight:700;color:var(--green);margin-bottom:6px}
-    .step h3{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:4px}
-    .step p{color:var(--muted);font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+    .feat{padding:26px;border:1px solid var(--line);border-radius:16px;background:#fff}
+    .feat .ic{width:40px;height:40px;border-radius:10px;background:var(--soft);display:flex;
+      align-items:center;justify-content:center;margin-bottom:16px}
+    .feat .ic svg{width:21px;height:21px;stroke:var(--green);fill:none;stroke-width:1.7}
+    .feat h3{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:7px}
+    .feat p{color:var(--muted);font-size:15.5px}
 
-    .price{max-width:440px;margin:0 auto;border:1px solid var(--line);border-radius:16px;
-      padding:34px;text-align:center;background:#fff}
-    .price .tag{display:inline-block;font-size:13px;font-weight:700;color:var(--green);
-      background:var(--soft);padding:6px 14px;border-radius:20px;margin-bottom:18px}
-    .price .amt{font-size:40px;font-weight:800;color:var(--ink)}
-    .price .per{color:var(--muted);font-size:16px;font-weight:500}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+    .step{padding:24px;border:1px solid var(--line);border-radius:16px;background:#fff}
+    .step .num{font-size:13px;font-weight:800;color:#fff;background:var(--green);width:30px;height:30px;
+      border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+    .step h3{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:5px}
+    .step p{color:var(--muted);font-size:15px}
+
+    .price{max-width:430px;margin:0 auto;border:1px solid var(--line);border-radius:18px;padding:36px;text-align:center;background:#fff}
+    .price .tag{display:inline-block;font-size:13px;font-weight:700;color:var(--green);background:var(--soft);padding:6px 14px;border-radius:20px;margin-bottom:20px}
+    .price .amt{font-size:42px;font-weight:800;color:var(--ink)}
+    .price .per{color:var(--muted);font-size:16px;font-weight:600}
     .price .alt{color:var(--muted);font-size:15px;margin-top:4px}
-    .price ul{list-style:none;text-align:right;margin:22px auto 0;max-width:300px}
-    .price li{padding:7px 0;color:var(--txt);font-size:15px;display:flex;gap:9px;align-items:center}
-    .price li svg{width:17px;height:17px;stroke:var(--green);fill:none;stroke-width:2;flex:none}
-    .price .free{color:var(--muted);font-size:14px;margin-top:18px}
+    .price ul{list-style:none;text-align:right;margin:24px auto 0;max-width:300px}
+    .price li{padding:8px 0;color:var(--txt);font-size:15.5px;display:flex;gap:10px;align-items:center}
+    .price li svg{width:18px;height:18px;stroke:var(--green);fill:none;stroke-width:2.2;flex:none}
+    .price .free{color:var(--muted);font-size:14px;margin-top:20px}
 
-    footer{padding:36px 0;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+    footer{padding:38px 0;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+
+    @media(max-width:760px){
+      .hero{grid-template-columns:1fr;text-align:center;padding:30px 0 48px}
+      .hero .lead{margin-inline:auto}
+      form,.incentive{margin-inline:auto;justify-content:center}
+      .phoneWrap{order:-1;margin-bottom:14px}
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <nav>
-      <div class="logo"><span class="mark"></span>NutriSmart</div>
+      <div class="logo">
+        <span class="mark"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>NutriSmart
+      </div>
       <a class="cta" href="#join">הרשמה</a>
     </nav>
 
     <header class="hero">
-      <h1>ניהול תזונה חכם, בעברית.</h1>
-      <p>מצלמים את הארוחה ומקבלים ערכים תזונתיים מדויקים — כולל מאכלים ישראליים. יעדים מותאמים אישית, בלי טבלאות ובלי התעסקות.</p>
+      <div>
+        <h1>ניהול תזונה חכם,<br>בעברית.</h1>
+        <p class="lead">מצלמים את הארוחה ומקבלים ערכים תזונתיים מדויקים — כולל מאכלים ישראליים. יעדים מותאמים אישית, בלי טבלאות ובלי התעסקות.</p>
+        <form id="join">
+          <input id="email" type="email" placeholder="כתובת אימייל" required autocomplete="email" />
+          <button id="btn" type="submit">הצטרפות לרשימת ההמתנה</button>
+        </form>
+        <div class="incentive">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+          הנרשמים הראשונים מקבלים חודש מנוי Pro ללא תשלום
+        </div>
+        <div class="ok" id="ok">תודה. נשמרת ברשימה — נעדכן אותך עם פתיחת ההרשמה.</div>
+      </div>
 
-      <form id="join">
-        <input id="email" type="email" placeholder="כתובת אימייל" required autocomplete="email" />
-        <button id="btn" type="submit">הצטרפות לרשימת ההמתנה</button>
-      </form>
-      <div class="incentive">הנרשמים הראשונים מקבלים חודש מנוי Pro ללא תשלום.</div>
-      <div class="ok" id="ok">תודה. נשמרת ברשימה — נעדכן אותך עם פתיחת ההרשמה.</div>
+      <div class="phoneWrap">
+        <div class="phone"><div class="screen">
+          <div class="sb"><span>9:41</span><span>NutriSmart</span></div>
+          <div class="ph-head">הארוחה שלך</div>
+          <div class="ph-photo"></div>
+          <div class="ph-card">
+            <div class="ph-total"><b>485 ק"ל</b><span>3 פריטים זוהו</span></div>
+            <div class="ph-row"><span class="n">חזה עוף</span><span class="c">150 גרם · 248 ק"ל</span></div>
+            <div class="ph-row"><span class="n">אורז לבן</span><span class="c">120 גרם · 156 ק"ל</span></div>
+            <div class="ph-row"><span class="n">סלט ירקות</span><span class="c">160 גרם · 56 ק"ל</span></div>
+          </div>
+          <div class="ph-btn">הוספה ליומן</div>
+        </div></div>
+      </div>
     </header>
   </div>
 
@@ -123,9 +175,9 @@
       <div class="eyebrow">איך זה עובד</div>
       <div class="h2">שלושה צעדים</div>
       <div class="steps">
-        <div class="step"><div class="num">01</div><h3>מצלמים</h3><p>תמונה אחת של הארוחה.</p></div>
-        <div class="step"><div class="num">02</div><h3>מקבלים ערכים</h3><p>קלוריות, חלבון ומאקרו — מדויק.</p></div>
-        <div class="step"><div class="num">03</div><h3>מתקדמים ליעד</h3><p>המערכת מלווה אתכם לאורך הדרך.</p></div>
+        <div class="step"><div class="num">1</div><h3>מצלמים</h3><p>תמונה אחת של הארוחה.</p></div>
+        <div class="step"><div class="num">2</div><h3>מקבלים ערכים</h3><p>קלוריות, חלבון ומאקרו — מדויק.</p></div>
+        <div class="step"><div class="num">3</div><h3>מתקדמים ליעד</h3><p>המערכת מלווה אתכם לאורך הדרך.</p></div>
       </div>
     </div>
   </section>
@@ -163,8 +215,7 @@
       btn.disabled = true; btn.textContent = "רגע...";
       try {
         await fetch(API_BASE + "/waitlist/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, source: "landing", goal: "weight_loss" }),
         });
       } catch (_) {}
