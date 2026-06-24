@@ -57,6 +57,12 @@ class FoodLogRepository:
     # ── Backend selector ──────────────────────────────────────────────────────
 
     def _use_sqlite(self) -> bool:
+        # Supabase wins when configured (production): it's the persistent store.
+        # SQLite is local-dev only — on Render the committed nutrition.db lives on
+        # an EPHEMERAL disk that is wiped on every deploy, which silently reset the
+        # food log. Never use SQLite when Supabase is available.
+        if self._use_supabase():
+            return False
         return os.path.exists(self._db_path)
 
     def _use_supabase(self) -> bool:
