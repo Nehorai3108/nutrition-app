@@ -138,14 +138,28 @@ class FoodLogRepository:
         return [_row_to_entry(r) for r in rows]
 
     def _sb_add_entry(self, user_id: str, day: date_cls, entry: FoodLogEntry):
-        self._sb().table("food_log").insert({
+        payload = {
             "user_id": user_id, "date": day.isoformat(),
             "food_id": entry.food_id, "food_name": entry.food_name,
             "grams": entry.grams, "calories": entry.calories,
             "protein": entry.protein, "carbs": entry.carbs, "fat": entry.fat,
             "meal_type": entry.meal_type, "timestamp": entry.timestamp,
-            "entry_id": entry.entry_id,
-        }).execute()
+            "entry_id": entry.entry_id, "image_url": entry.image_url,
+        }
+        # Schema drift: older food_log tables may lack the image_url column.
+        # If PostgREST rejects it, drop the column and retry so logging never
+        # breaks (run db/migrations/food_log_image_url.sql to persist images).
+        import re as _re
+        for _ in range(3):
+            try:
+                self._sb().table("food_log").insert(payload).execute()
+                return
+            except Exception as e:
+                m = _re.search(r"Could not find the '([^']+)' column", str(e))
+                if not m or m.group(1) not in payload:
+                    raise
+                payload.pop(m.group(1), None)
+        raise RuntimeError("food_log insert failed after stripping unknown columns")
 
     def _sb_remove_entry(self, user_id: str, day: date_cls, entry_id: str):
         self._sb().table("food_log").delete().eq("entry_id", entry_id).execute()
