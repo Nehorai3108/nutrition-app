@@ -358,4 +358,10 @@ def format_ingredient_display(ingredient: dict) -> str:
 
     count = quantity / grams_per_unit
 
+    # Countable items (eggs, pitas...) must be WHOLE units — "חצי ביצה" makes no
+    # sense in a recipe. Round to the nearest whole, minimum one.
+    if category == "countable":
+        whole = max(1, round(count))
+        return f"{unit_he} אחת" if whole == 1 else f"{whole} {unit_he_plural}"
+
     return _format_quantity_hebrew(count, unit_he, unit_he_plural)

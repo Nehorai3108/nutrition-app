@@ -130,9 +130,8 @@ def get_meal_suggestions(
         exclude_name_keywords=_exclude_kw(meal_type),
         include_name_keywords=_include_kw(meal_type),
     )
-    # Prefer composed meals (≥3 ingredients) whose natural calories are already
-    # close to the target, so scaling stays gentle and portions stay realistic
-    # (no "8 eggs" / "30 olives" from blowing up a tiny recipe).
+    # Build a GOOD pool: composed meals (≥3 ingredients) whose natural calories
+    # are already close to the target (gentle scaling → realistic portions).
     tc = float(target_calories)
     def _meal_score(r):
         n = r.get("total_nutrition", {}) or {}
@@ -140,9 +139,15 @@ def get_meal_suggestions(
         proximity = abs(cal - tc) / tc if tc else 1.0      # 0 = perfect match
         composed  = -0.20 if len(r.get("ingredients", []) or []) >= 3 else 0.20
         return proximity + composed
-    results = sorted(results, key=_meal_score)
+    pool = sorted(results, key=_meal_score)[:7]   # the 7 best candidates
 
-    out = [_scale_recipe(r, target_calories) for r in results[:3]]
+    # Rotate WITHIN the good pool by the seed so the picks change day to day
+    # (the deterministic sort alone would always show the same 3).
+    import random as _random
+    rng = _random.Random(seed)
+    rng.shuffle(pool)
+
+    out = [_scale_recipe(r, target_calories) for r in pool[:3]]
     enrich_images(out)
     return {"meal_type": meal_type, "recipes": out}
 

@@ -641,14 +641,15 @@ class RecipeManager:
             scored.append((score, recipe))
 
         scored.sort(key=lambda x: x[0], reverse=True)
-        # קח את 15 המתכונים הטובים ביותר, ואז ערבב לפי seed לוריאציה
+        # קח את 15 המתכונים הטובים ביותר, ואז ערבב לפי seed לוריאציה.
+        # מחזירים 12 (לא 5) כדי שלשכבת ה-API יהיה מאגר לרוטציה יומית.
         import random as _random
         top_pool = scored[:15]
         if variation_seed != 0:
             _random.seed(variation_seed)
             _random.shuffle(top_pool)
             _random.seed()  # reset seed
-        return [r for _, r in top_pool[:5]]
+        return [r for _, r in top_pool[:12]]
 
     # ------------------------------------------------------------------
     # Statistics
