@@ -53,70 +53,59 @@ def _wiki_query(params: dict, lang: str) -> str | None:
     return None
 
 
-# ── Curated, high-quality food images (verified URLs) ────────────────────
-# Wikipedia thumbnails are inconsistent for foods (e.g. Hebrew "מלון" returns a
-# HOTEL, not the fruit). These hand-picked TheMealDB / Wikimedia images are
-# checked first, matched by the most specific Hebrew name.
-_MEALDB = "https://www.themealdb.com/images/ingredients/{}.png"
-_WM = "https://commons.wikimedia.org/wiki/Special:FilePath/{}?width=400"
-_CURATED: dict[str, str] = {
-    # fruit
-    "מלון": _WM.format("Cantaloupe.jpg"),
-    "אבטיח": _WM.format("Watermelon_cross_BNC.jpg"),
-    "בננה": _MEALDB.format("Banana"),
-    "תפוח עץ": _MEALDB.format("Apple"),
-    "תפוז": _MEALDB.format("Orange"),
-    "מנגו": _MEALDB.format("Mango"),
-    "תות": _MEALDB.format("Strawberries"),
-    "אבוקדו": _MEALDB.format("Avocado"),
-    # vegetables
-    "עגבניות שרי": _MEALDB.format("Cherry%20Tomatoes"),
-    "עגבנייה": _MEALDB.format("Tomato"),
-    "עגבני": _MEALDB.format("Tomato"),
-    "מלפפון": _MEALDB.format("Cucumber"),
-    "ברוקולי": _MEALDB.format("Broccoli"),
-    "גזר": _MEALDB.format("Carrot"),
-    "בצל": _MEALDB.format("Onion"),
-    "פלפל": _MEALDB.format("Red%20Pepper"),
-    "בטטה": _WM.format("Sweet_potato.jpg"),
-    "תפוח אדמה": _MEALDB.format("Potato"),
-    # protein
-    "טונה": _MEALDB.format("Tuna"),
-    "סלמון": _MEALDB.format("Salmon"),
-    "חזה עוף": _MEALDB.format("Chicken%20Breast"),
-    "עוף": _MEALDB.format("Chicken"),
-    "הודו": _MEALDB.format("Turkey"),
-    "ביצים": _MEALDB.format("Egg"),
-    "ביצה": _MEALDB.format("Egg"),
-    # dairy
-    "גבינה בולגרית": _MEALDB.format("Feta"),
-    "גבינה לבנה": _MEALDB.format("Feta"),
-    "גבינת פטה": _MEALDB.format("Feta"),
-    "יוגורט": _MEALDB.format("Greek%20Yogurt"),
-    "חלב": _MEALDB.format("Milk"),
-    # grains / carbs
-    "אורז": _MEALDB.format("Rice"),
-    "פסטה": _MEALDB.format("Spaghetti"),
-    "קינואה": _MEALDB.format("Quinoa"),
-    "פיתה": _WM.format("Pita.jpg"),
-    "לחם": _MEALDB.format("Bread"),
-    # legumes / nuts / fats
-    "חומוס": _MEALDB.format("Hummus"),
-    "עדשים": _MEALDB.format("Lentils"),
-    "שקדים": _MEALDB.format("Almonds"),
-    "אגוזי מלך": _MEALDB.format("Walnuts"),
-    "אגוזים": _MEALDB.format("Walnuts"),
-    "שמן זית": _MEALDB.format("Olive%20Oil"),
+# ── Hebrew → English search term for common foods ────────────────────────
+# Used to (a) query Pexels for an appetising photo and (b) disambiguate names
+# Wikipedia gets wrong (Hebrew "מלון" = melon AND hotel). Most-specific match.
+_HE_TO_EN: dict[str, str] = {
+    "מלון": "cantaloupe melon", "אבטיח": "watermelon", "בננה": "banana",
+    "תפוח עץ": "apple fruit", "תפוז": "orange fruit", "מנגו": "mango",
+    "תות": "strawberry", "אבוקדו": "avocado", "ענבים": "grapes", "אגס": "pear",
+    "אפרסק": "peach", "קיווי": "kiwi fruit", "תמר": "dates fruit",
+    "עגבניות שרי": "cherry tomatoes", "עגבנייה": "tomato", "עגבני": "tomato",
+    "מלפפון": "cucumber", "ברוקולי": "broccoli", "גזר": "carrots", "בצל": "onion",
+    "פלפל": "bell pepper", "בטטה": "sweet potato", "תפוח אדמה": "potato",
+    "חסה": "lettuce", "כרוב": "cabbage",
+    "טונה": "canned tuna", "סלמון": "salmon fillet", "חזה עוף": "grilled chicken breast",
+    "עוף": "cooked chicken", "הודו": "turkey meat", "ביצים": "fried eggs",
+    "ביצה": "fried egg", "פלאפל": "falafel", "שקשוקה": "shakshuka",
+    "גבינה צהובה": "cheddar cheese", "גבינה לבנה": "white cheese", "קוטג": "cottage cheese",
+    "יוגורט": "yogurt bowl", "חלב": "glass of milk",
+    "אורז": "cooked white rice", "פסטה": "pasta", "קינואה": "quinoa",
+    "פיתה": "pita bread", "לחם": "bread loaf", "שיבולת שועל": "oatmeal",
+    "בורגול": "bulgur", "חומוס": "hummus", "עדשים": "cooked lentils",
+    "שקדים": "almonds", "אגוזי מלך": "walnuts", "אגוזים": "mixed nuts",
+    "שמן זית": "olive oil", "זיתים": "olives", "טחינה": "tahini",
 }
 
 
-def _curated_lookup(name_he: str) -> str | None:
-    """Most-specific curated image for a Hebrew food name (longest key match)."""
+def _en_term(name_he: str) -> str | None:
+    """Most-specific English search term for a Hebrew food name."""
     nm = (name_he or "").strip()
     if not nm:
         return None
-    cands = [k for k in _CURATED if k in nm or nm in k]
-    return _CURATED[max(cands, key=len)] if cands else None
+    cands = [k for k in _HE_TO_EN if k in nm or nm in k]
+    return _HE_TO_EN[max(cands, key=len)] if cands else None
+
+
+def _pexels_food_image(query: str) -> str | None:
+    """Appetising food photo from Pexels (the same source as recipe images).
+    Returns None when no PEXELS_API_KEY is configured — caller falls back."""
+    if not query:
+        return None
+    try:
+        from nutrition_app.agents.agent_recipe_images.image_fetcher import (
+            _pexels_search, _get_api_key,
+        )
+        key = _get_api_key()
+        if not key:
+            return None
+        photos = _pexels_search(f"{query} food", per_page=1, api_key=key)
+        if photos:
+            src = photos[0].get("src", {}) or {}
+            return src.get("large") or src.get("medium") or src.get("original")
+    except Exception:
+        pass
+    return None
 
 
 def _wiki_image(title: str, lang: str) -> str | None:
@@ -145,13 +134,11 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     names like "פיתה עם חומוס ואמבה" where search wrongly returned shawarma.
     Caches misses as "" so we don't repeatedly query foods with no page image.
     """
-    # Curated images are authoritative and cheap — return before the cache so a
-    # previously-cached bad image (e.g. melon→hotel) is overridden.
-    curated = _curated_lookup(name_he)
-    if curated:
-        return curated
+    # A curated English term both drives the Pexels query and disambiguates
+    # names Wikipedia gets wrong (melon→hotel).
+    en_term = name_en or _en_term(name_he)
 
-    key = ("s:" if allow_search else "x:") + (name_en or name_he or "").strip().lower()
+    key = ("s:" if allow_search else "x:") + (en_term or name_he or "").strip().lower()
     if key in ("s:", "x:"):
         return None
 
@@ -160,10 +147,13 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
         if key in cache:
             return cache[key] or None
 
-    # exact Wikipedia title, then fuzzy search
-    img = _wiki_image(name_en, "en") or _wiki_image(name_he, "he")
+    # 1. Pexels — appetising photo (same source as recipe images), if a key is set
+    img = _pexels_food_image(en_term or name_he)
+    # 2. exact Wikipedia title (English term first), then 3. fuzzy search
+    if not img:
+        img = _wiki_image(en_term, "en") or _wiki_image(name_he, "he")
     if not img and allow_search:
-        img = _wiki_search_image(name_en, "en") or _wiki_search_image(name_he, "he")
+        img = _wiki_search_image(en_term, "en") or _wiki_search_image(name_he, "he")
 
     with _lock:
         cache[key] = img or ""
