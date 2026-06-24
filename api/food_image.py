@@ -87,6 +87,66 @@ def _en_term(name_he: str) -> str | None:
     return _HE_TO_EN[max(cands, key=len)] if cands else None
 
 
+# Hand-verified DIRECT Wikimedia image URLs for common foods — load instantly in
+# React Native, correct topic, no live lookup (so no rate-limits / stale cache).
+_W = "https://upload.wikimedia.org/wikipedia/commons"
+_CURATED_URLS: dict[str, str] = {
+    "מלון": f"{_W}/thumb/a/ae/Meloen_vrucht_met_bloem.jpg/500px-Meloen_vrucht_met_bloem.jpg",
+    "אבטיח": f"{_W}/thumb/4/47/Taiwan_2009_Tainan_City_Organic_Farm_Watermelon_FRD_7962.jpg/500px-Taiwan_2009_Tainan_City_Organic_Farm_Watermelon_FRD_7962.jpg",
+    "בננה": f"{_W}/d/de/Bananavarieties.jpg",
+    "תפוח עץ": f"{_W}/thumb/a/a6/Pink_lady_and_cross_section.jpg/500px-Pink_lady_and_cross_section.jpg",
+    "תפוז": f"{_W}/thumb/e/e3/Oranges_-_whole-halved-segment.jpg/500px-Oranges_-_whole-halved-segment.jpg",
+    "מנגו": f"{_W}/thumb/7/74/Mangos_-_single_and_halved.jpg/500px-Mangos_-_single_and_halved.jpg",
+    "תות": f"{_W}/thumb/4/4c/Garden_strawberry_%28Fragaria_%C3%97_ananassa%29_single2.jpg/500px-Garden_strawberry_%28Fragaria_%C3%97_ananassa%29_single2.jpg",
+    "אבוקדו": f"{_W}/thumb/f/f2/Persea_americana_fruit_2.JPG/500px-Persea_americana_fruit_2.JPG",
+    "ענבים": f"{_W}/thumb/5/53/Grapes%2C_Rostov-on-Don%2C_Russia.jpg/500px-Grapes%2C_Rostov-on-Don%2C_Russia.jpg",
+    "אגס": f"{_W}/thumb/c/cf/Pears.jpg/500px-Pears.jpg",
+    "תמר": f"{_W}/thumb/4/45/Dates005.jpg/500px-Dates005.jpg",
+    "עגבנייה": f"{_W}/thumb/8/89/Tomato_je.jpg/500px-Tomato_je.jpg",
+    "עגבני": f"{_W}/thumb/8/89/Tomato_je.jpg/500px-Tomato_je.jpg",
+    "מלפפון": f"{_W}/thumb/9/96/ARS_cucumber.jpg/500px-ARS_cucumber.jpg",
+    "ברוקולי": f"{_W}/thumb/0/03/Broccoli_and_cross_section_edit.jpg/500px-Broccoli_and_cross_section_edit.jpg",
+    "גזר": f"{_W}/thumb/a/a2/Vegetable-Carrot-Bundle-wStalks.jpg/500px-Vegetable-Carrot-Bundle-wStalks.jpg",
+    "בצל": f"{_W}/thumb/a/a2/Mixed_onions.jpg/500px-Mixed_onions.jpg",
+    "פלפל": f"{_W}/thumb/8/85/Green-Yellow-Red-Pepper-2009.jpg/500px-Green-Yellow-Red-Pepper-2009.jpg",
+    "בטטה": f"{_W}/thumb/5/58/Ipomoea_batatas_006.JPG/500px-Ipomoea_batatas_006.JPG",
+    "תפוח אדמה": f"{_W}/thumb/a/ab/Patates.jpg/500px-Patates.jpg",
+    "חסה": f"{_W}/thumb/d/da/Iceberg_lettuce_in_SB.jpg/500px-Iceberg_lettuce_in_SB.jpg",
+    "טונה": f"{_W}/2/21/Tuna_assortment.png",
+    "סלמון": f"{_W}/thumb/3/39/Salmo_salar.jpg/500px-Salmo_salar.jpg",
+    "ביצים": f"{_W}/thumb/f/f0/Fried_Egg_2.jpg/500px-Fried_Egg_2.jpg",
+    "ביצה": f"{_W}/thumb/f/f0/Fried_Egg_2.jpg/500px-Fried_Egg_2.jpg",
+    "הודו": f"{_W}/thumb/a/a3/Thanksgiving_Turkey.jpg/500px-Thanksgiving_Turkey.jpg",
+    "יוגורט": f"{_W}/thumb/b/b8/Joghurt.jpg/500px-Joghurt.jpg",
+    "חלב": f"{_W}/thumb/a/a5/Glass_of_Milk_%2833657535532%29.jpg/500px-Glass_of_Milk_%2833657535532%29.jpg",
+    "גבינה צהובה": f"{_W}/thumb/a/a8/Cheese_platter.jpg/500px-Cheese_platter.jpg",
+    "גבינה לבנה": f"{_W}/thumb/7/7b/Skimmed_milk_quark_on_spoon.jpg/500px-Skimmed_milk_quark_on_spoon.jpg",
+    "קוטג": f"{_W}/thumb/1/16/Cottagecheese200px.jpg/500px-Cottagecheese200px.jpg",
+    "אורז": f"{_W}/thumb/d/d6/Meshi_001.jpg/500px-Meshi_001.jpg",
+    "פסטה": f"{_W}/thumb/3/3f/%28Pasta%29_by_David_Adam_Kess_%28pic.2%29.jpg/500px-%28Pasta%29_by_David_Adam_Kess_%28pic.2%29.jpg",
+    "קינואה": f"{_W}/thumb/9/96/Reismelde.jpg/500px-Reismelde.jpg",
+    "פיתה": f"{_W}/thumb/3/32/Pita_Bread.jpg/500px-Pita_Bread.jpg",
+    "לחם": f"{_W}/thumb/2/2c/Wei%C3%9Fbrot-1.jpg/500px-Wei%C3%9Fbrot-1.jpg",
+    "חומוס": f"{_W}/thumb/b/bf/Lebanese_style_hummus.jpg/500px-Lebanese_style_hummus.jpg",
+    "עדשים": f"{_W}/thumb/f/f5/3_types_of_lentil.png/500px-3_types_of_lentil.png",
+    "שקדים": f"{_W}/thumb/3/37/Almonds_-_in_shell%2C_shell_cracked_open%2C_shelled%2C_blanched.jpg/500px-Almonds_-_in_shell%2C_shell_cracked_open%2C_shelled%2C_blanched.jpg",
+    "אגוזי מלך": f"{_W}/thumb/b/b2/Walnuts_-_whole_and_open_with_halved_kernel.jpg/500px-Walnuts_-_whole_and_open_with_halved_kernel.jpg",
+    "זיתים": f"{_W}/8/84/Olivesfromjordan.jpg",
+    "טחינה": f"{_W}/thumb/3/39/Tahina.JPG/500px-Tahina.JPG",
+    "שקשוקה": f"{_W}/thumb/1/18/Shakshuka_by_Calliopejen1.jpg/500px-Shakshuka_by_Calliopejen1.jpg",
+    "פלאפל": f"{_W}/thumb/5/57/Falafels_2.jpg/500px-Falafels_2.jpg",
+}
+
+
+def _curated_url(name_he: str) -> str | None:
+    """Hand-verified direct image URL for a common food (most-specific match)."""
+    nm = (name_he or "").strip()
+    if not nm:
+        return None
+    cands = [k for k in _CURATED_URLS if k in nm or nm in k]
+    return _CURATED_URLS[max(cands, key=len)] if cands else None
+
+
 def _pexels_food_image(query: str) -> str | None:
     """Appetising food photo from Pexels (the same source as recipe images).
     Returns None when no PEXELS_API_KEY is configured — caller falls back."""
@@ -134,6 +194,12 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     names like "פיתה עם חומוס ואמבה" where search wrongly returned shawarma.
     Caches misses as "" so we don't repeatedly query foods with no page image.
     """
+    # 0. Hand-verified direct URL for a common food — instant, correct, reliable.
+    #    Returned before the cache so any stale/bad cached value is overridden.
+    direct = _curated_url(name_he)
+    if direct:
+        return direct
+
     # A curated English term both drives the Pexels query and disambiguates
     # names Wikipedia gets wrong (melon→hotel).
     en_term = name_en or _en_term(name_he)
