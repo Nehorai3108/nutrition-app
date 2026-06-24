@@ -130,8 +130,11 @@ def get_meal_suggestions(
         exclude_name_keywords=_exclude_kw(meal_type),
         include_name_keywords=_include_kw(meal_type),
     )
-    enrich_images(results)
-    return {"meal_type": meal_type, "recipes": results[:3]}
+    # Scale each suggestion to the meal's calorie target so what's proposed
+    # actually matches what the user should eat for that meal.
+    out = [_scale_recipe(r, target_calories) for r in results[:3]]
+    enrich_images(out)
+    return {"meal_type": meal_type, "recipes": out}
 
 @router.get("/search")
 def search_recipes_for_meal(
@@ -144,28 +147,34 @@ def search_recipes_for_meal(
     לדוגמה: מחפשים 'שקשוקה' ל-759 קק"ל — מקבלים את השקשוקה כשהכמויות והערכים
     מותאמים בדיוק ליעד.
     """
-    import copy
     mgr = get_manager()
     results = mgr.search_recipes(RecipeFilter(search_text=q, max_results=20))
-
-    out = []
-    for r in results[:10]:
-        rec = copy.deepcopy(r)  # never mutate the cached recipe
-        n = rec.get("total_nutrition", {}) or {}
-        cal = n.get("calories", 0) or 0
-        if target_calories and cal > 0:
-            factor = float(target_calories) / cal
-            for k in ("calories", "protein", "carbs", "fat"):
-                if n.get(k) is not None:
-                    n[k] = round(n[k] * factor, 1)
-            for ing in rec.get("ingredients", []) or []:
-                if ing.get("quantity"):
-                    ing["quantity"] = round(ing["quantity"] * factor)
-            rec["scaled_to_calories"] = round(float(target_calories))
-        out.append(rec)
-
+    out = [_scale_recipe(r, target_calories) for r in results[:10]]
     enrich_images(out)  # also recomputes household-unit displays on scaled amounts
     return {"recipes": out}
+
+
+def _scale_recipe(recipe: dict, target_calories: Optional[int]) -> dict:
+    """Scale a recipe's nutrition + ingredient quantities to a calorie target.
+
+    Clamped to a realistic 0.5×–2.5× range so portions stay sensible while still
+    matching the meal budget as closely as possible. Never mutates the cache.
+    """
+    import copy
+    rec = copy.deepcopy(recipe)
+    n = rec.get("total_nutrition", {}) or {}
+    cal = n.get("calories", 0) or 0
+    if not target_calories or cal <= 0:
+        return rec
+    factor = max(0.5, min(2.5, float(target_calories) / cal))
+    for k in ("calories", "protein", "carbs", "fat"):
+        if n.get(k) is not None:
+            n[k] = round(n[k] * factor, 1)
+    for ing in rec.get("ingredients", []) or []:
+        if ing.get("quantity"):
+            ing["quantity"] = round(ing["quantity"] * factor)
+    rec["scaled_to_calories"] = round(n.get("calories", 0))
+    return rec
 
 @router.get("/plan")
 def get_daily_plan(user=Depends(get_current_user)):

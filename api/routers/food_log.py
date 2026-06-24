@@ -204,6 +204,11 @@ def get_log(date_str: str, user=Depends(get_current_user)):
     for e in entries:
         row = {k: v for k, v in e.__dict__.items()}
         row["image_url"] = row.get("image_url") or recipe_images.get(e.food_id)
+        # Last resort: resolve an image by the food name (disk-cached, so fast
+        # after the first lookup). Makes manually-added foods show a thumbnail
+        # even if none was stored on the entry.
+        if not row.get("image_url") and e.food_name:
+            row["image_url"] = _food_image("", e.food_name)
         result.append(row)
     return {"entries": result}
 
