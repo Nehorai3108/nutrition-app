@@ -130,8 +130,18 @@ def get_meal_suggestions(
         exclude_name_keywords=_exclude_kw(meal_type),
         include_name_keywords=_include_kw(meal_type),
     )
-    # Scale each suggestion to the meal's calorie target so what's proposed
-    # actually matches what the user should eat for that meal.
+    # Prefer composed meals (≥3 ingredients) whose natural calories are already
+    # close to the target, so scaling stays gentle and portions stay realistic
+    # (no "8 eggs" / "30 olives" from blowing up a tiny recipe).
+    tc = float(target_calories)
+    def _meal_score(r):
+        n = r.get("total_nutrition", {}) or {}
+        cal = n.get("calories", 0) or 0
+        proximity = abs(cal - tc) / tc if tc else 1.0      # 0 = perfect match
+        composed  = -0.20 if len(r.get("ingredients", []) or []) >= 3 else 0.20
+        return proximity + composed
+    results = sorted(results, key=_meal_score)
+
     out = [_scale_recipe(r, target_calories) for r in results[:3]]
     enrich_images(out)
     return {"meal_type": meal_type, "recipes": out}
@@ -157,8 +167,8 @@ def search_recipes_for_meal(
 def _scale_recipe(recipe: dict, target_calories: Optional[int]) -> dict:
     """Scale a recipe's nutrition + ingredient quantities to a calorie target.
 
-    Clamped to a realistic 0.5×–2.5× range so portions stay sensible while still
-    matching the meal budget as closely as possible. Never mutates the cache.
+    Clamped tightly (0.7×–1.4×) so portions stay realistic — better to be a bit
+    off the target than to tell someone to eat 8 eggs. Never mutates the cache.
     """
     import copy
     rec = copy.deepcopy(recipe)
@@ -166,7 +176,7 @@ def _scale_recipe(recipe: dict, target_calories: Optional[int]) -> dict:
     cal = n.get("calories", 0) or 0
     if not target_calories or cal <= 0:
         return rec
-    factor = max(0.5, min(2.5, float(target_calories) / cal))
+    factor = max(0.7, min(1.4, float(target_calories) / cal))
     for k in ("calories", "protein", "carbs", "fat"):
         if n.get(k) is not None:
             n[k] = round(n[k] * factor, 1)
