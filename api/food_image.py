@@ -159,10 +159,10 @@ def _pexels_food_image(query: str) -> str | None:
         key = _get_api_key()
         if not key:
             return None
-        photos = _pexels_search(f"{query} food", per_page=1, api_key=key)
+        photos = _pexels_search(query, per_page=1, api_key=key)
         if photos:
             src = photos[0].get("src", {}) or {}
-            return src.get("large") or src.get("medium") or src.get("original")
+            return src.get("medium") or src.get("large") or src.get("original")
     except Exception:
         pass
     return None
