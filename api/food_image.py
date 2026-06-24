@@ -194,12 +194,6 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     names like "פיתה עם חומוס ואמבה" where search wrongly returned shawarma.
     Caches misses as "" so we don't repeatedly query foods with no page image.
     """
-    # 0. Hand-verified direct URL for a common food — instant, correct, reliable.
-    #    Returned before the cache so any stale/bad cached value is overridden.
-    direct = _curated_url(name_he)
-    if direct:
-        return direct
-
     # A curated English term both drives the Pexels query and disambiguates
     # names Wikipedia gets wrong (melon→hotel).
     en_term = name_en or _en_term(name_he)
@@ -213,9 +207,13 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
         if key in cache:
             return cache[key] or None
 
-    # 1. Pexels — appetising photo (same source as recipe images), if a key is set
+    # 1. Pexels — appetising photo (same source as recipe images). Best quality;
+    #    used for ALL foods when a PEXELS_API_KEY is set.
     img = _pexels_food_image(en_term or name_he)
-    # 2. exact Wikipedia title (English term first), then 3. fuzzy search
+    # 2. hand-verified direct Wikimedia URL for common foods — reliable fallback
+    if not img:
+        img = _curated_url(name_he)
+    # 3. Wikipedia exact title (English term first), then 4. fuzzy search
     if not img:
         img = _wiki_image(en_term, "en") or _wiki_image(name_he, "he")
     if not img and allow_search:
