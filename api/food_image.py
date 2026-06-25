@@ -216,8 +216,8 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     # 3. Wikipedia exact title (English term first), then 4. fuzzy search
     if not img:
         img = _wiki_image(en_term, "en") or _wiki_image(name_he, "he")
-    if not img and allow_search:
-        img = _wiki_search_image(en_term, "en") or _wiki_search_image(name_he, "he")
+    # NOTE: _wiki_search_image intentionally removed — fuzzy search returns
+    # unrelated articles (including people's portraits) for Hebrew food names.
 
     with _lock:
         cache[key] = img or ""

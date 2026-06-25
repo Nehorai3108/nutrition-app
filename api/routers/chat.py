@@ -235,6 +235,39 @@ name_he must be in Hebrew, NEVER Arabic."""
         return {"reply": f"שגיאה: {e}", "food_data": None, "recipe": None}
 
 
+def _auto_log_foods(user_id: str, meal_type: str, foods: list) -> None:
+    """Silently log chat-suggested foods to the food diary."""
+    try:
+        import sqlite3 as _sq, uuid as _uuid
+        from api.utils import now_il_iso, today_il
+        conn = _sq.connect(_DB_PATH)
+        conn.isolation_level = None
+        d = today_il().isoformat()
+        for f in foods:
+            g = float(f.get("grams") or 100)
+            conn.execute(
+                "INSERT INTO food_log (id,user_id,date,food_id,food_name,grams,"
+                "calories,protein,carbs,fat,meal_type,timestamp,image_url) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    str(_uuid.uuid4()), user_id, d,
+                    f.get("name_en") or "chat_food",
+                    f.get("name_he") or f.get("name_en") or "מזון",
+                    g,
+                    round(float(f.get("calories") or 0), 1),
+                    round(float(f.get("protein") or 0), 1),
+                    round(float(f.get("carbs") or 0), 1),
+                    round(float(f.get("fat") or 0), 1),
+                    meal_type,
+                    now_il_iso(),
+                    f.get("image_url"),
+                ),
+            )
+        conn.close()
+    except Exception:
+        pass
+
+
 def _process_model_output(raw: str, user_id: str) -> dict:
     """Turn the raw model reply into the API response (reply + food/recipe/actions).
 
@@ -250,10 +283,11 @@ def _process_model_output(raw: str, user_id: str) -> dict:
     if data:
         reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or "בוצע ✓"
         if isinstance(data.get("foods"), list) and data["foods"]:
-            food_data = {
-                "meal_type": _normalize_meal_type(data.get("meal_type", "lunch")),
-                "foods": [_enrich_food(f) for f in data["foods"]],
-            }
+            meal_type = _normalize_meal_type(data.get("meal_type", "lunch"))
+            enriched = [_enrich_food(f) for f in data["foods"]]
+            food_data = {"meal_type": meal_type, "foods": enriched}
+            # Auto-log to diary so the user doesn't have to tap "add"
+            _auto_log_foods(user_id, meal_type, enriched)
         rec = data.get("recipe")
         if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
             meal_type = _normalize_meal_type(rec.get("meal_type", "lunch"))
