@@ -339,6 +339,7 @@ def _lookup_il_table(name_he: str, grams: float) -> dict | None:
     g = _clamp_grams(name, grams)
     f = g / 100.0
     return {
+        "name_he":  best_key,   # canonical Hebrew name — never show English/Arabic
         "calories": round(kcal100  * f),
         "protein":  round(prot100  * f, 1),
         "carbs":    round(carbs100 * f, 1),
@@ -376,13 +377,16 @@ def _lookup_catalog(name_he: str, name_en: str, grams: float) -> dict | None:
         if best:
             g = _clamp_grams(name_he, grams)
             macros = best.macros_for_grams(g)
-            return {
+            out = {
                 "calories": round(macros.get("calories_kcal", 0)),
                 "protein":  round(macros.get("protein_g",     0), 1),
                 "carbs":    round(macros.get("carbs_g",       0), 1),
                 "fat":      round(macros.get("fat_g",         0), 1),
                 "grams":    round(g),
             }
+            if best.name_he:        # prefer the catalog's Hebrew name
+                out["name_he"] = best.name_he
+            return out
     except Exception:
         pass
     return None
