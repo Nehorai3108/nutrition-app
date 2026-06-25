@@ -207,12 +207,15 @@ NUTRITION CALCULATION:
 
 Be precise. Think step by step: 1) What is the food? 2) How large is the portion? 3) Calculate nutrition for THAT portion."""
 
+    import time as _t
+    _model = "meta-llama/llama-4-scout-17b-16e-instruct"
+    _t0 = _t.time()
     try:
         resp = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             json={
-                "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+                "model": _model,
                 "messages": [{"role": "user", "content": [
                     {"type": "text",      "text": prompt},
                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
@@ -222,7 +225,11 @@ Be precise. Think step by step: 1) What is the food? 2) How large is the portion
             },
             timeout=35,
         )
-        text = resp.json()["choices"][0]["message"]["content"].strip()
+        _body = resp.json()
+        from api.llm_usage import log_llm_usage
+        log_llm_usage(user["id"], "groq", _model, "food_photo", _body.get("usage"),
+                      latency_ms=(_t.time() - _t0) * 1000)
+        text = _body["choices"][0]["message"]["content"].strip()
 
         # נקה markdown אם יש
         if "```" in text:

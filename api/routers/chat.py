@@ -205,16 +205,26 @@ name_he must be in Hebrew, NEVER Arabic."""
         messages.append({"role": m.role, "content": m.content})
     messages.append({"role": "user", "content": body.message})
 
+    import time as _t
+    _model = "llama-3.3-70b-versatile"
+    _t0 = _t.time()
     try:
         resp = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model=_model,
             messages=messages,
             max_tokens=1500,   # recipe JSON + reply must fit, or it gets truncated
             temperature=0.2,
         )
+        from api.llm_usage import log_llm_usage
+        log_llm_usage(user["id"], "groq", _model, "chat_assistant",
+                      getattr(resp, "usage", None),
+                      latency_ms=(_t.time() - _t0) * 1000)
         raw = resp.choices[0].message.content.strip()
         return _process_model_output(raw, user["id"])
     except Exception as e:
+        from api.llm_usage import log_llm_usage
+        log_llm_usage(user["id"], "groq", _model, "chat_assistant", None,
+                      latency_ms=(_t.time() - _t0) * 1000, success=False, error=str(e))
         return {"reply": f"שגיאה: {e}", "food_data": None, "recipe": None}
 
 

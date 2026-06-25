@@ -85,6 +85,8 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
 החזר אך ורק JSON אחד בפורמט הבא, ללא טקסט נוסף:
 {{"name_en": "english name", "category": "<one of: protein, carbohydrate, fat, vegetable, fruit, dairy, grain, legume, nut_seed, condiment, beverage, snack, sweet, other>", "calories": <kcal per 100g>, "protein": <g>, "carbs": <g>, "fat": <g>}}"""
 
+    import time as _t
+    _t0 = _t.time()
     try:
         resp = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
@@ -97,7 +99,15 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
             },
             timeout=20,
         )
-        text = resp.json()["choices"][0]["message"]["content"].strip()
+        _body = resp.json()
+        try:
+            from api.llm_usage import log_llm_usage
+            # utility — no user context; logged as "anon"
+            log_llm_usage("anon", "groq", _MODEL, "nutrition_estimate",
+                          _body.get("usage"), latency_ms=(_t.time() - _t0) * 1000)
+        except Exception:
+            pass
+        text = _body["choices"][0]["message"]["content"].strip()
         if "```" in text:
             text = text.split("```")[1]
             if text.startswith("json"):

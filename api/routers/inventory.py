@@ -234,12 +234,15 @@ milk = "חלב", bread = "לחם", cucumber = "מלפפון", chicken = "עוף"
 Return ONLY a JSON array, no markdown:
 [{"name_he":"עגבניות","name_en":"tomatoes","category":"produce","quantity":1,"unit":"ק\\"ג"}]"""
 
+    import time as _t
+    _model = "meta-llama/llama-4-scout-17b-16e-instruct"
+    _t0 = _t.time()
     try:
         resp = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             json={
-                "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+                "model": _model,
                 "messages": [{"role": "user", "content": [
                     {"type": "text", "text": prompt},
                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}},
@@ -249,7 +252,11 @@ Return ONLY a JSON array, no markdown:
             },
             timeout=45,
         )
-        text = resp.json()["choices"][0]["message"]["content"].strip()
+        _body = resp.json()
+        from api.llm_usage import log_llm_usage
+        log_llm_usage(user["id"], "groq", _model, "receipt_scan", _body.get("usage"),
+                      latency_ms=(_t.time() - _t0) * 1000)
+        text = _body["choices"][0]["message"]["content"].strip()
         if "```" in text:
             text = text.split("```")[1]
             if text.startswith("json"):
@@ -259,6 +266,9 @@ Return ONLY a JSON array, no markdown:
             text = text[start:end + 1]
         parsed = json.loads(text.strip())
     except Exception as e:
+        from api.llm_usage import log_llm_usage
+        log_llm_usage(user["id"], "groq", _model, "receipt_scan", None,
+                      latency_ms=(_t.time() - _t0) * 1000, success=False, error=str(e))
         return {"items": [], "error": str(e)}
 
     # Parse only — return the items for the user to review/edit before saving.
