@@ -235,37 +235,34 @@ name_he must be in Hebrew, NEVER Arabic."""
         return {"reply": f"שגיאה: {e}", "food_data": None, "recipe": None}
 
 
-def _auto_log_foods(user_id: str, meal_type: str, foods: list) -> None:
-    """Silently log chat-suggested foods to the food diary."""
+def _auto_log_foods(user_id: str, meal_type: str, foods: list) -> bool:
+    """Log chat-suggested foods to the food diary via the shared repository
+    (routes to Supabase in production, SQLite locally). Returns True on success
+    so the caller can tell the user it really happened."""
     try:
-        import sqlite3 as _sq, uuid as _uuid
-        from api.utils import now_il_iso, today_il
-        conn = _sq.connect(_DB_PATH)
-        conn.isolation_level = None
-        d = today_il().isoformat()
+        from nutrition_app.repositories.food_log_repository import (
+            FoodLogRepository, FoodLogEntry,
+        )
+        from api._tz import now_il_iso, today_il
+        repo = FoodLogRepository()
+        day = today_il()
         for f in foods:
-            g = float(f.get("grams") or 100)
-            conn.execute(
-                "INSERT INTO food_log (id,user_id,date,food_id,food_name,grams,"
-                "calories,protein,carbs,fat,meal_type,timestamp,image_url) "
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    str(_uuid.uuid4()), user_id, d,
-                    f.get("name_en") or "chat_food",
-                    f.get("name_he") or f.get("name_en") or "מזון",
-                    g,
-                    round(float(f.get("calories") or 0), 1),
-                    round(float(f.get("protein") or 0), 1),
-                    round(float(f.get("carbs") or 0), 1),
-                    round(float(f.get("fat") or 0), 1),
-                    meal_type,
-                    now_il_iso(),
-                    f.get("image_url"),
-                ),
+            entry = FoodLogEntry(
+                food_id=f.get("name_en") or "chat_food",
+                food_name=f.get("name_he") or f.get("name_en") or "מזון",
+                grams=float(f.get("grams") or 100),
+                calories=round(float(f.get("calories") or 0), 1),
+                protein=round(float(f.get("protein") or 0), 1),
+                carbs=round(float(f.get("carbs") or 0), 1),
+                fat=round(float(f.get("fat") or 0), 1),
+                meal_type=meal_type,
+                timestamp=now_il_iso(),
+                image_url=f.get("image_url"),
             )
-        conn.close()
+            repo.add_entry(user_id, day, entry)
+        return True
     except Exception:
-        pass
+        return False
 
 
 def _process_model_output(raw: str, user_id: str) -> dict:

@@ -76,6 +76,6 @@ def diag():
     return {
         "commit": commit[:12],
         "has_pexels_key": has_pexels,
-        "has_public_base": bool(os.environ.get("PUBLIC_BASE_URL")),
+        "public_base_url": os.environ.get("PUBLIC_BASE_URL", ""),
         "petibeur_image": probe,
     }
