@@ -47,3 +47,35 @@ app.mount("/food-photos", StaticFiles(directory=_photos_path), name="food-photos
 @app.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
+
+
+@app.get("/diag")
+def diag():
+    """Deployment diagnostics — confirms which build is live and key/feature state."""
+    import subprocess
+    commit = os.environ.get("RENDER_GIT_COMMIT", "")
+    if not commit:
+        try:
+            commit = subprocess.check_output(
+                ["git", "rev-parse", "--short", "HEAD"],
+                cwd=os.path.dirname(os.path.dirname(__file__)),
+            ).decode().strip()
+        except Exception:
+            commit = "unknown"
+    try:
+        from nutrition_app.agents.agent_recipe_images.image_fetcher import _get_api_key
+        has_pexels = bool(_get_api_key())
+    except Exception:
+        has_pexels = False
+    # Live image resolution probe for a previously-broken food name.
+    try:
+        from api.food_image import get_food_image
+        probe = get_food_image("", "פתיבר")
+    except Exception as e:
+        probe = f"error: {e}"
+    return {
+        "commit": commit[:12],
+        "has_pexels_key": has_pexels,
+        "has_public_base": bool(os.environ.get("PUBLIC_BASE_URL")),
+        "petibeur_image": probe,
+    }
