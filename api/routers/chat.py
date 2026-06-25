@@ -167,6 +167,13 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    "actions":[{{"type":"add_inventory","name_he":"עגבניות","quantity":1,"unit":"יח׳","category":"produce"}}]
    type is "add_inventory" or "remove_inventory". category ∈ produce,meat,dairy,bakery,pantry,frozen,beverages,snacks,other.
 
+2b. LOG A WORKOUT when the user says they exercised (e.g. "עשיתי ריצה 4 ק\"מ",
+   "התאמנתי חצי שעה כוח", "רכבתי 20 דקות") — include an action:
+   "actions":[{{"type":"add_workout","workout_type":"running","duration_minutes":30,"distance_km":4,"intensity":"moderate"}}]
+   workout_type ∈ running, strength, cycling, swimming, yoga, hiit, walking, other.
+   intensity ∈ low, moderate, high. distance_km optional. The system computes the
+   calories burned — don't include calories.
+
 3. SUGGEST A MEAL / RECIPE — when the user asks for a meal, a recipe, or what to
    cook/eat (e.g. "תכין לי מתכון", "תן לי ארוחת בוקר", "מה לאכול לצהריים") —
    return a STRUCTURED recipe via "recipe". Build it to fit that meal's calorie
@@ -494,6 +501,53 @@ def _fmt_q(q):
         return q
 
 
+# MET per workout type — calories computed server-side (don't trust the model).
+_WORKOUT_MET = {
+    "running": 9.0, "walking": 3.5, "strength": 4.5, "cycling": 6.8,
+    "swimming": 6.0, "yoga": 3.0, "hiit": 8.0, "other": 4.5,
+}
+
+
+def _log_workout(user_id: str, a: dict) -> None:
+    """Insert a workout from a chat action into the shared workout store."""
+    import uuid
+    from api.routers.workout import _use_sb as w_sb_on, _sb as w_sb, _conn as w_conn
+    from api._tz import today_il, now_il_iso
+
+    wtype = (a.get("workout_type") or "other").lower().strip()
+    intensity = (a.get("intensity") or "moderate").lower().strip()
+    try:
+        mins = float(a.get("duration_minutes") or 30)
+    except (TypeError, ValueError):
+        mins = 30.0
+    try:
+        dist = float(a["distance_km"]) if a.get("distance_km") not in (None, "") else None
+    except (TypeError, ValueError):
+        dist = None
+    calories = round((mins / 60.0) * _WORKOUT_MET.get(wtype, 4.5) * 75)
+
+    row = {
+        "entry_id": uuid.uuid4().hex, "user_id": user_id, "date": today_il().isoformat(),
+        "mode": "type", "workout_type": wtype, "intensity": intensity,
+        "duration_minutes": mins, "distance_km": dist, "calories_burned": calories,
+        "timestamp": now_il_iso(),
+    }
+    if w_sb_on():
+        w_sb().table("workout_log").insert(row).execute()
+    else:
+        with w_conn() as conn:
+            conn.execute(
+                """INSERT INTO workout_log
+                     (entry_id, user_id, date, mode, workout_type, intensity,
+                      duration_minutes, distance_km, calories_burned, timestamp)
+                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
+                tuple(row[k] for k in ("entry_id", "user_id", "date", "mode",
+                      "workout_type", "intensity", "duration_minutes",
+                      "distance_km", "calories_burned", "timestamp")),
+            )
+            conn.commit()
+
+
 def _exec_actions(user_id: str, actions: list) -> list:
     """Execute inventory add/remove actions via the shared inventory storage
     (Supabase in the cloud, SQLite locally) — same store the inventory list reads."""
@@ -503,6 +557,16 @@ def _exec_actions(user_id: str, actions: list) -> list:
         if not isinstance(a, dict):
             continue
         t = (a.get("type") or "").lower().strip()
+
+        # Workout logging — no name needed; handle before the name guard.
+        if t in ("add_workout", "workout", "log_workout"):
+            try:
+                _log_workout(user_id, a)
+                done.append({"op": "workout", "type": a.get("workout_type", "other")})
+            except Exception:
+                pass
+            continue
+
         name = (a.get("name_he") or a.get("name") or "").strip()
         if not name:
             continue

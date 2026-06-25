@@ -292,14 +292,12 @@ def _format_quantity_hebrew(count: float, unit_singular: str, unit_plural: str) 
         return f"חצי {unit_singular}"
 
     if frac == 0:
-        if whole == 1:
-            return f"{unit_singular} אחת"
-        return f"{whole} {unit_plural}"
+        return f"1 {unit_singular}" if whole == 1 else f"{whole} {unit_plural}"
 
-    mixed = "וחצי"
+    # whole + half (e.g. "כף וחצי", "2 כפות וחצי")
     if whole == 1:
-        return f"אחד {mixed} {unit_plural}"
-    return f"{whole} {mixed} {unit_plural}"
+        return f"{unit_singular} וחצי"
+    return f"{whole} {unit_plural} וחצי"
 
 
 def enrich_recipe_ingredients(recipe: dict) -> dict:
@@ -359,9 +357,9 @@ def format_ingredient_display(ingredient: dict) -> str:
     count = quantity / grams_per_unit
 
     # Countable items (eggs, pitas...) must be WHOLE units — "חצי ביצה" makes no
-    # sense in a recipe. Round to the nearest whole, minimum one.
+    # sense. Use NUMBERS to avoid Hebrew gender issues ("1 אבוקדו", not "אבוקדו אחת").
     if category == "countable":
         whole = max(1, round(count))
-        return f"{unit_he} אחת" if whole == 1 else f"{whole} {unit_he_plural}"
+        return f"1 {unit_he}" if whole == 1 else f"{whole} {unit_he_plural}"
 
     return _format_quantity_hebrew(count, unit_he, unit_he_plural)
