@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Request
 from api.deps import get_current_user
 import sys, os, base64, json, requests, uuid
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -138,7 +138,7 @@ ACCURACY — distinguish look-alike foods:
 
 
 @router.post("/identify")
-async def identify_food(file: UploadFile = File(...), user=Depends(get_current_user)):
+async def identify_food(request: Request, file: UploadFile = File(...), user=Depends(get_current_user)):
     """מקבל תמונה → זיהוי מזון + הערכת כמות + ערכי תזונה מדויקים מהקטלוג."""
     # Free-tier rate limit (food-photo scan is the most expensive feature).
     from api.usage import check_and_consume, is_owner
@@ -173,7 +173,8 @@ async def identify_food(file: UploadFile = File(...), user=Depends(get_current_u
         fname = f"{uuid.uuid4().hex}.jpg"
         with open(os.path.join(_PHOTOS_DIR, fname), "wb") as fh:
             fh.write(image_bytes)
-        image_url = f"{_PUBLIC_BASE}/food-photos/{fname}"
+        base = os.environ.get("PUBLIC_BASE_URL") or str(request.base_url).rstrip("/")
+        image_url = f"{base}/food-photos/{fname}"
     except Exception:
         pass
 

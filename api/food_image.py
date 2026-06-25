@@ -75,6 +75,12 @@ _HE_TO_EN: dict[str, str] = {
     "בורגול": "bulgur", "חומוס": "hummus", "עדשים": "cooked lentils",
     "שקדים": "almonds", "אגוזי מלך": "walnuts", "אגוזים": "mixed nuts",
     "שמן זית": "olive oil", "זיתים": "olives", "טחינה": "tahini",
+    "ביצקיט": "biscuit cookie", "פתיבר": "petit beurre cookie",
+    "עוגייה": "cookie", "עוגיות": "cookies", "קרקר": "crackers",
+    "שוקולד": "chocolate bar", "גרנולה": "granola", "חטיף": "snack bar",
+    "אפרסמון": "persimmon", "רימון": "pomegranate", "תאנה": "figs",
+    "גבינה": "cheese", "חמאה": "butter", "שמנת": "sour cream",
+    "קפה": "coffee cup", "תה": "tea cup", "מיץ": "fruit juice",
 }
 
 
