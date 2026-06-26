@@ -181,7 +181,7 @@ def _scale_recipe(recipe: dict, target_calories: Optional[int]) -> dict:
     cal = n.get("calories", 0) or 0
     if not target_calories or cal <= 0:
         return rec
-    factor = max(0.7, min(1.4, float(target_calories) / cal))
+    factor = max(0.6, min(1.6, float(target_calories) / cal))
     for k in ("calories", "protein", "carbs", "fat"):
         if n.get(k) is not None:
             n[k] = round(n[k] * factor, 1)
@@ -236,20 +236,51 @@ def _nutri(rec: dict) -> dict:
     }
 
 
-def _combo_deviation(combo, targets) -> float:
-    """Weighted, normalized distance of a day's totals from the macro targets.
-    Protein is weighted highest — it's what users most want a plan to nail."""
-    tot = {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
+def _scale_recipe_by_factor(recipe: dict, factor: float) -> dict:
+    """Multiply a recipe's nutrition + ingredient quantities by `factor`
+    (used to normalize the whole day to the exact calorie target)."""
+    import copy
+    rec = copy.deepcopy(recipe)
+    n = rec.get("total_nutrition", {}) or {}
+    for k in ("calories", "protein", "carbs", "fat"):
+        if n.get(k) is not None:
+            n[k] = round(n[k] * factor, 1)
+    for ing in rec.get("ingredients", []) or []:
+        if ing.get("quantity"):
+            ing["quantity"] = round(ing["quantity"] * factor)
+    rec["scaled_to_calories"] = round(n.get("calories", 0))
+    return rec
+
+
+def _combo_norm(combo, target_cal: float):
+    """Day totals for a combo AFTER normalizing to the exact calorie target.
+
+    Returns (normalized_totals, factor). The factor is clamped so portions stay
+    sane; any residual calorie gap after clamping is reflected in the totals."""
+    raw = {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
     for rec in combo:
         n = _nutri(rec)
-        for k in tot:
-            tot[k] += n[k]
-    weights = {"protein": 2.0, "calories": 1.0, "carbs": 0.5, "fat": 0.5}
-    dev = 0.0
-    for k, w in weights.items():
-        tgt = float(targets.get(k) or 0) or 1.0
-        dev += w * abs(tot[k] - tgt) / tgt
-    return dev
+        for k in raw:
+            raw[k] += n[k]
+    if raw["calories"] <= 0:
+        return raw, 1.0
+    factor = max(0.6, min(1.8, target_cal / raw["calories"]))
+    return {k: v * factor for k, v in raw.items()}, factor
+
+
+def _combo_cost(combo, targets) -> float:
+    """Lower = better. Encodes the user's priorities on the normalized day:
+    hit calories exactly, never undershoot protein, never overshoot fat."""
+    tcal  = float(targets.get("calories") or 0) or 1.0
+    tprot = float(targets.get("protein")  or 0) or 1.0
+    tcarb = float(targets.get("carbs")    or 0) or 1.0
+    tfat  = float(targets.get("fat")      or 0) or 1.0
+    tot, _ = _combo_norm(combo, tcal)
+    cal_dev    = abs(tot["calories"] - tcal) / tcal       # residual after clamp
+    prot_under = max(0.0, tprot - tot["protein"]) / tprot  # below protein = bad
+    fat_over   = max(0.0, tot["fat"] - tfat) / tfat        # above fat = bad
+    carb_dev   = abs(tot["carbs"] - tcarb) / tcarb
+    return 4.0 * cal_dev + 2.0 * prot_under + 3.0 * fat_over + 0.4 * carb_dev
 
 
 @router.get("/full-day-plan")
@@ -300,22 +331,24 @@ def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
     meals = list(meal_candidates.keys())
     pools = [meal_candidates[m] for m in meals]
 
-    # 2. Search combinations (bounded: ≤4^5) for the one that best hits the
-    #    day's macro targets. Pick among the near-best for day-to-day variety.
+    # 2. Search combinations (bounded: ≤4^5) for the lowest-cost day (hits
+    #    calories, protein floor, fat ceiling). Pick among near-best for variety.
     combos = list(itertools.product(*pools))
-    scored = sorted(combos, key=lambda c: _combo_deviation(c, targets))
+    scored = sorted(combos, key=lambda c: _combo_cost(c, targets))
     if scored:
-        best_dev = _combo_deviation(scored[0], targets)
-        near_best = [c for c in scored if _combo_deviation(c, targets) <= best_dev * 1.10] or scored[:1]
+        best = _combo_cost(scored[0], targets)
+        near_best = [c for c in scored if _combo_cost(c, targets) <= best + 0.15] or scored[:1]
         chosen = random.Random(seed).choice(near_best)
     else:
         chosen = ()
 
-    # 3. Assemble the response: per-meal recipe with precise quantities + the
-    #    day's totals vs. the targets.
+    # 3. Normalize the chosen day to the EXACT calorie target, then assemble the
+    #    response with per-meal precise quantities + the day's totals.
+    _, factor = _combo_norm(chosen, float(total_cal))
     plan = {}
     totals = {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
     for meal, rec in zip(meals, chosen):
+        rec = _scale_recipe_by_factor(rec, factor)
         enrich_images([rec])  # image + household-unit ingredient strings
         n = _nutri(rec)
         for k in totals:
@@ -331,3 +364,50 @@ def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
         "totals": {k: round(v, 1) for k, v in totals.items()},
         "seed": seed,
     }
+
+
+@router.get("/swap-meal/{meal_type}")
+def swap_meal(
+    meal_type: str,
+    target_calories: int,
+    exclude_recipe_id: Optional[str] = None,
+    seed: int = 0,
+    user=Depends(get_current_user),
+):
+    """החלפת מנה בודדת — מחזיר מתכון חלופי לארוחה אחת, מותאם לאותו יעד קלורי,
+    מכבד אלרגיות/לא-אוהב, ושונה מהמנה הנוכחית (exclude_recipe_id)."""
+    mgr  = get_manager()
+    repo = ProfileRepository()
+    prefs     = repo.load(user["id"]).get("meal_preferences", {})
+    allergens = prefs.get("allergies", [])
+    disliked  = prefs.get("disliked_foods", [])
+
+    mt = meal_type.upper()
+    suggestions = mgr.recommend_meal(
+        meal_type=mt,
+        target_calories=float(target_calories),
+        allergens=allergens or None,
+        disliked_foods=disliked or None,
+        variation_seed=seed,
+        max_prep_minutes=_prep_cap(mt),
+        exclude_name_keywords=_exclude_kw(mt),
+        include_name_keywords=_include_kw(mt),
+    )
+    # Drop the current recipe so the swap always changes something.
+    pool = [r for r in suggestions if r.get("recipe_id") != exclude_recipe_id]
+    pool = pool or suggestions
+    if not pool:
+        return {"recipe": None}
+
+    scaled = [_scale_recipe(r, target_calories) for r in pool]
+    # Closest to the meal's calorie target, prefer composed dishes.
+    def _score(r):
+        n = _nutri(r)
+        prox = abs(n["calories"] - target_calories) / target_calories if target_calories else 1.0
+        composed = -0.2 if len(r.get("ingredients", []) or []) >= 3 else 0.2
+        return prox + composed
+    best_pool = sorted(scaled, key=_score)[:5]
+    import random as _random
+    rec = _random.Random(seed).choice(best_pool)
+    enrich_images([rec])
+    return {"recipe": rec, "meal_type": mt}
