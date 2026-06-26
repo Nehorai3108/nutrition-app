@@ -222,3 +222,112 @@ def get_daily_plan(user=Depends(get_current_user)):
         }
 
     return {"plan": plan, "total_target": total_cal}
+
+
+# ── Full-day plan: one recipe per meal, optimized to hit the DAY's macros ──────
+
+def _nutri(rec: dict) -> dict:
+    n = rec.get("total_nutrition", {}) or {}
+    return {
+        "calories": float(n.get("calories") or 0),
+        "protein":  float(n.get("protein")  or 0),
+        "carbs":    float(n.get("carbs")    or 0),
+        "fat":      float(n.get("fat")      or 0),
+    }
+
+
+def _combo_deviation(combo, targets) -> float:
+    """Weighted, normalized distance of a day's totals from the macro targets.
+    Protein is weighted highest — it's what users most want a plan to nail."""
+    tot = {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
+    for rec in combo:
+        n = _nutri(rec)
+        for k in tot:
+            tot[k] += n[k]
+    weights = {"protein": 2.0, "calories": 1.0, "carbs": 0.5, "fat": 0.5}
+    dev = 0.0
+    for k, w in weights.items():
+        tgt = float(targets.get(k) or 0) or 1.0
+        dev += w * abs(tot[k] - tgt) / tgt
+    return dev
+
+
+@router.get("/full-day-plan")
+def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
+    """תפריט יום שלם בלחיצה — מנה אחת לכל ארוחה, מותאם כך שסך היום פוגע
+    ביעדי המאקרו (חלבון/פחמימות/שומן), לא רק בקלוריות. מותאם לאלרגיות
+    ולמאכלים שהמשתמש לא אוהב. seed שונה → תפריט אחר (גיוון)."""
+    import itertools, random
+    from api.routers.profile import get_targets
+
+    targets = get_targets(user)
+    total_cal = targets["calories"]
+
+    mgr  = get_manager()
+    repo = ProfileRepository()
+    prefs     = repo.load(user["id"]).get("meal_preferences", {})
+    allergens = prefs.get("allergies", [])
+    disliked  = prefs.get("disliked_foods", [])
+
+    # 1. Build a candidate pool per meal — each recipe scaled to that meal's
+    #    calorie sub-target (so total calories stay on target automatically).
+    K = 4  # candidates per meal kept for the macro search
+    meal_candidates = {}
+    for meal, ratio in MEAL_DISTRIBUTION.items():
+        meal_cal = total_cal * ratio
+        suggestions = mgr.recommend_meal(
+            meal_type=meal,
+            target_calories=meal_cal,
+            allergens=allergens or None,
+            disliked_foods=disliked or None,
+            variation_seed=seed,
+            max_prep_minutes=_prep_cap(meal),
+            exclude_name_keywords=_exclude_kw(meal),
+            include_name_keywords=_include_kw(meal),
+        )
+        scaled = [_scale_recipe(r, round(meal_cal)) for r in suggestions]
+        # Prefer composed meals close to the meal's calorie target.
+        def _score(r):
+            n = _nutri(r)
+            prox = abs(n["calories"] - meal_cal) / meal_cal if meal_cal else 1.0
+            composed = -0.2 if len(r.get("ingredients", []) or []) >= 3 else 0.2
+            return prox + composed
+        pool = sorted(scaled, key=_score)[:K]
+        rng = random.Random(seed + hash(meal) % 1000)
+        rng.shuffle(pool)
+        meal_candidates[meal] = pool or scaled[:1]
+
+    meals = list(meal_candidates.keys())
+    pools = [meal_candidates[m] for m in meals]
+
+    # 2. Search combinations (bounded: ≤4^5) for the one that best hits the
+    #    day's macro targets. Pick among the near-best for day-to-day variety.
+    combos = list(itertools.product(*pools))
+    scored = sorted(combos, key=lambda c: _combo_deviation(c, targets))
+    if scored:
+        best_dev = _combo_deviation(scored[0], targets)
+        near_best = [c for c in scored if _combo_deviation(c, targets) <= best_dev * 1.10] or scored[:1]
+        chosen = random.Random(seed).choice(near_best)
+    else:
+        chosen = ()
+
+    # 3. Assemble the response: per-meal recipe with precise quantities + the
+    #    day's totals vs. the targets.
+    plan = {}
+    totals = {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
+    for meal, rec in zip(meals, chosen):
+        enrich_images([rec])  # image + household-unit ingredient strings
+        n = _nutri(rec)
+        for k in totals:
+            totals[k] += n[k]
+        plan[meal] = {
+            "target_calories": round(total_cal * MEAL_DISTRIBUTION[meal]),
+            "recipe": rec,
+        }
+
+    return {
+        "plan": plan,
+        "targets": targets,
+        "totals": {k: round(v, 1) for k, v in totals.items()},
+        "seed": seed,
+    }
