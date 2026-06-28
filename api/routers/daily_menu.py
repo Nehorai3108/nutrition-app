@@ -276,11 +276,15 @@ def _combo_cost(combo, targets) -> float:
     tcarb = float(targets.get("carbs")    or 0) or 1.0
     tfat  = float(targets.get("fat")      or 0) or 1.0
     tot, _ = _combo_norm(combo, tcal)
-    cal_dev    = abs(tot["calories"] - tcal) / tcal       # residual after clamp
-    prot_under = max(0.0, tprot - tot["protein"]) / tprot  # below protein = bad
-    fat_over   = max(0.0, tot["fat"] - tfat) / tfat        # above fat = bad
-    carb_dev   = abs(tot["carbs"] - tcarb) / tcarb
-    return 4.0 * cal_dev + 2.0 * prot_under + 3.0 * fat_over + 0.4 * carb_dev
+    cal_dev   = abs(tot["calories"] - tcal) / tcal     # residual after clamp
+    prot_dev  = abs(tot["protein"] - tprot) / tprot    # match protein both ways
+    carb_dev  = abs(tot["carbs"]   - tcarb) / tcarb    # match carbs both ways
+    fat_dev   = abs(tot["fat"]     - tfat)  / tfat      # match fat both ways
+    # Extra nudge: undershooting protein and overshooting fat are worse than the reverse.
+    prot_under = max(0.0, tprot - tot["protein"]) / tprot
+    fat_over   = max(0.0, tot["fat"] - tfat) / tfat
+    return (4.0 * cal_dev + 1.5 * prot_dev + 1.0 * carb_dev + 1.8 * fat_dev
+            + 0.8 * prot_under + 1.5 * fat_over)
 
 
 def _compose_day(targets, mgr, allergens, disliked, seed):
@@ -289,7 +293,7 @@ def _compose_day(targets, mgr, allergens, disliked, seed):
     total_cal = targets["calories"]
 
     # 1. Candidate pool per meal — each scaled to the meal's calorie sub-target.
-    K = 4
+    K = 6
     meal_candidates = {}
     for meal, ratio in MEAL_DISTRIBUTION.items():
         meal_cal = total_cal * ratio
@@ -322,7 +326,7 @@ def _compose_day(targets, mgr, allergens, disliked, seed):
     scored = sorted(combos, key=lambda c: _combo_cost(c, targets))
     if scored:
         best = _combo_cost(scored[0], targets)
-        near_best = [c for c in scored if _combo_cost(c, targets) <= best + 0.15] or scored[:1]
+        near_best = [c for c in scored if _combo_cost(c, targets) <= best + 0.05] or scored[:1]
         chosen = random.Random(seed).choice(near_best)
     else:
         chosen = ()
