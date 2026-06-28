@@ -308,6 +308,10 @@ def _compose_day(targets, mgr, allergens, disliked, seed):
             include_name_keywords=_include_kw(meal),
         )
         scaled = [_scale_recipe(r, round(meal_cal)) for r in suggestions]
+        # Drop dishes that are too small/large to be a real meal at this slot
+        # (prevents a "50 kcal breakfast"). Keep the full list as a fallback.
+        sized = [r for r in scaled if 0.45 * meal_cal <= _nutri(r)["calories"] <= 1.8 * meal_cal]
+        scaled = sized or scaled
         def _score(r):
             n = _nutri(r)
             prox = abs(n["calories"] - meal_cal) / meal_cal if meal_cal else 1.0
