@@ -181,10 +181,14 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    "recipe":{{
      "title":"חביתת ירקות עם טונה",
      "meal_type":"breakfast",
+     "to_menu":false,
      "instructions":["מטגנים בצל וירקות","מוסיפים ביצים טרופות","מערבבים טונה ומגישים"],
      "foods":[{{"name_he":"ביצה","name_en":"egg","grams":110,"calories":160,"protein":13,"carbs":1,"fat":11}},
               {{"name_he":"טונה","name_en":"tuna","grams":100,"calories":116,"protein":26,"carbs":0,"fat":1}}]
    }}
+   Set "to_menu":true ONLY when the user explicitly asks to PUT/ADD the dish into
+   their menu/plan (e.g. "תכניס לי לתפריט", "תוסיף לתפריט בבוקר", "תשבץ בתפריט").
+   Otherwise "to_menu":false. Always set the correct "meal_type" the user named.
    The "foods" must sum to roughly the meal budget. Keep instructions short (2-5 steps).
    Use realistic portions and compute TOTAL nutrition per food.
    RECIPE RULES (important):
@@ -321,6 +325,7 @@ def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:
         "total_calories": round(sum(f.get("calories", 0) for f in foods)),
         "total_protein":  round(sum(f.get("protein", 0) for f in foods)),
         "meal_target":    round(target_cal) if target_cal else None,
+        "to_menu":        bool(rec.get("to_menu")),
     }
 
 
