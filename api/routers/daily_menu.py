@@ -283,26 +283,13 @@ def _combo_cost(combo, targets) -> float:
     return 4.0 * cal_dev + 2.0 * prot_under + 3.0 * fat_over + 0.4 * carb_dev
 
 
-@router.get("/full-day-plan")
-def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
-    """תפריט יום שלם בלחיצה — מנה אחת לכל ארוחה, מותאם כך שסך היום פוגע
-    ביעדי המאקרו (חלבון/פחמימות/שומן), לא רק בקלוריות. מותאם לאלרגיות
-    ולמאכלים שהמשתמש לא אוהב. seed שונה → תפריט אחר (גיוון)."""
+def _compose_day(targets, mgr, allergens, disliked, seed):
+    """Build one macro-optimized day (plan + totals) for the given seed."""
     import itertools, random
-    from api.routers.profile import get_targets
-
-    targets = get_targets(user)
     total_cal = targets["calories"]
 
-    mgr  = get_manager()
-    repo = ProfileRepository()
-    prefs     = repo.load(user["id"]).get("meal_preferences", {})
-    allergens = prefs.get("allergies", [])
-    disliked  = prefs.get("disliked_foods", [])
-
-    # 1. Build a candidate pool per meal — each recipe scaled to that meal's
-    #    calorie sub-target (so total calories stay on target automatically).
-    K = 4  # candidates per meal kept for the macro search
+    # 1. Candidate pool per meal — each scaled to the meal's calorie sub-target.
+    K = 4
     meal_candidates = {}
     for meal, ratio in MEAL_DISTRIBUTION.items():
         meal_cal = total_cal * ratio
@@ -317,7 +304,6 @@ def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
             include_name_keywords=_include_kw(meal),
         )
         scaled = [_scale_recipe(r, round(meal_cal)) for r in suggestions]
-        # Prefer composed meals close to the meal's calorie target.
         def _score(r):
             n = _nutri(r)
             prox = abs(n["calories"] - meal_cal) / meal_cal if meal_cal else 1.0
@@ -331,8 +317,7 @@ def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
     meals = list(meal_candidates.keys())
     pools = [meal_candidates[m] for m in meals]
 
-    # 2. Search combinations (bounded: ≤4^5) for the lowest-cost day (hits
-    #    calories, protein floor, fat ceiling). Pick among near-best for variety.
+    # 2. Lowest-cost combination (hits calories, protein floor, fat ceiling).
     combos = list(itertools.product(*pools))
     scored = sorted(combos, key=lambda c: _combo_cost(c, targets))
     if scored:
@@ -342,28 +327,50 @@ def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
     else:
         chosen = ()
 
-    # 3. Normalize the chosen day to the EXACT calorie target, then assemble the
-    #    response with per-meal precise quantities + the day's totals.
+    # 3. Normalize to the exact calorie target, assemble plan + totals.
     _, factor = _combo_norm(chosen, float(total_cal))
     plan = {}
     totals = {"calories": 0.0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
     for meal, rec in zip(meals, chosen):
         rec = _scale_recipe_by_factor(rec, factor)
-        enrich_images([rec])  # image + household-unit ingredient strings
+        enrich_images([rec])
         n = _nutri(rec)
         for k in totals:
             totals[k] += n[k]
-        plan[meal] = {
-            "target_calories": round(total_cal * MEAL_DISTRIBUTION[meal]),
-            "recipe": rec,
-        }
+        plan[meal] = {"target_calories": round(total_cal * MEAL_DISTRIBUTION[meal]), "recipe": rec}
 
-    return {
-        "plan": plan,
-        "targets": targets,
-        "totals": {k: round(v, 1) for k, v in totals.items()},
-        "seed": seed,
-    }
+    return {"plan": plan, "totals": {k: round(v, 1) for k, v in totals.items()}}
+
+
+@router.get("/full-day-plan")
+def get_full_day_plan(seed: int = 0, user=Depends(get_current_user)):
+    """תפריט יום שלם בלחיצה — מנה אחת לכל ארוחה, מותאם לפגוע ביעדי המאקרו."""
+    from api.routers.profile import get_targets
+    targets = get_targets(user)
+    prefs   = ProfileRepository().load(user["id"]).get("meal_preferences", {})
+    day = _compose_day(targets, get_manager(), prefs.get("allergies", []),
+                       prefs.get("disliked_foods", []), seed)
+    return {**day, "targets": targets, "seed": seed}
+
+
+_DAY_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"]
+
+
+@router.get("/weekly-plan")
+def get_weekly_plan(seed: int = 0, user=Depends(get_current_user)):
+    """תפריט שבועי מפורט — 7 ימים, כל יום מותאם ליעדי המאקרו ושונה מהאחרים."""
+    from api.routers.profile import get_targets
+    targets = get_targets(user)
+    mgr = get_manager()
+    prefs = ProfileRepository().load(user["id"]).get("meal_preferences", {})
+    allergens = prefs.get("allergies", [])
+    disliked  = prefs.get("disliked_foods", [])
+
+    days = []
+    for i in range(7):
+        day = _compose_day(targets, mgr, allergens, disliked, seed * 100 + i)
+        days.append({"day_index": i, "day_name": _DAY_NAMES[i], **day})
+    return {"days": days, "targets": targets, "seed": seed}
 
 
 @router.get("/swap-meal/{meal_type}")
