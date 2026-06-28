@@ -287,10 +287,11 @@ def _combo_cost(combo, targets) -> float:
             + 0.8 * prot_under + 1.5 * fat_over)
 
 
-def _compose_day(targets, mgr, allergens, disliked, seed):
+def _compose_day(targets, mgr, allergens, disliked, seed, used_ids=None):
     """Build one macro-optimized day (plan + totals) for the given seed."""
     import itertools, random
     total_cal = targets["calories"]
+    used_ids = used_ids or set()
 
     # 1. Candidate pool per meal — each scaled to the meal's calorie sub-target.
     K = 6
@@ -312,6 +313,10 @@ def _compose_day(targets, mgr, allergens, disliked, seed):
         # (prevents a "50 kcal breakfast"). Keep the full list as a fallback.
         sized = [r for r in scaled if 0.45 * meal_cal <= _nutri(r)["calories"] <= 1.8 * meal_cal]
         scaled = sized or scaled
+        # Avoid repeating dishes already used earlier in the week (variety).
+        if used_ids:
+            fresh = [r for r in scaled if r.get("recipe_id") not in used_ids]
+            scaled = fresh or scaled
         def _score(r):
             n = _nutri(r)
             prox = abs(n["calories"] - meal_cal) / meal_cal if meal_cal else 1.0
@@ -375,8 +380,13 @@ def get_weekly_plan(seed: int = 0, user=Depends(get_current_user)):
     disliked  = prefs.get("disliked_foods", [])
 
     days = []
+    used_ids = set()  # avoid repeating the same dish across the week
     for i in range(7):
-        day = _compose_day(targets, mgr, allergens, disliked, seed * 100 + i)
+        day = _compose_day(targets, mgr, allergens, disliked, seed * 100 + i, used_ids)
+        for md in day["plan"].values():
+            rid = md.get("recipe", {}).get("recipe_id")
+            if rid:
+                used_ids.add(rid)
         days.append({"day_index": i, "day_name": _DAY_NAMES[i], **day})
     return {"days": days, "targets": targets, "seed": seed}
 
