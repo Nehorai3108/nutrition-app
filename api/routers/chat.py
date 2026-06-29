@@ -192,6 +192,12 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    The "foods" must sum to roughly the meal budget. Keep instructions short (2-5 steps).
    Use realistic portions and compute TOTAL nutrition per food.
    RECIPE RULES (important):
+   • CENTER the recipe on what the user asked for. If they said "חביתה", the dish
+     IS an omelette — build a normal meal AROUND it, never replace it.
+   • Use meal-APPROPRIATE foods. A normal Israeli breakfast = ביצים/חביתה, סלט
+     ירקות, גבינה לבנה/קוטג', פיתה/לחם, אבוקדו, טחינה, זיתים. NEVER put cooked
+     rice/pasta/אורז מבושל/פסטה in breakfast or a snack. Rice/pasta are for
+     lunch/dinner only.
    • List EVERY ingredient the instructions use — including cooking oil/fat
      (שמן זית/חמאה), spices, and anything fried/sautéed in. A fried/sautéed dish
      MUST include שמן זית.
