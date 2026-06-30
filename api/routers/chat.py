@@ -159,9 +159,13 @@ Be specific with quantities. Never give a generic answer that ignores the budget
 
 You can ACT for the user by returning a JSON object (inside a ```json block). Use it when relevant:
 
-1. LOG food the user says they ate — include "foods":
+1. LOG food the user says they ATE or DRANK — include "foods":
    "foods":[{{"name_he":"שם בעברית","name_en":"english","grams":<total grams>,"calories":<total kcal>,"protein":<g>,"carbs":<g>,"fat":<g>}}]
    Estimate realistic portions (ביצה≈55g, פרוסת לחם≈30g, מנת אורז≈180g, חזה עוף≈170g, תפוח≈180g) and compute TOTAL nutrition for the portion described.
+   CRITICAL: ANY time the user says they ate/drank/had something (past tense — e.g.
+   "אכלתי חלב", "שתיתי קפה", "אכלתי מעדן", "אכלנו פיצה", "היה לי תפוח") you MUST
+   return the "foods" array. NEVER just confirm in text ("בוצע"/"רשמתי") without it,
+   and do NOT turn it into a "recipe" — eaten food = "foods", not "recipe".
 
 2. ADD or REMOVE inventory items when the user asks (e.g. "קניתי עגבניות תוסיף למלאי", "תוריד חלב מהמלאי") — include "actions":
    "actions":[{{"type":"add_inventory","name_he":"עגבניות","quantity":1,"unit":"יח׳","category":"produce"}}]
@@ -237,7 +241,17 @@ name_he must be in Hebrew, NEVER Arabic."""
                       getattr(resp, "usage", None),
                       latency_ms=(_t.time() - _t0) * 1000)
         raw = resp.choices[0].message.content.strip()
-        return _process_model_output(raw, user["id"])
+        result = _process_model_output(raw, user["id"])
+        # Safety net: the user clearly reported eating something but the model
+        # didn't structure it → a second focused call extracts the foods so the
+        # client can log + sync them.
+        if (not result.get("food_data") and not result.get("recipe")
+                and not result.get("actions") and _looks_like_ate(body.message)):
+            foods = _extract_eaten_foods(client, _model, body.message)
+            if foods:
+                result["food_data"] = {"meal_type": _guess_meal_type(body.message), "foods": foods}
+                result["reply"] = (result.get("reply") or "").strip() or "רשמתי ✓"
+        return result
     except Exception as e:
         from api.llm_usage import log_llm_usage
         log_llm_usage(user["id"], "groq", _model, "chat_assistant", None,
@@ -306,6 +320,63 @@ def _process_model_output(raw: str, user_id: str) -> dict:
 
     return {"reply": reply, "food_data": food_data,
             "recipe": recipe_data, "actions": actions_done}
+
+
+_ATE_WORDS = ("אכלתי", "אכלנו", "אכלה", "אכלת", "שתיתי", "שתינו", "טעמתי",
+              "היה לי", "כיווני", "נשנשתי", "זללתי")
+
+
+def _looks_like_ate(message: str) -> bool:
+    m = message or ""
+    return any(w in m for w in _ATE_WORDS)
+
+
+def _guess_meal_type(message: str) -> str:
+    m = message or ""
+    if "בוקר" in m:
+        return "breakfast"
+    if "צהר" in m:
+        return "lunch"
+    if "ערב" in m or "דינר" in m:
+        return "dinner"
+    # default by current Israel hour
+    try:
+        from api._tz import now_il
+        h = now_il().hour
+    except Exception:
+        h = 13
+    if h < 11:
+        return "breakfast"
+    if h < 16:
+        return "lunch"
+    if h < 19:
+        return "afternoon_snack"
+    return "dinner"
+
+
+def _extract_eaten_foods(client, model: str, message: str) -> list:
+    """Focused second call: extract ONLY the foods the user said they ate."""
+    sys = ("המשתמש אמר שאכל או שתה משהו. החזר אך ורק מערך JSON של הפריטים שאכל, "
+           "ללא טקסט נוסף. פורמט מדויק: "
+           '[{"name_he":"שם בעברית מלא","grams":<גרם>,"calories":<קלוריות סהכ>,'
+           '"protein":<גרם>,"carbs":<גרם>,"fat":<גרם>}]. '
+           "הערך כמות מציאותית וחשב ערכים לכל המנה. שמות בעברית בלבד, לא ערבית.")
+    try:
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": sys},
+                      {"role": "user", "content": message}],
+            max_tokens=400, temperature=0.1,
+        )
+        raw = resp.choices[0].message.content.strip()
+        import re as _re, json as _json
+        mt = _re.search(r"\[.*\]", raw, _re.DOTALL)
+        arr = _json.loads(mt.group(0) if mt else raw)
+        if isinstance(arr, list) and arr:
+            return [_enrich_food(f) for f in arr if isinstance(f, dict)]
+    except Exception:
+        pass
+    return []
 
 
 def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:
