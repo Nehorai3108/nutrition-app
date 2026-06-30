@@ -10,6 +10,43 @@ router = APIRouter()
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                         "storage", "nutrition.db")
 
+_NOTES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                          "storage_agents", "biti_notes")
+
+
+def _notes_path(user_id: str) -> str:
+    safe = "".join(c for c in str(user_id) if c.isalnum() or c in "-_") or "user"
+    return os.path.join(_NOTES_DIR, f"{safe}.json")
+
+
+def _load_notes(user_id: str) -> list:
+    """Durable facts Biti has learned about the user."""
+    try:
+        import json as _json
+        with open(_notes_path(user_id), encoding="utf-8") as f:
+            data = _json.load(f)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def _save_note(user_id: str, note: str) -> None:
+    note = (note or "").strip()
+    if not note:
+        return
+    try:
+        import json as _json
+        notes = _load_notes(user_id)
+        # de-dupe (case-insensitive) and cap to the 25 most recent facts
+        if not any(note.lower() == n.lower() for n in notes):
+            notes.append(note)
+            notes = notes[-25:]
+            os.makedirs(_NOTES_DIR, exist_ok=True)
+            with open(_notes_path(user_id), "w", encoding="utf-8") as f:
+                _json.dump(notes, f, ensure_ascii=False)
+    except Exception:
+        pass
+
 
 @router.get("/insight")
 def daily_insight(user=Depends(get_current_user)):
@@ -143,8 +180,18 @@ def chat(body: ChatRequest, user=Depends(get_current_user)):
 
     inv_ctx = _inventory_context(user["id"])
     nut_ctx = _nutrition_context(user["id"])
+    notes   = _load_notes(user["id"])
+    notes_ctx = ("\n".join(f"  • {n}" for n in notes)) if notes else "  (עדיין לא ידוע)"
 
     system = f"""You are Biti — a smart Israeli nutrition assistant. Always reply in Hebrew.
+You are the user's PERSONAL nutritionist who knows them and remembers them.
+
+WHAT YOU REMEMBER ABOUT THIS USER (use it, refer to it naturally):
+{notes_ctx}
+When you learn a DURABLE fact about the user (a preference, dietary style, goal,
+dislike, allergy, routine — e.g. "אני צמחוני", "אני לא אוהב דגים", "אני מתאמן בבוקר"),
+add a short Hebrew note via "remember" in your JSON: "remember":"המשתמש צמחוני".
+Only for lasting facts — NOT one-off meals.
 
 USER CONTEXT (live data — use it):
 - Inventory (מלאי): {inv_ctx}
@@ -322,6 +369,14 @@ def _process_model_output(raw: str, user_id: str) -> dict:
             recipe_data = _build_recipe_data(rec, target_cal)
         if isinstance(data.get("actions"), list) and data["actions"]:
             actions_done = _exec_actions(user_id, data["actions"])
+        # Long-term memory: persist any durable fact Biti learned about the user.
+        remember = data.get("remember")
+        if isinstance(remember, str) and remember.strip():
+            _save_note(user_id, remember)
+        elif isinstance(remember, list):
+            for r in remember:
+                if isinstance(r, str):
+                    _save_note(user_id, r)
 
     return {"reply": reply, "food_data": food_data,
             "recipe": recipe_data, "actions": actions_done}
