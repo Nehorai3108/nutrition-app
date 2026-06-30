@@ -293,8 +293,8 @@ def _process_model_output(raw: str, user_id: str) -> dict:
             meal_type = _normalize_meal_type(data.get("meal_type", "lunch"))
             enriched = [_enrich_food(f) for f in data["foods"]]
             food_data = {"meal_type": meal_type, "foods": enriched}
-            # Auto-log to diary so the user doesn't have to tap "add"
-            _auto_log_foods(user_id, meal_type, enriched)
+            # NOTE: the client logs these to the diary (reliable + refreshes the
+            # home summary) and deducts them from the menu — no server auto-log.
         rec = data.get("recipe")
         if isinstance(rec, dict) and isinstance(rec.get("foods"), list) and rec["foods"]:
             meal_type = _normalize_meal_type(rec.get("meal_type", "lunch"))
