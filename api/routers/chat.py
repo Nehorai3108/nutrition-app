@@ -166,6 +166,11 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    "אכלתי חלב", "שתיתי קפה", "אכלתי מעדן", "אכלנו פיצה", "היה לי תפוח") you MUST
    return the "foods" array. NEVER just confirm in text ("בוצע"/"רשמתי") without it,
    and do NOT turn it into a "recipe" — eaten food = "foods", not "recipe".
+   ALWAYS include "meal_type" matching what the user said, using EXACTLY one of:
+   breakfast (בוקר) · morning_snack (ביניים בוקר / חטיף בוקר) · lunch (צהריים) ·
+   afternoon_snack (ביניים צהריים / חטיף צהריים / אחה"צ) · dinner (ערב).
+   Example: "אכלתי תפוח לביניים צהריים" → "meal_type":"afternoon_snack". If the user
+   didn't say which meal, omit meal_type.
 
 2. ADD or REMOVE inventory items when the user asks (e.g. "קניתי עגבניות תוסיף למלאי", "תוריד חלב מהמלאי") — include "actions":
    "actions":[{{"type":"add_inventory","name_he":"עגבניות","quantity":1,"unit":"יח׳","category":"produce"}}]
@@ -333,10 +338,11 @@ def _looks_like_ate(message: str) -> bool:
 
 def _guess_meal_type(message: str) -> str:
     m = message or ""
+    snack = "ביניים" in m or "חטיף" in m
     if "בוקר" in m:
-        return "breakfast"
-    if "צהר" in m:
-        return "lunch"
+        return "morning_snack" if snack else "breakfast"
+    if "צהר" in m or "אחה" in m:
+        return "afternoon_snack" if snack else "lunch"
     if "ערב" in m or "דינר" in m:
         return "dinner"
     # default by current Israel hour
@@ -468,10 +474,13 @@ _MEAL_ALIASES = {
     "lunch": "lunch", "noon": "lunch", "צהריים": "lunch",
     "ארוחת צהריים": "lunch", "ארוחתצהריים": "lunch",
     "afternoon_snack": "afternoon_snack", "חטיף צהריים": "afternoon_snack",
+    "ביניים בוקר": "morning_snack", "ביניים צהריים": "afternoon_snack",
+    "ביניים אחהצ": "afternoon_snack", "אחהצ": "afternoon_snack",
     "dinner": "dinner", "evening": "dinner", "ערב": "dinner",
     "ארוחת ערב": "dinner", "ארוחתערב": "dinner",
-    "evening_snack": "evening_snack", "חטיף ערב": "evening_snack",
-    "snack": "snack", "חטיף": "snack",
+    # No evening-snack slot in the plan → fold into dinner.
+    "evening_snack": "dinner", "חטיף ערב": "dinner", "ביניים ערב": "dinner",
+    "snack": "afternoon_snack", "חטיף": "afternoon_snack", "ביניים": "afternoon_snack",
 }
 
 
