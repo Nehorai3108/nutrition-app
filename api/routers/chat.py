@@ -339,7 +339,7 @@ Hebrew must be spelled fully and correctly — no typos, no truncated words.
 name_he must be in Hebrew, NEVER Arabic."""
 
     messages = [{"role": "system", "content": system}]
-    for m in body.history[-10:]:
+    for m in body.history[-6:]:   # keep context lean to conserve daily tokens
         messages.append({"role": m.role, "content": m.content})
     messages.append({"role": "user", "content": body.message})
 
@@ -407,7 +407,12 @@ name_he must be in Hebrew, NEVER Arabic."""
         from api.llm_usage import log_llm_usage
         log_llm_usage(user["id"], "groq", _model, "chat_assistant", None,
                       latency_ms=(_t.time() - _t0) * 1000, success=False, error=str(e))
-        return {"reply": f"שגיאה: {e}", "food_data": None, "recipe": None}
+        msg = str(e).lower()
+        if "rate_limit" in msg or "429" in msg or "tokens per day" in msg:
+            reply = "אני קצת עמוס כרגע 🙏 נסה שוב בעוד כמה דקות."
+        else:
+            reply = "משהו השתבש, נסה שוב בעוד רגע."
+        return {"reply": reply, "food_data": None, "recipe": None}
 
 
 def _auto_log_foods(user_id: str, meal_type: str, foods: list) -> bool:
