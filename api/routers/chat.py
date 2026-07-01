@@ -20,8 +20,12 @@ async def transcribe(file: UploadFile = File(...), user=Depends(get_current_user
         client = Groq(api_key=api_key)
         res = client.audio.transcriptions.create(
             file=(file.filename or "audio.m4a", audio),
-            model="whisper-large-v3-turbo",
+            model="whisper-large-v3",  # most accurate for Hebrew
             language="he",
+            temperature=0.0,
+            # Domain hint improves spelling of nutrition terms.
+            prompt="שיחה בעברית על תזונה: אכלתי, שתיתי, ארוחת בוקר, צהריים, ערב, "
+                   "חלבון, פחמימות, שומן, קלוריות, חביתה, סלט, עוף, אורז, יוגורט.",
             response_format="text",
         )
         text = res if isinstance(res, str) else getattr(res, "text", "")
