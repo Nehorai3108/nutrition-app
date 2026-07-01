@@ -549,7 +549,8 @@ def _add_household_display(foods: list) -> list:
         for f in foods:
             f["display_he"] = format_ingredient_display({
                 "food_name": f.get("name_he", ""),
-                "food_name_en": f.get("name_en", ""),
+                # _enrich_food stores the English name under "name"; fall back to it.
+                "food_name_en": f.get("name_en") or f.get("name") or "",
                 "quantity": f.get("grams", 0),
                 "unit": "grams",
             })
