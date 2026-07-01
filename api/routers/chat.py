@@ -313,6 +313,12 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
      Lunch/dinner = a substantial MAIN COURSE: a protein (עוף/בשר/דג/קטניות) + a
      carb (אורז/פסטה/תפוח אדמה/קוסקוס/בורגול) + ירקות. NEVER serve a breakfast dish
      (חביתה/שקשוקה/דייסה) as lunch or dinner. NEVER put rice/pasta in breakfast/snack.
+   • The dish must be a REAL, COHERENT thing people actually eat — NOT a random pile
+     of items assembled to hit a calorie number. A snack = ONE simple realistic idea
+     with 2-4 ingredients that belong together (e.g. "יוגורט עם גרנולה ופירות יער",
+     "תפוח עם חמאת בוטנים", "כריך גבינה וירקות", "פרוסת לחם עם אבוקדו וביצה").
+     If it doesn't reach the calorie target, use a slightly bigger portion — do NOT
+     tack on unrelated foods (אל תערבב תפוח+יוגורט+אגוזים+דבש+גרנולה+שוקולד יחד).
    • List EVERY ingredient the instructions use — including cooking oil/fat
      (שמן זית/חמאה), spices, and anything fried/sautéed in. A fried/sautéed dish
      MUST include שמן זית.
