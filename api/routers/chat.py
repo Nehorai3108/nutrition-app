@@ -372,7 +372,7 @@ name_he must be in Hebrew, NEVER Arabic."""
                     and not result.get("actions") and _looks_like_ate(body.message)):
                 foods = _extract_eaten_foods(client, _model, body.message)
                 if foods:
-                    result["food_data"] = {"meal_type": _guess_meal_type(body.message), "foods": foods}
+                    result["food_data"] = {"meal_type": _guess_meal_type(body.message), "foods": _add_household_display(foods)}
                     result["reply"] = (result.get("reply") or "").strip() or "רשמתי ✓"
             yield "data: " + _json.dumps({"t": "done", **result}, ensure_ascii=False) + "\n\n"
 
@@ -400,7 +400,7 @@ name_he must be in Hebrew, NEVER Arabic."""
                 and not result.get("actions") and _looks_like_ate(body.message)):
             foods = _extract_eaten_foods(client, _model, body.message)
             if foods:
-                result["food_data"] = {"meal_type": _guess_meal_type(body.message), "foods": foods}
+                result["food_data"] = {"meal_type": _guess_meal_type(body.message), "foods": _add_household_display(foods)}
                 result["reply"] = (result.get("reply") or "").strip() or "רשמתי ✓"
         return result
     except Exception as e:
@@ -456,7 +456,7 @@ def _process_model_output(raw: str, user_id: str) -> dict:
         reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or "בוצע ✓"
         if isinstance(data.get("foods"), list) and data["foods"]:
             meal_type = _normalize_meal_type(data.get("meal_type", "lunch"))
-            enriched = [_enrich_food(f) for f in data["foods"]]
+            enriched = _add_household_display([_enrich_food(f) for f in data["foods"]])
             food_data = {"meal_type": meal_type, "foods": enriched}
             # NOTE: the client logs these to the diary (reliable + refreshes the
             # home summary) and deducts them from the menu — no server auto-log.
@@ -516,11 +516,13 @@ def _guess_meal_type(message: str) -> str:
 
 def _extract_eaten_foods(client, model: str, message: str) -> list:
     """Focused second call: extract ONLY the foods the user said they ate."""
-    sys = ("המשתמש אמר שאכל או שתה משהו. החזר אך ורק מערך JSON של הפריטים שאכל, "
-           "ללא טקסט נוסף. פורמט מדויק: "
+    sys = ("חלץ אך ורק מאכלים/משקאות ספציפיים שהמשתמש אמר במפורש שאכל או שתה. "
+           "החזר מערך JSON בלבד, ללא טקסט. פורמט: "
            '[{"name_he":"שם בעברית מלא","grams":<גרם>,"calories":<קלוריות סהכ>,'
            '"protein":<גרם>,"carbs":<גרם>,"fat":<גרם>}]. '
-           "הערך כמות מציאותית וחשב ערכים לכל המנה. שמות בעברית בלבד, לא ערבית.")
+           "חשוב מאוד: אל תמציא מאכלים. אם ההודעה לא מזכירה מאכל ספציפי (למשל "
+           "'אכלתי הרבה', 'אכלתי את כל הקלוריות', 'אני רעב') — החזר [] ריק. "
+           "שמות בעברית מלאה בלבד, לא ערבית.")
     try:
         resp = client.chat.completions.create(
             model=model,
@@ -539,6 +541,23 @@ def _extract_eaten_foods(client, model: str, message: str) -> list:
     return []
 
 
+def _add_household_display(foods: list) -> list:
+    """Add a `display_he` household-unit string (e.g. "3 כפות גרנולה", "4 תותים")
+    to each chat food so the app never shows raw grams."""
+    try:
+        from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
+        for f in foods:
+            f["display_he"] = format_ingredient_display({
+                "food_name": f.get("name_he", ""),
+                "food_name_en": f.get("name_en", ""),
+                "quantity": f.get("grams", 0),
+                "unit": "grams",
+            })
+    except Exception:
+        pass
+    return foods
+
+
 def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:
     """Turn a model recipe into a clean, accurate recipe card.
 
@@ -554,6 +573,7 @@ def _build_recipe_data(rec: dict, target_cal: float | None) -> dict:
     foods = _ensure_recipe_has_fat(foods, instructions)
     if target_cal:
         foods = _scale_recipe_to_target(foods, target_cal)
+    _add_household_display(foods)
     return {
         "title":          (rec.get("title") or "מתכון").strip(),
         "meal_type":      rec.get("meal_type", "lunch"),
