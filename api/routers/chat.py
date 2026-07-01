@@ -260,10 +260,13 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
 1. LOG food the user says they ATE or DRANK — include "foods":
    "foods":[{{"name_he":"שם בעברית","name_en":"english","grams":<total grams>,"calories":<total kcal>,"protein":<g>,"carbs":<g>,"fat":<g>}}]
    Estimate realistic portions (ביצה≈55g, פרוסת לחם≈30g, מנת אורז≈180g, חזה עוף≈170g, תפוח≈180g) and compute TOTAL nutrition for the portion described.
-   CRITICAL: ANY time the user says they ate/drank/had something (past tense — e.g.
-   "אכלתי חלב", "שתיתי קפה", "אכלתי מעדן", "אכלנו פיצה", "היה לי תפוח") you MUST
-   return the "foods" array. NEVER just confirm in text ("בוצע"/"רשמתי") without it,
-   and do NOT turn it into a "recipe" — eaten food = "foods", not "recipe".
+   CRITICAL: use "foods" ONLY for PAST-TENSE eating — the user reporting what they
+   ALREADY ate/drank ("אכלתי חלב", "שתיתי קפה", "אכלתי מעדן", "אכלנו פיצה",
+   "היה לי תפוח"). In that case you MUST return "foods" (never just confirm in text).
+   NEVER use "foods" for a request/question about what to eat in the FUTURE —
+   "אני רוצה לאכול...", "מה לאכול", "מה כדאי", "מה תמליץ", "תן לי חטיף/ארוחה" — those
+   are SUGGESTIONS → use "recipe" (rule 3), NOT "foods". Do not log food the user
+   has not yet eaten.
    ALWAYS include "meal_type" matching what the user said, using EXACTLY one of:
    breakfast (בוקר) · morning_snack (ביניים בוקר / חטיף בוקר) · lunch (צהריים) ·
    afternoon_snack (ביניים צהריים / חטיף צהריים / אחה"צ) · dinner (ערב).
