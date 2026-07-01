@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from api.deps import get_current_user
@@ -192,8 +193,8 @@ class ChatRequest(BaseModel):
     history: List[ChatMessage] = []
 
 @router.post("/")
-def chat(body: ChatRequest, user=Depends(get_current_user)):
-    """שולח הודעה ל-AI ומקבל תגובה + נתוני מזון."""
+def chat(body: ChatRequest, stream: bool = False, user=Depends(get_current_user)):
+    """שולח הודעה ל-AI ומקבל תגובה + נתוני מזון. stream=true → זרם SSE."""
     import os
     from groq import Groq
     from nutrition_app.agents.agent_3_food import FoodCatalog
@@ -333,8 +334,42 @@ name_he must be in Hebrew, NEVER Arabic."""
         messages.append({"role": m.role, "content": m.content})
     messages.append({"role": "user", "content": body.message})
 
-    import time as _t
     _model = "llama-3.3-70b-versatile"
+
+    # ── Streaming path: emit the reply token-by-token via SSE, then a final
+    #    "done" event with the processed food/recipe/actions payload. ──────────
+    if stream:
+        import json as _json
+
+        def _gen():
+            parts = []
+            try:
+                s = client.chat.completions.create(
+                    model=_model, messages=messages, max_tokens=1500,
+                    temperature=0.2, stream=True,
+                )
+                for chunk in s:
+                    delta = (chunk.choices[0].delta.content or "") if chunk.choices else ""
+                    if delta:
+                        parts.append(delta)
+                        yield "data: " + _json.dumps({"t": "c", "d": delta}, ensure_ascii=False) + "\n\n"
+            except Exception as e:
+                yield "data: " + _json.dumps({"t": "done", "reply": f"שגיאה: {e}",
+                                              "food_data": None, "recipe": None}, ensure_ascii=False) + "\n\n"
+                return
+            raw = "".join(parts).strip()
+            result = _process_model_output(raw, user["id"])
+            if (not result.get("food_data") and not result.get("recipe")
+                    and not result.get("actions") and _looks_like_ate(body.message)):
+                foods = _extract_eaten_foods(client, _model, body.message)
+                if foods:
+                    result["food_data"] = {"meal_type": _guess_meal_type(body.message), "foods": foods}
+                    result["reply"] = (result.get("reply") or "").strip() or "רשמתי ✓"
+            yield "data: " + _json.dumps({"t": "done", **result}, ensure_ascii=False) + "\n\n"
+
+        return StreamingResponse(_gen(), media_type="text/event-stream")
+
+    import time as _t
     _t0 = _t.time()
     try:
         resp = client.chat.completions.create(
