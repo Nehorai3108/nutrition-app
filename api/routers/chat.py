@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from pydantic import BaseModel
 from typing import List, Optional
 from api.deps import get_current_user
@@ -6,6 +6,28 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 router = APIRouter()
+
+
+@router.post("/transcribe")
+async def transcribe(file: UploadFile = File(...), user=Depends(get_current_user)):
+    """תמלול הקלטה קולית לעברית (Groq Whisper) — לדבר עם Biti במקום להקליד."""
+    api_key = os.environ.get("GROQ_API_KEY", "")
+    if not api_key:
+        return {"text": "", "error": "GROQ_API_KEY missing"}
+    try:
+        from groq import Groq
+        audio = await file.read()
+        client = Groq(api_key=api_key)
+        res = client.audio.transcriptions.create(
+            file=(file.filename or "audio.m4a", audio),
+            model="whisper-large-v3-turbo",
+            language="he",
+            response_format="text",
+        )
+        text = res if isinstance(res, str) else getattr(res, "text", "")
+        return {"text": (text or "").strip()}
+    except Exception as e:
+        return {"text": "", "error": str(e)}
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                         "storage", "nutrition.db")
