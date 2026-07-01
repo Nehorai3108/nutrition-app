@@ -73,9 +73,19 @@ def diag():
         probe = get_food_image("", "פתיבר")
     except Exception as e:
         probe = f"error: {e}"
+    # Live household-unit probe: run the real recipe builder on a sample.
+    try:
+        from api.routers.chat import _build_recipe_data
+        _r = _build_recipe_data({"title": "t", "meal_type": "morning_snack", "foods": [
+            {"name_he": "טוטים", "name_en": "strawberries", "grams": 50,
+             "calories": 20, "protein": 0, "carbs": 5, "fat": 0}]}, None)
+        household = _r["foods"][0].get("display_he")
+    except Exception as e:
+        household = f"error: {e}"
     return {
         "commit": commit[:12],
         "has_pexels_key": has_pexels,
         "public_base_url": os.environ.get("PUBLIC_BASE_URL", ""),
+        "household_probe": household,
         "petibeur_image": probe,
     }
