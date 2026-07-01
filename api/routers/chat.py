@@ -29,9 +29,30 @@ async def transcribe(file: UploadFile = File(...), user=Depends(get_current_user
             response_format="text",
         )
         text = res if isinstance(res, str) else getattr(res, "text", "")
-        return {"text": (text or "").strip()}
+        text = (text or "").strip()
+        return {"text": _clean_transcript(client, text) if text else ""}
     except Exception as e:
         return {"text": "", "error": str(e)}
+
+
+def _clean_transcript(client, text: str) -> str:
+    """Fix Hebrew spelling/typos from speech-to-text WITHOUT changing meaning."""
+    try:
+        resp = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content":
+                 "אתה מתקן שגיאות כתיב ופיסוק בעברית של תמלול דיבור. החזר אך ורק את "
+                 "הטקסט המתוקן, באותה משמעות בדיוק, בלי להוסיף או להשמיט מילים, בלי "
+                 "הסברים. שמור על סגנון דיבור טבעי."},
+                {"role": "user", "content": text},
+            ],
+            max_tokens=200, temperature=0.0,
+        )
+        cleaned = (resp.choices[0].message.content or "").strip()
+        return cleaned or text
+    except Exception:
+        return text
 
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                         "storage", "nutrition.db")
