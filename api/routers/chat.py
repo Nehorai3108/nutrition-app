@@ -269,6 +269,8 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    LIGHT/DIET/ZERO variants ("קל", "לייט", "דיאט", "זירו", "ללא סוכר") have MUCH fewer
    calories than the regular product: light juice ≈ 45-55% fewer calories; diet/zero
    soft-drinks ≈ 0-5 kcal. Compute accordingly — do NOT use the regular version's values.
+   And KEEP the variant word in "name_he" (e.g. "מיץ תפוזים קל", not "מיץ תפוזים") so
+   the reduced value is preserved.
    CRITICAL: use "foods" ONLY for PAST-TENSE eating — the user reporting what they
    ALREADY ate/drank ("אכלתי חלב", "שתיתי קפה", "אכלתי מעדן", "אכלנו פיצה",
    "היה לי תפוח"). In that case you MUST return "foods" (never just confirm in text).
