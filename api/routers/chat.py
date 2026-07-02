@@ -262,8 +262,9 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    Estimate realistic portions (ביצה≈55g, פרוסת לחם≈30g, מנת אורז≈180g, חזה עוף≈170g, תפוח≈180g) and compute TOTAL nutrition for the portion described.
    COUNTED items — when the user states a NUMBER of a countable food, set grams =
    number × the item's unit weight, so the count is preserved exactly:
-   תות=12g (10 תותים→120g), ביצה=55g, בננה=120g, תפוח=180g, אגוז מלך=5g, שקד=1.2g,
-   זית=4g, תמר=8g, פרוסת לחם=30g, קרקר=8g. Example: "10 תותים" → grams:120.
+   תות=12g (10 תותים→120g), ביצה=55g, בננה=120g, תפוח=180g, משמש=35g, שזיף=70g,
+   אגוז מלך=5g, שקד=1.2g, זית=4g, תמר=8g, פרוסת לחם=30g, קרקר=8g.
+   Example: "2 משמשים" → grams:70 ; "10 תותים" → grams:120.
    CRITICAL: use "foods" ONLY for PAST-TENSE eating — the user reporting what they
    ALREADY ate/drank ("אכלתי חלב", "שתיתי קפה", "אכלתי מעדן", "אכלנו פיצה",
    "היה לי תפוח"). In that case you MUST return "foods" (never just confirm in text).
@@ -465,7 +466,9 @@ def _process_model_output(raw: str, user_id: str) -> dict:
         reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or "בוצע ✓"
         if isinstance(data.get("foods"), list) and data["foods"]:
             meal_type = _normalize_meal_type(data.get("meal_type", "lunch"))
-            enriched = _add_household_display([_enrich_food(f) for f in data["foods"]])
+            # recompute=True → nutrition from the real food catalog × grams (accurate),
+            # not the model's guess.
+            enriched = _add_household_display([_enrich_food(f, recompute=True) for f in data["foods"]])
             food_data = {"meal_type": meal_type, "foods": enriched}
             # NOTE: the client logs these to the diary (reliable + refreshes the
             # home summary) and deducts them from the menu — no server auto-log.
@@ -544,7 +547,7 @@ def _extract_eaten_foods(client, model: str, message: str) -> list:
         mt = _re.search(r"\[.*\]", raw, _re.DOTALL)
         arr = _json.loads(mt.group(0) if mt else raw)
         if isinstance(arr, list) and arr:
-            return [_enrich_food(f) for f in arr if isinstance(f, dict)]
+            return [_enrich_food(f, recompute=True) for f in arr if isinstance(f, dict)]
     except Exception:
         pass
     return []
