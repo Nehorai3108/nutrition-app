@@ -456,6 +456,62 @@ def _auto_log_foods(user_id: str, meal_type: str, foods: list) -> bool:
         return False
 
 
+def _off_search(query: str) -> dict | None:
+    """Text-search OpenFoodFacts for a branded product → real per-100g + image.
+    Free, openly licensed (ODbL). Returns None if nothing usable is found."""
+    q = (query or "").strip()
+    if not q:
+        return None
+    try:
+        import requests as _req
+        r = _req.get(
+            "https://world.openfoodfacts.org/cgi/search.pl",
+            params={"search_terms": q, "search_simple": 1, "action": "process",
+                    "json": 1, "page_size": 5,
+                    "fields": "product_name,product_name_he,nutriments,image_url,brands"},
+            timeout=6, headers={"User-Agent": "BiteFit/1.0 (nutrition app)"},
+        )
+        for p in (r.json().get("products", []) or []):
+            n = p.get("nutriments", {}) or {}
+            cal = n.get("energy-kcal_100g")
+            if cal:
+                return {
+                    "name": p.get("product_name_he") or p.get("product_name") or q,
+                    "cal": float(cal),
+                    "protein": float(n.get("proteins_100g") or 0),
+                    "carbs": float(n.get("carbohydrates_100g") or 0),
+                    "fat": float(n.get("fat_100g") or 0),
+                    "image": p.get("image_url"),
+                }
+    except Exception:
+        pass
+    return None
+
+
+def _enrich_eaten(f: dict) -> dict:
+    """Nutrition for a food the user ate, best source first:
+    Israeli catalog (whole foods) → OpenFoodFacts (branded, +image) → model."""
+    name_he = f.get("name_he") or f.get("name") or ""
+    name_en = f.get("name_en") or f.get("name") or name_he
+    light = _is_light_variant(name_he)
+    in_catalog = (not light) and _resolve_per_100g(name_he, name_en) is not None
+    if in_catalog:
+        return _enrich_food(f, recompute=True)          # accurate whole-food data
+    # Not a plain catalog food → try OpenFoodFacts for the real branded product.
+    off = _off_search(name_he)
+    ef = _enrich_food(f, recompute=False)               # base (keeps model numbers/light)
+    if off:
+        g = float(ef.get("grams") or 100)
+        fac = g / 100.0
+        ef["calories"] = round(off["cal"] * fac)
+        ef["protein"] = round(off["protein"] * fac, 1)
+        ef["carbs"] = round(off["carbs"] * fac, 1)
+        ef["fat"] = round(off["fat"] * fac, 1)
+        if off.get("image"):
+            ef["image_url"] = off["image"]
+    return ef
+
+
 def _process_model_output(raw: str, user_id: str) -> dict:
     """Turn the raw model reply into the API response (reply + food/recipe/actions).
 
@@ -472,12 +528,8 @@ def _process_model_output(raw: str, user_id: str) -> dict:
         reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or "בוצע ✓"
         if isinstance(data.get("foods"), list) and data["foods"]:
             meal_type = _normalize_meal_type(data.get("meal_type", "lunch"))
-            # recompute=True → nutrition from the real food catalog × grams (accurate).
-            # But for light/diet/zero VARIANTS, trust the model (the generic catalog
-            # value would wrongly override the reduced calories).
-            enriched = _add_household_display([
-                _enrich_food(f, recompute=not _is_light_variant(f.get("name_he", "")))
-                for f in data["foods"]])
+            # Best data source per food: catalog → OpenFoodFacts → model.
+            enriched = _add_household_display([_enrich_eaten(f) for f in data["foods"]])
             food_data = {"meal_type": meal_type, "foods": enriched}
             # NOTE: the client logs these to the diary (reliable + refreshes the
             # home summary) and deducts them from the menu — no server auto-log.
@@ -567,7 +619,7 @@ def _extract_eaten_foods(client, model: str, message: str) -> list:
         mt = _re.search(r"\[.*\]", raw, _re.DOTALL)
         arr = _json.loads(mt.group(0) if mt else raw)
         if isinstance(arr, list) and arr:
-            return [_enrich_food(f, recompute=True) for f in arr if isinstance(f, dict)]
+            return [_enrich_eaten(f) for f in arr if isinstance(f, dict)]
     except Exception:
         pass
     return []
