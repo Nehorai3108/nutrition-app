@@ -5,6 +5,7 @@ BiteFit FastAPI Backend
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 import os
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
@@ -47,6 +48,69 @@ app.mount("/food-photos", StaticFiles(directory=_photos_path), name="food-photos
 @app.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
+
+
+_PRIVACY_HTML = """<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutriSmart — מדיניות פרטיות</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Arial, sans-serif; background:#f2ede0;
+         color:#1c2b20; max-width:760px; margin:0 auto; padding:28px 20px 60px; line-height:1.7; }
+  h1 { color:#3a7a4a; } h2 { color:#3a7a4a; margin-top:28px; font-size:1.15rem; }
+  a { color:#3a7a4a; } .en { direction:ltr; text-align:left; margin-top:48px;
+      border-top:1px solid #d8d0bd; padding-top:24px; }
+  .muted { color:#6b7568; font-size:.9rem; }
+</style>
+</head>
+<body>
+<h1>מדיניות פרטיות — NutriSmart</h1>
+<p class="muted">עודכן לאחרונה: יולי 2026</p>
+
+<p>NutriSmart ("האפליקציה") היא אפליקציית תזונה אישית. מסמך זה מסביר אילו נתונים אנו אוספים וכיצד אנו משתמשים בהם.</p>
+
+<h2>אילו נתונים אנו אוספים</h2>
+<ul>
+  <li><b>פרטי פרופיל</b> — גיל, מין, גובה, משקל, יעדי תזונה שאתה מזין, לצורך חישוב יעדים קלוריים.</li>
+  <li><b>יומן מזון</b> — מאכלים שרשמת, כמויות, וערכים תזונתיים.</li>
+  <li><b>תמונות מזון</b> — תמונות שאתה מצלם לזיהוי מזון. התמונות מעובדות לזיהוי בלבד.</li>
+  <li><b>הקלטות קול</b> — הקלטה שאתה יוצר להזנת מזון בדיבור, מתומללת לטקסט ואינה נשמרת לאחר התמלול.</li>
+</ul>
+
+<h2>כיצד אנו משתמשים בנתונים</h2>
+<p>הנתונים משמשים אך ורק כדי לספק את שירות התזונה: חישוב יעדים, בניית תפריטים, מעקב יומי וזיהוי מזון. איננו מוכרים את הנתונים שלך לצד שלישי.</p>
+
+<h2>שירותי צד שלישי</h2>
+<ul>
+  <li><b>Groq</b> — עיבוד שפה טבעית וזיהוי מזון בצ'אט ותמלול קול.</li>
+  <li><b>OpenFoodFacts</b> — מאגר נתוני מזון ציבורי לזיהוי מוצרים.</li>
+  <li><b>Supabase</b> — אחסון מאובטח של הפרופיל ויומן המזון שלך.</li>
+</ul>
+
+<h2>הרשאות מכשיר</h2>
+<p><b>מצלמה</b> — לסריקת ברקוד וצילום מזון. <b>מיקרופון</b> — להזנת מזון בדיבור. ההרשאות פעילות רק בזמן שימוש יזום שלך בפיצ'ר.</p>
+
+<h2>מחיקת נתונים</h2>
+<p>ניתן לבקש מחיקה מלאה של הנתונים שלך בכל עת בפנייה לכתובת המייל למטה.</p>
+
+<h2>יצירת קשר</h2>
+<p>לשאלות בנושא פרטיות: <a href="mailto:dviryona8@gmail.com">dviryona8@gmail.com</a></p>
+
+<div class="en">
+<h1>Privacy Policy — NutriSmart</h1>
+<p class="muted">Last updated: July 2026</p>
+<p>NutriSmart is a personal nutrition app. We collect profile details (age, sex, height, weight, goals), your food log, food photos you capture (processed for recognition only), and voice recordings (transcribed to text, not retained). Data is used solely to provide the nutrition service and is never sold. Third-party services: Groq (AI food recognition &amp; voice transcription), OpenFoodFacts (public food database), Supabase (secure data storage). Camera and microphone permissions are used only during active use of those features. You may request full deletion of your data at any time by contacting <a href="mailto:dviryona8@gmail.com">dviryona8@gmail.com</a>.</p>
+</div>
+</body>
+</html>"""
+
+
+@app.get("/privacy", response_class=HTMLResponse)
+def privacy():
+    """Public privacy policy — required URL for App Store / Play Store submission."""
+    return _PRIVACY_HTML
 
 
 @app.get("/diag")
