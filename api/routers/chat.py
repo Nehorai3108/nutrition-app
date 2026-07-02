@@ -264,7 +264,7 @@ Return a ```json block when relevant:
 
 The system really performs actions — confirm briefly ("הוספתי ✓"), don't ask the user to do it.
 
-Output: when returning JSON, return ONLY the JSON object (no text before/after, no ```json fences). Your short Hebrew sentence goes in "reply" (user never sees raw JSON). For a plain question (no food/recipe/action) reply with plain Hebrew text only."""
+Output: when returning JSON, return ONLY the JSON object (no text before/after, no ```json fences). Your short Hebrew sentence goes in "reply" (user never sees raw JSON). Never put a double-quote (") inside any JSON string value — write "קלוריות" not קק"ל. For a plain question (no food/recipe/action) reply with plain Hebrew text only."""
 
     messages = [{"role": "system", "content": system}]
     for m in body.history[-6:]:   # keep context lean to conserve daily tokens
@@ -436,13 +436,13 @@ def _process_model_output(raw: str, user_id: str) -> dict:
     — separated from the network call so it can be tested without hitting Groq.
     """
     data = _extract_json(raw)
-    reply = _strip_json_artifacts(raw)
+    reply = _strip_json_artifacts(raw) or _reply_from_broken_json(_fix_hebrew_quotes(raw))
     food_data = None
     recipe_data = None
     actions_done = []
 
     if data:
-        reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or "בוצע ✓"
+        reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or _reply_from_broken_json(_fix_hebrew_quotes(raw)) or "בוצע ✓"
         if isinstance(data.get("foods"), list) and data["foods"]:
             meal_type = _normalize_meal_type(data.get("meal_type", "lunch"))
             # Best data source per food: catalog → OpenFoodFacts → model.
@@ -613,6 +613,21 @@ def _strip_json_artifacts(text: str) -> str:
     return t.strip()
 
 
+import re as _re
+
+# A literal " between two Hebrew letters is a gershayim (קק"ל, ש"ח, ק"ג) — it
+# breaks JSON string parsing. Swap it for the real gershayim char (U+05F4).
+_HEB_QUOTE_RE = _re.compile(r"([֐-׿])\"([֐-׿])")
+
+
+def _fix_hebrew_quotes(text: str) -> str:
+    prev = None
+    while prev != text:  # handle chains like ק"ג ל"ק
+        prev = text
+        text = _HEB_QUOTE_RE.sub("\\1״\\2", text)
+    return text
+
+
 def _extract_json(raw: str):
     """Pull the first JSON object out of the model reply (fenced or raw)."""
     import json
@@ -625,11 +640,21 @@ def _extract_json(raw: str):
                 text = text.lstrip()[4:]
     start, end = text.find("{"), text.rfind("}")
     if start != -1 and end != -1 and end > start:
-        try:
-            return json.loads(text[start:end + 1])
-        except Exception:
-            return None
+        blob = text[start:end + 1]
+        for candidate in (blob, _fix_hebrew_quotes(blob)):
+            try:
+                return json.loads(candidate)
+            except Exception:
+                continue
     return None
+
+
+def _reply_from_broken_json(raw: str) -> str:
+    """Last resort: pull the "reply" value out even when JSON won't parse."""
+    m = _re.search(r'"reply"\s*:\s*"(.*?)"\s*(?:,\s*"|\}|$)', raw, _re.S)
+    if m:
+        return m.group(1).replace('\\"', '"').replace("\\n", " ").strip()
+    return ""
 
 
 _MEAL_HE = {
