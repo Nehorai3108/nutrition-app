@@ -14,9 +14,15 @@ from api.routers import auth, profile, food_log, recipes, daily_menu, chat, came
 
 app = FastAPI(title="BiteFit API", version="1.0.0")
 
+# Native app requests (React Native) aren't subject to CORS, so this mainly guards
+# browser origins (e.g. the /privacy page or any future web client). Set
+# ALLOWED_ORIGINS as a comma-separated list to restrict; unset keeps "*" (no change).
+_origins_env = os.environ.get("ALLOWED_ORIGINS", "").strip()
+_allowed_origins = [o.strip() for o in _origins_env.split(",") if o.strip()] or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

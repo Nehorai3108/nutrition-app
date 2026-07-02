@@ -15,8 +15,12 @@ def get_supabase() -> Client:
     return create_client(url, key)
 
 async def get_current_user(authorization: str = Header(None)) -> dict:
-    """מאמת JWT token מ-Supabase. אם Supabase לא מוגדר — dev bypass."""
-    if not os.environ.get("SUPABASE_URL"):
+    """מאמת JWT token מ-Supabase.
+
+    Dev bypass קיים רק כשמפעילים אותו במפורש (DEV_AUTH_BYPASS=1) *וגם* אין Supabase —
+    כדי שאובדן משתנה סביבה בפרודקשן לא יחשוף את כל הנתונים כ-ui_user_001.
+    """
+    if os.environ.get("DEV_AUTH_BYPASS") == "1" and not os.environ.get("SUPABASE_URL"):
         return {"id": "ui_user_001", "email": "dev@bitefit.local"}
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")
