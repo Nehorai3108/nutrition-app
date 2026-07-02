@@ -265,6 +265,10 @@ You can ACT for the user by returning a JSON object (inside a ```json block). Us
    תות=12g (10 תותים→120g), ביצה=55g, בננה=120g, תפוח=180g, משמש=35g, שזיף=70g,
    אגוז מלך=5g, שקד=1.2g, זית=4g, תמר=8g, פרוסת לחם=30g, קרקר=8g.
    Example: "2 משמשים" → grams:70 ; "10 תותים" → grams:120.
+   BEVERAGES/portions: a cup of juice ≈ 250ml, a glass of milk ≈ 240ml, a can ≈ 330ml.
+   LIGHT/DIET/ZERO variants ("קל", "לייט", "דיאט", "זירו", "ללא סוכר") have MUCH fewer
+   calories than the regular product: light juice ≈ 45-55% fewer calories; diet/zero
+   soft-drinks ≈ 0-5 kcal. Compute accordingly — do NOT use the regular version's values.
    CRITICAL: use "foods" ONLY for PAST-TENSE eating — the user reporting what they
    ALREADY ate/drank ("אכלתי חלב", "שתיתי קפה", "אכלתי מעדן", "אכלנו פיצה",
    "היה לי תפוח"). In that case you MUST return "foods" (never just confirm in text).
@@ -466,9 +470,12 @@ def _process_model_output(raw: str, user_id: str) -> dict:
         reply = (data.get("reply") or "").strip() or _strip_json_artifacts(raw) or "בוצע ✓"
         if isinstance(data.get("foods"), list) and data["foods"]:
             meal_type = _normalize_meal_type(data.get("meal_type", "lunch"))
-            # recompute=True → nutrition from the real food catalog × grams (accurate),
-            # not the model's guess.
-            enriched = _add_household_display([_enrich_food(f, recompute=True) for f in data["foods"]])
+            # recompute=True → nutrition from the real food catalog × grams (accurate).
+            # But for light/diet/zero VARIANTS, trust the model (the generic catalog
+            # value would wrongly override the reduced calories).
+            enriched = _add_household_display([
+                _enrich_food(f, recompute=not _is_light_variant(f.get("name_he", "")))
+                for f in data["foods"]])
             food_data = {"meal_type": meal_type, "foods": enriched}
             # NOTE: the client logs these to the diary (reliable + refreshes the
             # home summary) and deducts them from the menu — no server auto-log.
@@ -500,6 +507,17 @@ _ATE_WORDS = ("אכלתי", "אכלנו", "אכלה", "אכלת", "שתיתי", 
 def _looks_like_ate(message: str) -> bool:
     m = message or ""
     return any(w in m for w in _ATE_WORDS)
+
+
+_LIGHT_WORDS = ("קל", "לייט", "light", "דיאט", "diet", "זירו", "zero",
+                "ללא סוכר", "דל קלוריות", "דל שומן")
+
+
+def _is_light_variant(name: str) -> bool:
+    """True for reduced-calorie product variants where the generic catalog value
+    would be misleading (light juice, diet soda, zero...)."""
+    n = f" {name or ''} "
+    return any(w in n for w in _LIGHT_WORDS)
 
 
 def _guess_meal_type(message: str) -> str:
