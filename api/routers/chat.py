@@ -603,7 +603,10 @@ def _strip_json_artifacts(text: str) -> str:
         t = t.split("```")[0]
     t = t.strip()
     # pure JSON (no prose) → nothing human to show
-    if t[:1] in ("{", "["):
+    if t[:1] in ("{", "[", '"'):
+        return ""
+    # model returned bare JSON keys without outer braces ("reply": ...) → leak
+    if _re.search(r'"(reply|recipe|foods|meal_type|actions|remember)"\s*:', t):
         return ""
     # cut a trailing naked JSON object/array that follows real prose
     for brace in ("{", "["):
@@ -629,7 +632,11 @@ def _fix_hebrew_quotes(text: str) -> str:
 
 
 def _extract_json(raw: str):
-    """Pull the first JSON object out of the model reply (fenced or raw)."""
+    """Pull the first JSON object out of the model reply (fenced or raw).
+
+    Handles: ```json fences, gershayim quotes (קק"ל), and the model omitting the
+    outer braces (returning `"reply": "...", "recipe": {...}` bare).
+    """
     import json
     text = raw
     if "```" in text:
@@ -638,12 +645,20 @@ def _extract_json(raw: str):
             text = parts[1]
             if text.lstrip().lower().startswith("json"):
                 text = text.lstrip()[4:]
+    text = text.strip()
+    candidates = []
     start, end = text.find("{"), text.rfind("}")
     if start != -1 and end != -1 and end > start:
-        blob = text[start:end + 1]
-        for candidate in (blob, _fix_hebrew_quotes(blob)):
+        candidates.append(text[start:end + 1])
+    # model dropped the outer braces → wrap the whole thing
+    if '"reply"' in text or '"recipe"' in text or '"foods"' in text:
+        candidates.append("{" + text.strip().strip("{}") + "}")
+    for cand in candidates:
+        for variant in (cand, _fix_hebrew_quotes(cand)):
             try:
-                return json.loads(candidate)
+                obj = json.loads(variant)
+                if isinstance(obj, dict):
+                    return obj
             except Exception:
                 continue
     return None
@@ -651,7 +666,7 @@ def _extract_json(raw: str):
 
 def _reply_from_broken_json(raw: str) -> str:
     """Last resort: pull the "reply" value out even when JSON won't parse."""
-    m = _re.search(r'"reply"\s*:\s*"(.*?)"\s*(?:,\s*"|\}|$)', raw, _re.S)
+    m = _re.search(r'"reply"\s*:\s*"(.*?)"\s*(?:,\s*"|\}|$)', _fix_hebrew_quotes(raw), _re.S)
     if m:
         return m.group(1).replace('\\"', '"').replace("\\n", " ").strip()
     return ""
