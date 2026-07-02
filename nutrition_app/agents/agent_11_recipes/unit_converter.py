@@ -320,6 +320,35 @@ def enrich_recipe_ingredients(recipe: dict) -> dict:
     return recipe
 
 
+# Branded / packaged items best matched by their HEBREW name (substring). The
+# package/bar is the natural unit. grams_per_unit ≈ one standard package.
+_HE_UNITS: Dict[str, dict] = {
+    "קינדר בואנו": {"unit_he": "חטיף קינדר בואנו", "unit_he_plural": "חטיפי קינדר בואנו", "grams_per_unit": 43,  "category": "countable"},
+    "קינדר":       {"unit_he": "חטיף קינדר",       "unit_he_plural": "חטיפי קינדר",       "grams_per_unit": 21,  "category": "countable"},
+    "קיט קט":      {"unit_he": "חטיף קיט קט",       "unit_he_plural": "חטיפי קיט קט",       "grams_per_unit": 41,  "category": "countable"},
+    "קיטקט":       {"unit_he": "חטיף קיט קט",       "unit_he_plural": "חטיפי קיט קט",       "grams_per_unit": 41,  "category": "countable"},
+    "מקופלת":      {"unit_he": "שורת מקופלת",       "unit_he_plural": "שורות מקופלת",       "grams_per_unit": 25,  "category": "countable"},
+    "טורטית":      {"unit_he": "חטיף טורטית",       "unit_he_plural": "חטיפי טורטית",       "grams_per_unit": 30,  "category": "countable"},
+    "כיף כף":      {"unit_he": "כיף כף",            "unit_he_plural": "כיף כף",             "grams_per_unit": 45,  "category": "countable"},
+    "במבה":        {"unit_he": "שקית במבה",         "unit_he_plural": "שקיות במבה",         "grams_per_unit": 25,  "category": "countable"},
+    "ביסלי":       {"unit_he": "שקית ביסלי",        "unit_he_plural": "שקיות ביסלי",        "grams_per_unit": 55,  "category": "countable"},
+    "תפוציפס":     {"unit_he": "שקית תפוציפס",      "unit_he_plural": "שקיות תפוציפס",      "grams_per_unit": 50,  "category": "countable"},
+    "דוריטוס":     {"unit_he": "שקית דוריטוס",      "unit_he_plural": "שקיות דוריטוס",      "grams_per_unit": 50,  "category": "countable"},
+    "פרינגלס":     {"unit_he": "קופסת פרינגלס",     "unit_he_plural": "קופסאות פרינגלס",    "grams_per_unit": 40,  "category": "countable"},
+    "חטיף חלבון":  {"unit_he": "חטיף חלבון",        "unit_he_plural": "חטיפי חלבון",        "grams_per_unit": 60,  "category": "countable"},
+    "חטיף אנרגיה": {"unit_he": "חטיף אנרגיה",       "unit_he_plural": "חטיפי אנרגיה",       "grams_per_unit": 40,  "category": "countable"},
+    "וופל":        {"unit_he": "וופל",              "unit_he_plural": "וופלים",             "grams_per_unit": 30,  "category": "countable"},
+}
+
+
+def _he_unit_entry(food_name: str):
+    nm = (food_name or "").strip()
+    if not nm:
+        return None
+    cands = [k for k in _HE_UNITS if k in nm]
+    return _HE_UNITS[max(cands, key=len)] if cands else None
+
+
 def format_ingredient_display(ingredient: dict) -> str:
     """Convert a recipe ingredient from grams to household display string.
 
@@ -349,6 +378,9 @@ def format_ingredient_display(ingredient: dict) -> str:
     if not entry and " " in food_name_en:
         words = food_name_en.split()
         entry = HOUSEHOLD_UNITS.get(words[-1]) or HOUSEHOLD_UNITS.get(words[0])
+    # Branded/packaged items matched by Hebrew name (e.g. "קינדר בואנו").
+    if not entry:
+        entry = _he_unit_entry(food_name)
     if not entry:
         # Fallback: show grams
         q_display = int(quantity) if quantity == int(quantity) else quantity
