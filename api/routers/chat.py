@@ -429,6 +429,25 @@ def _enrich_eaten(f: dict) -> dict:
     return ef
 
 
+def _final_clean_reply(text: str) -> str:
+    """Last-line defense so raw JSON can NEVER reach the user.
+
+    A human Hebrew reply never contains a JSON key ("recipe":), a brace, or a code
+    fence — so cut the reply at the first such artifact and strip trailing quotes.
+    """
+    import re as _re2
+    if not text:
+        return ""
+    t = text
+    m = _re2.search(
+        r'("(?:reply|recipe|title|foods|meal_type|actions|remember|name_he|name_en|calories|grams|protein|carbs|fat)"\s*:)|[{}\[\]]|```',
+        t,
+    )
+    if m:
+        t = t[:m.start()]
+    return t.strip().strip('"').strip().rstrip(",").strip()
+
+
 def _process_model_output(raw: str, user_id: str) -> dict:
     """Turn the raw model reply into the API response (reply + food/recipe/actions).
 
@@ -466,6 +485,11 @@ def _process_model_output(raw: str, user_id: str) -> dict:
             for r in remember:
                 if isinstance(r, str):
                     _save_note(user_id, r)
+
+    # Bulletproof: strip any leaked JSON from what the user actually sees.
+    reply = _final_clean_reply(reply)
+    if not reply:
+        reply = "הנה 👇" if (food_data or recipe_data) else "בוצע ✓"
 
     return {"reply": reply, "food_data": food_data,
             "recipe": recipe_data, "actions": actions_done}
