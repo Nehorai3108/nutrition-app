@@ -376,8 +376,12 @@ def format_ingredient_display(ingredient: dict) -> str:
     # so common modifiers don't drop us to a grams display.
     entry = HOUSEHOLD_UNITS.get(food_name_en)
     if not entry and " " in food_name_en:
-        words = food_name_en.split()
-        entry = HOUSEHOLD_UNITS.get(words[-1]) or HOUSEHOLD_UNITS.get(words[0])
+        # Try each word (last→first) so modifiers like "white rice cooked" still
+        # resolve to "rice" instead of dropping to a grams display.
+        for w in reversed(food_name_en.split()):
+            entry = HOUSEHOLD_UNITS.get(w)
+            if entry:
+                break
     # Branded/packaged items matched by Hebrew name (e.g. "קינדר בואנו").
     if not entry:
         entry = _he_unit_entry(food_name)

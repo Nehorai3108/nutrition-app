@@ -69,6 +69,49 @@ def _is_trusted_match(food, q: str) -> bool:
     return bool(_hebrew_tokens(q)) and _norm(food.name_he) == _norm(q)
 
 
+def _household_display(food_name: str, grams: float, name_en: str = "") -> Optional[str]:
+    """Household-unit string for a logged food (e.g. "4 תותים", "3 כפות אורז").
+    name_en drives the conversion table; without it most foods fall back to
+    grams. Returns None on failure so the app uses its own gram display."""
+    try:
+        from nutrition_app.agents.agent_11_recipes.unit_converter import format_ingredient_display
+        disp = format_ingredient_display({
+            "food_name": food_name or "",
+            "food_name_en": name_en or "",
+            "quantity": grams or 0,
+            "unit": "grams",
+        })
+        return disp or None
+    except Exception:
+        return None
+
+
+def _name_en_lookup():
+    """A cached food_id/name_he → name_en resolver backed by the catalog."""
+    try:
+        from nutrition_app.agents.agent_3_food import FoodCatalog
+        cat = FoodCatalog(db_path=_DB_PATH)
+    except Exception:
+        return lambda fid, name_he: ""
+
+    cache: dict = {}
+
+    def resolve(fid: str, name_he: str) -> str:
+        key = fid or name_he or ""
+        if key in cache:
+            return cache[key]
+        en = ""
+        try:
+            food = cat.get_food_by_id(fid) if fid else None
+            en = getattr(food, "name_en", "") if food else ""
+        except Exception:
+            en = ""
+        cache[key] = en or ""
+        return cache[key]
+
+    return resolve
+
+
 def _food_image(name_en: str, name_he: str):
     try:
         from api.food_image import get_food_image
@@ -200,6 +243,7 @@ def get_log(date_str: str, user=Depends(get_current_user)):
     entries = repo.get_log(user["id"], d)
     # Enrich with recipe images for entries that came from a recipe card
     recipe_images = _load_recipe_images()
+    name_en_of = _name_en_lookup()
     result = []
     for e in entries:
         row = {k: v for k, v in e.__dict__.items()}
@@ -209,6 +253,10 @@ def get_log(date_str: str, user=Depends(get_current_user)):
         # even if none was stored on the entry.
         if not row.get("image_url") and e.food_name and e.food_id != "camera_food":
             row["image_url"] = _food_image("", e.food_name)
+        # Household-unit display so the diary shows physical units, not grams.
+        if not row.get("display_he"):
+            row["display_he"] = _household_display(
+                e.food_name, e.grams, name_en_of(e.food_id, e.food_name))
         result.append(row)
     return {"entries": result}
 
