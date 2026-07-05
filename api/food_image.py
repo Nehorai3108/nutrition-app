@@ -81,6 +81,22 @@ _HE_TO_EN: dict[str, str] = {
     "אפרסמון": "persimmon", "רימון": "pomegranate", "תאנה": "figs",
     "גבינה": "cheese", "חמאה": "butter", "שמנת": "sour cream",
     "קפה": "coffee cup", "תה": "tea cup", "מיץ": "fruit juice",
+    # Common Israeli dishes — clean English so Pexels returns a real photo.
+    "שניצל": "chicken schnitzel", "המבורגר": "hamburger", "פיצה": "pizza slice",
+    "סושי": "sushi", "מרק": "bowl of soup", "טוסט": "grilled cheese toast",
+    "כריך": "sandwich", "סנדוויץ": "sandwich", "בורקס": "bourekas pastry",
+    "שווארמה": "shawarma", "נקניקיה": "hot dog", "פנקייק": "pancakes",
+    "וופל": "waffle", "קרואסון": "croissant", "מאפין": "muffin",
+    "גלידה": "ice cream", "עוגה": "cake slice", "עוגת גבינה": "cheesecake",
+    "סלט ירקות": "vegetable salad", "סלט": "green salad", "פירה": "mashed potatoes",
+    "צ'יפס": "french fries", "ציפס": "french fries", "פסטרמה": "pastrami",
+    "נקניק": "sausage", "קורנפלקס": "corn flakes cereal", "דגני בוקר": "breakfast cereal",
+    "בשר בקר": "cooked beef", "בשר טחון": "ground beef cooked",
+    "סטייק": "grilled steak", "כבד": "cooked liver",
+    "דג": "cooked fish fillet", "אורז מלא": "cooked brown rice",
+    "פסטה ברוטב עגבניות": "pasta with tomato sauce", "לזניה": "lasagna",
+    "מנקיש": "manakish", "לאפה": "laffa bread", "בגט": "baguette",
+    "קוסקוס": "couscous", "פריכיות אורז": "rice cakes", "פופקורן": "popcorn",
 }
 
 
