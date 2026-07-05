@@ -141,6 +141,10 @@ _CURATED_URLS: dict[str, str] = {
     "טחינה": f"{_W}/thumb/3/39/Tahina.JPG/500px-Tahina.JPG",
     "שקשוקה": f"{_W}/thumb/1/18/Shakshuka_by_Calliopejen1.jpg/500px-Shakshuka_by_Calliopejen1.jpg",
     "פלאפל": f"{_W}/thumb/5/57/Falafels_2.jpg/500px-Falafels_2.jpg",
+    "לחמני": f"{_W}/thumb/1/1d/Kaisersemmel.jpg/500px-Kaisersemmel.jpg",
+    "קפה": f"{_W}/thumb/4/45/A_small_cup_of_coffee.JPG/320px-A_small_cup_of_coffee.JPG",
+    "סלט כרוב": f"{_W}/thumb/9/97/Coleslaw_%281%29.jpg/500px-Coleslaw_%281%29.jpg",
+    "כרוב": f"{_W}/thumb/d/d0/Cabbage_and_cross_section_on_white.jpg/500px-Cabbage_and_cross_section_on_white.jpg",
 }
 
 
@@ -204,8 +208,9 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     # names Wikipedia gets wrong (melon→hotel).
     en_term = name_en or _en_term(name_he)
 
-    key = ("s:" if allow_search else "x:") + (en_term or name_he or "").strip().lower()
-    if key in ("s:", "x:"):
+    # v2 cache prefix — invalidates old entries resolved with the wrong ordering.
+    key = ("s2:" if allow_search else "x2:") + (en_term or name_he or "").strip().lower()
+    if key in ("s2:", "x2:"):
         return None
 
     with _lock:
@@ -213,17 +218,17 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
         if key in cache:
             return cache[key] or None
 
-    # 1. Pexels — appetising photo (same source as recipe images). Best quality;
-    #    used for ALL foods when a PEXELS_API_KEY is set.
-    img = _pexels_food_image(en_term or name_he)
-    # 2. hand-verified direct Wikimedia URL for common foods — reliable fallback
-    if not img:
-        img = _curated_url(name_he)
-    # 3. Wikipedia exact title (English term first), then 4. fuzzy search
+    # ACCURACY BEFORE PRETTINESS. Pexels returns appetising-but-wrong photos
+    # (a fish steak for "tuna", a burger for "roll"), so it goes LAST — only for
+    # foods with no accurate match.
+    # 1. hand-verified direct Wikimedia URL (exact — e.g. tuna → a tin)
+    img = _curated_url(name_he)
+    # 2. Wikipedia exact title (English term first, then Hebrew)
     if not img:
         img = _wiki_image(en_term, "en") or _wiki_image(name_he, "he")
-    # NOTE: _wiki_search_image intentionally removed — fuzzy search returns
-    # unrelated articles (including people's portraits) for Hebrew food names.
+    # 3. Pexels — last resort, only when nothing accurate was found
+    if not img and allow_search:
+        img = _pexels_food_image(en_term or name_he)
 
     with _lock:
         cache[key] = img or ""
