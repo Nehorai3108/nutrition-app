@@ -205,12 +205,14 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     Caches misses as "" so we don't repeatedly query foods with no page image.
     """
     # A curated English term both drives the Pexels query and disambiguates
-    # names Wikipedia gets wrong (melon→hotel).
-    en_term = name_en or _en_term(name_he)
+    # names Wikipedia gets wrong (melon→hotel). Prefer the CLEAN curated term
+    # over a noisy catalog name_en ("Strawberry Froop", "!HOLLA NOLLA!...").
+    en_term = _en_term(name_he) or name_en
 
-    # v2 cache prefix — invalidates old entries resolved with the wrong ordering.
-    key = ("s2:" if allow_search else "x2:") + (en_term or name_he or "").strip().lower()
-    if key in ("s2:", "x2:"):
+    # v3 cache prefix — invalidates entries from the old ordering / Hebrew-query
+    # Pexels lookups that returned unrelated photos.
+    key = ("s3:" if allow_search else "x3:") + (en_term or name_he or "").strip().lower()
+    if key in ("s3:", "x3:"):
         return None
 
     with _lock:
@@ -226,9 +228,11 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     # 2. Wikipedia exact title (English term first, then Hebrew)
     if not img:
         img = _wiki_image(en_term, "en") or _wiki_image(name_he, "he")
-    # 3. Pexels — last resort, only when nothing accurate was found
-    if not img and allow_search:
-        img = _pexels_food_image(en_term or name_he)
+    # 3. Pexels — last resort, only when nothing accurate was found. Query ONLY
+    #    with a clean English term: a Hebrew query returns random unrelated
+    #    photos, so no image (app shows a food icon) is better than a wrong one.
+    if not img and allow_search and en_term and en_term.isascii():
+        img = _pexels_food_image(en_term)
 
     with _lock:
         cache[key] = img or ""

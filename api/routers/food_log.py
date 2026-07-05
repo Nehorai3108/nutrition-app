@@ -270,12 +270,12 @@ def get_log(date_str: str, user=Depends(get_current_user)):
         # Last resort: resolve an image by the food name (disk-cached, so fast
         # after the first lookup). Makes manually-added foods show a thumbnail
         # even if none was stored on the entry.
+        en = name_en_of(e.food_id, e.food_name)
         if not row.get("image_url") and e.food_name and e.food_id != "camera_food":
-            row["image_url"] = _food_image("", e.food_name)
+            row["image_url"] = _food_image(en, e.food_name)
         # Household-unit display so the diary shows physical units, not grams.
         if not row.get("display_he"):
-            row["display_he"] = _household_display(
-                e.food_name, e.grams, name_en_of(e.food_id, e.food_name))
+            row["display_he"] = _household_display(e.food_name, e.grams, en)
         result.append(row)
     return {"entries": result}
 
