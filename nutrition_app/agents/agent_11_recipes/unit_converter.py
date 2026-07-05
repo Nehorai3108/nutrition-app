@@ -349,6 +349,26 @@ def _he_unit_entry(food_name: str):
     return _HE_UNITS[max(cands, key=len)] if cands else None
 
 
+def household_unit_for(name_he: str = "", name_en: str = "") -> Optional[dict]:
+    """Return the household-unit entry for a food, or None if it has no natural
+    unit (then callers fall back to grams). Mirrors the lookup used by
+    format_ingredient_display: exact English, then each English word, then a
+    Hebrew-name (branded) match.
+
+    Returns a dict: {unit_he, unit_he_plural, grams_per_unit, category}.
+    """
+    en = (name_en or "").lower().strip()
+    entry = HOUSEHOLD_UNITS.get(en)
+    if not entry and " " in en:
+        for w in reversed(en.split()):
+            entry = HOUSEHOLD_UNITS.get(w)
+            if entry:
+                break
+    if not entry:
+        entry = _he_unit_entry(name_he)
+    return entry
+
+
 def format_ingredient_display(ingredient: dict) -> str:
     """Convert a recipe ingredient from grams to household display string.
 

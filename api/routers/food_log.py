@@ -112,6 +112,23 @@ def _name_en_lookup():
     return resolve
 
 
+def _serving(name_he: str, name_en: str) -> Optional[dict]:
+    """Household serving info for the manual-add unit picker, or None → grams.
+    e.g. {"unit_he": "ביצה", "unit_he_plural": "ביצים", "grams_per_unit": 50}."""
+    try:
+        from nutrition_app.agents.agent_11_recipes.unit_converter import household_unit_for
+        e = household_unit_for(name_he or "", name_en or "")
+        if not e:
+            return None
+        return {
+            "unit_he": e["unit_he"],
+            "unit_he_plural": e.get("unit_he_plural", e["unit_he"]),
+            "grams_per_unit": e["grams_per_unit"],
+        }
+    except Exception:
+        return None
+
+
 def _food_image(name_en: str, name_he: str):
     try:
         from api.food_image import get_food_image
@@ -132,6 +149,7 @@ def _food_response(food) -> dict:
         "carbs_per_100g": n.carbs_g,
         "fat_per_100g": n.fat_g,
         "image_url": _food_image(getattr(food, "name_en", ""), food.name_he),
+        "serving": _serving(food.name_he, getattr(food, "name_en", "")),
     }
 
 
@@ -200,6 +218,7 @@ def _ai_estimate_and_store(q: str) -> Optional[dict]:
         "carbs_per_100g": est["carbs"],
         "fat_per_100g": est["fat"],
         "image_url": _food_image(est.get("name_en", ""), est["name_he"]),
+        "serving": _serving(est["name_he"], est.get("name_en", "")),
     }
 
 @router.post("/")
