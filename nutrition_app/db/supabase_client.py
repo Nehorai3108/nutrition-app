@@ -60,6 +60,23 @@ def get_supabase() -> Client:
     return _streamlit_get_supabase()
 
 
+_service_client: Client | None = None
+
+
+def get_service_supabase() -> Client | None:
+    """Admin client authed with the SERVICE_ROLE key — bypasses RLS and can
+    delete auth users. Returns None when the key isn't configured (so callers
+    degrade gracefully instead of crashing). Never expose this to the client."""
+    global _service_client
+    url = os.environ.get("SUPABASE_URL", "")
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    if not url or not key:
+        return None
+    if _service_client is None:
+        _service_client = create_client(url, key)
+    return _service_client
+
+
 def _streamlit_get_supabase() -> Client:
     """
     Return a Supabase client for the current Streamlit session.

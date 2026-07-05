@@ -20,6 +20,51 @@ def save_profile(data: dict, user=Depends(get_current_user)):
     repo.save(data)
     return {"ok": True}
 
+# Every table that holds user-scoped rows (keyed by user_id). Deleting an
+# account must wipe all of them (Apple + privacy requirement).
+_USER_TABLES = [
+    "food_log", "daily_summaries", "inventory", "meal_balance",
+    "user_meal_preferences", "water_data", "workout_data", "workout_log",
+    "usage_daily", "llm_usage", "profiles",  # profiles last (its own row)
+]
+
+
+@router.delete("/account")
+def delete_account(user=Depends(get_current_user)):
+    """מחיקת חשבון מלאה — מוחקת את כל נתוני המשתמש ואת חשבון ה-Auth.
+
+    נדרש לאישור App Store. מוחק שורות מכל הטבלאות המשויכות, ואז את משתמש ה-Auth
+    דרך service-role (אם מוגדר). מחזיר אילו חלקים נמחקו כדי שהאפליקציה תדע.
+    """
+    uid = user["id"]
+    from nutrition_app.db.supabase_client import get_supabase, get_service_supabase
+
+    # 1. Wipe all user data. Prefer the service-role client (bypasses RLS,
+    #    guaranteed complete); fall back to the request-JWT client (RLS lets a
+    #    user delete their own rows).
+    svc = get_service_supabase()
+    data_client = svc or get_supabase()
+    deleted, failed = [], []
+    for t in _USER_TABLES:
+        try:
+            data_client.table(t).delete().eq("user_id", uid).execute()
+            deleted.append(t)
+        except Exception:
+            failed.append(t)
+
+    # 2. Delete the auth user itself — needs the service role.
+    auth_deleted = False
+    if svc:
+        try:
+            svc.auth.admin.delete_user(uid)
+            auth_deleted = True
+        except Exception:
+            auth_deleted = False
+
+    return {"ok": True, "data_deleted": deleted, "data_failed": failed,
+            "auth_deleted": auth_deleted}
+
+
 @router.get("/usage")
 def get_usage(user=Depends(get_current_user)):
     """מצב מכסת השימוש היומית (לתצוגה באפליקציה) — צילומים וצ'אט."""
