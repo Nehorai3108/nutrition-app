@@ -97,6 +97,10 @@ _HE_TO_EN: dict[str, str] = {
     "פסטה ברוטב עגבניות": "pasta with tomato sauce", "לזניה": "lasagna",
     "מנקיש": "manakish", "לאפה": "laffa bread", "בגט": "baguette",
     "קוסקוס": "couscous", "פריכיות אורז": "rice cakes", "פופקורן": "popcorn",
+    "סיגר בשר": "meat kofta", "סיגרים": "meat kofta", "סיגר": "meat kofta",
+    "נקטרינה": "nectarine", "ליצי": "lychee fruit", "קלמנטינה": "clementine",
+    "אשכולית": "grapefruit", "שזיף": "plum fruit", "משמש": "apricot fruit",
+    "דובדבן": "cherries", "פטל": "raspberries", "אוכמניות": "blueberries",
 }
 
 
@@ -220,15 +224,18 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     names like "פיתה עם חומוס ואמבה" where search wrongly returned shawarma.
     Caches misses as "" so we don't repeatedly query foods with no page image.
     """
-    # A curated English term both drives the Pexels query and disambiguates
-    # names Wikipedia gets wrong (melon→hotel). Prefer the CLEAN curated term
-    # over a noisy catalog name_en ("Strawberry Froop", "!HOLLA NOLLA!...").
-    en_term = _en_term(name_he) or name_en
+    # TRUSTED term = from our curated Hebrew→English food map. A raw catalog
+    # name_en is UNTRUSTED — it can be a plain ambiguous word ("Cigar" for the
+    # meat pastry "סיגר בשר", "Froop") that Wikipedia resolves to a NON-food
+    # (a tobacco cigar). So Wikipedia only ever gets the trusted term; the noisy
+    # name_en is used solely to seed a Pexels food-library query.
+    trusted = _en_term(name_he)
+    en_term = trusted or name_en
 
-    # v3 cache prefix — invalidates entries from the old ordering / Hebrew-query
-    # Pexels lookups that returned unrelated photos.
-    key = ("s3:" if allow_search else "x3:") + (en_term or name_he or "").strip().lower()
-    if key in ("s3:", "x3:"):
+    # v4 cache prefix — invalidates entries where an untrusted English name hit
+    # Wikipedia and returned a non-food image ("Cigar" → a tobacco cigar).
+    key = ("s4:" if allow_search else "x4:") + (en_term or name_he or "").strip().lower()
+    if key in ("s4:", "x4:"):
         return None
 
     with _lock:
@@ -241,9 +248,10 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     # foods with no accurate match.
     # 1. hand-verified direct Wikimedia URL (exact — e.g. tuna → a tin)
     img = _curated_url(name_he)
-    # 2. Wikipedia exact title (English term first, then Hebrew)
-    if not img:
-        img = _wiki_image(en_term, "en") or _wiki_image(name_he, "he")
+    # 2. Wikipedia exact title — ONLY the trusted food term (never a raw name_en,
+    #    which risks resolving an ambiguous word to a non-food article).
+    if not img and trusted:
+        img = _wiki_image(trusted, "en")
     # 3. Pexels — last resort, only when nothing accurate was found. Query ONLY
     #    with a clean English term: a Hebrew query returns random unrelated
     #    photos, so no image (app shows a food icon) is better than a wrong one.
