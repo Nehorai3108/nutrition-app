@@ -25,7 +25,7 @@ def save_profile(data: dict, user=Depends(get_current_user)):
 _USER_TABLES = [
     "food_log", "daily_summaries", "inventory", "meal_balance",
     "user_meal_preferences", "water_data", "workout_data", "workout_log",
-    "usage_daily", "llm_usage", "profiles",  # profiles last (its own row)
+    "weight_log", "usage_daily", "llm_usage", "profiles",  # profiles last (its own row)
 ]
 
 

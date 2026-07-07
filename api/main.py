@@ -10,7 +10,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
-from api.routers import auth, profile, food_log, recipes, daily_menu, chat, camera, water, barcode, workout, inventory, meal_balance, adaptation, waitlist
+from api.routers import auth, profile, food_log, recipes, daily_menu, chat, camera, water, barcode, workout, inventory, meal_balance, adaptation, waitlist, weight_log
 
 app = FastAPI(title="BiteFit API", version="1.0.0")
 
@@ -35,6 +35,7 @@ app.include_router(daily_menu.router, prefix="/daily-menu", tags=["daily-menu"])
 app.include_router(chat.router,       prefix="/chat",       tags=["chat"])
 app.include_router(camera.router,     prefix="/camera",     tags=["camera"])
 app.include_router(water.router,      prefix="/water",      tags=["water"])
+app.include_router(weight_log.router, prefix="/weight-log", tags=["weight-log"])
 app.include_router(barcode.router,    prefix="/barcode",    tags=["barcode"])
 app.include_router(workout.router,    prefix="/workout",    tags=["workout"])
 app.include_router(inventory.router,  prefix="/inventory",  tags=["inventory"])
