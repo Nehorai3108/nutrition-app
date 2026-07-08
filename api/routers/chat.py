@@ -405,6 +405,22 @@ def _off_search(query: str) -> dict | None:
     return None
 
 
+def _sanitize_food_calories(f: dict) -> dict:
+    """Cheap guardrail against a weak model's inconsistent numbers: if the
+    reported calories disagree with the macros (Atwater: 4·protein + 4·carbs +
+    9·fat) by more than 30%, trust the macros and recompute calories. No-op for
+    catalog/OpenFoodFacts foods (already consistent) and when macros are absent."""
+    try:
+        cal = float(f.get("calories") or 0)
+        p = float(f.get("protein") or 0); c = float(f.get("carbs") or 0); fat = float(f.get("fat") or 0)
+        atwater = 4 * p + 4 * c + 9 * fat
+        if atwater > 15 and (cal <= 0 or abs(cal - atwater) / atwater > 0.30):
+            f["calories"] = round(atwater)
+    except (TypeError, ValueError):
+        pass
+    return f
+
+
 def _enrich_eaten(f: dict) -> dict:
     """Nutrition for a food the user ate, best source first:
     Israeli catalog (whole foods) → OpenFoodFacts (branded, +image) → model."""
@@ -413,7 +429,7 @@ def _enrich_eaten(f: dict) -> dict:
     light = _is_light_variant(name_he)
     in_catalog = (not light) and _resolve_per_100g(name_he, name_en) is not None
     if in_catalog:
-        return _enrich_food(f, recompute=True)          # accurate whole-food data
+        return _sanitize_food_calories(_enrich_food(f, recompute=True))  # accurate whole-food data
     # Not a plain catalog food → try OpenFoodFacts for the real branded product.
     off = _off_search(name_he)
     ef = _enrich_food(f, recompute=False)               # base (keeps model numbers/light)
@@ -426,7 +442,8 @@ def _enrich_eaten(f: dict) -> dict:
         ef["fat"] = round(off["fat"] * fac, 1)
         if off.get("image"):
             ef["image_url"] = off["image"]
-    return ef
+        return ef                                       # branded numbers are trustworthy
+    return _sanitize_food_calories(ef)                  # model numbers → guardrail
 
 
 def _final_clean_reply(text: str) -> str:
