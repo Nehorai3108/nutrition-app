@@ -16,6 +16,9 @@ class SignupRequest(BaseModel):
 class RefreshRequest(BaseModel):
     refresh_token: str
 
+class ResetRequest(BaseModel):
+    email: str
+
 @router.post("/login")
 def login(body: LoginRequest):
     try:
@@ -40,9 +43,21 @@ def signup(body: SignupRequest):
             "refresh_token": res.session.refresh_token if res.session else None,
             "user_id":       res.user.id,
             "email":         res.user.email,
+            # No session → the project requires email confirmation before login.
+            "needs_confirmation": res.session is None,
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/reset-password")
+def reset_password(body: ResetRequest):
+    """שולח מייל איפוס סיסמה. תמיד מחזיר ok — לא חושפים אם המייל קיים במערכת."""
+    try:
+        sb = get_supabase()
+        sb.auth.reset_password_for_email(body.email)
+    except Exception:
+        pass
+    return {"ok": True}
 
 @router.post("/refresh")
 def refresh(body: RefreshRequest):
