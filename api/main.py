@@ -100,7 +100,7 @@ _PRIVACY_HTML = """<!DOCTYPE html>
 <p><b>מצלמה</b> — לסריקת ברקוד וצילום מזון. <b>מיקרופון</b> — להזנת מזון בדיבור. ההרשאות פעילות רק בזמן שימוש יזום שלך בפיצ'ר.</p>
 
 <h2>מחיקת נתונים</h2>
-<p>ניתן לבקש מחיקה מלאה של הנתונים שלך בכל עת בפנייה לכתובת המייל למטה.</p>
+<p>ניתן למחוק את החשבון וכל הנתונים לצמיתות ישירות מתוך האפליקציה: הגדרות → חשבון → מחיקת חשבון. לחלופין אפשר לפנות לכתובת המייל למטה.</p>
 
 <h2>יצירת קשר</h2>
 <p>לשאלות בנושא פרטיות: <a href="mailto:dviryona8@gmail.com">dviryona8@gmail.com</a></p>
@@ -114,10 +114,73 @@ _PRIVACY_HTML = """<!DOCTYPE html>
 </html>"""
 
 
+_TERMS_HTML = """<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutriSmart — תנאי שימוש</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Arial, sans-serif; background:#f2ede0;
+         color:#1c2b20; max-width:760px; margin:0 auto; padding:28px 20px 60px; line-height:1.7; }
+  h1 { color:#3a7a4a; } h2 { color:#3a7a4a; margin-top:28px; font-size:1.15rem; }
+  a { color:#3a7a4a; } .en { direction:ltr; text-align:left; margin-top:48px;
+      border-top:1px solid #d8d0bd; padding-top:24px; }
+  .muted { color:#6b7568; font-size:.9rem; }
+  .warn { background:#fff4e5; border:1px solid #e0c48a; border-radius:8px; padding:12px 16px; }
+</style>
+</head>
+<body>
+<h1>תנאי שימוש — NutriSmart</h1>
+<p class="muted">עודכן לאחרונה: יולי 2026</p>
+
+<p>השימוש באפליקציית NutriSmart ("האפליקציה") כפוף לתנאים הבאים. עצם השימוש מהווה הסכמה לתנאים אלה.</p>
+
+<h2>1. השירות</h2>
+<p>האפליקציה מספקת מעקב תזונה, בניית תפריטים, זיהוי מזון ומעקב אחר יעדים אישיים. אנו שואפים לדיוק אך איננו מתחייבים לכך שכל הערכים התזונתיים או ההמלצות מדויקים לחלוטין.</p>
+
+<h2>2. אינו ייעוץ רפואי</h2>
+<div class="warn">
+<p>NutriSmart אינה מספקת ייעוץ רפואי, אבחון או טיפול. המידע באפליקציה הוא למטרות מידע כללי בלבד ואינו תחליף לייעוץ של רופא, דיאטן או איש מקצוע מוסמך. התייעץ תמיד עם גורם רפואי לפני שינויים משמעותיים בתזונה, במיוחד אם יש לך מצב רפואי, אלרגיות, או שאתה בהיריון.</p>
+</div>
+
+<h2>3. אחריות המשתמש</h2>
+<p>אתה אחראי לדיוק הנתונים שאתה מזין ולהחלטות התזונתיות שאתה מקבל. אין להשתמש באפליקציה למטרות בלתי חוקיות או לפגיעה באחרים.</p>
+
+<h2>4. חשבון</h2>
+<p>אתה אחראי לשמירת סודיות פרטי ההתחברות שלך. ניתן למחוק את החשבון בכל עת מתוך האפליקציה (הגדרות → חשבון → מחיקת חשבון).</p>
+
+<h2>5. מנויים ותשלומים</h2>
+<p>אם וכאשר יוצעו תכונות בתשלום, החיוב יתבצע דרך חשבון ה-App Store שלך בהתאם לתנאי Apple. ניתן לבטל מנוי דרך הגדרות ה-App Store.</p>
+
+<h2>6. הגבלת אחריות</h2>
+<p>האפליקציה מסופקת "כפי שהיא" (AS IS). איננו אחראים לכל נזק ישיר או עקיף הנובע מהשימוש בה, במידה המרבית המותרת בחוק.</p>
+
+<h2>7. שינויים</h2>
+<p>אנו רשאים לעדכן תנאים אלה מעת לעת. המשך השימוש לאחר עדכון מהווה הסכמה לתנאים המעודכנים.</p>
+
+<h2>8. יצירת קשר</h2>
+<p>לשאלות: <a href="mailto:dviryona8@gmail.com">dviryona8@gmail.com</a></p>
+
+<div class="en">
+<h1>Terms of Service — NutriSmart</h1>
+<p class="muted">Last updated: July 2026</p>
+<p>By using NutriSmart ("the App") you agree to these terms. The App provides nutrition tracking, meal planning and food recognition for general informational purposes. <b>The App does not provide medical advice, diagnosis or treatment and is not a substitute for a physician or licensed dietitian; consult a professional before significant dietary changes, especially with a medical condition, allergies or pregnancy.</b> You are responsible for the accuracy of the data you enter and for your dietary decisions. You may delete your account and all data at any time in Settings → Account → Delete Account. Any paid features are billed through your App Store account under Apple's terms and can be cancelled in App Store settings. The App is provided "AS IS" without warranties, and we are not liable for damages arising from its use to the maximum extent permitted by law. We may update these terms; continued use constitutes acceptance. Contact: <a href="mailto:dviryona8@gmail.com">dviryona8@gmail.com</a>.</p>
+</div>
+</body>
+</html>"""
+
+
 @app.get("/privacy", response_class=HTMLResponse)
 def privacy():
     """Public privacy policy — required URL for App Store / Play Store submission."""
     return _PRIVACY_HTML
+
+
+@app.get("/terms", response_class=HTMLResponse)
+def terms():
+    """Public terms of service — includes the not-medical-advice disclaimer."""
+    return _TERMS_HTML
 
 
 @app.get("/diag")
