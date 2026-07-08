@@ -338,6 +338,23 @@ _HE_UNITS: Dict[str, dict] = {
     "חטיף חלבון":  {"unit_he": "חטיף חלבון",        "unit_he_plural": "חטיפי חלבון",        "grams_per_unit": 60,  "category": "countable"},
     "חטיף אנרגיה": {"unit_he": "חטיף אנרגיה",       "unit_he_plural": "חטיפי אנרגיה",       "grams_per_unit": 40,  "category": "countable"},
     "וופל":        {"unit_he": "וופל",              "unit_he_plural": "וופלים",             "grams_per_unit": 30,  "category": "countable"},
+    # Spreads / sauces / condiments — the tablespoon is the natural unit.
+    "קטשופ":       {"unit_he": "כף קטשופ",          "unit_he_plural": "כפות קטשופ",         "grams_per_unit": 15,  "category": "spoon"},
+    "מיונז":       {"unit_he": "כף מיונז",          "unit_he_plural": "כפות מיונז",         "grams_per_unit": 15,  "category": "spoon"},
+    "חרדל":        {"unit_he": "כף חרדל",           "unit_he_plural": "כפות חרדל",          "grams_per_unit": 15,  "category": "spoon"},
+    "ריבה":        {"unit_he": "כף ריבה",           "unit_he_plural": "כפות ריבה",          "grams_per_unit": 20,  "category": "spoon"},
+    "דבש":         {"unit_he": "כף דבש",            "unit_he_plural": "כפות דבש",           "grams_per_unit": 21,  "category": "spoon"},
+    "חמאת בוטנים": {"unit_he": "כף חמאת בוטנים",    "unit_he_plural": "כפות חמאת בוטנים",   "grams_per_unit": 16,  "category": "spoon"},
+    "ממרח שוקולד": {"unit_he": "כף ממרח שוקולד",    "unit_he_plural": "כפות ממרח שוקולד",   "grams_per_unit": 20,  "category": "spoon"},
+    "זעתר":        {"unit_he": "כף זעתר",           "unit_he_plural": "כפות זעתר",          "grams_per_unit": 6,   "category": "spoon"},
+    # Countable dishes / baked goods.
+    "בורקס":       {"unit_he": "בורקס",             "unit_he_plural": "בורקסים",            "grams_per_unit": 90,  "category": "countable"},
+    "פלאפל":       {"unit_he": "כדור פלאפל",        "unit_he_plural": "כדורי פלאפל",        "grams_per_unit": 17,  "category": "countable"},
+    "קבב":         {"unit_he": "שיפוד קבב",         "unit_he_plural": "שיפודי קבב",         "grams_per_unit": 90,  "category": "countable"},
+    "חלה":         {"unit_he": "פרוסת חלה",         "unit_he_plural": "פרוסות חלה",         "grams_per_unit": 35,  "category": "countable"},
+    "רוגלך":       {"unit_he": "רוגלך",             "unit_he_plural": "רוגלך",              "grams_per_unit": 30,  "category": "countable"},
+    "קרואסון":     {"unit_he": "קרואסון",           "unit_he_plural": "קרואסונים",          "grams_per_unit": 60,  "category": "countable"},
+    "פרגית":       {"unit_he": "פרגית",             "unit_he_plural": "פרגיות",             "grams_per_unit": 150, "category": "countable"},
 }
 
 

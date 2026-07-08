@@ -101,6 +101,19 @@ _HE_TO_EN: dict[str, str] = {
     "נקטרינה": "nectarine", "ליצי": "lychee fruit", "קלמנטינה": "clementine",
     "אשכולית": "grapefruit", "שזיף": "plum fruit", "משמש": "apricot fruit",
     "דובדבן": "cherries", "פטל": "raspberries", "אוכמניות": "blueberries",
+    # More Israeli/Middle-Eastern dishes and staples.
+    "סביח": "sabich pita", "מלווח": "malawach", "גחנון": "jachnun",
+    "ג׳חנון": "jachnun", "קובה": "kubbeh", "מגדרה": "mujaddara", "מג׳דרה": "mujaddara",
+    "אמבה": "amba mango sauce", "חציל": "eggplant", "במיה": "okra stew",
+    "מולוחייה": "molokhia", "פריקה": "freekeh", "מפרום": "yemeni meat stew",
+    "פרגית": "grilled chicken thigh", "כבד עוף": "chicken liver",
+    "לבבות עוף": "chicken hearts", "קבב": "kebab", "קרעפלך": "kreplach dumplings",
+    "גפילטע": "gefilte fish", "חלה": "challah", "רוגלך": "rugelach",
+    "עוגת שמרים": "babka", "מלבי": "malabi pudding", "כנאפה": "kanafeh",
+    "בקלאווה": "baklava", "קטשופ": "ketchup", "מיונז": "mayonnaise",
+    "חרדל": "mustard", "חמוצים": "pickles", "זעתר": "zaatar",
+    "ריבה": "fruit jam", "דבש": "honey jar", "חמאת בוטנים": "peanut butter",
+    "ממרח שוקולד": "chocolate spread", "קוואקר": "oatmeal", "גרנולה": "granola",
 }
 
 
