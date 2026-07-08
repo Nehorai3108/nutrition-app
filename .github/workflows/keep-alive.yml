@@ -1,0 +1,25 @@
+name: keep-alive
+
+# Ping the Render service so the free tier doesn't spin down (a cold start is
+# ~50s, an awful first impression). Runs every 10 minutes. GitHub cron is
+# best-effort and can lag a few minutes, which is fine — Render spins down only
+# after ~15 minutes idle.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /diag
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 \
+              https://bitefit-api.onrender.com/diag || echo "000")
+            echo "attempt $i -> HTTP $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 15
+          done
+          echo "service did not return 200 after retries"
