@@ -114,16 +114,39 @@ _HE_TO_EN: dict[str, str] = {
     "חרדל": "mustard", "חמוצים": "pickles", "זעתר": "zaatar",
     "ריבה": "fruit jam", "דבש": "honey jar", "חמאת בוטנים": "peanut butter",
     "ממרח שוקולד": "chocolate spread", "קוואקר": "oatmeal", "גרנולה": "granola",
+    # Drinks.
+    "קפה הפוך": "latte coffee", "אספרסו": "espresso", "קפוצינו": "cappuccino",
+    "שוקו": "chocolate milk", "לימונדה": "lemonade", "קולה": "cola glass",
+    "ספרייט": "lemon lime soda", "בירה": "glass of beer", "יין": "glass of wine",
+    "וודקה": "vodka glass", "מים": "glass of water", "שייק": "fruit smoothie",
+    "חלב סויה": "soy milk", "חלב שקדים": "almond milk", "משקה חלבון": "protein shake",
+    # Sweets / snacks.
+    "ממתק": "candy", "שלגון": "popsicle", "ארטיק": "ice lolly", "נאגטס": "chicken nuggets",
+    "טורטייה": "tortilla wrap", "רול": "bread roll", "ביסקוויט": "biscuit cookie",
+    "פריכית": "rice cake", "עוגיות אוראו": "oreo cookies",
+    # Nuts.
+    "אגוזי לוז": "hazelnuts", "קשיו": "cashew nuts", "פיסטוק": "pistachios", "בוטנים": "peanuts",
+    # Vegetables.
+    "תירס": "corn", "אפונה": "green peas", "שעועית": "green beans", "כרובית": "cauliflower",
+    "קישוא": "zucchini", "דלעת": "pumpkin", "פטריות": "mushrooms", "לימון": "lemon",
 }
 
 
 def _en_term(name_he: str) -> str | None:
-    """Most-specific English search term for a Hebrew food name."""
+    """Most-specific English search term for a Hebrew food name.
+
+    Prefer keys the food name CONTAINS (strong: "וופל בלגי" → "וופל") over keys
+    that merely contain the food name (weak: "בוטנים" ⊂ "חמאת בוטנים"), so a
+    short food name isn't hijacked by a longer superset key.
+    """
     nm = (name_he or "").strip()
     if not nm:
         return None
-    cands = [k for k in _HE_TO_EN if k in nm or nm in k]
-    return _HE_TO_EN[max(cands, key=len)] if cands else None
+    strong = [k for k in _HE_TO_EN if k in nm]
+    if strong:
+        return _HE_TO_EN[max(strong, key=len)]
+    weak = [k for k in _HE_TO_EN if nm in k]
+    return _HE_TO_EN[max(weak, key=len)] if weak else None
 
 
 # Hand-verified DIRECT Wikimedia image URLs for common foods — load instantly in
@@ -186,8 +209,11 @@ def _curated_url(name_he: str) -> str | None:
     nm = (name_he or "").strip()
     if not nm:
         return None
-    cands = [k for k in _CURATED_URLS if k in nm or nm in k]
-    return _CURATED_URLS[max(cands, key=len)] if cands else None
+    strong = [k for k in _CURATED_URLS if k in nm]
+    if strong:
+        return _CURATED_URLS[max(strong, key=len)]
+    weak = [k for k in _CURATED_URLS if nm in k]
+    return _CURATED_URLS[max(weak, key=len)] if weak else None
 
 
 def _pexels_food_image(query: str) -> str | None:

@@ -355,6 +355,36 @@ _HE_UNITS: Dict[str, dict] = {
     "רוגלך":       {"unit_he": "רוגלך",             "unit_he_plural": "רוגלך",              "grams_per_unit": 30,  "category": "countable"},
     "קרואסון":     {"unit_he": "קרואסון",           "unit_he_plural": "קרואסונים",          "grams_per_unit": 60,  "category": "countable"},
     "פרגית":       {"unit_he": "פרגית",             "unit_he_plural": "פרגיות",             "grams_per_unit": 150, "category": "countable"},
+    # Drinks — the cup/glass is the natural unit (longer keys win over shorter).
+    "קפה הפוך":    {"unit_he": "כוס קפה הפוך",      "unit_he_plural": "כוסות קפה הפוך",     "grams_per_unit": 240, "category": "cup"},
+    "אספרסו":      {"unit_he": "כוס אספרסו",        "unit_he_plural": "כוסות אספרסו",       "grams_per_unit": 30,  "category": "cup"},
+    "קפוצינו":     {"unit_he": "כוס קפוצינו",       "unit_he_plural": "כוסות קפוצינו",      "grams_per_unit": 180, "category": "cup"},
+    "שוקו":        {"unit_he": "כוס שוקו",          "unit_he_plural": "כוסות שוקו",         "grams_per_unit": 240, "category": "cup"},
+    "לימונדה":     {"unit_he": "כוס לימונדה",       "unit_he_plural": "כוסות לימונדה",      "grams_per_unit": 250, "category": "cup"},
+    "קולה":        {"unit_he": "כוס קולה",          "unit_he_plural": "כוסות קולה",         "grams_per_unit": 250, "category": "cup"},
+    "ספרייט":      {"unit_he": "כוס ספרייט",        "unit_he_plural": "כוסות ספרייט",       "grams_per_unit": 250, "category": "cup"},
+    "שייק":        {"unit_he": "כוס שייק",          "unit_he_plural": "כוסות שייק",         "grams_per_unit": 250, "category": "cup"},
+    "משקה חלבון":  {"unit_he": "כוס משקה חלבון",    "unit_he_plural": "כוסות משקה חלבון",   "grams_per_unit": 300, "category": "cup"},
+    "בירה":        {"unit_he": "פחית בירה",         "unit_he_plural": "פחיות בירה",         "grams_per_unit": 330, "category": "countable"},
+    "יין":         {"unit_he": "כוס יין",           "unit_he_plural": "כוסות יין",          "grams_per_unit": 150, "category": "cup"},
+    "מים":         {"unit_he": "כוס מים",           "unit_he_plural": "כוסות מים",          "grams_per_unit": 240, "category": "cup"},
+    # Countable dishes / snacks / produce.
+    "נקניקיי":     {"unit_he": "נקניקייה",          "unit_he_plural": "נקניקיות",           "grams_per_unit": 50,  "category": "countable"},
+    "נאגטס":       {"unit_he": "נאגט",              "unit_he_plural": "נאגטס",              "grams_per_unit": 18,  "category": "countable"},
+    "פיצה":        {"unit_he": "משולש פיצה",        "unit_he_plural": "משולשי פיצה",        "grams_per_unit": 120, "category": "countable"},
+    "גלידה":       {"unit_he": "כדור גלידה",        "unit_he_plural": "כדורי גלידה",        "grams_per_unit": 60,  "category": "countable"},
+    "טורטייה":     {"unit_he": "טורטייה",           "unit_he_plural": "טורטיות",            "grams_per_unit": 45,  "category": "countable"},
+    "פריכית":      {"unit_he": "פריכית",            "unit_he_plural": "פריכיות",            "grams_per_unit": 9,   "category": "countable"},
+    "עוגיות אוראו":{"unit_he": "עוגיית אוראו",      "unit_he_plural": "עוגיות אוראו",       "grams_per_unit": 11,  "category": "countable"},
+    "תירס":        {"unit_he": "קלח תירס",          "unit_he_plural": "קלחי תירס",          "grams_per_unit": 100, "category": "countable"},
+    "לימון":       {"unit_he": "לימון",             "unit_he_plural": "לימונים",            "grams_per_unit": 60,  "category": "countable"},
+    "קישוא":       {"unit_he": "קישוא",             "unit_he_plural": "קישואים",            "grams_per_unit": 150, "category": "countable"},
+    "גזר":         {"unit_he": "גזר",               "unit_he_plural": "גזרים",              "grams_per_unit": 60,  "category": "countable"},
+    # Nuts — a handful is the natural unit.
+    "אגוזי לוז":   {"unit_he": "חופן אגוזי לוז",    "unit_he_plural": "חופני אגוזי לוז",    "grams_per_unit": 28,  "category": "cup"},
+    "קשיו":        {"unit_he": "חופן קשיו",         "unit_he_plural": "חופני קשיו",         "grams_per_unit": 28,  "category": "cup"},
+    "פיסטוק":      {"unit_he": "חופן פיסטוקים",     "unit_he_plural": "חופני פיסטוקים",     "grams_per_unit": 28,  "category": "cup"},
+    "בוטנים":      {"unit_he": "חופן בוטנים",       "unit_he_plural": "חופני בוטנים",       "grams_per_unit": 28,  "category": "cup"},
 }
 
 
