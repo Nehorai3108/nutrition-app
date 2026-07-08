@@ -82,6 +82,12 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
     prompt = f"""אתה מומחה תזונה. עבור המאכל "{food_name_he}" החזר את הערכים התזונתיים ל-100 גרם.
 אם זו מנה מורכבת (למשל "פיתה פלאפל", "סביח", "שווארמה בלאפה") — חשב את הממוצע המשוקלל של כל המנה ל-100 גרם.
 
+כללים מחייבים (ל-100 גרם מזון):
+- חלבון + פחמימות + שומן ביחד לא יכולים לעלות על 100 גרם.
+- הקלוריות חייבות להיות עקביות עם המקרו: קלוריות ≈ 4×חלבון + 4×פחמימות + 9×שומן.
+- ערכים ריאליים: קלוריות 0–900, כל מקרו 0–100 גרם.
+- אם אינך בטוח — תן הערכה סבירה של מאכל דומה, לעולם אל תמציא ערכים קיצוניים.
+
 החזר אך ורק JSON אחד בפורמט הבא, ללא טקסט נוסף:
 {{"name_en": "english name", "category": "<one of: protein, carbohydrate, fat, vegetable, fruit, dairy, grain, legume, nut_seed, condiment, beverage, snack, sweet, other>", "calories": <kcal per 100g>, "protein": <g>, "carbs": <g>, "fat": <g>}}"""
 
@@ -118,9 +124,11 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
             text = text[start:end + 1]
         data = json.loads(text.strip())
 
-        cal = float(data.get("calories", 0) or 0)
-        if cal <= 0:
-            return None
+        vals = _sanitize_macros(data)
+        if vals is None:
+            return None  # implausible estimate — caller falls back to catalog
+        cal, protein, carbs, fat = vals
+
         category = str(data.get("category", "other")).lower().strip()
         if category not in _VALID_CATEGORIES:
             category = "other"
@@ -130,12 +138,55 @@ def estimate_nutrition_per_100g(food_name_he: str) -> dict | None:
             "name_en": str(data.get("name_en", "")).strip(),
             "category": category,
             "calories": round(cal, 1),
-            "protein": round(float(data.get("protein", 0) or 0), 1),
-            "carbs": round(float(data.get("carbs", 0) or 0), 1),
-            "fat": round(float(data.get("fat", 0) or 0), 1),
+            "protein": round(protein, 1),
+            "carbs": round(carbs, 1),
+            "fat": round(fat, 1),
         }
         cache[key] = result
         _save_nut_cache()
         return result
     except Exception:
         return None
+
+
+def _sanitize_macros(data: dict):
+    """Validate/repair a per-100g estimate. Returns (cal, protein, carbs, fat)
+    or None when the numbers are implausible (so the caller falls back to the
+    catalog instead of logging a bogus value).
+
+    Guardrails:
+      • each value within a physical per-100g range,
+      • protein+carbs+fat ≤ 100g (per 100g of food — can't exceed its mass),
+      • calories consistent with the Atwater estimate (4·protein + 4·carbs +
+        9·fat); if the model's calorie number disagrees by >25%, trust the
+        macros and recompute calories from them.
+    """
+    try:
+        cal = float(data.get("calories", 0) or 0)
+        protein = float(data.get("protein", 0) or 0)
+        carbs = float(data.get("carbs", 0) or 0)
+        fat = float(data.get("fat", 0) or 0)
+    except (TypeError, ValueError):
+        return None
+
+    # Reject negatives / out-of-range values outright.
+    if min(cal, protein, carbs, fat) < 0:
+        return None
+    if protein > 100 or carbs > 100 or fat > 100 or cal > 900:
+        return None
+    # Macros can't weigh more than the 100g of food they came from (small slack
+    # for rounding). A sum well over 100 means the estimate is inflated.
+    if protein + carbs + fat > 105:
+        return None
+
+    atwater = 4 * protein + 4 * carbs + 9 * fat
+    # If the model gave essentially no calories but real macros, use Atwater.
+    if cal <= 0:
+        cal = atwater
+    # Disagreement > 25% → the macros are usually the more reliable signal.
+    elif atwater > 0 and abs(cal - atwater) / atwater > 0.25:
+        cal = atwater
+
+    if cal <= 0:
+        return None
+    return cal, protein, carbs, fat
