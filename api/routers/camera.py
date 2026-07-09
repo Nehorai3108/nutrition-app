@@ -348,11 +348,22 @@ def _lookup_il_table(name_he: str, grams: float) -> dict | None:
     }
 
 
+_catalog_singleton = None
+
+
+def _catalog():
+    """Cached FoodCatalog — avoid reloading ~12k foods for every detected item."""
+    global _catalog_singleton
+    if _catalog_singleton is None:
+        from nutrition_app.agents.agent_3_food import FoodCatalog
+        _catalog_singleton = FoodCatalog()
+    return _catalog_singleton
+
+
 def _lookup_catalog(name_he: str, name_en: str, grams: float) -> dict | None:
     """Fuzzy-match against FoodCatalog."""
     try:
-        from nutrition_app.agents.agent_3_food import FoodCatalog
-        cat   = FoodCatalog()
+        cat   = _catalog()
         foods = cat.get_all_foods()
         q     = name_he.lower().strip()
 

@@ -43,7 +43,7 @@ def _wiki_query(params: dict, lang: str) -> str | None:
     url = f"https://{lang}.wikipedia.org/w/api.php?{urllib.parse.urlencode(params)}"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "BiteFit/1.0"})
-        data = json.loads(urllib.request.urlopen(req, timeout=8).read())
+        data = json.loads(urllib.request.urlopen(req, timeout=4).read())
         for page in data.get("query", {}).get("pages", {}).values():
             thumb = page.get("thumbnail", {}).get("source")
             if thumb:
@@ -255,13 +255,19 @@ def _wiki_search_image(query: str, lang: str) -> str | None:
     )
 
 
-def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = True) -> str | None:
+def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = True,
+                   cache_only: bool = False) -> str | None:
     """Return a food image URL (English Wikipedia first, then Hebrew). Cached.
 
     allow_search=False uses ONLY exact-title lookups (accurate), skipping the
     fuzzy search that can return a loosely-related photo — important for recipe
     names like "פיתה עם חומוס ואמבה" where search wrongly returned shawarma.
     Caches misses as "" so we don't repeatedly query foods with no page image.
+
+    cache_only=True does NO network I/O — returns only a cached or hand-curated
+    URL (instant). Used in latency-sensitive paths like loading the food diary,
+    so a page of entries never blocks on live Wikipedia/Pexels lookups. A miss
+    is NOT cached, so a later full lookup can still resolve and warm the cache.
     """
     # TRUSTED term = from our curated Hebrew→English food map. A raw catalog
     # name_en is UNTRUSTED — it can be a plain ambiguous word ("Cigar" for the
@@ -287,6 +293,16 @@ def get_food_image(name_en: str = "", name_he: str = "", allow_search: bool = Tr
     # foods with no accurate match.
     # 1. hand-verified direct Wikimedia URL (exact — e.g. tuna → a tin)
     img = _curated_url(name_he)
+
+    # Instant path: never touch the network. Return the curated URL (or None),
+    # caching only a hit so a later full lookup can still resolve a miss.
+    if cache_only:
+        if img:
+            with _lock:
+                cache[key] = img
+                _save_cache()
+        return img
+
     # 2. Wikipedia exact title — ONLY the trusted food term (never a raw name_en,
     #    which risks resolving an ambiguous word to a non-food article).
     if not img and trusted:

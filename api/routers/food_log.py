@@ -26,6 +26,19 @@ class AddFoodEntry(BaseModel):
 _DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                         "storage", "nutrition.db")
 
+_CATALOG = None
+
+
+def _get_catalog():
+    """Module-level FoodCatalog singleton. Building it loads ~12k foods from
+    SQLite (~0.3-2s), so we do it ONCE instead of on every diary/search request.
+    Read-only after init, so it's safe to share across requests."""
+    global _CATALOG
+    if _CATALOG is None:
+        from nutrition_app.agents.agent_3_food import FoodCatalog
+        _CATALOG = FoodCatalog(db_path=_DB_PATH)
+    return _CATALOG
+
 
 def _hebrew_tokens(text: str) -> set:
     """Hebrew words of length >= 2 in the text (the geresh ׳ stays attached)."""
@@ -89,8 +102,7 @@ def _household_display(food_name: str, grams: float, name_en: str = "") -> Optio
 def _name_en_lookup():
     """A cached food_id/name_he → name_en resolver backed by the catalog."""
     try:
-        from nutrition_app.agents.agent_3_food import FoodCatalog
-        cat = FoodCatalog(db_path=_DB_PATH)
+        cat = _get_catalog()
     except Exception:
         return lambda fid, name_he: ""
 
@@ -129,10 +141,10 @@ def _serving(name_he: str, name_en: str) -> Optional[dict]:
         return None
 
 
-def _food_image(name_en: str, name_he: str):
+def _food_image(name_en: str, name_he: str, cache_only: bool = False):
     try:
         from api.food_image import get_food_image
-        return get_food_image(name_en or "", name_he or "")
+        return get_food_image(name_en or "", name_he or "", cache_only=cache_only)
     except Exception:
         return None
 
@@ -161,8 +173,7 @@ def search_food_nutrition(q: str, user=Depends(get_current_user)):
     התאמה מדויקת. כל השאר (התאמות חלקיות, נתוני OFF/USDA רועשים) → Groq מעריך
     את הערכים, והפריט נשמר כמקור 'ai' כך שהקטלוג העברי גדל אורגנית.
     """
-    from nutrition_app.agents.agent_3_food import FoodCatalog
-    cat = FoodCatalog(db_path=_DB_PATH)
+    cat = _get_catalog()
     candidates = cat.search_foods(q, limit=20)
     with_data = [f for f in candidates if f.nutrition_per_100g.calories_kcal]
 
@@ -271,8 +282,10 @@ def get_log(date_str: str, user=Depends(get_current_user)):
         # after the first lookup). Makes manually-added foods show a thumbnail
         # even if none was stored on the entry.
         en = name_en_of(e.food_id, e.food_name)
+        # cache_only: never block the diary on a live image lookup — instant
+        # curated/cached URLs only (chat/search warm the cache for the rest).
         if not row.get("image_url") and e.food_name and e.food_id != "camera_food":
-            row["image_url"] = _food_image(en, e.food_name)
+            row["image_url"] = _food_image(en, e.food_name, cache_only=True)
         # Household-unit display so the diary shows physical units, not grams.
         if not row.get("display_he"):
             row["display_he"] = _household_display(e.food_name, e.grams, en)

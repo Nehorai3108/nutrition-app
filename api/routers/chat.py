@@ -1021,6 +1021,18 @@ _NAME_FIXES = {
 }
 
 _canonical_names_cache: list | None = None
+_catalog_singleton = None
+
+
+def _catalog():
+    """Module-level FoodCatalog singleton — building it loads ~12k foods from
+    SQLite (~0.3-2s). Without this, _resolve_per_100g rebuilt the whole catalog
+    for EVERY food in a chat message, adding seconds of latency."""
+    global _catalog_singleton
+    if _catalog_singleton is None:
+        from nutrition_app.agents.agent_3_food import FoodCatalog
+        _catalog_singleton = FoodCatalog()
+    return _catalog_singleton
 
 
 def _canonical_names() -> list:
@@ -1035,8 +1047,7 @@ def _canonical_names() -> list:
     except Exception:
         pass
     try:
-        from nutrition_app.agents.agent_3_food import FoodCatalog
-        for fd in FoodCatalog().get_all_foods():
+        for fd in _catalog().get_all_foods():
             if fd.name_he:
                 names.add(fd.name_he.strip())
             for a in (fd.aliases_he or []):
@@ -1118,8 +1129,7 @@ def _resolve_per_100g(name_he: str, name_en: str) -> dict | None:
         pass
     # 2. FoodCatalog
     try:
-        from nutrition_app.agents.agent_3_food import FoodCatalog
-        cat = FoodCatalog()
+        cat = _catalog()
         q = (name_he or "").lower().strip()
         for fd in cat.get_all_foods():
             aliases = (fd.aliases_he or []) + [fd.name_he or ""]
