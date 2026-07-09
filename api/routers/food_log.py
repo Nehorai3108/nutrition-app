@@ -296,23 +296,22 @@ _recipe_images_cache: dict | None = None
 
 
 def _load_recipe_images() -> dict:
-    """Returns {recipe_id: image_url} from recipes.json. Cached — was re-read
-    and re-parsed (~299 recipes) on every diary load."""
+    """Returns {recipe_id: client-reachable image_url} for recipes that have a
+    local approved JPG. Uses PUBLIC_BASE_URL — NEVER the localhost URL baked
+    into recipes.json (which is broken on real devices). Cached."""
     global _recipe_images_cache
     if _recipe_images_cache is not None:
         return _recipe_images_cache
     try:
-        recipes_path = os.path.join(
+        base = os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/")
+        appr_dir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-            "storage_agents", "recipes", "recipes.json",
+            "storage_agents", "recipe_images", "approved",
         )
-        import json
-        with open(recipes_path, encoding="utf-8") as f:
-            recipes = json.load(f)
+        files = os.listdir(appr_dir) if os.path.isdir(appr_dir) else []
         _recipe_images_cache = {
-            r["recipe_id"]: r.get("image_url")
-            for r in recipes
-            if r.get("recipe_id") and r.get("image_url")
+            os.path.splitext(fn)[0]: f"{base}/recipe-images/{fn}"
+            for fn in files if fn.lower().endswith(".jpg")
         }
     except Exception:
         _recipe_images_cache = {}

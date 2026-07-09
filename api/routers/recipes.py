@@ -35,6 +35,19 @@ def _get_recipe_image_map():
             _recipe_image_map = {}
     return _recipe_image_map
 
+def _resolve_recipe_image(rid: str) -> str | None:
+    """Correct, client-reachable image URL for a recipe. NEVER the localhost
+    URL baked into recipes.json. Priority: local approved JPG (served from this
+    host) → curated Unsplash URL → None (client shows a placeholder)."""
+    if not rid:
+        return None
+    local = os.path.join(_PROJECT_ROOT, "storage_agents", "recipe_images", "approved", f"{rid}.jpg")
+    if os.path.exists(local):
+        return f"{_PUBLIC_BASE}/recipe-images/{rid}.jpg"
+    mapped = _get_recipe_image_map().get(rid) or ""
+    return mapped if "images.unsplash.com" in mapped else None
+
+
 @router.get("/")
 def search_recipes(
     q: Optional[str] = None,
@@ -58,18 +71,8 @@ def search_recipes(
     #   2. data/recipe_images.json     (curated Unsplash URL per recipe_id)
     # Never use the generic themealdb image_url baked into recipes.json — those are
     # mismatched. No image at all → client shows a clean placeholder.
-    images_dir = os.path.join(_PROJECT_ROOT, "storage_agents", "recipe_images", "approved")
-    img_map = _get_recipe_image_map()
     for r in results:
-        rid = r.get("recipe_id", "")
-        local = os.path.join(images_dir, f"{rid}.jpg")
-        if os.path.exists(local):
-            r["image_url"] = f"{_PUBLIC_BASE}/recipe-images/{rid}.jpg"
-        else:
-            mapped = img_map.get(rid) or ""
-            # Only keep sources that actually load & look relevant. Skip the dead
-            # source.unsplash.com service and the generic/mismatched themealdb photos.
-            r["image_url"] = mapped if "images.unsplash.com" in mapped else None
+        r["image_url"] = _resolve_recipe_image(r.get("recipe_id", ""))
         enrich_recipe_ingredients(r)
     return {"recipes": results, "total": len(results)}
 
@@ -80,5 +83,6 @@ def get_recipe(recipe_id: str, user=Depends(get_current_user)):
     if not recipe:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Recipe not found")
+    recipe["image_url"] = _resolve_recipe_image(recipe.get("recipe_id", ""))
     enrich_recipe_ingredients(recipe)
     return recipe
