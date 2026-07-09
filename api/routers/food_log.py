@@ -292,8 +292,15 @@ def get_log(date_str: str, user=Depends(get_current_user)):
         result.append(row)
     return {"entries": result}
 
+_recipe_images_cache: dict | None = None
+
+
 def _load_recipe_images() -> dict:
-    """Returns {recipe_id: image_url} from recipes.json."""
+    """Returns {recipe_id: image_url} from recipes.json. Cached — was re-read
+    and re-parsed (~299 recipes) on every diary load."""
+    global _recipe_images_cache
+    if _recipe_images_cache is not None:
+        return _recipe_images_cache
     try:
         recipes_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -302,13 +309,14 @@ def _load_recipe_images() -> dict:
         import json
         with open(recipes_path, encoding="utf-8") as f:
             recipes = json.load(f)
-        return {
+        _recipe_images_cache = {
             r["recipe_id"]: r.get("image_url")
             for r in recipes
             if r.get("recipe_id") and r.get("image_url")
         }
     except Exception:
-        return {}
+        _recipe_images_cache = {}
+    return _recipe_images_cache
 
 @router.delete("/{entry_id}")
 def delete_entry(entry_id: str, user=Depends(get_current_user)):
